@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TenantPortal Login</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-family: 'Arial', sans-serif;
+        }
+        .container {
+            margin-top: 100px;
+            max-width: 400px;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            font-weight: bold;
+        }
+        .form-group label {
+            font-weight: 600;
+        }
+        .error-message {
+            color: red;
+            background-color: #f8d7da;
+            padding: 10px;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .btn-primary {
+            background-color: #003366;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #003366;
+        }
+        .text-center a {
+            color: #003366;
+        }
+        .text-center a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 376px) {
+            .container {
+                margin-top: 20%;
+                padding: 20px;
+                width: 90%;
+            }
+            h1 {
+                font-size: 1.2rem;
+            }
+            .form-group label {
+                font-size: 0.7rem;
+            }
+            .btn-primary {
+                font-size: 0.7rem;
+            }
+            .form-control {
+                font-size: 0.6rem;
+            }
+            .btn {
+                font-size: 0.7rem;
+            }
+            .p {
+                font-size: 0.6rem;
+            }
+        }
+        .error-message {
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center text-dark">Login to TenantPortal</h1>
+
+        <% if (error.length > 0) { %>
+            <div class="error-message">
+              <%= error[0] %>
+            </div>
+        <% } %>
+
+        <form action="/tenant/login" method="POST">
+            <div class="form-group">
+                <label for="name">Username</label>
+                <input type="text" name="name" id="name" class="form-control" placeholder="Enter your username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" class="form-control" placeholder="Enter your password" required>
+                <input type="checkbox" id="showPassword"> <label for="showPassword">Show Password</label>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+        </form>
+        <p class="text-right"> <a href="#" data-toggle="modal" data-target="#forgotPasswordModal">Forget Password?</a></p>
+    </div>
+
+    <!-- Forget Password Modal -->
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" role="dialog" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="forgotPasswordModalLabel">Reset Password</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form action="/tenant/forgot-password" method="POST">
+              <div class="form-group">
+                <label for="email">Enter your email address</label>
+                <input type="email" name="email" id="email" class="form-control" placeholder="Enter your email" required>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">Send Reset Link</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.getElementById('showPassword').addEventListener('change', function() {
+            const passwordField = document.getElementById('password');
+            passwordField.setAttribute('type', this.checked ? 'text' : 'password');
+        });
+    </script>
+</body>
+</html>

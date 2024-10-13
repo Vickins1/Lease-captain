@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lease Captain Dashboard</title>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            margin-top: 20px;
+            padding: 15px;
+            padding-top: 50px;
+            margin-bottom: 70px;
+        }
+
+        .sidebar {
+            background-color: #000000;
+            height: 100vh;
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar h3 {
+            margin-bottom: 30px;
+            color: #ffffff;
+            font-size: 1.5em;
+        }
+
+        .sidebar a {
+            color: #adb5bd;
+            display: block;
+            padding: 10px 10px;
+            margin: 5px 0;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            font-weight: bold;
+            font-size: 1.0em;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            color: #ffffff;
+            background-color: #4d4d4d;
+        }
+
+        .header {
+            background-color: #000000;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .content {
+            margin-top: 70px;
+            padding: 15px;
+        }
+
+        .header img {
+            height: 40px;
+        }
+
+        footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: #000000;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+
+        @media (max-width: 968px) {
+            .sidebar {
+                transform: translateX(-250px);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .mobile-sidebar-btn {
+                display: block;
+                color: white;
+            }
+
+            .sidebar a {
+                font-size: 0.8em;
+            }
+        }
+
+
+        @media (min-width: 768px) and (max-width: 968px) {
+            .mobile-sidebar-btn {
+                display: block;
+            }
+
+            .content {
+                margin-left: 200px;
+                margin-bottom: 50px;
+            }
+        }
+
+
+        @media (min-width: 969px) {
+            .mobile-sidebar-btn {
+                display: none;
+                font-size: 0.6rem;
+            }
+
+            .content {
+                margin-left: 250px;
+                margin-bottom: 50px;
+            }
+
+        }
+
+
+        .collapse {
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .collapse.show {
+            opacity: 1;
+            max-height: 200px;
+        }
+
+
+        .dropdown-item {
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: #000000;
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <button class="btn btn-dark mobile-sidebar-btn" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+        <h1> </h1>
+        <div class="dropdown">
+            <button class="btn btn-dark dropdown-toggle" style="background-color: #000000;" type="button"
+                id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-user"></i> Welcome,
+                <%= currentUser.username %>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
+                <a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+    </div>
+    <style>
+        .mobile-sidebar-btn,
+        .dropdown-toggle {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+        }
+
+
+        @media (max-width: 576px) {
+
+            .mobile-sidebar-btn,
+            .dropdown-toggle {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.575rem;
+            }
+
+            .dropdown-menu {
+                font-size: 0.575rem;
+            }
+        }
+    </style>
+
+    <div class="d-flex">
+        <nav class="sidebar fixed" id="sidebarMenu">
+            <h3 class="text-white"><strong>Lease Captain</strong></h3>
+            <ul class="nav flex-column">
+                <li><a class="nav-link" href="/tenancy-manager/dashboard"><i class="fas fa-tachometer-alt"></i>
+                        Dashboard</a></li>
+
+                <li class="nav-item">
+                    <a class="nav-link dropdown-toggle" href="#propertiesSubmenu" data-toggle="collapse"
+                        aria-expanded="false">
+                        <i class="fas fa-home"></i> Manage Properties
+                    </a>
+                    <ul class="collapse list-unstyled" id="propertiesSubmenu">
+
+                        <li><a class="dropdown-item" href="/tenancy-manager/properties">
+                                Properties</a></li>
+                        <li><a class="dropdown-item" href="/tenancy-manager/property/units">
+                                Property Units</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link dropdown-toggle" href="#tenantsSubmenu" data-toggle="collapse"
+                        aria-expanded="false">
+                        <i class="fas fa-users"></i> Manage Tenants
+                    </a>
+                    <ul class="collapse list-unstyled" id="tenantsSubmenu">
+                        <li><a class="dropdown-item" href="/tenancy-manager/tenants"></i>
+                                Tenants</a></li>
+                        <li><a class="dropdown-item" href="/maintenance-requests"></i>
+                                Maintenance Requests</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link dropdown-toggle" href="#billingSubmenu" data-toggle="collapse"
+                        aria-expanded="false">
+                        <i class="fas fa-money-bill-wave"></i> Finance Management
+                    </a>
+                    <ul class="collapse list-unstyled" id="billingSubmenu">
+                        <li><a class="dropdown-item" href="/tenancy-manager/payments">
+                                Transactions</a></li>
+                        <li><a class="dropdown-item" href="/reports-invoices">
+                                Reports & Invoices</a></li>
+                        <li><a class="dropdown-item" href="/expenses">
+                                Expenses</a></li>
+                    </ul>
+                </li>
+
+
+
+                <li class="nav-item">
+                    <a class="nav-link dropdown-toggle" href="#smsSubmenu" data-toggle="collapse" aria-expanded="false">
+                        <i class="fas fa-sms"></i> Manage Notifications
+                    </a>
+                    <ul class="collapse list-unstyled" id="smsSubmenu">
+                        <li><a class="dropdown-item" href="/top-ups"> Top up</a></li>
+                        <li><a class="dropdown-item" href="/sms&email">
+                                SMS & Emails</a></li>
+                    </ul>
+                </li>
+
+
+
+                <li class="nav-item">
+                    <a class="nav-link dropdown-toggle" href="#userSubmenu" data-toggle="collapse"
+                        aria-expanded="false">
+                        <i class="fas fa-users-cog"></i> User Management
+                    </a>
+                    <ul class="collapse list-unstyled" id="userSubmenu">
+                        <li><a class="dropdown-item" href="/users">
+                                Users</a></li>
+                        <li><a class="dropdown-item" href="/roles"> Roles</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link dropdown-toggle" href="#settingsSubmenu" data-toggle="collapse"
+                        aria-expanded="false">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                    <ul class="collapse list-unstyled" id="settingsSubmenu">
+                        <li><a class="dropdown-item" href="/tenancy-manager/profile">
+                                Profile Settings</a></li>
+                        <li><a class="dropdown-item" href="/tenancy-manager/security"> Security Settings</a>
+                        </li>
+                        <li><a class="dropdown-item" href="/connect"> Linked Accounts</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+
+
+
+       <style>
+              body {
+    font-family: Arial, sans-serif;
+}
+
+
+
+h3, h4 {
+    font-size: 1.5rem;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th, .table td {
+    padding: 8px;
+    text-align: center;
+}
+
+.alert {
+    margin-bottom: 20px;
+}
+
+.btn {
+    margin-bottom: 10px;
+}
+
+.modal-dialog {
+    margin: auto;
+}
+
+.form-control {
+    font-size: 0.775rem;
+}
+
+@media (max-width: 768px) {
+    h3, h4 {
+        font-size: 1.25rem;
+    }
+
+    .table th, .table td {
+        font-size: 0.775rem;
+        padding: 5px;
+    }
+
+    .btn {
+        font-size: 10px;
+    }
+
+    .modal-content {
+        padding: 15px;
+        max-width: 100%;
+        font-size: 0.8rem;
+    }
+
+    .form-group {
+        margin-bottom: 10px;
+    }
+    
+}
+</style>
+
+<div class="container mt-5">
+       <h3 class="text-center">User Roles Management</h3>
+   
+<!-- Error Message -->
+<% if (error && error.length > 0) { %>
+       <div class="alert alert-danger text-center" role="alert" style="font-size: 0.9rem;">
+           <%= error %>
+       </div>
+   <% } %>
+   
+   <!-- Success Message -->
+   <% if (success && success.length > 0) { %>
+       <div class="alert alert-success text-center" role="alert" style="font-size: 0.9rem;">
+           <%= success %>
+       </div>
+   <% } %>
+<style>
+       @media (max-width: 576px) {
+    .alert {
+        font-size: 0.8rem;
+    }
+}
+</style>  
+   
+       <button type="button" style="background-color: #003366;" class="btn btn-dark mb-3" style="width: 100%;" data-toggle="modal" data-target="#createRoleModal">
+           Create New Role
+       </button>
+   
+       <h4 class="text-center">Existing Roles</h4>
+       <table class="table table-striped table-bordered" id="rolesTable">
+           <thead>
+               <tr>
+                   <th>Role Name</th>
+                   <th>Description</th>
+                   <th>Actions</th>
+               </tr>
+           </thead>
+           <tbody>
+               <% if (roles && roles.length > 0) { %>
+                   <% roles.forEach(role => { %>
+                       <tr id="role-<%= role._id %>">
+                           <td><%= role.name %></td>
+                           <td><%= role.description %></td>
+                           <td>
+                               <button class="btn btn-warning btn-sm" onclick="openEditModal('<%= role._id %>', '<%= role.name %>', '<%= role.description %>')">Edit</button>
+                               <button class="btn btn-danger btn-sm" onclick="deleteRole('<%= role._id %>')">Delete</button>
+                           </td>
+                       </tr>
+                   <% }); %>
+               <% } else { %>
+                   <tr>
+                       <td colspan="3" class="text-center">No roles found.</td>
+                   </tr>
+               <% } %>
+           </tbody>
+       </table>
+   </div>
+   
+   <!-- Create Role Modal -->
+   <div class="modal fade" id="createRoleModal" tabindex="-1" role="dialog" aria-labelledby="createRoleModalLabel" aria-hidden="true">
+       <div class="modal-dialog" role="document">
+           <div class="modal-content">
+               <div class="modal-header">
+                   <h5 class="modal-title" id="createRoleModalLabel">Create New Role</h5>
+                   <button type="button" class="close" data-dismiss="modal" aria-label="Close" >
+                       <span aria-hidden="true">&times;</span>
+                   </button>
+               </div>
+               <div class="modal-body">
+                   <form id="createRoleForm" action="/roles" method="POST">
+                       <div class="form-group">
+                           <label for="roleName">Role Name</label>
+                           <input type="text" class="form-control" id="roleName" name="roleName" required>
+                       </div>
+                       <div class="form-group">
+                           <label>Permissions</label><br>
+                           <% permissions.forEach(permission => { %>
+                               <div class="form-check">
+                                   <input class="form-check-input" type="checkbox" value="<%= permission %>" id="<%= permission %>" name="permissions">
+                                   <label class="form-check-label" for="<%= permission %>">
+                                       <%= permission %>
+                                   </label>
+                               </div>
+                           <% }); %>
+                       </div>
+                   </form>
+               </div>
+               <div class="modal-footer">
+                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                   <button type="button" class="btn btn-dark" onclick="submitCreateRole()" style="background-color: #003366;">Create Role</button>
+               </div>
+           </div>
+       </div>
+   </div>
+   
+   <!-- Edit Role Modal -->
+   <div class="modal fade" id="editRoleModal" tabindex="-1" role="dialog" aria-labelledby="editRoleModalLabel" aria-hidden="true">
+       <div class="modal-dialog" role="document">
+           <div class="modal-content">
+               <div class="modal-header">
+                   <h5 class="modal-title" id="editRoleModalLabel">Edit Role</h5>
+                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                       <span aria-hidden="true">&times;</span>
+                   </button>
+               </div>
+               <div class="modal-body">
+                   <form id="editRoleForm">
+                       <input type="hidden" id="editRoleId" name="roleId">
+                       <div class="form-group">
+                           <label for="editRoleName">Role Name</label>
+                           <input type="text" id="editRoleName" name="roleName" class="form-control" required>
+                       </div>
+                       <div class="form-group">
+                           <label for="editRoleDescription">Role Description</label>
+                           <textarea id="editRoleDescription" name="roleDescription" class="form-control" required></textarea>
+                       </div>
+                   </form>
+               </div>
+               <div class="modal-footer">
+                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                   <button type="button" class="btn btn-dark" onclick="submitEditRole()" style="background-color: #003366;">Update Role</button>
+               </div>
+           </div>
+       </div>
+   </div>
+   
+      
+          <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+      
+          <script>
+              // Function to submit the create role form
+              function submitCreateRole() {
+                  const roleName = document.getElementById('roleName').value;
+                  const roleDescription = document.getElementById('roleDescription').value;
+      
+                  $.post('/roles', { roleName, roleDescription })
+                      .done(function(response) {
+                          // Add new role to the table
+                          const newRole = `<tr id="role-${response._id}"><td>${response.name}</td><td>${response.description}</td><td><button class="btn btn-warning btn-sm" onclick="openEditModal('${response._id}', '${response.name}', '${response.description}')">Edit</button><button class="btn btn-danger btn-sm" onclick="deleteRole('${response._id}')">Delete</button></td></tr>`;
+                          $('#rolesTable tbody').append(newRole);
+                          $('#createRoleModal').modal('hide');
+                          document.getElementById('createRoleForm').reset();
+                      })
+                      .fail(function(err) {
+                          alert('Error creating role.');
+                      });
+              }
+      
+              // Function to open the edit modal with current role data
+              function openEditModal(id, name, description) {
+                  document.getElementById('editRoleId').value = id;
+                  document.getElementById('editRoleName').value = name;
+                  document.getElementById('editRoleDescription').value = description;
+                  $('#editRoleModal').modal('show');
+              }
+      
+              // Function to submit the edit role form
+              function submitEditRole() {
+                  const roleId = document.getElementById('editRoleId').value;
+                  const roleName = document.getElementById('editRoleName').value;
+                  const roleDescription = document.getElementById('editRoleDescription').value;
+      
+                  $.post(`/roles/edit/${roleId}`, { roleName, roleDescription })
+                      .done(function() {
+                          // Update the role in the table
+                          $(`#role-${roleId} td:nth-child(1)`).text(roleName);
+                          $(`#role-${roleId} td:nth-child(2)`).text(roleDescription);
+                          $('#editRoleModal').modal('hide');
+                      })
+                      .fail(function(err) {
+                          alert('Error updating role.');
+                      });
+              }
+      
+              // Function to delete a role
+              function deleteRole(roleId) {
+                  $.ajax({
+                      url: `/roles/${roleId}`,
+                      type: 'DELETE',
+                      success: function() {
+                          $(`#role-${roleId}`).remove();
+                      },
+                      error: function() {
+                          alert('Error deleting role.');
+                      }
+                  });
+              }
+          </script>
+
+          
+        <footer class="text-center py-0">
+              &copy; 2024 Lease Captain. All Rights Reserved || powered by
+              <a href="https://vickinstechnologies.com" target="_blank">Vickins Technologies</a>
+          </footer>
+          
+          <style>
+              footer {
+                  font-size: 0.7rem; /* Default font size */
+              }
+          
+              @media (max-width: 768px) {
+                  footer {
+                      font-size: 0.6rem; /* Smaller font size for small screens */
+                      padding: 5px; /* Adjust padding for smaller screens */
+                  }
+              }
+          
+              @media (max-width: 576px) {
+                  footer {
+                      font-size: 0.5rem; /* Even smaller font size for extra small screens */
+                      padding: 2px; /* Adjust padding further for extra small screens */
+                  }
+              }
+          </style>
+          
+  
+  
+  
+  
+          <!-- Bootstrap JS -->
+          <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+       
+          <script>
+              $(document).ready(function () {
+                  // Toggle sidebar on button click
+                  $('#sidebarToggle').click(function () {
+                      $('#sidebarMenu').toggleClass('active');
+                  });
+          
+                  // Collapse sidebar when clicking outside
+                  $(document).click(function (event) {
+                      if (!$(event.target).closest('#sidebarMenu, #sidebarToggle').length) {
+                          $('#sidebarMenu').removeClass('active');
+                      }
+                  });
+          
+                  // Close other collapsibles when one is opened
+                  $('.collapse').on('show.bs.collapse', function () {
+                      // Collapse all other elements except the one being opened
+                      $('.collapse').not(this).collapse('hide');
+                  });
+              });
+          </script>
+          
+          
+          
+  
+  </body>
+  
+  </html>

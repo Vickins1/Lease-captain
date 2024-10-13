@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Management - Sign Up</title>
+  <!-- Bootstrap CSS CDN -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #f4f4f4;
+    }
+
+    .container-fluid {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    h1 {
+      font-weight: bold; 
+      color: #003366;
+      font-size: 30px;
+    }
+
+    .right-section {
+      padding: 30px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
+      width: 100%;
+      max-width: 450px;
+      margin: auto;
+    }
+
+    .right-section h1 {
+      font-weight: bold;
+      font-size: 2rem;
+    }
+
+    .btn-primary {
+      background-color: #003366;
+      border-color: #003366;
+      font-size: 1rem;
+    }
+
+    .btn-primary:hover {
+      background-color: #00509e;
+      border-color: #00509e;
+    }
+
+    .alert {
+      margin-bottom: 20px;
+    }
+
+    .form-group label i {
+      margin-right: 5px;
+    }
+
+    @media (max-width: 768px) {
+      .right-section {
+        padding: 10px;
+      }
+
+      .right-section h1 {
+        font-size: 1.5rem;
+      }
+
+      .btn-primary {
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 376px) {
+      .container {
+        margin-top: 20%;
+        padding: 20px;
+        width: 90%;
+      }
+
+      h1 {
+        font-size: 1.2rem;
+      }
+
+      .form-group label {
+        font-size: 0.7rem;
+      }
+
+      .btn-primary {
+        font-size: 0.7rem;
+      }
+
+      .form-control {
+        font-size: 0.6rem;
+      }
+
+      .btn {
+        font-size: 0.7rem;
+      }
+
+      .p {
+        font-size: 0.6rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid">
+    <!-- Right Section for Signup Form -->
+    <div class="right-section">
+      <h1 class="text-center"><i class="fas fa-user-plus"></i> Sign Up</h1>
+
+      <!-- Error Message -->
+      <% if (error && error.length > 0) { %>
+      <div class="alert alert-danger text-center" role="alert" style="font-size: 0.9rem;">
+        <%= error %>
+      </div>
+      <% } %>
+
+      <!-- Success Message -->
+      <% if (success && success.length > 0) { %>
+      <div class="alert alert-success text-center" role="alert" style="font-size: 0.9rem;">
+        <%= success %>
+      </div>
+      <% } %>
+
+      <style>
+        @media (max-width: 576px) {
+          .alert {
+            font-size: 0.8rem;
+          }
+        }
+      </style>
+
+      <form id="signupForm" action="/signup" method="POST">
+        <div class="form-group">
+          <label for="email"><i class="fas fa-envelope"></i> Email</label>
+          <input type="email" name="email" id="email" class="form-control" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+          <label for="username"><i class="fas fa-user"></i> Username</label>
+          <input type="text" name="username" id="username" class="form-control" placeholder="Enter your username"
+            required>
+        </div>
+        <div class="form-group">
+          <label for="password"><i class="fas fa-lock"></i> Password</label>
+          <input type="password" name="password" id="password" class="form-control" placeholder="Enter password"
+            required>
+          <input type="checkbox" id="showPassword"> <label for="showPassword">Show Password</label>
+        </div>
+        <div class="form-group">
+          <label for="confirm-password"><i class="fas fa-lock"></i> Confirm Password</label>
+          <input type="password" name="confirm-password" id="confirm-password" class="form-control"
+            placeholder="Confirm password" required>
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-user-plus"></i> Sign Up</button>
+        </div>
+      </form>
+
+      <p class="text-center">Already have an account? <a href="/login"><i class="fas fa-sign-in-alt"></i> Login</a></p>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS and dependencies -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    // Show/Hide Password functionality
+    document.getElementById('showPassword').addEventListener('change', function () {
+      const passwordInput = document.getElementById('password');
+      const confirmPasswordInput = document.getElementById('confirm-password');
+      passwordInput.type = this.checked ? 'text' : 'password';
+      confirmPasswordInput.type = this.checked ? 'text' : 'password';
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lease Captain TenantPortal</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            padding: 15px;
+            padding-top: 40px;
+        }
+
+        .sidebar {
+            background-color: #000000;
+            height: 100vh;
+            padding: 10px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar h3 {
+            margin-bottom: 20px;
+            color: #ffffff;
+            font-size: 1.3em;
+        }
+
+        .sidebar a {
+            color: #adb5bd;
+            display: block;
+            padding: 20px;
+            margin: 5px 0;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            color: #ffffff;
+            background-color: #4d4d4d;
+        }
+
+        .header {
+            background-color: #000000;
+            color: white;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .content {
+            padding: 15px;
+        }
+
+
+        footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            color: rgb(0, 0, 0);
+            text-align: center;
+            padding: 5px 0;
+        }
+
+        .mobile-sidebar-btn {
+            display: block;
+            color: white;
+            padding: 0.5rem 0.75rem;
+            font-size: 1rem;
+            z-index: 2000;
+            cursor: pointer;
+        }
+
+        @media (min-width: 768px) {
+            .sidebar {
+                width: 250px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-200px);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .sidebar a {
+                font-size: 0.8em;
+            }
+
+            .alert {
+                font-size: 0.8rem;
+                padding: 10px;
+            }
+
+            .alert h5 {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <button class="btn btn-dark mobile-sidebar-btn" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+        <div class="dropdown">
+            <button class="btn btn-dark dropdown-toggle" style="background-color: #000000;" type="button"
+                id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-user"></i>
+                <% if (tenant) { %>
+                    Welcome, <%= tenant.name %>
+                        <% } else { %>
+                            Welcome, Guest
+                            <% } %>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
+                <a class="dropdown-item" href="/tenantPortal/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="d-flex">
+        <nav class="sidebar fixed" id="sidebarMenu">
+            <h2 class="text-white"><strong>Tenant Portal</strong></h2>
+            <ul class="nav flex-column">
+                <li><a class="nav-link" href="/tenantPortal/dashboard"><i class="fas fa-tachometer-alt"></i>
+                        Dashboard</a></li>
+                <li><a class="nav-link" href="/payments"><i class="fas fa-money-bill-wave"></i>
+                        Payment Management</a></li>
+                <li><a class="nav-link" href="/requestMaintenance"><i class="fas fa-wrench"></i>
+                        Request Maintenance</a></li>
+                <li><a class="nav-link" href="/lease"><i class="fas fa-file-contract"></i>
+                        Lease</a></li>
+                <li><a class="nav-link" href="/tenant/profile"><i class="fas fa-file-contract"></i>
+                        Profile Settings</a></li>
+
+            </ul>
+        </nav>
+
+        <div class="container mt-4">
+
+            <% if (typeof success !=='undefined' && success.length> 0) { %>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <%= success %>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                </div>
+                <% } %>
+
+                    <% if (typeof error !=='undefined' && error.length> 0) { %>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <%= error %>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                        </div>
+                        <% } %>
+
+
+
+                            <!-- Carousel for Important Announcements -->
+                            <div id="announcementCarousel" class="carousel slide mt-4" data-ride="carousel">
+                                <div class="carousel-inner">
+                                    <% announcements.forEach((announcement, index)=> { %>
+                                        <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                                            <div class="alert alert-<%= announcement.type %> text-center">
+                                                <h5>
+                                                    <%= announcement.message %>
+                                                </h5>
+                                            </div>
+                                        </div>
+                                        <% }); %>
+                                </div>
+
+                                <a class="carousel-control-prev" href="#announcementCarousel" role="button"
+                                    data-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                                <a class="carousel-control-next" href="#announcementCarousel" role="button"
+                                    data-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </div>
+
+                            <!-- Responsive Cards -->
+                            <div class="row mt-4">
+
+                                <!-- Important Dates Card -->
+                                <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                    <div class="card shadow-lg border-0 h-100">
+                                        <div class="card-header text-white"
+                                            style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                            <h5 class="mb-0">Important Dates</h5>
+                                        </div>
+
+                                        <div class="card-body d-flex flex-column bg-light"
+                                            style="border-radius: 0 0 0.5rem 0.5rem;">
+                                            <ul class="list-unstyled">
+                                                <li class="d-flex align-items-center mb-3">
+                                                    <i class="fas fa-calendar-alt mr-3 text-warning"
+                                                        style="font-size: 1.5rem;"></i>
+                                                    <span style="font-size: 1.1rem;">Rent due: <br><strong
+                                                            style="color: #003366;">
+                                                            <%= nextRentDue %>
+                                                        </strong></span>
+                                                </li>
+                                                <li class="d-flex align-items-center mb-3">
+                                                    <i class="fas fa-calendar-check mr-3 text-success"
+                                                        style="font-size: 1.5rem;"></i>
+                                                    <span style="font-size: 1.1rem;">Lease Start Date: <br><strong
+                                                            style="color: #003366;">
+                                                            <%= tenant.leaseStartDate ?
+                                                                tenant.leaseStartDate.toDateString() : 'N/A' %>
+                                                        </strong></span>
+                                                </li>
+
+
+                                                <% if (maintenanceScheduleDates && maintenanceScheduleDates.length> 0) {
+                                                    %>
+                                                    <% maintenanceScheduleDates.forEach(schedule=> { %>
+                                                        <li class="d-flex align-items-center mb-3">
+                                                            <i class="fas fa-wrench mr-3 text-danger"
+                                                                style="font-size: 1.5rem;"></i>
+                                                            <span style="font-size: 1.1rem;">Maintenance Schedule: <br>
+
+                                                                <strong style="color: #003366;">
+                                                                    <%= schedule.date.toLocaleDateString('en-US', {
+                                                                        year: 'numeric' , month: 'long' , day: 'numeric'
+                                                                        }) %>
+                                                                </strong>
+                                                            </span>
+                                                        </li>
+                                                        <% }); %>
+                                                            <% } else { %>
+                                                                <li class="d-flex align-items-center mb-3">
+                                                                    <span style="font-size: 1.1rem;">
+                                                                        No maintenance requests scheduled.
+                                                                    </span>
+                                                                </li>
+                                                                <% } %>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <!-- Rental Overview Card -->
+                                <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                    <div class="card shadow-lg border-0 h-100">
+                                        <div class="card-header text-white"
+                                            style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                            <h5 class="mb-0">Rental Overview</h5>
+                                        </div>
+                                        <div class="card-body d-flex flex-column bg-light"
+                                            style="border-radius: 0 0 0.5rem 0.5rem;">
+                                            <ul class="list-unstyled">
+                                                <li class="d-flex align-items-center mb-3">
+                                                    <i class="fas fa-home mr-3 text-primary"
+                                                        style="font-size: 1.5rem;"></i>
+                                                    <span style="font-size: 1.1rem;">
+                                                        Property Name:<br>
+
+                                                        <strong style="color: #003366;">
+                                                            <%= tenant.property? tenant.property.name : 'N/A' %>
+                                                        </strong>
+                                                    </span>
+                                                </li>
+                                                <li class="d-flex align-items-center mb-3">
+                                                    <i class="fas fa-door-open mr-3 text-info"
+                                                        style="font-size: 1.5rem;"></i>
+                                                    <span style="font-size: 1.1rem;">
+                                                        Unit Name:<br>
+
+                                                        <strong style="color: #003366;">
+                                                            <%= tenant.unit.unitName || 'N/A' %>
+                                                        </strong>
+                                                    </span>
+                                                </li>
+                                                <li class="d-flex align-items-center mb-3">
+                                                    <i class="fas fa-door-closed mr-3 text-warning"
+                                                        style="font-size: 1.5rem;"></i>
+                                                    <span style="font-size: 1.1rem;">
+                                                        Room Number: <br>
+
+                                                        <strong style="color: #003366;">
+                                                            <%= tenant.doorNumber || 'N/A' %>
+                                                        </strong>
+                                                    </span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <!-- Payment Status Card -->
+                                <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                    <div class="card shadow-lg border-0 h-100">
+                                        <div class="card-header text-white"
+                                            style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                            <h5 class="mb-0">Payment Status</h5>
+                                        </div>
+                                        <div class="card-body d-flex flex-column bg-light"
+                                            style="border-radius: 0 0 0.5rem 0.5rem;">
+                                            <p style="font-size: 1.1rem;">Monthly Rent: <strong
+                                                    style="color: #003366;">Ksh.<%= tenant.unit && tenant.unit.unitPrice
+                                                        ? tenant.unit.unitPrice.toFixed(2) : 'N/A' %></strong></p>
+                                            <p style="font-size: 1.1rem;">Deposit Paid: <strong
+                                                    style="color: #003366;">Ksh.<%= tenant.deposit ?
+                                                        tenant.deposit.toFixed(2) : 'N/A' %></strong></p>
+                                            <p style="font-size: 1.1rem;">Rent Paid: <strong
+                                                    style="color: #003366;">Ksh.<%= totalRentPaid ?
+                                                        totalRentPaid.toFixed(2) : '0' %></strong></p>
+                                            <p style="font-size: 1.1rem;">Utility Paid: <strong
+                                                    style="color: #003366;">Ksh.<%= utilityPaid ? utilityPaid.toFixed(2)
+                                                        : '0' %></strong></p>
+                                                        <p style="font-size: 1.1rem;">
+                                                            Rent Due: <strong style="color: #003366;">
+                                                            Ksh. <%= (rentDue || 0).toFixed(2) %>
+                                                            </strong>
+                                                        </p>
+                                                        <p style="font-size: 1.1rem;">
+                                                            Utility Due: <strong style="color: #003366;">
+                                                            Ksh. <%= (utilityDue || 0).toFixed(2) %>
+                                                            </strong>
+                                                        </p>
+                                                        
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <style>
+                                .card-header {
+                                    font-size: 1.25rem;
+                                }
+
+                                .card-body {
+                                    padding: 1.5rem;
+                                }
+
+                                .card-body p,
+                                .card-body span {
+                                    line-height: 1.5;
+                                }
+                            </style>
+
+                            <!-- Quick Actions Section -->
+                            <div class="card mt-4 border-0 shadow">
+                                <div class="card-header" style="background-color: #003366; color: #ffffff;">
+                                    <h5 class="mb-0">Quick Actions</h5>
+                                </div>
+                                <div class="card-body" style="background-color: #f5f5f5;">
+                                    <div class="row">
+                                        <div class="col-md-4 mb-4">
+                                            <a href="/payments" class="btn btn-dark btn-block"
+                                                style="background-color: #000000; color: #ffffff;">
+                                                <i class="fas fa-money-bill-alt"></i> Make a Payment
+                                            </a>
+                                        </div>
+                                        <div class="col-md-4 mb-4">
+                                            <a href="/requestMaintenance" class="btn btn-dark btn-block"
+                                                style="background-color: #000000; color: #ffffff;">
+                                                <i class="fas fa-wrench"></i> Request Maintenance
+                                            </a>
+                                        </div>
+                                        <div class="col-md-4 mb-4">
+                                            <a href="/lease" class="btn btn-dark btn-block"
+                                                style="background-color: #000000; color: #ffffff;">
+                                                <i class="fas fa-file-contract"></i> View Lease
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <style>
+                                @media (max-width: 768px) {
+
+                                    .card-header h5,
+                                    .card-body p,
+                                    .card-body span,
+                                    .card-body ul li span {
+                                        font-size: 14px;
+                                    }
+
+                                    .card {
+                                        margin-bottom: 1.5rem;
+                                        font-size: 0.9rem;
+                                    }
+
+                                    .btn-block {
+                                        font-size: 10px;
+                                        padding: 0.4rem 0.55rem;
+                                    }
+
+                                    .carousel-inner .carousel-item h5 {
+                                        font-size: 10px;
+                                    }
+
+
+                                    .card-body {
+                                        padding: 1rem;
+                                    }
+
+                                    .card-header {
+                                        padding: 0.75rem 1rem;
+                                    }
+
+                                    .alert {
+                                        font-size: 10px;
+                                    }
+
+                                    .btn {
+                                        font-size: 12px;
+                                    }
+
+                                    .dropdown-menu {
+                                        font-size: 0.575rem;
+                                    }
+                                }
+
+                                @media (max-width: 576px) {
+
+                                    .card-header h5,
+                                    .card-body p,
+                                    .card-body span,
+                                    .card-body ul li span {
+                                        font-size: 12px;
+                                    }
+
+                                    .btn-block {
+                                        font-size: 12px;
+                                    }
+
+
+                                    .btn-group .btn {
+                                        margin-bottom: 0.5rem;
+                                        width: 100%;
+                                    }
+
+                                    .carousel-inner .carousel-item h5 {
+                                        font-size: 14px;
+                                    }
+
+                                    .card-body {
+                                        padding: 0.75rem;
+                                    }
+
+                                    .card-header {
+                                        padding: 0.5rem 0.75rem;
+                                    }
+                                }
+                            </style>
+
+                            <footer class="text-center py-0">
+                                &copy; 2024 Lease Captain. All Rights Reserved || powered by
+                                <a href="https://vickinstechnologies.com" target="_blank">Vickins Technologies</a>
+                            </footer>
+
+                            <style>
+                                footer {
+                                    font-size: 0.7rem;
+                                }
+
+                                @media (max-width: 768px) {
+                                    footer {
+                                        font-size: 0.6rem;
+                                        padding: 5px;
+                                    }
+                                }
+
+                                @media (max-width: 576px) {
+                                    footer {
+                                        font-size: 0.5rem;
+                                        padding: 2px;
+                                    }
+                                }
+                            </style>
+
+
+
+
+
+                            <!-- Bootstrap JS -->
+                            <script
+                                src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+                            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+                            <script>
+                                $(document).ready(function () {
+                                    // Toggle sidebar on button click
+                                    $('#sidebarToggle').click(function () {
+                                        $('#sidebarMenu').toggleClass('active');
+                                    });
+
+                                    // Collapse sidebar when clicking outside
+                                    $(document).click(function (event) {
+                                        if (!$(event.target).closest('#sidebarMenu, #sidebarToggle').length) {
+                                            $('#sidebarMenu').removeClass('active');
+                                        }
+                                    });
+
+                                    // Close other collapsibles when one is opened
+                                    $('.collapse').on('show.bs.collapse', function () {
+                                        $('.collapse').not(this).collapse('hide');
+                                    });
+                                });
+                            </script>
+
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lease Captain Dashboard</title>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            margin-top: 20px;
+            padding: 15px;
+            padding-top: 50px;
+            margin-bottom: 70px;
+        }
+
+        .sidebar {
+            background-color: #000000;
+            height: 100vh;
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar h3 {
+            margin-bottom: 30px;
+            color: #ffffff;
+            font-size: 1.5em;
+        }
+
+        .sidebar a {
+            color: #adb5bd;
+            display: block;
+            padding: 10px 10px;
+            margin: 5px 0;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            font-weight: bold;
+            font-size: 1.0em;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            color: #ffffff;
+            background-color: #4d4d4d;
+        }
+
+        .header {
+            background-color: #000000;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .content {
+            margin-top: 70px;
+            padding: 15px;
+        }
+
+        .header img {
+            height: 40px;
+        }
+
+        footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: #000000;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+
+        @media (max-width: 968px) {
+            .sidebar {
+                transform: translateX(-250px);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .mobile-sidebar-btn {
+                display: block;
+                color: white;
+            }
+
+            .sidebar a {
+                font-size: 0.8em;
+            }
+        }
+
+
+        @media (min-width: 768px) and (max-width: 968px) {
+            .mobile-sidebar-btn {
+                display: block;
+            }
+
+            .content {
+                margin-left: 200px;
+                margin-bottom: 50px;
+            }
+        }
+
+
+        @media (min-width: 969px) {
+            .mobile-sidebar-btn {
+                display: none;
+                font-size: 0.6rem;
+            }
+
+            .content {
+                margin-left: 250px;
+                margin-bottom: 50px;
+            }
+
+        }
+
+
+        .collapse {
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .collapse.show {
+            opacity: 1;
+            max-height: 200px;
+        }
+
+
+        .dropdown-item {
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: #000000;
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <button class="btn btn-dark mobile-sidebar-btn" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+        <h1> </h1>
+        <div class="dropdown">
+            <button class="btn btn-dark dropdown-toggle" style="background-color: #000000;" type="button"
+                id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-user"></i> Welcome,
+                <%= currentUser.username %>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
+                <a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+    </div>
+    <style>
+        .mobile-sidebar-btn,
+        .dropdown-toggle {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+        }
+
+
+        @media (max-width: 576px) {
+
+            .mobile-sidebar-btn,
+            .dropdown-toggle {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.575rem;
+            }
+
+            .dropdown-menu {
+                font-size: 0.575rem;
+            }
+        }
+    </style>
+
+    <div class="d-flex">
+        <nav class="sidebar fixed" id="sidebarMenu">
+            <h3 class="text-white"><strong>Lease Captain</strong></h3>
+            <ul class="nav flex-column">
+                <li><a class="nav-link" href="/tenancy-manager/dashboard"><i class="fas fa-tachometer-alt"></i>
+                        Dashboard</a></li>
+
+                <li class="nav-item">
+                    <a class="nav-link dropdown-toggle" href="#propertiesSubmenu" data-toggle="collapse"
+                        aria-expanded="false">
+                        <i class="fas fa-home"></i> Manage Properties
+                    </a>
+                    <ul class="collapse list-unstyled" id="propertiesSubmenu">
+
+                        <li><a class="dropdown-item" href="/tenancy-manager/properties">
+                                Properties</a></li>
+                        <li><a class="dropdown-item" href="/tenancy-manager/property/units">
+                                Property Units</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link dropdown-toggle" href="#tenantsSubmenu" data-toggle="collapse"
+                        aria-expanded="false">
+                        <i class="fas fa-users"></i> Manage Tenants
+                    </a>
+                    <ul class="collapse list-unstyled" id="tenantsSubmenu">
+                        <li><a class="dropdown-item" href="/tenancy-manager/tenants"></i>
+                                Tenants</a></li>
+                        <li><a class="dropdown-item" href="/maintenance-requests"></i>
+                                Maintenance Requests</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link dropdown-toggle" href="#billingSubmenu" data-toggle="collapse"
+                        aria-expanded="false">
+                        <i class="fas fa-money-bill-wave"></i> Finance Management
+                    </a>
+                    <ul class="collapse list-unstyled" id="billingSubmenu">
+                        <li><a class="dropdown-item" href="/tenancy-manager/payments">
+                                Transactions</a></li>
+                        <li><a class="dropdown-item" href="/reports-invoices">
+                                Reports & Invoices</a></li>
+                        <li><a class="dropdown-item" href="/expenses">
+                                Expenses</a></li>
+                    </ul>
+                </li>
+
+
+
+                <li class="nav-item">
+                    <a class="nav-link dropdown-toggle" href="#smsSubmenu" data-toggle="collapse" aria-expanded="false">
+                        <i class="fas fa-sms"></i> Manage Notifications
+                    </a>
+                    <ul class="collapse list-unstyled" id="smsSubmenu">
+                        <li><a class="dropdown-item" href="/top-ups"> Top up</a></li>
+                        <li><a class="dropdown-item" href="/sms&email">
+                                SMS & Emails</a></li>
+                    </ul>
+                </li>
+
+
+
+                <li class="nav-item">
+                    <a class="nav-link dropdown-toggle" href="#userSubmenu" data-toggle="collapse"
+                        aria-expanded="false">
+                        <i class="fas fa-users-cog"></i> User Management
+                    </a>
+                    <ul class="collapse list-unstyled" id="userSubmenu">
+                        <li><a class="dropdown-item" href="/users">
+                                Users</a></li>
+                        <li><a class="dropdown-item" href="/roles"> Roles</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link dropdown-toggle" href="#settingsSubmenu" data-toggle="collapse"
+                        aria-expanded="false">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                    <ul class="collapse list-unstyled" id="settingsSubmenu">
+                        <li><a class="dropdown-item" href="/tenancy-manager/profile">
+                                Profile Settings</a></li>
+                        <li><a class="dropdown-item" href="/tenancy-manager/security"> Security Settings</a>
+                        </li>
+                        <li><a class="dropdown-item" href="/connect"> Linked Accounts</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    
+        <div class="container my-5">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2 class="text-center" style="color: #00172f;">
+                        <i class="fas fa-file-alt"></i> Reports & Invoices
+                    </h2>
+                    <p class="text-center">View, filter, and download transaction reports and invoices.</p>
+                </div>
+            </div>
+        
+            <!-- Tabs for Reports and Invoices -->
+            <ul class="nav nav-tabs mb-4" id="reportsInvoicesTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="reports-tab" data-toggle="tab" href="#reports" role="tab" aria-controls="reports" aria-selected="true">
+                        <i class="fas fa-chart-line"></i> Reports
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="invoices-tab" data-toggle="tab" href="#invoices" role="tab" aria-controls="invoices" aria-selected="false">
+                        <i class="fas fa-file-invoice"></i> Invoices
+                    </a>
+                </li>
+            </ul>
+        
+            <div class="tab-content" id="reportsInvoicesTabContent">
+                <!-- Reports Section -->
+                <div class="tab-pane fade show active" id="reports" role="tabpanel" aria-labelledby="reports-tab">
+                    <h4 class="text-center">
+                        <i class="fas fa-chart-pie"></i> Property Reports
+                    </h4>
+<!-- Error Message -->
+<% if (error && error.length > 0) { %>
+    <div class="alert alert-danger text-center" role="alert" style="font-size: 0.9rem;">
+        <%= error %>
+    </div>
+<% } %>
+
+<!-- Success Message -->
+<% if (success && success.length > 0) { %>
+    <div class="alert alert-success text-center" role="alert" style="font-size: 0.9rem;">
+        <%= success %>
+    </div>
+<% } %>
+<style>
+    @media (max-width: 576px) {
+ .alert {
+     font-size: 0.8rem;
+ }
+}
+</style>  
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <label for="propertySelect" class="small">Select Property:</label>
+                            <select class="form-control form-control-sm" id="propertySelect">
+                                <option value="all">All Properties</option>
+                                <!-- Options for properties should be populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="reportDateRange" class="small">Date Range:</label>
+                            <input type="date" class="form-control form-control-sm" id="reportDateFrom">
+                            <input type="date" class="form-control form-control-sm mt-2" id="reportDateTo">
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-dark btn-sm mt-4" style="background-color: #003366;">
+                                <i class="fas fa-file-export"></i> Generate Report
+                            </button>
+                        </div>
+                    </div>
+        
+                    <!-- Reports Table -->
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped table-hover table-bordered">
+                            <thead class="text-center" style="background-color: #00172f; color: white;">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Property</th>
+                                    <th>Occupancy Rate</th>
+                                    <th>Total Rent Collected</th>
+                                    <th>Pending Payments</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-center">
+                                <% reports.forEach((report, index) => { %>
+                                <tr>
+                                    <td><%= index + 1 %></td>
+                                    <td><%= report.propertyName %></td>
+                                    <td><%= report.occupancyRate.toFixed(2) %>%</td>
+                                    <td>$<%= report.totalRentCollected.toFixed(2) %></td>
+                                    <td>$<%= report.pendingPayments.toFixed(2) %></td>
+                                </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+        
+                <!-- Invoices Section -->
+                <div class="tab-pane fade" id="invoices" role="tabpanel" aria-labelledby="invoices-tab">
+                    <h4 class="text-center">
+                        <i class="fas fa-calculator"></i> Invoice Calculations
+                    </h4>
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <label for="invoiceDateRange" class="small">Date Range:</label>
+                            <input type="date" class="form-control form-control-sm" id="invoiceDateFrom">
+                            <input type="date" class="form-control form-control-sm mt-2" id="invoiceDateTo">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="invoiceStatus" class="small">Status:</label>
+                            <select class="form-control form-control-sm" id="invoiceStatus">
+                                <option value="all">All</option>
+                                <option value="paid">Paid</option>
+                                <option value="pending">Pending</option>
+                                <option value="overdue">Overdue</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-dark btn-sm mt-4" style="background-color: #003366;">
+                                <i class="fas fa-file-invoice-dollar"></i> Generate Invoice
+                            </button>
+                        </div>
+                    </div>
+        
+                    <!-- Invoices Table -->
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped table-hover table-bordered">
+                            <thead class="text-center" style="background-color: #00172f; color: white;">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Invoice ID</th>
+                                    <th>Property</th>
+                                    <th>Total Amount</th>
+                                    <th>Date Issued</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-center">
+                                <% invoices.forEach((invoice, index) => { %>
+                                <tr>
+                                    <td><%= index + 1 %></td>
+                                    <td><%= invoice.invoiceId %></td>
+                                    <td><%= invoice.property %></td>
+                                    <td>$<%= invoice.totalAmount.toFixed(2) %></td>
+                                    <td><%= new Date(invoice.dateIssued).toLocaleDateString() %></td>
+                                    <td>
+                                        <span class="badge bg-<%= invoice.status === 'paid' ? 'success' : invoice.status === 'pending' ? 'warning' : 'danger' %>">
+                                            <i class="fas fa-circle"></i> <%= invoice.status %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="/invoice/<%= invoice.invoiceId %>" class="btn btn-sm btn-dark" >
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <style>
+            
+            @media (max-width: 576px) {
+                h2 {
+                    font-size: 1.3rem; 
+                }
+        
+                h4 {
+                    font-size: 1.2rem; 
+                }
+                p {
+                    font-size: 0.9rem;
+                }
+        
+                .table th, .table td {
+                    font-size: 0.7rem; 
+                }
+        
+                .btn {
+                    font-size: 0.8rem; 
+                }
+        
+                .small {
+                    font-size: 0.8rem; 
+                }
+        
+                .table-responsive {
+                    font-size: 0.7rem; 
+                }
+            }
+        </style>
+        
+        
+        
+        
+             
+                 <footer class="text-center py-0">
+                    &copy; 2024 Lease Captain. All Rights Reserved || powered by
+                    <a href="https://vickinstechnologies.com" target="_blank">Vickins Technologies</a>
+                </footer>
+                
+                <style>
+                    footer {
+                        font-size: 0.7rem; 
+                    }
+                
+                    @media (max-width: 768px) {
+                        footer {
+                            font-size: 0.6rem; 
+                            padding: 5px;
+                        }
+                    }
+                
+                    @media (max-width: 576px) {
+                        footer {
+                            font-size: 0.5rem;
+                            padding: 2px; 
+                        }
+                    }
+                </style>
+                
+        
+        
+        
+        
+                <!-- Bootstrap JS -->
+                <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        
+             
+                <script>
+                    $(document).ready(function () {
+                        // Toggle sidebar on button click
+                        $('#sidebarToggle').click(function () {
+                            $('#sidebarMenu').toggleClass('active');
+                        });
+                
+                        // Collapse sidebar when clicking outside
+                        $(document).click(function (event) {
+                            if (!$(event.target).closest('#sidebarMenu, #sidebarToggle').length) {
+                                $('#sidebarMenu').removeClass('active');
+                            }
+                        });
+                
+                        // Close other collapsibles when one is opened
+                        $('.collapse').on('show.bs.collapse', function () {
+                            $('.collapse').not(this).collapse('hide');
+                        });
+                    });
+                </script>
+                
+                
+                
+        
+        </body>
+        
+        </html>

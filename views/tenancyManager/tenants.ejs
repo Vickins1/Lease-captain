@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lease Captain Dashboard</title>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            margin-top: 20px;
+            padding: 15px;
+            padding-top: 50px;
+            margin-bottom: 70px;
+        }
+
+        .sidebar {
+            background-color: #000000;
+            height: 100vh;
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar h3 {
+            margin-bottom: 30px;
+            color: #ffffff;
+            font-size: 1.5em;
+        }
+
+        .sidebar a {
+            color: #adb5bd;
+            display: block;
+            padding: 10px 10px;
+            margin: 5px 0;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            font-weight: bold;
+            font-size: 1.0em;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            color: #ffffff;
+            background-color: #4d4d4d;
+        }
+
+        .header {
+            background-color: #000000;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .content {
+            margin-top: 70px;
+            padding: 15px;
+        }
+
+        .header img {
+            height: 40px;
+        }
+
+        footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: #000000;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+
+        @media (max-width: 968px) {
+            .sidebar {
+                transform: translateX(-250px);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .mobile-sidebar-btn {
+                display: block;
+                color: white;
+            }
+
+            .sidebar a {
+                font-size: 0.8em;
+            }
+        }
+
+
+        @media (min-width: 768px) and (max-width: 968px) {
+            .mobile-sidebar-btn {
+                display: block;
+            }
+
+            .content {
+                margin-left: 200px;
+                margin-bottom: 50px;
+            }
+        }
+
+
+        @media (min-width: 969px) {
+            .mobile-sidebar-btn {
+                display: none;
+                font-size: 0.6rem;
+            }
+
+            .content {
+                margin-left: 250px;
+                margin-bottom: 50px;
+            }
+
+        }
+
+
+        .collapse {
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .collapse.show {
+            opacity: 1;
+            max-height: 200px;
+        }
+
+
+        .dropdown-item {
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: #000000;
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <button class="btn btn-dark mobile-sidebar-btn" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+        <h1> </h1>
+        <div class="dropdown">
+            <button class="btn btn-dark dropdown-toggle" style="background-color: #000000;" type="button"
+                id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-user"></i> Welcome,
+                <%= currentUser.username %>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
+                <a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+    </div>
+    <style>
+        .mobile-sidebar-btn,
+        .dropdown-toggle {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+        }
+
+
+        @media (max-width: 576px) {
+
+            .mobile-sidebar-btn,
+            .dropdown-toggle {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.575rem;
+            }
+
+            .dropdown-menu {
+                font-size: 0.575rem;
+            }
+        }
+    </style>
+
+    <div class="d-flex">
+        <nav class="sidebar fixed" id="sidebarMenu">
+            <h3 class="text-white"><strong>Lease Captain</strong></h3>
+            <ul class="nav flex-column">
+                <li><a class="nav-link" href="/tenancy-manager/dashboard"><i class="fas fa-tachometer-alt"></i>
+                        Dashboard</a></li>
+
+                <li class="nav-item">
+                    <a class="nav-link dropdown-toggle" href="#propertiesSubmenu" data-toggle="collapse"
+                        aria-expanded="false">
+                        <i class="fas fa-home"></i> Manage Properties
+                    </a>
+                    <ul class="collapse list-unstyled" id="propertiesSubmenu">
+
+                        <li><a class="dropdown-item" href="/tenancy-manager/properties">
+                                Properties</a></li>
+                        <li><a class="dropdown-item" href="/tenancy-manager/property/units">
+                                Property Units</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link dropdown-toggle" href="#tenantsSubmenu" data-toggle="collapse"
+                        aria-expanded="false">
+                        <i class="fas fa-users"></i> Manage Tenants
+                    </a>
+                    <ul class="collapse list-unstyled" id="tenantsSubmenu">
+                        <li><a class="dropdown-item" href="/tenancy-manager/tenants"></i>
+                                Tenants</a></li>
+                        <li><a class="dropdown-item" href="/maintenance-requests"></i>
+                                Maintenance Requests</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link dropdown-toggle" href="#billingSubmenu" data-toggle="collapse"
+                        aria-expanded="false">
+                        <i class="fas fa-money-bill-wave"></i> Finance Management
+                    </a>
+                    <ul class="collapse list-unstyled" id="billingSubmenu">
+                        <li><a class="dropdown-item" href="/tenancy-manager/payments">
+                                Transactions</a></li>
+                        <li><a class="dropdown-item" href="/reports-invoices">
+                                Reports & Invoices</a></li>
+                        <li><a class="dropdown-item" href="/expenses">
+                                Expenses</a></li>
+                    </ul>
+                </li>
+
+
+
+                <li class="nav-item">
+                    <a class="nav-link dropdown-toggle" href="#smsSubmenu" data-toggle="collapse" aria-expanded="false">
+                        <i class="fas fa-sms"></i> Manage Notifications
+                    </a>
+                    <ul class="collapse list-unstyled" id="smsSubmenu">
+                        <li><a class="dropdown-item" href="/top-ups"> Top up</a></li>
+                        <li><a class="dropdown-item" href="/sms&email">
+                                SMS & Emails</a></li>
+                    </ul>
+                </li>
+
+
+
+                <li class="nav-item">
+                    <a class="nav-link dropdown-toggle" href="#userSubmenu" data-toggle="collapse"
+                        aria-expanded="false">
+                        <i class="fas fa-users-cog"></i> User Management
+                    </a>
+                    <ul class="collapse list-unstyled" id="userSubmenu">
+                        <li><a class="dropdown-item" href="/users">
+                                Users</a></li>
+                        <li><a class="dropdown-item" href="/roles"> Roles</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link dropdown-toggle" href="#settingsSubmenu" data-toggle="collapse"
+                        aria-expanded="false">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                    <ul class="collapse list-unstyled" id="settingsSubmenu">
+                        <li><a class="dropdown-item" href="/tenancy-manager/profile">
+                                Profile Settings</a></li>
+                        <li><a class="dropdown-item" href="/tenancy-manager/security"> Security Settings</a>
+                        </li>
+                        <li><a class="dropdown-item" href="/connect"> Linked Accounts</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+
+
+
+        <div class="container-fluid custom-container mt-4" style="padding-top: 60px;">
+            <h2 class="text-center mb-4 font-weight-bold responsive-heading">
+                Tenants
+            </h2>
+
+
+<!-- Error Message -->
+<% if (error && error.length > 0) { %>
+    <div class="alert alert-danger text-center" role="alert" style="font-size: 0.9rem;">
+        <%= error %>
+    </div>
+<% } %>
+
+<!-- Success Message -->
+<% if (success && success.length > 0) { %>
+    <div class="alert alert-success text-center" role="alert" style="font-size: 0.9rem;">
+        <%= success %>
+    </div>
+<% } %>
+<style>
+    @media (max-width: 576px) {
+ .alert {
+     font-size: 0.8rem;
+ }
+}
+</style>  
+                            <!-- Search bar for filtering tenants -->
+                            <div class="row mb-3">
+                                <div class="col-12 col-md-6">
+                                    <input type="text" id="tenantSearch" class="form-control"
+                                        placeholder="Search tenant by name, email, or property">
+                                </div>
+                            </div>
+
+                            <!-- Section to display the tenant results dynamically -->
+                            <div id="tenantResults">
+                                <!-- The tenant table will be dynamically populated here -->
+                            </div>
+
+
+                            <!-- Add New Tenant Button -->
+                            <div class="d-flex justify-content-end mb-3">
+                                <!-- Full width on small screens, adjusted padding for responsiveness -->
+                                <button type="button" class="btn btn-dark btn-block btn-md" data-toggle="modal"
+                                    data-target="#addTenantModal" style="background-color: #003366; color: #ffffff;">
+                                    Add New Tenant
+                                </button>
+                            </div>
+
+
+                            <!-- Tenants Table -->
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover table-bordered table-sm small-table">
+                                    <thead class="text-center" style="background-color: #00172f; color: white;">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Property</th>
+                                            <th>Unit</th>
+                                            <th>Door</th>
+                                            <th>Lease Period</th>
+                                            <th>Rent Paid</th>
+                                            <th>Utility Paid</th>
+                                            <th>Wallet</th>
+                                            <th>Arrears</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-center" style="background-color: #f8f9fa; color: black;">
+                                        <% tenants.forEach((tenant, index)=> { %>
+                                            <tr>
+                                                <td>
+                                                    <%= (index + 1) + ((currentPage - 1) * perPage) %>
+                                                </td>
+                                                <td>
+                                                    <%= tenant.name %>
+                                                </td>
+                                                <td>
+                                                    <%= tenant.email %>
+                                                </td>
+                                                <td>
+                                                    <%= tenant.phone %>
+                                                </td>
+                                                <td>
+                                                    <%= tenant.property ? tenant.property.name : 'N/A' %>
+                                                </td>
+                                                <td>
+                                                    <%= tenant.unit ? tenant.unit.unitName : 'N/A' %>
+                                                </td>
+                                                <td>
+                                                    <%= tenant.doorNumber || 'N/A' %>
+                                                </td>
+                                                <td>
+                                                    <%= new Date(tenant.leaseStartDate).toLocaleDateString() %> - <%=
+                                                            new Date(tenant.leaseEndDate).toLocaleDateString() %>
+                                                </td>
+                                                <td>Ksh.<%= tenant.rentPaid ? tenant.rentPaid.toFixed(2) : "0.00" %>
+                                                </td>
+                                                <td>Ksh.<%= tenant.utilityPaid ? tenant.utilityPaid.toFixed(2) : "0.00"
+                                                        %>
+                                                </td>
+                                                <td>Ksh.<%= tenant.walletBalance ? tenant.walletBalance.toFixed(2)
+                                                        : "0.00" %>
+                                                </td>
+                                                <td>Ksh.<%= tenant.outstandingPayments ?
+                                                        tenant.outstandingPayments.toFixed(2) : "0.00" %>
+                                                </td>
+                                                <td>
+                                                    <%= tenant.leaseStatus || 'N/A' %>
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group" role="group" aria-label="Tenant actions">
+                                                        <!-- Edit Button with Icon -->
+                                                        <button class="btn btn-info btn-sm p-1" data-toggle="modal"
+                                                            data-target="#editTenantModal<%= tenant._id %>">
+                                                            <i class="fas fa-edit"></i> 
+                                                        </button>
+
+                                                        <!-- Delete Button with Icon -->
+                                                        <button class="btn btn-danger btn-sm p-1" data-toggle="modal"
+                                                            data-target="#deleteTenantModal<%= tenant._id %>">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                            <!-- Font Awesome Delete Icon -->
+                                                        </button>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                            <!-- CSS Styles -->
+                                            <style>
+                                                .custom-container {
+                                                    max-width: 1300px;
+                                                    max-height: 100%;
+                                                }
+
+                                                /* Make the table smaller on larger screens */
+                                                @media (min-width: 768px) {
+                                                    .small-table {
+                                                        font-size: 0.9rem;
+                                                        /* Adjust font size */
+                                                    }
+
+                                                    .small-table th,
+                                                    .small-table td {
+                                                        padding: 0.5rem;
+                                                        /* Adjust padding */
+                                                    }
+                                                }
+
+                                                /* Maintain full width for smaller screens */
+                                                @media (max-width: 367px) {
+                                                    .small-table {
+                                                        font-size: 0.6rem;
+                                                        /* Default font size */
+                                                    }
+
+                                                    .small-table th,
+                                                    .small-table td {
+                                                        padding: 0.5rem;
+                                                        /* Default padding */
+                                                    }
+                                                }
+                                            </style>
+
+
+
+
+
+                                            <!-- Edit Tenant Modal for each tenant -->
+                                            <div class="modal fade" id="editTenantModal<%= tenant._id %>" tabindex="-1"
+                                                role="dialog" aria-labelledby="editTenantModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog modal-lg" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header"
+                                                            style="background-color: #00172f; color: #ffffff;">
+                                                            <h5 class="modal-title" id="editTenantModalLabel">Edit
+                                                                Tenant</h5>
+                                                            <button type="button" class="close" data-dismiss="modal"
+                                                                aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <!-- Form for editing tenant details -->
+                                                            <form
+                                                                action="/tenancy-manager/tenants/edit/<%= tenant._id %>"
+                                                                method="POST">
+                                                                <div class="row">
+                                                                    <div class="col-12 col-md-6 form-group">
+                                                                        <label for="tenantName">Name</label>
+                                                                        <input type="text" class="form-control"
+                                                                            id="tenantName" name="name"
+                                                                            value="<%= tenant.name %>" required>
+                                                                    </div>
+                                                                    <div class="col-12 col-md-6 form-group">
+                                                                        <label for="tenantEmail">Email</label>
+                                                                        <input type="email" class="form-control"
+                                                                            id="tenantEmail" name="email"
+                                                                            value="<%= tenant.email %>" required>
+                                                                    </div>
+                                                                    <div class="col-12 col-md-6 form-group">
+                                                                        <label for="tenantPhone">Phone</label>
+                                                                        <input type="text" class="form-control"
+                                                                            id="tenantPhone" name="phone"
+                                                                            value="<%= tenant.phone %>" required>
+                                                                    </div>
+                                                                    <div class="col-12 col-md-6 form-group">
+                                                                        <label for="leaseStartDate">Lease Start
+                                                                            Date</label>
+                                                                        <input type="date" class="form-control"
+                                                                            id="leaseStartDate" name="leaseStartDate"
+                                                                            value="<%= new Date(tenant.leaseStartDate).toISOString().substring(0, 10) %>"
+                                                                            required>
+                                                                    </div>
+                                                                    <div class="col-12 col-md-6 form-group">
+                                                                        <label for="leaseEndDate">Lease End Date</label>
+                                                                        <input type="date" class="form-control"
+                                                                            id="leaseEndDate" name="leaseEndDate"
+                                                                            value="<%= new Date(tenant.leaseEndDate).toISOString().substring(0, 10) %>"
+                                                                            required>
+                                                                    </div>
+                                                                </div>
+                                                                <button type="submit" class="btn btn-dark"
+                                                                    style="background-color: #00172f; color: #ffffff;">Update
+                                                                    Tenant</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+
+
+
+
+                                            <!-- Delete Tenant Modal for each tenant -->
+                                            <div class="modal fade" id="deleteTenantModal<%= tenant._id %>"
+                                                tabindex="-1" role="dialog" aria-labelledby="deleteTenantModalLabel"
+                                                aria-hidden="true">
+                                                <div class="modal-dialog modal-lg" role="document">
+                                                    <div class="modal-content border-0 shadow-sm">
+                                                        <div class="modal-header bg-danger text-white">
+                                                            <h5 class="modal-title" id="deleteTenantModalLabel">
+                                                                <i class="fas fa-trash-alt"></i>
+                                                                Delete
+                                                                Tenant -
+                                                                <%= tenant.name %>
+                                                            </h5>
+                                                            <button type="button" class="close text-white"
+                                                                data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            Are you sure
+                                                            you want to
+                                                            delete <strong>
+                                                                <%= tenant.name %>
+                                                            </strong>? This
+                                                            action cannot
+                                                            be undone.
+                                                        </div>
+                                                        <div class="modal-footer bg-light">
+                                                            <form id="deleteTenantForm<%= tenant._id %>" method="POST"
+                                                                action="/tenancy-manager/tenants/delete/<%= tenant._id %>">
+                                                                <button type="button" class="btn btn-secondary"
+                                                                    data-dismiss="modal">
+                                                                    <i class="fas fa-times"></i>
+                                                                    Cancel
+                                                                </button>
+                                                                <button type="submit" class="btn btn-danger">
+                                                                    <i class="fas fa-trash"></i>
+                                                                    Delete
+                                                                </button>
+                                                            </form>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- Pagination controls -->
+                            <nav aria-label="Tenant pagination">
+                                <ul class="pagination justify-content-center">
+                                    <% if (currentPage> 1) { %>
+                                        <li class="page-item">
+                                            <a class="page-link"
+                                                href="/tenancy-manager/tenants?page=<%= currentPage - 1 %>"
+                                                aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+                                        <% } %>
+
+                                            <% for (let i=1; i <=totalPages; i++) { %>
+                                                <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                                    <a class="page-link" href="/tenancy-manager/tenants?page=<%= i %>">
+                                                        <%= i %>
+                                                    </a>
+                                                </li>
+                                                <% } %>
+
+                                                    <% if (currentPage < totalPages) { %>
+                                                        <li class="page-item">
+                                                            <a class="page-link"
+                                                                href="/tenancy-manager/tenants?page=<%= currentPage + 1 %>"
+                                                                aria-label="Next">
+                                                                <span aria-hidden="true">&raquo;</span>
+                                                            </a>
+                                                        </li>
+                                                        <% } %>
+                                </ul>
+                            </nav>
+        </div>
+        <style>
+            .pagination .page-item.active .page-link {
+                background-color: #003366;
+                border-color: #003366;
+            }
+
+            @media (max-width: 576px) {
+                .pagination .page-item .page-link {
+                    font-size: 0.75rem;
+                    padding: 0.3rem 0.5rem;
+                }
+
+                .pagination {
+                    margin-top: 10px;
+                }
+
+                .pagination .page-item.active .page-link {
+                    background-color: #003366;
+                    border-color: #003366;
+                }
+
+                .pagination .page-item .page-link {
+                    border-radius: 0.2rem;
+                }
+
+                .pagination .page-item:first-child .page-link,
+                .pagination .page-item:last-child .page-link {
+                    padding: 0.3rem 0.4rem;
+                }
+            }
+        </style>
+
+
+        <!-- Modal Structure -->
+        <div class="modal fade" id="addTenantModal" tabindex="-1" role="dialog" aria-labelledby="addTenantModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header" style="background-color: #00172f; color: white;">
+                        <h5 class="modal-title" id="addTenantModalLabel">Add New Tenant</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <!-- Loader -->
+                        <div id="loader" class="text-center" style="display: none;">
+                            <div class="spinner-border" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            <p>Adding Tenant, please wait...</p>
+                        </div>
+
+                        <% if (error && error.length> 0) { %>
+                            <div class="alert alert-danger" role="alert">
+                                <%= error %>
+                            </div>
+                            <% } %>
+
+                                <form action="/tenancy-manager/tenant/new" method="POST">
+                                    <div class="row">
+                                        <!-- Left Column -->
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="tenantName">Tenant Name</label>
+                                                <input type="text" class="form-control" id="tenantName" name="name"
+                                                    required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="tenantEmail">Tenant Email</label>
+                                                <input type="email" class="form-control" id="tenantEmail" name="email"
+                                                    required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="tenantPhone">Tenant Phone Number</label>
+                                                <input type="text" class="form-control" id="tenantPhone" name="phone"
+                                                    required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="leaseStartDate">Lease Start Date</label>
+                                                <input type="date" class="form-control" id="leaseStartDate"
+                                                    name="leaseStartDate" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="leaseEndDate">Lease End Date</label>
+                                                <input type="date" class="form-control" id="leaseEndDate"
+                                                    name="leaseEndDate" required>
+                                            </div>
+                                        </div>
+
+                                        <!-- Right Column -->
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="tenantDoorNumber">Door Number</label>
+                                                <input type="text" class="form-control" id="tenantDoorNumber"
+                                                    name="doorNumber" placeholder="e.g B-20" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="propertySelection">Property</label>
+                                                <select class="form-control" id="propertySelection" name="property"
+                                                    required>
+                                                    <option value="">Select Property</option>
+                                                    <% properties.forEach(property=> { %>
+                                                        <option value="<%= property._id %>">
+                                                            <%= property.name %>
+                                                        </option>
+                                                        <% }); %>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="unitSelection">Unit</label>
+                                                <select class="form-control" id="unitSelection" name="unitId" required>
+                                                    <option value="">Select Unit</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="utilitiesAmount">Utilities</label>
+                                                <input type="number" class="form-control" id="utilitiesAmount"
+                                                    name="utilities" required min="0" step="0.01" readonly>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="tenantRentPaid">Deposit</label>
+                                                <input type="number" class="form-control" id="tenantRentPaid"
+                                                    name="deposit" required min="0" step="0.01" readonly>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function () {
+                                            const propertySelect = document.getElementById('propertySelection');
+                                            const unitSelect = document.getElementById('unitSelection');
+                                            const depositInput = document.getElementById('tenantRentPaid');
+                                            const utilitiesInput = document.getElementById('utilitiesAmount');
+
+                                            propertySelect.addEventListener('change', async function () {
+                                                const propertyId = this.value;
+
+                                                // Clear previous unit options and reset inputs
+                                                unitSelect.innerHTML = '<option value="">Select Unit</option>';
+                                                depositInput.value = '';
+                                                utilitiesInput.value = '';
+
+                                                if (propertyId) {
+                                                    try {
+                                                        // Fetch units for the selected property
+                                                        const response = await fetch(`/api/property/${propertyId}/units`);
+
+                                                        // Check if the response is OK
+                                                        if (!response.ok) {
+                                                            const errorData = await response.json();
+                                                            throw new Error(`Failed to fetch units: ${response.statusText} - ${errorData.error || ''}`);
+                                                        }
+
+                                                        const data = await response.json();
+
+                                                        // Check if the expected data structure is present
+                                                        if (Array.isArray(data.units) && data.units.length > 0) {
+                                                            data.units.forEach(unit => {
+                                                                const option = document.createElement('option');
+                                                                option.value = unit._id; // Assuming _id is the identifier
+                                                                option.textContent = unit.unitName; // Assuming unitName is the display name
+                                                                option.dataset.deposit = unit.deposit || 0; // Store the deposit amount, default to 0 if undefined
+                                                                const totalUtilities = (unit.utilities || []).reduce((sum, utility) => sum + utility.amount, 0);
+                                                                option.dataset.utilities = totalUtilities; // Store the total utilities amount in a data attribute
+
+                                                                unitSelect.appendChild(option);
+                                                            });
+                                                        } else {
+                                                            console.warn('No units found or incorrect data structure:', data);
+                                                            alert('No units found for the selected property.');
+                                                        }
+                                                    } catch (error) {
+                                                        console.error('Error fetching units:', error);
+                                                        alert(`Failed to fetch units. Error: ${error.message}`);
+                                                    }
+                                                }
+                                            });
+
+                                            unitSelect.addEventListener('change', function () {
+                                                const selectedOption = this.options[this.selectedIndex];
+                                                const depositAmount = selectedOption?.dataset.deposit || 0;
+                                                const utilitiesAmount = selectedOption?.dataset.utilities || 0;
+                                                depositInput.value = depositAmount; // Set the deposit amount
+                                                utilitiesInput.value = utilitiesAmount; // Set the utilities amount
+                                            });
+                                        });
+
+                                        // Show loader on form submission
+                                        document.querySelector('form').addEventListener('submit', function () {
+                                            document.getElementById('loader').style.display = 'block';
+                                            const submitButton = this.querySelector('button[type="submit"]');
+                                            submitButton.disabled = true; // Disable the button to prevent multiple submissions
+                                        });
+                                    </script>
+
+                                    <button type="submit" class="btn btn-dark w-100"
+                                        style="background-color: #003366; color: #ffffff;">Add Tenant</button>
+                                </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <style>
+            @media (max-width: 476px) {
+                .modal-content {
+                    padding: 5px;
+                }
+
+                .modal-title {
+                    font-size: 0.9rem;
+                }
+
+                .form-group label {
+                    font-size: 0.6rem;
+                }
+
+                .form-control {
+                    font-size: 0.6rem;
+                }
+
+                .btn {
+                    font-size: 0.6rem;
+                }
+
+
+                .modal-dialog {
+                    max-width: 100%;
+                    max-height: fit-content;
+                }
+
+
+            }
+        </style>
+
+
+
+
+
+
+
+
+
+        <!-- Toastr JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+
+
+        <script>// Function for filtering tenants in the table
+            document.getElementById('tenantSearch').addEventListener('input', function () {
+                const filter = this.value.toLowerCase();
+                const rows = document.querySelectorAll('table tbody tr');
+            
+                // Loop through each row and toggle its visibility based on the search filter
+                rows.forEach(row => {
+                    const tenantCells = row.querySelectorAll('td');
+                    let rowVisible = false; // Track visibility state
+            
+                    // Check each cell's text against the filter
+                    tenantCells.forEach(cell => {
+                        if (cell.textContent.toLowerCase().includes(filter)) {
+                            rowVisible = true; // Set to true if any cell matches
+                        }
+                    });
+            
+                    // Show or hide the row based on visibility state
+                    row.style.display = rowVisible ? '' : 'none';
+                });
+            });
+            
+            // Function to open Edit Modal and populate the fields with tenant data
+            function openEditModal(id, name, email, phone) {
+                // Populate edit form fields
+                document.getElementById('tenantName').value = name;
+                document.getElementById('tenantEmail').value = email;
+                document.getElementById('tenantPhone').value = phone;
+            
+                // Set form action dynamically to include tenant ID
+                document.getElementById('editTenantForm').action = `/tenancy-manager/tenants/edit/${id}`;
+            
+                // Open the modal
+                $('#editTenantModal').modal('show');
+            }
+            
+            // Function to open Delete Modal and show tenant name
+            function openDeleteModal(id, name) {
+                // Set the tenant name in the confirmation message
+                document.getElementById('deleteTenantName').textContent = name;
+            
+                // Set form action dynamically to include tenant ID
+                document.getElementById('deleteTenantForm').action = `/tenancy-manager/tenants/delete/${id}`;
+            
+                // Open the modal
+                $('#deleteTenantModal').modal('show');
+            }
+            
+            // Enable Bootstrap tooltips
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+</script>            
+
+
+
+
+        <footer class="text-center py-0">
+            &copy; 2024 Lease Captain. All Rights Reserved || powered by
+            <a href="https://vickinstechnologies.com" target="_blank">Vickins Technologies</a>
+        </footer>
+
+        <style>
+            footer {
+                font-size: 0.7rem;
+                /* Default font size */
+            }
+
+            @media (max-width: 768px) {
+                footer {
+                    font-size: 0.6rem;
+                    /* Smaller font size for small screens */
+                    padding: 5px;
+                    /* Adjust padding for smaller screens */
+                }
+            }
+
+            @media (max-width: 576px) {
+                footer {
+                    font-size: 0.5rem;
+                    /* Even smaller font size for extra small screens */
+                    padding: 2px;
+                    /* Adjust padding further for extra small screens */
+                }
+            }
+        </style>
+
+
+
+
+
+        <!-- Bootstrap JS -->
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+        <script>
+            $(document).ready(function () {
+                // Toggle sidebar on button click
+                $('#sidebarToggle').click(function () {
+                    $('#sidebarMenu').toggleClass('active');
+                });
+
+                // Collapse sidebar when clicking outside
+                $(document).click(function (event) {
+                    if (!$(event.target).closest('#sidebarMenu, #sidebarToggle').length) {
+                        $('#sidebarMenu').removeClass('active');
+                    }
+                });
+
+                // Close other collapsibles when one is opened
+                $('.collapse').on('show.bs.collapse', function () {
+                    // Collapse all other elements except the one being opened
+                    $('.collapse').not(this).collapse('hide');
+                });
+            });
+        </script>
+
+
+
+
+</body>
+
+</html>

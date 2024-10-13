@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lease Captain</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.css"> <!-- Animation on scroll -->
+    <style>
+        body {
+            background-color: #ffffff; /* White background */
+            color: #003366; /* Dark blue text */
+            font-family: 'Arial', sans-serif; /* Modern font */
+        }
+
+        .hero {
+            margin-top: 90px; /* Adjust for smaller header */
+            position: relative;
+            height: 60vh; /* Full height of the viewport */
+            overflow: hidden; /* Hide any overflow */
+        }
+
+        .hero::before,
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 50%; /* Each image takes half of the section */
+            height: 60vh;
+            background-size: cover;
+            background-position: center;
+            z-index: 0;
+            opacity: 0.7;
+        }
+
+        .hero::before {
+            left: 0;
+            background-image: url('/images/banner1.jpeg'); 
+        }
+
+        .hero::after {
+            right: 0;
+            background-image: url('/images/banner2.jpeg');
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            color: rgb(0, 8, 120);
+        }
+
+        .btn-light-custom {
+            background-color: #ffffff;
+            color: #000000;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-outline-light-custom {
+            border-color: #ffffff;
+            color: #000000;
+        }
+
+        .btn-outline-light-custom:hover {
+            background-color: #ffffff;
+            color: #001224;
+        }
+
+        .feature-icon {
+            font-size: 40px;
+            color: #003366; /* Dark blue icon color */
+        }
+
+        .footer {
+            background-color: #000000; /* Dark blue background */
+            color: #ffffff; /* White text */
+            padding: 20px 0;
+        }
+
+        .footer a {
+            color: #ffffff; /* White link color */
+            text-decoration: underline; /* Underline for links */
+        }
+
+        /* New Styles */
+        .card {
+            border: none; /* Remove card border */
+            transition: transform 0.3s ease; /* Smooth transform effect */
+        }
+
+        .card:hover {
+            transform: translateY(-5px); /* Lift effect on hover */
+        }
+
+        h2 {
+            position: relative; /* Position for underline effect */
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+
+        h2::after {
+            content: '';
+            width: 50px; /* Underline width */
+            height: 4px; /* Underline height */
+            background-color: #003366; /* Dark blue underline */
+            display: block;
+            margin: auto; /* Center the underline */
+        }
+
+        /* Logo Style */
+        .logo {
+            width: 150px; /* Adjust width as needed */
+            height: auto; /* Maintain aspect ratio */
+        }
+
+        /* Header Style */
+        header {
+            
+            height: 10vh;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .hero {
+                height: 30vh; /* Reduce height for smaller screens */
+            }
+
+            .hero h1 {
+                font-size: 1.5rem; /* Adjust font size for smaller screens */
+            }
+
+            .hero p {
+                font-size: 1rem; /* Adjust font size for smaller screens */
+            }
+
+            .btn-lg {
+                font-size: 0.8rem; /* Adjust button size for smaller screens */
+                padding: 0.5rem 1rem; /* Adjust padding for buttons */
+            }
+
+            .logo {
+                width: 120px; /* Further reduce logo size */
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="bg-white fixed-top">
+        <div class="container d-flex align-items-center justify-content-center" style="height: 10vh;">
+            <a href="/" class="mr-2"><img src="/images/logo2.png" alt="Lease Captain Logo" class="logo img-fluid"></a> <!-- Logo -->
+            <nav class="text-center">
+                <a href="/login" class="btn btn-light-custom btn-lg mr-2">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                <a href="/signup" class="btn btn-outline-light-custom btn-lg">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </a>
+            </nav>
+        </div>
+    </header>
+    
+    
+
+    <section class="hero d-flex align-items-center">
+        <div class="container text-center">
+            <h1 class="display-4 font-weight-bold"><strong>Welcome to Lease Captain!</strong></h1>
+            <p class="lead font-weight-bold">Your Cutting Edge Property Manager.</p>
+        </div>
+    </section>
+
+   
+    <!-- Additional Features Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center" style="color: #003366;">Our Core Features</h2>
+            <div class="row text-center">
+                <div class="col-md-4" data-aos="fade-up" data-aos-duration="1000">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-home"></i>
+                            </div>
+                            <h3>Property Listing</h3>
+                            <p>Manage, view, and list properties with ease through our advanced property listing platform.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-duration="1000">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <h3>Lease Management</h3>
+                            <p>Automate lease tracking, tenant communications, and renewals, ensuring smooth tenancy management.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-duration="1000">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-tools"></i>
+                            </div>
+                            <h3>Maintenance Requests</h3>
+                            <p>Streamline maintenance requests from tenants, ensuring efficient issue resolution.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     <!-- Core Features Section -->
+     <section class="py-5">
+        <div class="container">
+            <h2 class="text-center" style="color: #003366;">Additional Features</h2>
+            <div class="row text-center">
+                <div class="col-md-4" data-aos="fade-up" data-aos-duration="1000">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                            <h3>Eco-Friendly Solutions</h3>
+                            <p>Innovative solutions that promote sustainable living while maintaining modern conveniences.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-duration="1000">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h3>Smart Management</h3>
+                            <p>Seamless property management with advanced technology for reporting and analysis.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-duration="1000">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h3>Community Focused</h3>
+                            <p>Join a community of like-minded individuals focused on sustainability and collaboration.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Footer -->
+    <footer class="py-0 text-center">
+        &copy; 2024 Lease Captain. All Rights Reserved || powered by
+        <a href="https://vickinstechnologies.com" target="_blank">Vickins Technologies</a>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.js"></script>
+    <script>
+        AOS.init(); // Initialize AOS
+    </script>
+</body>
+
+</html>
