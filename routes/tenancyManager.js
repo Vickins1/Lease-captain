@@ -824,7 +824,8 @@ router.post('/connect', async (req, res) => {
     const { accountEmail, apiKey, accountId, status, webhookUrl } = req.body;
 
     if (!accountEmail || !apiKey || !accountId || !status) {
-        return res.status(400).json({ message: 'All required fields must be filled' });
+        req.flash('error', 'All required fields must be filled');
+        return res.redirect('/connect');
     }
 
     const userId = req.user._id; 
@@ -842,15 +843,17 @@ router.post('/connect', async (req, res) => {
 
         console.log('Form Data Saved:', newAccount);
 
-        res.status(201).json({
-            message: 'Account connected and saved successfully!',
-            account: newAccount
-        });
+        req.flash('success', 'Account connected and saved successfully!');
+        res.redirect('/connect');
     } catch (error) {
         console.error('Error saving account:', error);
-        res.status(500).json({ message: 'Server error, please try again later.' });
+        req.flash('error', 'Server error, please try again later.');
+        res.redirect('/connect');
     }
 });
+
+
+
 
 router.post('/edit/:id', async (req, res) => {
     const accountId = req.params.id;
