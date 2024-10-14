@@ -292,7 +292,7 @@
                                 Profile Settings</a></li>
                         <li><a class="dropdown-item" href="/tenancy-manager/security"> Security Settings</a>
                         </li>
-                        <li><a class="dropdown-item" href="/connect"> Linked Accounts</a></li>
+                        <li><a class="dropdown-item" href="/connect">Payment Gateway</a></li>
                     </ul>
                 </li>
             </ul>
@@ -330,20 +330,19 @@
                 <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            <th>Account Name</th>
                             <th>Account Email</th>
                             <th>API Key</th>
                             <th>Account ID</th>
                             <th>Webhook URL</th>
                             <th>Status</th>
                             <th>Connected At</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <% connectedAccounts.forEach(account => { %>
                             <tr>
-                                <td><%= account.name %></td>
-                                <td><%= account.email %></td>
+                                <td><%= account.accountEmail %></td>
                                 <td>****</td> 
                                 <td><%= account.accountId %></td>
                                 <td><%= account.webhookUrl || 'N/A' %></td>
@@ -354,88 +353,164 @@
                                         <i class="fas fa-times-circle" style="color: red;"></i> Inactive
                                     <% } %>
                                 </td>
-                                <td><%= new Date(account.connectedAt).toLocaleDateString() %></td>
+                                <td><%= new Date(account.createdAt).toLocaleDateString() %></td>
+                                <td>
+                                    <div class="btn-group" role="group" aria-label="Account Actions">
+                                        <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#editAccountModal<%= account._id %>">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteAccountModal<%= account._id %>">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                                
                             </tr>
+            
+                            <!-- Edit Modal -->
+                            <div class="modal fade" id="editAccountModal<%= account._id %>" tabindex="-1" role="dialog" aria-labelledby="editAccountModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editAccountModalLabel">Edit Account</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="/edit/<%= account._id %>" method="POST" id="edit-form<%= account._id %>">
+                                                <div class="form-group">
+                                                    <label for="accountEmail">Account Email</label>
+                                                    <input type="email" class="form-control" id="accountEmail" name="accountEmail" value="<%= account.accountEmail %>" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="apiKey">API Key *</label>
+                                                    <input type="text" class="form-control" id="apiKey" name="apiKey" value="<%= account.apiKey %>" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="accountId">Account ID *</label>
+                                                    <input type="text" class="form-control" id="accountId" name="accountId" value="<%= account.accountId %>" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Status</label><br>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="status" id="active<%= account._id %>" value="active" <%= account.status === 'active' ? 'checked' : '' %> required>
+                                                        <label class="form-check-label" for="active<%= account._id %>">Active</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="status" id="inactive<%= account._id %>" value="inactive" <%= account.status === 'inactive' ? 'checked' : '' %> required>
+                                                        <label class="form-check-label" for="inactive<%= account._id %>">Inactive</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="webhookUrl">Webhook URL</label>
+                                                    <input type="url" class="form-control" id="webhookUrl" name="webhookUrl" value="<%= account.webhookUrl || '' %>">
+                                                </div>
+                                                <button type="submit" class="btn btn-dark">Update Account</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+            
+                            <!-- Delete Modal -->
+                            <div class="modal fade" id="deleteAccountModal<%= account._id %>" tabindex="-1" role="dialog" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteAccountModalLabel">Delete Account</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to delete the account for <strong><%= account.accountEmail %></strong>?</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <form action="/delete/<%= account._id %>" method="POST">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-danger">Delete Account</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+            
                         <% }) %>
                     </tbody>
                 </table>
             </div>
-        </div>
-        
-        <!-- Modal for connecting account -->
-        <div class="modal fade" id="connectAccountModal" tabindex="-1" role="dialog" aria-labelledby="connectAccountModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="connectAccountModalLabel" >Connect Your UMS Pay Account</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <% if (messages && messages.success) { %>
-                            <div class="alert alert-success"><%= messages.success %></div>
-                        <% } %>
-        
-                        <% if (messages && messages.error) { %>
-                            <div class="alert alert-danger"><%= messages.error %></div>
-                        <% } %>
-        
-                        <form action="/payment/connect" method="POST" id="connect-form">
-                            <div class="form-group">
-                                <label for="accountEmail">Account Email</label>
-                                <input type="email" class="form-control" id="accountEmail" name="accountEmail" placeholder="Enter your Account Email" required>
-                            </div>
-                        
-                            <div class="form-group">
-                                <label for="apiKey">API Key *</label>
-                                <input type="text" class="form-control" id="apiKey" name="apiKey" placeholder="Enter your API Key" required>
-                            </div>
-                        
-                            <div class="form-group">
-                                <label for="accountId">Account ID *</label>
-                                <input type="text" class="form-control" id="accountId" name="accountId" placeholder="Enter your Account ID" required>
-                            </div>
-                        
-                            <div class="form-group">
-                                <label>Status</label><br>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="status" id="active" value="active" required>
-                                    <label class="form-check-label" for="active">
-                                        <i class="fas fa-check-circle" style="color: green;"></i> Active
-                                    </label>
+            
+            
+            <!-- Modal for connecting account -->
+            <div class="modal fade" id="connectAccountModal" tabindex="-1" role="dialog" aria-labelledby="connectAccountModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="connectAccountModalLabel">Connect Your UMS Pay Account</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                           
+            
+                            <form action="/connect" method="POST" id="connect-form">
+                                <div class="form-group">
+                                    <label for="accountEmail">Account Email</label>
+                                    <input type="email" class="form-control" id="accountEmail" name="accountEmail" placeholder="Enter your Account Email" required>
                                 </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="status" id="inactive" value="inactive" required>
-                                    <label class="form-check-label" for="inactive">
-                                        <i class="fas fa-times-circle" style="color: red;"></i> Inactive
-                                    </label>
+            
+                                <div class="form-group">
+                                    <label for="apiKey">API Key *</label>
+                                    <input type="text" class="form-control" id="apiKey" name="apiKey" placeholder="Enter your API Key" required>
                                 </div>
-                            </div>
-                        
-                            <div class="form-group">
-                                <label for="webhookUrl">Webhook URL</label>
-                                <input type="url" class="form-control" id="webhookUrl" name="webhookUrl" placeholder="Enter your Webhook URL">
-                            </div>
-                        
-                            <button type="submit" class="btn btn-dark">Connect Account</button>
-                        </form>
+            
+                                <div class="form-group">
+                                    <label for="accountId">Account ID *</label>
+                                    <input type="text" class="form-control" id="accountId" name="accountId" placeholder="Enter your Account ID" required>
+                                </div>
+            
+                                <div class="form-group">
+                                    <label>Status</label><br>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="status" id="active" value="active" required>
+                                        <label class="form-check-label" for="active">
+                                            <i class="fas fa-check-circle" style="color: green;"></i> Active
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="status" id="inactive" value="inactive" required>
+                                        <label class="form-check-label" for="inactive">
+                                            <i class="fas fa-times-circle" style="color: red;"></i> Inactive
+                                        </label>
+                                    </div>
+                                </div>
+            
+                                <div class="form-group">
+                                    <label for="webhookUrl">Webhook URL</label>
+                                    <input type="url" class="form-control" id="webhookUrl" name="webhookUrl" placeholder="Enter your Webhook URL">
+                                </div>
+            
+                                <button type="submit" class="btn btn-dark">Connect Account</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+            
         
         <style>
             @media (max-width: 576px) {
                 .modal-dialog {
                     margin: 0.8rem;
-                    max-width: 100%; /* Ensures modal takes full width on small screens */
+                    max-width: 100%; 
                 }
                 .modal-content {
-                    padding: 0.5rem; /* Adjust padding for smaller screens */
+                    padding: 0.5rem; 
                 }
                 .table th, .table td {
-                    font-size: 0.6rem; /* Smaller font size for smaller screens */
+                    font-size: 0.6rem; 
                 }
                 .btn {
                 font-size: 0.6rem;
@@ -443,7 +518,7 @@
             }
         
             .table th, .table td {
-                font-size: 0.8rem; /* General smaller font size for the table */
+                font-size: 0.8rem;
             }
             .btn {
                 font-size: 0.8rem;

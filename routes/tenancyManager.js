@@ -20,6 +20,8 @@ const Reminder = require('../models/reminder');
 const Template = require('../models/template');
 const crypto = require('crypto');
 
+
+
 router.get('/tenancy-manager/dashboard', isTenancyManager, async (req, res) => {
     try {
         const properties = await Property.find({ owner: req.user._id }).populate('tenants');
@@ -784,30 +786,109 @@ router.post('/schedule', async (req, res) => {
 
 
 
-// Route to render the payment gateway account connection page
 router.get('/connect', async (req, res) => {
     if (!req.user) {
         req.flash('error', 'User not authenticated.');
         return res.redirect('/login');
     }
+
     try {
-        const connectedAccounts = await Account.find({ userId: req.user._id });
+       
+        const connectedAccounts = await Account.find({ userId: req.user._id }).lean(); 
+
+      
         res.render('tenancyManager/connectAccount', {
             currentUser: req.user,
-            messages: {},
+            messages: {
+                success: req.flash('success'),
+                error: req.flash('error'),
+            },
             connectedAccounts: connectedAccounts 
         });
-
     } catch (error) {
-        console.error(error);
+        console.error('Error fetching connected accounts:', error);
         req.flash('error', 'Failed to fetch connected accounts.');
         res.render('tenancyManager/connectAccount', {
             currentUser: req.user,
-            messages: {},
-            connectedAccounts: [] 
+            messages: {
+                success: req.flash('success'),
+                error: req.flash('error'),
+            },
+            connectedAccounts: []
         });
     }
 });
+
+
+router.post('/connect', async (req, res) => {
+    const { accountEmail, apiKey, accountId, status, webhookUrl } = req.body;
+
+    if (!accountEmail || !apiKey || !accountId || !status) {
+        return res.status(400).json({ message: 'All required fields must be filled' });
+    }
+
+    const userId = req.user._id; 
+    try {
+        const newAccount = new Account({
+            userId, 
+            accountEmail,
+            apiKey,
+            accountId,
+            status,
+            webhookUrl
+        });
+
+        await newAccount.save();
+
+        console.log('Form Data Saved:', newAccount);
+
+        res.status(201).json({
+            message: 'Account connected and saved successfully!',
+            account: newAccount
+        });
+    } catch (error) {
+        console.error('Error saving account:', error);
+        res.status(500).json({ message: 'Server error, please try again later.' });
+    }
+});
+
+router.post('/edit/:id', async (req, res) => {
+    const accountId = req.params.id;
+    const { accountEmail, apiKey, accountId: newAccountId, status, webhookUrl } = req.body;
+
+    try {
+        await Account.findByIdAndUpdate(accountId, {
+            accountEmail,
+            apiKey,
+            accountId: newAccountId,
+            status,
+            webhookUrl
+        });
+
+        res.redirect('/connect');
+    } catch (error) {
+        console.error('Error updating account:', error);
+        res.status(500).send('Internal Server Error'); 
+    }
+});
+
+// Delete account route
+router.post('/delete/:id', async (req, res) => {
+    const accountId = req.params.id;
+
+    try {
+        // Find the account by ID and delete it
+        await Account.findByIdAndDelete(accountId);
+
+        
+        res.redirect('/connect'); 
+    } catch (error) {
+        console.error('Error deleting account:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
 
 // Get top-up page
 router.get('/top-ups', isTenancyManager, async (req, res) => {

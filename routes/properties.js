@@ -73,42 +73,59 @@ router.get('/tenancy-manager/properties', isTenancyManager, async (req, res) => 
                     },
                     // Calculate dues based on unit prices and paid amounts
                     rentDue: {
-                        $subtract: [
-                            { 
-                                $multiply: [
-                                    { $ifNull: ['$units.rentDue', 0] }, 
-                                    {
-                                        $floor: {
-                                            $divide: [
-                                                { $subtract: [new Date(), { $convert: { input: '$units.tenants.leaseStart', to: 'date' } }] },
-                                                1000 * 60 * 60 * 24 * 30 
-                                            ]
-                                        }
+                        $let: {
+                            vars: {
+                                rentDue: { $ifNull: ['$units.rentDue', 0] },
+                                monthsElapsed: {
+                                    $floor: {
+                                        $divide: [
+                                            { 
+                                                $subtract: [
+                                                    new Date(), 
+                                                    { 
+                                                        $toDate: { 
+                                                            $arrayElemAt: ['$units.tenants.leaseStart', 0] 
+                                                        } 
+                                                    }
+                                                ]
+                                            },
+                                            1000 * 60 * 60 * 24 * 30 
+                                        ]
                                     }
-                                ]
+                                }
                             },
-                            '$totalPaidRent'
-                        ]
+                            in: {
+                                $multiply: ['$$rentDue', '$$monthsElapsed']
+                            }
+                        }
                     },
                     utilitiesDue: {
-                        $subtract: [
-                            { 
-                                $multiply: [
-                                    { $ifNull: ['$units.utilitiesDue', 0] }, 
-                                    {
-                                        $floor: {
-                                            $divide: [
-                                                { $subtract: [new Date(), { $convert: { input: '$units.tenants.leaseStart', to: 'date' } }] },
-                                                1000 * 60 * 60 * 24 * 30 
-                                            ]
-                                        }
+                        $let: {
+                            vars: {
+                                utilitiesDue: { $ifNull: ['$units.utilitiesDue', 0] },
+                                monthsElapsed: {
+                                    $floor: {
+                                        $divide: [
+                                            { 
+                                                $subtract: [
+                                                    new Date(), 
+                                                    { 
+                                                        $toDate: { 
+                                                            $arrayElemAt: ['$units.tenants.leaseStart', 0] 
+                                                        } 
+                                                    }
+                                                ]
+                                            },
+                                            1000 * 60 * 60 * 24 * 30
+                                        ]
                                     }
-                                ]
+                                }
                             },
-                            '$totalPaidUtilities'
-                        ]
+                            in: {
+                                $multiply: ['$$utilitiesDue', '$$monthsElapsed']
+                            }
+                        }
                     },
-                    // Check for vacancies - if the tenant field is empty, it's vacant
                     isVacant: {
                         $cond: {
                             if: { $eq: [{ $size: { $ifNull: ['$units.tenants', []] } }, 0] },
@@ -186,6 +203,8 @@ router.get('/tenancy-manager/properties', isTenancyManager, async (req, res) => 
         res.redirect('/tenancyManager/dashboard');
     }
 });
+
+  
 
 
 
@@ -297,7 +316,6 @@ router.post('/tenancy-manager/property/units', isTenancyManager, async (req, res
             deposit: depositAmount 
         });
 
-        // Save the new unit to the database
         await newUnit.save();
 
         req.flash('success', 'Property unit added successfully!');
@@ -340,7 +358,6 @@ router.post('/tenancy-manager/property', isTenancyManager, async (req, res) => {
             owner: req.user._id,
         });
 
-        // Save the new property to the database
         await newProperty.save();
 
         req.flash('success', 'Property added successfully!');

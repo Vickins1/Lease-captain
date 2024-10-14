@@ -74,8 +74,6 @@
         .content {
             padding: 15px;
         }
-
-
         footer {
             position: fixed;
             left: 0;
@@ -193,149 +191,194 @@
                             </button>
 
 
-                            <% if (maintenanceRequests.length === 0) { %>
+                            <% if (maintenanceRequests.length===0) { %>
                                 <p>No maintenance requests at the moment.</p>
-                            <% } else { %>
-                                <div class="card mt-4">
-                                    <div class="card-header">
-                                        <h5>Pending Maintenance Requests</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="table-responsive">
-                                            <table class="table table-bordered">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Request ID</th>
-                                                        <th>Description</th>
-                                                        <th>Status</th>
-                                                        <th>Date Submitted</th>
-                                                        <th>Actions</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <% maintenanceRequests.forEach(request => { %>
-                                                    <tr>
-                                                        <td><%= request._id.toString().substring(0, 6) %></td>
-                                                        <td><%= request.description %></td>
-                                                        <td>
-                                                            <span class="badge badge-<%= 
+                                <% } else { %>
+                                    <div class="card mt-4">
+                                        <div class="card-header">
+                                            <h5>Pending Maintenance Requests</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Request ID</th>
+                                                            <th>Description</th>
+                                                            <th>Status</th>
+                                                            <th>Date Submitted</th>
+                                                            <th>Actions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <% maintenanceRequests.forEach(request=> { %>
+                                                            <tr>
+                                                                <td>
+                                                                    <%= request._id.toString().substring(0, 6) %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= request.description %>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="badge badge-<%= 
                                                                 request.status.toLowerCase() === 'pending' ? 'warning' : 
                                                                 request.status.toLowerCase() === 'in progress' ? 'info' : 
                                                                 request.status.toLowerCase() === 'completed' ? 'success' : 
                                                                 'secondary' %>">
-                                                                <%= request.status.charAt(0).toUpperCase() + request.status.slice(1).toLowerCase() %>
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            <%= new Date(request.date).toLocaleDateString('en-US', {
-                                                                year: 'numeric', month: '2-digit', day: '2-digit'
-                                                            }) %>
-                                                        </td>
-                                                        <td>
-                                                            <!-- Edit Button -->
-                                                            <button class="btn btn-primary" style="background-color: #003366;" data-toggle="modal" 
-                                                                data-target="#editRequestModal<%= request._id %>">Edit</button>
-                            
-                                                            <!-- Delete Button -->
-                                                            <button class="btn btn-danger" data-toggle="modal" 
-                                                                data-target="#deleteRequestModal<%= request._id %>">Delete</button>
+                                                                        <%= request.status.charAt(0).toUpperCase() +
+                                                                            request.status.slice(1).toLowerCase() %>
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <%= new
+                                                                        Date(request.date).toLocaleDateString('en-US', {
+                                                                        year: 'numeric' , month: '2-digit' ,
+                                                                        day: '2-digit' }) %>
+                                                                </td>
+                                                                <td>
+                                                                    <!-- Edit Button -->
+                                                                    <button class="btn btn-primary"
+                                                                        style="background-color: #003366;"
+                                                                        data-toggle="modal"
+                                                                        data-target="#editRequestModal<%= request._id %>">Edit</button>
 
+                                                                    <!-- Delete Button -->
+                                                                    <button class="btn btn-danger" data-toggle="modal"
+                                                                        data-target="#deleteRequestModal<%= request._id %>">Delete</button>
 
-                            
-                                                            <!-- Edit Request Modal -->
-                                                            <div class="modal fade" id="editRequestModal<%= request._id %>" tabindex="-1" role="dialog">
-                                                                <div class="modal-dialog" role="document">
-                                                                    <div class="modal-content">
-                                                                        <div class="modal-header">
-                                                                            <h5 class="modal-title" style="color: #ffffff;">Edit Maintenance Request</h5>
-                                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                                <span aria-hidden="true">&times;</span>
-                                                                            </button>
-                                                                        </div>
-                                                                        <div class="modal-body">
-                                                                            <form action="/maintenance/edit" method="POST">
-                                                                                <input type="hidden" name="requestId" value="<%= request._id %>">
-                                                                                <div class="form-group">
-                                                                                    <label for="description">Description</label>
-                                                                                    <textarea name="description" class="form-control" rows="5" 
-                                                                                        required><%= request.description %></textarea>
-                                                                                </div>
-                                                                                <div class="modal-footer">
-                                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                                                                    <button type="submit" class="btn btn-dark" style="background-color: #003366;">
-                                                                                        Save Changes
+                                                                    <!-- Edit Request Modal -->
+                                                                    <div class="modal fade"
+                                                                        id="editRequestModal<%= request._id %>"
+                                                                        tabindex="-1" role="dialog">
+                                                                        <div class="modal-dialog" role="document">
+                                                                            <div class="modal-content">
+                                                                                <div class="modal-header">
+                                                                                    <h5 class="modal-title"
+                                                                                        style="color: #ffffff;">Edit
+                                                                                        Maintenance Request</h5>
+                                                                                    <button type="button" class="close"
+                                                                                        data-dismiss="modal"
+                                                                                        aria-label="Close">
+                                                                                        <span
+                                                                                            aria-hidden="true">&times;</span>
                                                                                     </button>
                                                                                 </div>
-                                                                                
-                                                                            </form>
+                                                                                <div class="modal-body">
+                                                                                    <form action="/maintenance/edit"
+                                                                                        method="POST">
+                                                                                        <input type="hidden"
+                                                                                            name="requestId"
+                                                                                            value="<%= request._id %>">
+                                                                                        <div class="form-group">
+                                                                                            <label
+                                                                                                for="description">Description</label>
+                                                                                            <textarea name="description"
+                                                                                                class="form-control"
+                                                                                                rows="5"
+                                                                                                required><%= request.description %></textarea>
+                                                                                        </div>
+                                                                                        <div class="modal-footer">
+                                                                                            <button type="button"
+                                                                                                class="btn btn-secondary"
+                                                                                                data-dismiss="modal">Cancel</button>
+                                                                                            <button type="submit"
+                                                                                                class="btn btn-dark"
+                                                                                                style="background-color: #003366;">
+                                                                                                Save Changes
+                                                                                            </button>
+                                                                                        </div>
+
+                                                                                    </form>
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
-                                                                </div>
-                                                            </div>
-                            
-                                                            <!-- Delete Request Modal -->
-                                                            <div class="modal fade" id="deleteRequestModal<%= request._id %>" tabindex="-1" role="dialog">
-                                                                <div class="modal-dialog" role="document">
-                                                                    <div class="modal-content">
-                                                                        <div class="modal-header">
-                                                                            <h5 class="modal-title">Confirm Delete</h5>
-                                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                                <span aria-hidden="true">&times;</span>
-                                                                            </button>
-                                                                        </div>
-                                                                        <div class="modal-body">
-                                                                            <p>Are you sure you want to delete this maintenance request?</p>
-                                                                        </div>
-                                                                        <div class="modal-footer">
-                                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                                                            <form action="/requests/<%= request._id %>/delete" method="POST">
-                                                                                <button type="submit" class="btn btn-danger">Delete</button>
-                                                                            </form>
+
+
+
+                                                                    <!-- Delete Request Modal -->
+                                                                    <div class="modal fade"
+                                                                        id="deleteRequestModal<%= request._id %>"
+                                                                        tabindex="-1" role="dialog">
+                                                                        <div class="modal-dialog" role="document">
+                                                                            <div class="modal-content">
+                                                                                <div class="modal-header">
+                                                                                    <h5 class="modal-title">Confirm
+                                                                                        Delete</h5>
+                                                                                    <button type="button" class="close"
+                                                                                        data-dismiss="modal"
+                                                                                        aria-label="Close">
+                                                                                        <span
+                                                                                            aria-hidden="true">&times;</span>
+                                                                                    </button>
+                                                                                </div>
+                                                                                <div class="modal-body">
+                                                                                    <p>Are you sure you want to delete
+                                                                                        this maintenance request?</p>
+                                                                                </div>
+                                                                                <div class="modal-footer">
+                                                                                    <button type="button"
+                                                                                        class="btn btn-secondary"
+                                                                                        data-dismiss="modal">Cancel</button>
+                                                                                    <form
+                                                                                        action="/requests/<%= request._id %>/delete"
+                                                                                        method="POST">
+                                                                                        <button type="submit"
+                                                                                            class="btn btn-danger">Delete</button>
+                                                                                    </form>
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                    <% }); %>
-                                                </tbody>
-                                            </table>
+                                                                </td>
+                                                            </tr>
+                                                            <% }); %>
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            <% } %>
-                            
+                                    <% } %>
+
 
 
 
 
                                         <!-- Modal for New Maintenance Request -->
-<div class="modal fade" id="newRequestModal" tabindex="-1" role="dialog" aria-labelledby="newRequestModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content shadow-lg">
-            <div class="modal-header" style="background-color: #003366; color: #ffffff;">
-                <h5 class="modal-title text-white" id="newRequestModalLabel">New Maintenance Request</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form action="/maintenance/new" method="POST">
+                                        <div class="modal fade" id="newRequestModal" tabindex="-1" role="dialog"
+                                            aria-labelledby="newRequestModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                                <div class="modal-content shadow-lg">
+                                                    <div class="modal-header"
+                                                        style="background-color: #003366; color: #ffffff;">
+                                                        <h5 class="modal-title text-white" id="newRequestModalLabel">New
+                                                            Maintenance Request</h5>
+                                                        <button type="button" class="close text-white"
+                                                            data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form action="/maintenance/new" method="POST">
 
-                    <div class="form-group">
-                        <label for="description">Description</label>
-                        <textarea id="description" name="description" class="form-control" rows="5"
-                            placeholder="Describe your request in detail" required></textarea>
-                    </div>
+                                                            <div class="form-group">
+                                                                <label for="description">Description</label>
+                                                                <textarea id="description" name="description"
+                                                                    class="form-control" rows="5"
+                                                                    placeholder="Describe your request in detail"
+                                                                    required></textarea>
+                                                            </div>
 
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-dark" style="background-color: #003366;">Submit Request</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+                                                            <div class="text-center">
+                                                                <button type="submit" class="btn btn-dark"
+                                                                    style="background-color: #003366;">Submit
+                                                                    Request</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
 
 
 
@@ -441,10 +484,6 @@
                                                 }
                                             }
                                         </style>
-
-
-
-
 
                                         <footer class="text-center py-0">
                                             &copy; 2024 Lease Captain. All Rights Reserved || powered by
