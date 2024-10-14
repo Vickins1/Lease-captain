@@ -3,6 +3,10 @@ const router = express.Router();
 const Tenant = require('../models/tenant');
 const bcrypt = require('bcrypt');
 const MaintenanceRequest = require('../models/maintenanceRequest')
+const UMS_API_BASE_URL = 'https://api.umeskiasoftwares.com/api/v1';
+const axios = require('axios');
+const PaymentAccount = require('../models/account');
+
 
 // Tenant login route 
 router.get('/tenantPortal/login', (req, res) => {
@@ -71,7 +75,6 @@ router.get('/tenantPortal/dashboard', async (req, res) => {
             })
             .exec();
 
-        console.log('Tenant Data:', tenant);
         if (!tenant) {
             req.flash('error', 'Tenant not found');
             return res.redirect('/tenantPortal/login');
@@ -493,7 +496,7 @@ async function handlePayment(tenantId, amount) {
 
         // Update tenant wallet balance and overpayment amount
         tenant.walletBalance += overpaymentAmount;
-        tenant.overpayment = (tenant.overpayment || 0) + overpaymentAmount; // Initialize if undefined
+        tenant.overpayment = (tenant.overpayment || 0) + overpaymentAmount; 
     } else {
         tenant.rentPaid += amount;
     }
@@ -544,7 +547,6 @@ async function withdrawFromWallet(tenantId, amount) {
     tenant.walletBalance -= amount; 
     await tenant.save();
 }
-
 
 
 

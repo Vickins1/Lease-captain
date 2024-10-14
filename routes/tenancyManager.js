@@ -259,6 +259,7 @@ router.post('/tenancy-manager/tenant/new', async (req, res) => {
         req.flash('error', 'Property is required');
         return res.redirect('/tenancy-manager/tenants');
     }
+
     if (!name) {
         req.flash('error', 'Name is required');
         return res.redirect('/tenancy-manager/tenants');
@@ -329,6 +330,7 @@ router.post('/tenancy-manager/tenant/new', async (req, res) => {
             leaseEndDate,
             property,
             owner: currentUser._id,
+            userId: currentUser._id,
             unit: unitId,
             doorNumber,
             walletBalance,

@@ -13,8 +13,8 @@ const userSchema = new mongoose.Schema({
         unique: true, 
         required: true 
     },
-    password: {  // Add the password field explicitly
-        type: String,  // This will be the hashed password
+    password: {  
+        type: String,
         required: true,
     },
     role: { 

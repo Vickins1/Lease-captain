@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const moment = require('moment');
-const Property = require('../models/property'); 
+const Property = require('../models/property');
 const PropertyUnit = require('../models/unit');
 
 const tenantSchema = new Schema({
@@ -50,7 +50,7 @@ const tenantSchema = new Schema({
         required: true,
         validate: {
             validator: function (v) {
-                return v > this.leaseStartDate; 
+                return v > this.leaseStartDate;
             },
             message: (props) => `${props.value} is not a valid lease end date!`
         },
@@ -86,17 +86,17 @@ const tenantSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Transaction',
     }],
-    maintenanceRequests: [{ 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'MaintenanceRequest' 
+    maintenanceRequests: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'MaintenanceRequest'
     }],
     walletBalance: {
         type: Number,
-        default: 0, 
+        default: 0,
     },
     overpayment: {
         type: Number,
-        default: 0, 
+        default: 0,
     },
     paymentHistory: [{
         date: {
@@ -134,6 +134,10 @@ const tenantSchema = new Schema({
         type: Number,
         default: 0,
     },
+    userId: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User', 
+        required: true },
 });
 
 tenantSchema.methods.getRentDue = async function () {
@@ -167,7 +171,7 @@ tenantSchema.methods.getUtilityDue = async function () {
 };
 
 tenantSchema.pre('save', async function (next) {
-    if (!this.isNew) return next(); 
+    if (!this.isNew) return next();
 
     try {
         const property = await Property.findById(this.property);
@@ -180,10 +184,10 @@ tenantSchema.pre('save', async function (next) {
             return next(new Error('No available units in this property.'));
         }
 
-        property.tenants.push(this._id); 
-        property.vacant -= 1; 
-        await property.save(); 
-        next(); 
+        property.tenants.push(this._id);
+        property.vacant -= 1;
+        await property.save();
+        next();
     } catch (err) {
         console.error(err);
         next(err);
@@ -199,10 +203,10 @@ tenantSchema.pre('remove', async function (next) {
         }
 
         property.tenants.pull(this._id);
-        property.vacant += 1; 
-        await property.save(); 
+        property.vacant += 1;
+        await property.save();
 
-        next(); 
+        next();
     } catch (err) {
         console.error(err);
         next(err);

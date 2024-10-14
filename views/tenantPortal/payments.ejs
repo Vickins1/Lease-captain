@@ -173,6 +173,7 @@
             .row.mt-3 .col-12 {
                 margin-bottom: 0.5rem;
             }
+
             .dropdown-menu {
                 font-size: 0.575rem;
             }
@@ -279,16 +280,16 @@
                                         </td>
                                         <td>
                                             <% if (payment.type==='utility' ) { %>
-                                                $<%= payment.utilityPaid.toFixed(2) %> 
+                                                $<%= payment.utilityPaid.toFixed(2) %>
                                                     <% } else { %>
-                                                        $0 
+                                                        $0
                                                         <% } %>
                                         </td>
                                         <td>
                                             <% if (payment.type==='utility' ) { %>
-                                                $<%= payment.utilityDue.toFixed(2) %> 
+                                                $<%= payment.utilityDue.toFixed(2) %>
                                                     <% } else { %>
-                                                        $0 
+                                                        $0
                                                         <% } %>
                                         </td>
                                         <td>
@@ -323,7 +324,8 @@
 
             <div class="row mt-3">
                 <div class="col-12 col-md-6 mb-2">
-                    <button class="btn btn-dark btn-block" data-toggle="modal" style=" background-color: #003366;" data-target="#rentPaymentModal">
+                    <button class="btn btn-dark btn-block" data-toggle="modal" style=" background-color: #003366;"
+                        data-target="#rentPaymentModal">
                         <i class="fas fa-plus"></i> Make Rent Payment
                     </button>
                 </div>
@@ -335,74 +337,88 @@
             </div>
 
 
-            <!-- Rent Payment Modal -->
-            <div class="modal fade" id="rentPaymentModal" tabindex="-1" role="dialog"
-                aria-labelledby="rentPaymentModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header" style="background-color: #003366; color: #ffffff;">
-                            <h5 class="modal-title" id="rentPaymentModalLabel">Make Rent Payment</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="rentPaymentForm">
-                                <div class="form-group">
-                                    <label for="rentAmount">Payment Amount</label>
-                                    <input type="number" class="form-control" id="rentAmount" name="amount"
-                                        placeholder="Enter amount" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="rentPaymentMethod">Payment Method</label>
-                                    <select class="form-control" id="rentPaymentMethod" name="paymentMethod" required>
-                                        <option value="">Select Payment Method</option>
-                                        <option value="creditCard">Credit Card</option>
-                                        <option value="bankTransfer">Bank Transfer</option>
-                                        <option value="mobilePayment">Mobile Payment</option>
-                                    </select>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Pay Rent</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+<!-- Rent Payment Modal -->
+<div class="modal fade" id="rentPaymentModal" tabindex="-1" role="dialog" aria-labelledby="rentPaymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #003366; color: #ffffff;">
+                <h5 class="modal-title" id="rentPaymentModalLabel">Make Rent Payment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
+            <div class="modal-body">
+                <form id="rentPaymentForm" action="/payment/rent" method="POST">
+                    <div class="form-group">
+                        <label for="rentAmount">Payment Amount</label>
+                        <input type="number" class="form-control" id="rentAmount" name="amount" placeholder="Enter amount" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="rentPaymentMethod">Payment Method</label>
+                        <select class="form-control" id="rentPaymentMethod" name="paymentMethod" required>
+                            <option value="">Select Payment Method</option>
+                            <option value="mobilePayment">Mobile Payment</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="rentPhoneGroup" style="display: none;">
+                        <label for="rentPhoneNumber">Phone Number</label>
+                        <input type="tel" class="form-control" id="rentPhoneNumber" name="phoneNumber" placeholder="Enter phone number" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Pay Rent</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
-            <!-- Utility Payment Modal -->
-            <div class="modal fade" id="utilityPaymentModal" tabindex="-1" role="dialog"
-                aria-labelledby="utilityPaymentModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header" style="background-color: #003366; color: #ffffff;">
-                            <h5 class="modal-title" id="utilityPaymentModalLabel">Make Utility Payment</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="utilityPaymentForm">
-                                <div class="form-group">
-                                    <label for="utilityAmount">Utility Amount</label>
-                                    <input type="number" class="form-control" id="utilityAmount" name="amount"
-                                        placeholder="Enter amount" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="utilityPaymentMethod">Payment Method</label>
-                                    <select class="form-control" id="utilityPaymentMethod" name="paymentMethod"
-                                        required>
-                                        <option value="">Select Payment Method</option>
-                                        <option value="creditCard">Credit Card</option>
-                                        <option value="bankTransfer">Bank Transfer</option>
-                                        <option value="mobilePayment">Mobile Payment</option>
-                                    </select>
-                                </div>
-                                <button type="submit" class="btn btn-dark">Pay Utility</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+<!-- Utility Payment Modal -->
+<div class="modal fade" id="utilityPaymentModal" tabindex="-1" role="dialog" aria-labelledby="utilityPaymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #003366; color: #ffffff;">
+                <h5 class="modal-title" id="utilityPaymentModalLabel">Make Utility Payment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
+            <div class="modal-body">
+                <form id="utilityPaymentForm" action="/payment/utility" method="POST">
+                    <div class="form-group">
+                        <label for="utilityAmount">Utility Amount</label>
+                        <input type="number" class="form-control" id="utilityAmount" name="amount" placeholder="Enter amount" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="utilityPaymentMethod">Payment Method</label>
+                        <select class="form-control" id="utilityPaymentMethod" name="paymentMethod" required>
+                            <option value="">Select Payment Method</option>
+                            <option value="mobilePayment">Mobile Payment</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="utilityPhoneGroup" style="display: none;">
+                        <label for="utilityPhoneNumber">Phone Number</label>
+                        <input type="tel" class="form-control" id="utilityPhoneNumber" name="phoneNumber" placeholder="Enter phone number" required>
+                    </div>
+                    <button type="submit" class="btn btn-dark">Pay Utility</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Show/Hide phone number input based on payment method selection
+    document.getElementById('rentPaymentMethod').addEventListener('change', function () {
+        const rentPhoneGroup = document.getElementById('rentPhoneGroup');
+        rentPhoneGroup.style.display = this.value === 'mobilePayment' ? 'block' : 'none';
+    });
+
+    document.getElementById('utilityPaymentMethod').addEventListener('change', function () {
+        const utilityPhoneGroup = document.getElementById('utilityPhoneGroup');
+        utilityPhoneGroup.style.display = this.value === 'mobilePayment' ? 'block' : 'none';
+    });
+</script>
+
+
 
 
             <footer class="text-center py-0">

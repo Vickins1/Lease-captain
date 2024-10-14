@@ -11,113 +11,155 @@ const propertyRoutes = require('./routes/properties');
 const TenantRoutes = require('./routes/tenant');
 const tenantPortalRoutes = require('./routes/tenantPortal');
 const authRoutes = require('./routes/auth');
-const app = express();
+const paymentGatewayRoutes = require('./routes/paymentGateway');
+const axios = require('axios');
+const fs = require('fs');
 require('dotenv').config();
 
-// Database Connection
-mongoose.connect('mongodb://localhost:27017/Rental-management')
-  .then(() => console.log('MongoDB connected successfully!'))
-  .catch(err => console.error('Database connection error:', err));
+const app = express();
 
-// Middleware Setup
+// Connect to MongoDB
+mongoose.connect('mongodb://localhost:27017/Rental-management',)
+    .then(() => console.log('MongoDB connected successfully!'))
+    .catch(err => console.error('Database connection error:', err));
+
+// Set view engine
 app.set('view engine', 'ejs');
+
+// Middleware setup
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static('public'));
 app.use(session({
-  secret: 'secret',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { secure: false } // Set to true if using HTTPS
+    secret: 'secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false }
 }));
 app.use(flash());
 
-// Make flash messages and current user available in views
+// Local variables for flash messages and user
 app.use((req, res, next) => {
-  res.locals.success = req.flash('success');
-  res.locals.error = req.flash('error');
-  res.locals.currentUser = req.user; 
-  next();
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    res.locals.currentUser = req.user; 
+    next();
 });
 
-// Passport Configuration
+// Passport initialization
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Passport strategies
 passport.use(User.createStrategy());
 passport.serializeUser((user, done) => {
-  done(null, user.id);
+    done(null, user.id);
 });
 
 passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findById(id); 
-    done(null, user); 
-  } catch (error) {
-    done(error);
-  }
+    try {
+        const user = await User.findById(id); 
+        done(null, user); 
+    } catch (error) {
+        done(error);
+    }
 });
 
-// Routes
+// Route setup
 app.use('/', authRoutes);
 app.use('/', tenancyManagerRoutes);
 app.use('/', propertyRoutes);
 app.use('/', TenantRoutes);
 app.use('/', tenantPortalRoutes);
+app.use('/', paymentGatewayRoutes);
 
+// Landing page
 app.get('/', (req, res) => {
-  res.render('landingPage'); 
+    res.render('landingPage'); 
 });
 
-// Handle 404 - Page Not Found
+// Error handling for 404
 app.use((req, res, next) => {
-  res.status(404);
-  res.render('404');
+    res.status(404);
+    res.render('404');
 });
 
-// Handle 500 - Internal Server Error
+// Error handling for 500
 app.use((err, req, res, next) => {
-  console.error(err.stack); 
-  res.status(500);
-  res.render('500');
+    console.error(err.stack); 
+    res.status(500);
+    res.render('500');
 });
 
-const os = require('os'); 
+// Payment processing functions
+async function verifyPayment(api_key, email, transaction_request_id) {
+    const payload = {
+        api_key: api_key,
+        email: email,
+        transaction_request_id: transaction_request_id,
+    };
 
-// Start Server
+    try {
+        const response = await axios.post('https://api.umeskiasoftwares.com/api/v1/transactionstatus', payload, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error verifying payment:', error);
+        return error.response ? error.response.data : { error: 'An error occurred' };
+    }
+}
+
+// Callback route for payment status updates
+app.post('/callback', (req, res) => {
+    const stkCallbackResponse = req.body;
+    const logFile = 'UmsPayMpesastkresponse.json';
+
+    fs.appendFile(logFile, JSON.stringify(stkCallbackResponse, null, 2), (err) => {
+        if (err) {
+            console.error('Error writing to log file:', err);
+            return res.status(500).json({ status: 'error', message: 'Could not write to log file' });
+        }
+        console.log('Callback data received:', stkCallbackResponse);
+        return res.status(200).json({ status: 'success', message: 'Callback data received and logged' });
+    });
+});
+
+// Server setup
+const os = require('os'); 
 const PORT = process.env.PORT || 4000;
 const HOST = '0.0.0.0';
 
-// Function to get local network IP address
 function getLocalIP() {
-  const interfaces = os.networkInterfaces();
-  for (const name of Object.keys(interfaces)) {
-    for (const iface of interfaces[name]) {
-      if (iface.family === 'IPv4' && !iface.internal) {
-        return iface.address;
-      }
+    const interfaces = os.networkInterfaces();
+    for (const name of Object.keys(interfaces)) {
+        for (const iface of interfaces[name]) {
+            if (iface.family === 'IPv4' && !iface.internal) {
+                return iface.address;
+            }
+        }
     }
-  }
-  return 'localhost'; 
+    return 'localhost'; 
 }
 
-// Start the server with error handling
 const server = app.listen(PORT, HOST, () => {
-  const localIP = getLocalIP();
-  console.log(`Server is running on http://${localIP}:${PORT}`);
+    const localIP = getLocalIP();
+    console.log(`Server is running on http://${localIP}:${PORT}`);
 });
 
-// Graceful shutdown on unhandled exceptions
+// Handle uncaught exceptions and unhandled rejections
 process.on('uncaughtException', (err) => {
-  console.error('Uncaught Exception:', err);
-  server.close(() => {
-    process.exit(1); 
-  });
+    console.error('Uncaught Exception:', err);
+    server.close(() => {
+        process.exit(1); 
+    });
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  server.close(() => {
-    process.exit(1); 
-  });
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    server.close(() => {
+        process.exit(1); 
+    });
 });
