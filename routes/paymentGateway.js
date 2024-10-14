@@ -10,80 +10,88 @@ const UMS_API_BASE_URL = 'https://api.umeskiasoftwares.com/api/v1';
 router.post('/payment/rent', async (req, res) => {
        const { amount, phoneNumber } = req.body;
        const tenantId = req.session.tenantId;
-
+   
        if (!tenantId) {
-              return res.status(401).json({ message: 'Unauthorized: Tenant not found in session.' });
+           req.flash('error', 'Unauthorized: Tenant not found in session.');
+           return res.redirect('/payments');
        }
-
+   
        if (!phoneNumber) {
-              return res.status(400).json({ message: 'Phone number is required.' });
+           req.flash('error', 'Phone number is required.');
+           return res.redirect('/payments');
        }
-
+   
        try {
-              const tenant = await Tenant.findById(tenantId);
-
-              if (!tenant) {
-                     return res.status(404).json({ message: 'Tenant not found.' });
-              }
-
-              const creatorId = tenant.userId;
-              console.log('Creator ID:', creatorId);
-
-              const userPaymentAccount = await PaymentAccount.findOne({ userId: creatorId });
-
-              if (!userPaymentAccount) {
-                     return res.status(404).json({ message: 'Payment account for creator not found.' });
-              }
-
-              console.log(userPaymentAccount);
-
-              // Prepare the payload
-              const payload = {
-                     api_key: userPaymentAccount.apiKey,
-                     email: userPaymentAccount.accountEmail,
-                     account_id: userPaymentAccount.accountId,
-                     amount: amount,
-                     msisdn: phoneNumber,
-                     reference: Date.now().toString(),
-              };
-              try {
-                     // Send the POST request with timeout
-                     const response = await axios.post('https://api.umeskiasoftwares.com/api/v1/intiatestk', payload, {
-                            headers: {
-                                   'Content-Type': 'application/json',
-                            },
-                            timeout: 10000,
-                     });
-
-                     // Log and return the response data
-                     console.log('API Response:', response.data);
-                     return res.json(response.data);
-
-              } catch (error) {
-                     // Log error details
-                     console.error('Error making payment:', error.message);
-
-                     // Log detailed error response if available
-                     if (error.response) {
-                            console.error('Error response data:', error.response.data);
-                            return res.status(error.response.status).json(error.response.data);
-                     } else {
-                            return res.status(500).json({ error: 'An unexpected error occurred' });
-                     }
-              }
+           const tenant = await Tenant.findById(tenantId);
+   
+           if (!tenant) {
+               req.flash('error', 'Tenant not found.');
+               return res.redirect('/payments');
+           }
+   
+           const creatorId = tenant.userId;
+           console.log('Creator ID:', creatorId);
+   
+           const userPaymentAccount = await PaymentAccount.findOne({ userId: creatorId });
+   
+           if (!userPaymentAccount) {
+               req.flash('error', 'Payment account for creator not found.');
+               return res.redirect('/payments');
+           }
+   
+           console.log(userPaymentAccount);
+   
+           // Prepare the payload
+           const payload = {
+               api_key: userPaymentAccount.apiKey,
+               email: userPaymentAccount.accountEmail,
+               account_id: userPaymentAccount.accountId,
+               amount: amount,
+               msisdn: phoneNumber,
+               reference: Date.now().toString(),
+           };
+   
+           try {
+               // Send the POST request with timeout
+               const response = await axios.post('https://api.umeskiasoftwares.com/api/v1/intiatestk', payload, {
+                   headers: { 'Content-Type': 'application/json' },
+                   timeout: 10000,
+               });
+   
+               console.log('API Response:', response.data);
+               req.flash('success', 'Payment initiated successfully.');
+               return res.redirect('/payments');
+   
+           } catch (error) {
+               console.error('Error making payment:', error.message);
+   
+               if (error.response) {
+                   console.error('Error response data:', error.response.data);
+                   req.flash('error', error.response.data.message || 'Payment failed.');
+                   return res.redirect('/payments');
+               } else {
+                   req.flash('error', 'An unexpected error occurred.');
+                   return res.redirect('/payments');
+               }
+           }
+   
        } catch (error) {
-              if (error.response) {
-                     console.error('STK Push failed with response:', error.response.data);
-                     return res.status(error.response.status).json({ message: error.response.data.message || 'Payment failed' });
-              } else if (error.request) {
-                     console.error('No response received:', error.request);
-                     return res.status(500).json({ message: 'No response from payment server. Please try again.' });
-              } else {
-                     console.error('Error initiating STK push:', error.message);
-                     return res.status(500).json({ message: 'Payment initiation failed. Please try again.' });
-              }
+           if (error.response) {
+               console.error('STK Push failed with response:', error.response.data);
+               req.flash('error', error.response.data.message || 'Payment failed.');
+               return res.redirect('/payments');
+           } else if (error.request) {
+               console.error('No response received:', error.request);
+               req.flash('error', 'No response from payment server. Please try again.');
+               return res.redirect('/payments');
+           } else {
+               console.error('Error initiating STK push:', error.message);
+               req.flash('error', 'Payment initiation failed. Please try again.');
+               return res.redirect('/payments');
+           }
        }
-});
+   });
+   
 
 
 // Utility payment endpoint
