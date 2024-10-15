@@ -3,9 +3,7 @@ const router = express.Router();
 const Tenant = require('../models/tenant');
 const bcrypt = require('bcrypt');
 const MaintenanceRequest = require('../models/maintenanceRequest')
-const UMS_API_BASE_URL = 'https://api.umeskiasoftwares.com/api/v1';
-const axios = require('axios');
-const PaymentAccount = require('../models/account');
+const Payment = require('../models/payment')
 
 
 // Tenant login route 
@@ -137,27 +135,47 @@ router.get('/tenantPortal/dashboard', async (req, res) => {
     }
 });
 
-
-
-// Payments route to display tenant's payment history
 router.get('/payments', async (req, res) => {
     try {
-        const tenant = await Tenant.findById(req.session.tenantId).populate('property').exec();
+        const tenantId = req.session.tenantId;
 
+        // Check if tenantId is defined
+        if (!tenantId) {
+            console.log('Tenant ID is undefined');
+            req.flash('error', 'Please log in first.');
+            return res.redirect('/tenantPortal/login');
+        }
+
+        // Fetch tenant and populate payments
+        const tenant = await Tenant.findById(tenantId).exec();
+
+        // Log fetched tenant for debugging
+        console.log('Fetched Tenant:', tenant);
+
+        // Check if tenant was found
         if (!tenant) {
             req.flash('error', 'Tenant not found.');
             return res.redirect('/tenantPortal/login');
         }
 
-        const paymentHistory = tenant.paymentHistory || [];
-        const totalRentPaid = paymentHistory.reduce((acc, payment) => acc + (payment.amount || 0), 0);
-        const outstandingBalance = tenant.outstandingBalance || 0;
+        // Fetch payments associated with the tenant
+        const payments = await Payment.find({ tenant: tenantId }).exec();
+
+        console.log('Payments:', payments);
+
+        // Check if there are payments and handle accordingly
+        if (payments.length === 0) {
+            console.log('No payments found for this tenant.');
+            req.flash('info', 'No payments found for your account.');
+        }
 
         res.render('tenantPortal/payments', {
             tenant,
-            paymentHistory,
-            totalRentPaid,
-            outstandingBalance
+            payments,
+            title: 'Your Payments',
+            success: req.flash('success'),
+            error: req.flash('error'),
+            info: req.flash('info')
         });
     } catch (error) {
         console.error('Error fetching payment data:', error);
@@ -165,6 +183,8 @@ router.get('/payments', async (req, res) => {
         res.redirect('/tenantPortal/dashboard');
     }
 });
+
+
 
 
 
@@ -355,23 +375,6 @@ router.post('/tenant/profile/update', async (req, res) => {
     }
 });
 
-
-// Serve Payments Page
-router.get('/tenant/payments', async (req, res) => {
-    try {
-
-        const tenant = await Tenant.findById(tenantId);
-
-        if (!tenant) {
-            return res.status(404).send('Tenant not found');
-        }
-
-        res.render('tenantPortal/payments', { tenant });
-    } catch (error) {
-        console.error('Error fetching tenant profile:', error);
-        res.status(500).send('Error fetching tenant profile');
-    }
-});
 
 // GET: Fetch maintenance requests and tenant information
 router.get('/requestMaintenance', async (req, res) => {

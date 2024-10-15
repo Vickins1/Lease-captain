@@ -330,42 +330,51 @@
 </div>
 
         
-            <div class="table-container">
-                <div class="table-responsive">
-                    <table class="table table-sm table-striped table-hover table-bordered" style="border: 1px solid #003366;">
-                        <thead class="text-center" style="background-color: #00172f; color: white;">
-                            <tr>
-                                <th>#</th>
-                                <th>Transaction ID</th>
-                                <th>Tenant Name</th>
-                                <th>Property</th>
-                                <th>Rent Paid</th>
-                                <th>Utility Paid</th>
-                                <th>Total Amount</th>
-                                <th>Date Paid</th>
-                                <th>Payment Method</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-center" style="background-color: white; color: black;">
-                            <% payments.forEach((payment, index) => { %>
-                            <tr>
-                                <td><%= (currentPage - 1) * pageSize + index + 1 %></td>
-                                <td><%= payment.transactionId %></td>
-                                <td><%= payment.tenantName %></td>
-                                <td><%= payment.property %></td>
-                                <td>$<%= payment.rentPaid.toFixed(2) %></td>
-                                <td>$<%= payment.utilityPaid.toFixed(2) %></td>
-                                <td>$<%= (payment.rentPaid + payment.utilityPaid).toFixed(2) %></td>
-                                <td><%= new Date(payment.datePaid).toLocaleDateString() %></td>
-                                <td><%= payment.method %></td>
-                                <td><span class="badge bg-success"><%= payment.status %></span></td>
-                            </tr>
-                            <% }); %>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+<div class="table-container">
+    <div class="table-responsive">
+        <table class="table table-sm table-striped table-hover table-bordered" style="border: 1px solid #003366;">
+            <thead class="text-center" style="background-color: #00172f; color: white;">
+                <tr>
+                    <th>#</th>
+                    <th>Transaction ID</th>
+                    <th>Tenant Name</th>
+                    <th>Property</th>
+                    <th>Rent Paid</th>
+                    <th>Utility Paid</th>
+                    <th>Total Amount</th>
+                    <th>Date Paid</th>
+                    <th>Payment Method</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody class="text-center" style="background-color: white; color: black;">
+                <% payments.forEach((payment, index) => { %>
+                <tr>
+                    <td><%= (currentPage - 1) * pageSize + index + 1 %></td>
+                    <td><%= payment.transactionId || 'N/A' %></td>
+                    <td><%= payment.tenantName || 'N/A' %></td>
+                    <td><%= payment.property || 'N/A' %></td>
+                    <td>$<%= (payment.rentPaid || 0).toFixed(2) %></td>
+                    <td>$<%= (payment.utilityPaid || 0).toFixed(2) %></td>
+                    <td>$<%= ((payment.rentPaid || 0) + (payment.utilityPaid || 0)).toFixed(2) %></td>
+                    <td><%= payment.datePaid ? new Date(payment.datePaid).toLocaleDateString() : 'N/A' %></td>
+                    <td><%= payment.method || 'N/A' %></td>
+                    <td>
+                        <span class="badge 
+                            <%= payment.status === 'completed' ? 'bg-success' : 
+                                payment.status === 'pending' ? 'bg-warning' : 
+                                payment.status === 'failed' ? 'bg-danger' : 'bg-secondary' %>">
+                            <%= payment.status || 'Unknown' %>
+                        </span>
+                    </td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
         
             <!-- Pagination -->
             <nav aria-label="Page navigation">

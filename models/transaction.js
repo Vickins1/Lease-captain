@@ -29,8 +29,7 @@ const transactionSchema = new Schema({
     },
     type: {
         type: String,
-        enum: ['rent', 'maintenance', 'other'],
-        default: 'rent',
+        default: 'rent, utility',
     },
     status: {
         type: String,

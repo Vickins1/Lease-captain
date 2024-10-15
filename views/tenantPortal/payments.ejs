@@ -243,99 +243,54 @@
                                     }
                                 }
                             </style>
-                            <!-- Payment History Section -->
-                            <div class="card mt-4">
-                                <div class="card-header" style="background-color: #003366; color: #ffffff;">
-                                    <h5>Payment History</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive"> <!-- Responsive table -->
-                                        <table class="table table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th>Date</th>
-                                                    <th>Transaction ID</th>
-                                                    <th>Payment Type</th>
-                                                    <th>Rent Paid</th>
-                                                    <th>Rent Due</th>
-                                                    <th>Utility Paid</th>
-                                                    <th>Utility Due</th>
-                                                    <th>Payment Method</th>
-                                                    <th>Status</th>
-                                                    <th>Receipt</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <% paymentHistory.forEach(payment=> { %>
-                                                    <tr>
-                                                        <td>
-                                                            <%= new Date(payment.date).toLocaleDateString() %>
-                                                        </td>
-                                                        <td>
-                                                            <%= payment.transactionId %>
-                                                        </td>
-                                                        <td>
-                                                            <% if (payment.type==='rent' ) { %>
-                                                                <i class="fas fa-home"></i> Rent
-                                                                <% } else if (payment.type==='utility' ) { %>
-                                                                    <i class="fas fa-lightbulb"></i> Utility
-                                                                    <% } else { %>
-                                                                        <i class="fas fa-dollar-sign"></i> Other Payment
-                                                                        <% } %>
-                                                        </td>
-                                                        <td>
-                                                            <% if (payment.type==='rent' ) { %>
-                                                                $<%= payment.amountPaid.toFixed(2) %>
-                                                                    <% } else { %>
-                                                                        $0
-                                                                        <% } %>
-                                                        </td>
-                                                        <td>
-                                                            <% if (payment.type==='rent' ) { %>
-                                                                $<%= payment.amountDue.toFixed(2) %>
-                                                                    <% } else { %>
-                                                                        $0
-                                                                        <% } %>
-                                                        </td>
-                                                        <td>
-                                                            <% if (payment.type==='utility' ) { %>
-                                                                $<%= payment.utilityPaid.toFixed(2) %>
-                                                                    <% } else { %>
-                                                                        $0
-                                                                        <% } %>
-                                                        </td>
-                                                        <td>
-                                                            <% if (payment.type==='utility' ) { %>
-                                                                $<%= payment.utilityDue.toFixed(2) %>
-                                                                    <% } else { %>
-                                                                        $0
-                                                                        <% } %>
-                                                        </td>
-                                                        <td>
-                                                            <%= payment.method %>
-                                                        </td>
-                                                        <td>
-                                                            <% if (payment.status==='completed' ) { %>
-                                                                <i class="fas fa-check-circle text-success"></i>
-                                                                <%= payment.status %>
-                                                                    <% } else { %>
-                                                                        <i class="fas fa-times-circle text-danger"></i>
-                                                                        <%= payment.status %>
-                                                                            <% } %>
-                                                        </td>
-                                                        <td>
-                                                            <a href="/download-receipt/<%= payment.transactionId %>"
-                                                                class="text-primary" title="Download Receipt">
-                                                                <i class="fas fa-download"></i>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                    <% }) %>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
+
+                            <!-- Payment Section -->
+<div class="card mt-4">
+    <div class="card-header" style="background-color: #003366; color: #ffffff;">
+        <h5>Payment History</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-sm">
+                <thead>
+                    <tr>
+                        <th>Date Paid</th>
+                        <th>Transaction ID</th>
+                        <th>Payment Type</th>
+                        <th>Amount Paid</th>
+                        <th>Payment Method</th>
+                        <th>Status</th>
+                        <th>Action</th> <!-- Added Action column -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (payments.length === 0) { %>
+                        <tr>
+                            <td colspan="7" class="text-center">No payment records found.</td>
+                        </tr>
+                    <% } else { %>
+                        <% payments.forEach(payment => { %>
+                            <tr>
+                                <td><%= new Date(payment.datePaid).toLocaleDateString() %></td>
+                                <td><%= payment._id %></td>
+                                <td><%= payment.paymentType || 'N/A' %></td>
+                                <td>$<%= payment.totalPaid.toFixed(2) %></td>
+                                <td><%= payment.method || 'N/A' %></td>
+                                <td><%= payment.status || 'Unknown' %></td>
+                                <td>
+                                    <a href="/download-receipt/<%= payment._id %>" class="text-primary" title="Download Receipt">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 
                             <div class="row mt-3">
                                 <div class="col-12 col-md-6 mb-2">
@@ -365,7 +320,8 @@
                                             </button>
                                         </div>
                                         <div class="modal-body">
-                                            <form id="rentPaymentForm" action="/payment/rent" method="POST">
+                                            <form id="rentPaymentForm" action="/payment/rent" method="POST"
+                                                onsubmit="showLoader()">
                                                 <div class="form-group">
                                                     <label for="rentAmount">Payment Amount</label>
                                                     <input type="number" class="form-control" id="rentAmount"
@@ -386,6 +342,12 @@
                                                 </div>
                                                 <button type="submit" class="btn btn-primary">Pay Rent</button>
                                             </form>
+                                            <!-- Loader -->
+                                            <div id="loader" style="display: none; text-align: center;">
+                                                <div class="spinner-border" role="status">
+                                                    <span class="sr-only">Loading...</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -404,7 +366,8 @@
                                             </button>
                                         </div>
                                         <div class="modal-body">
-                                            <form id="utilityPaymentForm" action="/payment/utility" method="POST">
+                                            <form id="utilityPaymentForm" action="/payment/utility" method="POST"
+                                                onsubmit="showLoader()">
                                                 <div class="form-group">
                                                     <label for="utilityAmount">Utility Amount</label>
                                                     <input type="number" class="form-control" id="utilityAmount"
@@ -425,11 +388,16 @@
                                                 </div>
                                                 <button type="submit" class="btn btn-dark">Pay Utility</button>
                                             </form>
+                                            <!-- Loader -->
+                                            <div id="loader" style="display: none; text-align: center;">
+                                                <div class="spinner-border" role="status">
+                                                    <span class="sr-only">Loading...</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
                             <script>
                                 // Show/Hide phone number input based on payment method selection
                                 document.getElementById('rentPaymentMethod').addEventListener('change', function () {
@@ -441,8 +409,32 @@
                                     const utilityPhoneGroup = document.getElementById('utilityPhoneGroup');
                                     utilityPhoneGroup.style.display = this.value === 'mobilePayment' ? 'block' : 'none';
                                 });
+
+                                function showLoader() {
+                                    // Show the loader
+                                    document.getElementById('loader').style.display = 'block';
+                                }
                             </script>
 
+
+                            <script src="/socket.io/socket.io.js"></script>
+                            <script>
+                                const socket = io();
+
+                                socket.on('connect', () => {
+                                    console.log('Connected to server');
+                                    socket.emit('fetchPayments');
+                                });
+
+                                socket.on('paymentUpdates', (payments) => {
+                                    console.log('Real-time Payments:', payments);
+                                    updatePaymentList(payments);
+                                });
+
+                                socket.on('paymentCallback', (callbackData) => {
+                                    console.log('Payment Callback Data:', callbackData);
+                                });
+                            </script>
 
 
 

@@ -41,6 +41,10 @@ const tenantSchema = new Schema({
         type: String,
         required: true,
     },
+    payments: [{ 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Payment' }],
+        
     leaseStartDate: {
         type: Date,
         required: true,

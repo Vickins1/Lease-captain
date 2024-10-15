@@ -229,18 +229,6 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// Function to generate a random alphanumeric password of specified length
-function generateAlphanumericPassword(length = 8) {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let password = '';
-    for (let i = 0; i < length; i++) {
-        const randomIndex = Math.floor(Math.random() * chars.length);
-        password += chars[randomIndex];
-    }
-    return password;
-}
-
-
 
 // Route to handle form submission for new tenant
 router.post('/tenancy-manager/tenant/new', async (req, res) => {
@@ -456,36 +444,32 @@ router.post('/tenancy-manager/tenant/new', async (req, res) => {
 
 
 
-// Route for Manage Payments
-router.get('/tenancy-manager/payments', async (req, res) => {
+router.get('/tenancy-manager/payments', isTenancyManager, async (req, res) => {
     try {
         const pageSize = 10; 
         const currentPage = Number(req.query.page) || 1;
         const searchQuery = req.query.search || ''; 
 
-        // Create a search condition based on the query
+        // Create a regex pattern for tenantName
+        const regex = new RegExp(searchQuery, 'i');
+
+        // Create a search condition that only uses tenantName
         const searchCondition = {
-            $or: [
-                { tenantName: { $regex: searchQuery, $options: 'i' } },
-                { property: { $regex: searchQuery, $options: 'i' } } 
-            ]
+            tenantName: regex
         };
 
-        
+        // Count the total payments that match the search condition
         const totalPayments = await Payment.countDocuments(searchCondition);
 
-       
+        // Fetch the payments with pagination
         const payments = await Payment.find(searchCondition)
             .skip((currentPage - 1) * pageSize)
             .limit(pageSize); 
 
-       
         const totalPages = Math.ceil(totalPayments / pageSize);
-
         
         const currentUser = req.user || null; 
 
-        
         res.render('tenancyManager/payments', {
             title: 'Manage Payments',
             payments,
@@ -500,6 +484,8 @@ router.get('/tenancy-manager/payments', async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 });
+
+
 
 
 // Route for Reports & Invoices page
