@@ -1,53 +1,53 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const moment = require('moment');
 const Property = require('../models/property');
 const PropertyUnit = require('../models/unit');
 
 const tenantSchema = new Schema({
     name: {
         type: String,
-        required: true,
+        required: true
     },
     email: {
         type: String,
         required: true,
         unique: true,
-        match: /.+\@.+\..+/
+        match: /.+\@.+\..+/,
+        index: true // Index for better performance
     },
     phone: {
         type: String,
-        required: true,
+        required: true
     },
     rentPaid: {
         type: Number,
-        default: 0,
+        default: 0
     },
     deposit: {
         type: Number,
-        required: true,
+        required: true
     },
     property: {
         type: Schema.Types.ObjectId,
         ref: 'Property',
-        required: true,
+        required: true
     },
     unit: {
         type: Schema.Types.ObjectId,
         ref: 'PropertyUnit',
-        required: true,
+        required: true
     },
     doorNumber: {
         type: String,
-        required: true,
+        required: true
     },
     payments: [{ 
         type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Payment' }],
-        
+        ref: 'Payment' 
+    }],
     leaseStartDate: {
         type: Date,
-        required: true,
+        required: true
     },
     leaseEndDate: {
         type: Date,
@@ -56,39 +56,40 @@ const tenantSchema = new Schema({
             validator: function (v) {
                 return v > this.leaseStartDate;
             },
-            message: (props) => `${props.value} is not a valid lease end date!`
-        },
+            message: props => `${props.value} is not a valid lease end date!`
+        }
     },
     createdAt: {
         type: Date,
-        default: Date.now,
+        default: Date.now
     },
     username: {
         type: String,
         required: true,
         unique: true,
+        index: true 
     },
     password: {
         type: String,
         required: true,
-        minlength: 8,
+        minlength: 8
     },
     owner: {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
+        required: true
     },
     resetCode: {
         type: String,
-        default: null,
+        default: null
     },
     resetCodeExpiration: {
         type: Date,
-        default: null,
+        default: null
     },
     transactions: [{
         type: Schema.Types.ObjectId,
-        ref: 'Transaction',
+        ref: 'Transaction'
     }],
     maintenanceRequests: [{
         type: mongoose.Schema.Types.ObjectId,
@@ -96,125 +97,70 @@ const tenantSchema = new Schema({
     }],
     walletBalance: {
         type: Number,
-        default: 0,
+        default: 0
     },
     overpayment: {
         type: Number,
-        default: 0,
+        default: 0
     },
     paymentHistory: [{
         date: {
             type: Date,
-            required: true,
+            required: true
         },
         amount: {
             type: Number,
-            required: true,
+            required: true
         },
         paymentMethod: {
             type: String,
-            required: true,
+            required: true
         },
         note: {
             type: String,
-            default: null,
-        },
+            default: null
+        }
     }],
     utilityPayments: [{
         date: {
             type: Date,
-            required: true,
+            required: true
         },
         amount: {
             type: Number,
-            required: true,
+            required: true
         },
         note: {
             type: String,
-            default: null,
-        },
+            default: null
+        }
     }],
     utilityPaid: {
         type: Number,
-        default: 0,
+        default: 0
     },
     userId: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'User', 
-        required: true },
+        required: true 
+    }
 });
 
+// Methods for rent and utility due calculations
 tenantSchema.methods.getRentDue = async function () {
     const unit = await PropertyUnit.findById(this.unit);
     if (!unit) throw new Error('Unit not found');
-
     const today = new Date();
     const leaseStartMonth = this.leaseStartDate.getMonth();
     const leaseStartYear = this.leaseStartDate.getFullYear();
     const currentMonth = today.getMonth();
     const currentYear = today.getFullYear();
-
     const totalMonths = (currentYear - leaseStartYear) * 12 + (currentMonth - leaseStartMonth);
-    const totalRentDue = Math.max(totalMonths, 0) * unit.unitPrice;
-
-    return totalRentDue - this.rentPaid;
+    const totalRentExpected = Math.max(totalMonths, 0) * unit.unitPrice;
+    const totalRentPaid = this.rentPayments.reduce((total, payment) => total + payment.amount, 0);
+    const rentDue = totalRentExpected - totalRentPaid;
+    return Math.max(rentDue, 0);
 };
 
-tenantSchema.methods.getUtilityDue = async function () {
-    const unit = await PropertyUnit.findById(this.unit);
-    if (!unit) throw new Error('Unit not found');
-
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-
-    const totalUtilityPaid = this.utilityPayments.reduce((total, payment) => total + payment.amount, 0);
-    const totalUtilityExpected = (currentYear * 12 + currentMonth) - this.utilityPaid; // Example calculation
-
-    return totalUtilityExpected - totalUtilityPaid;
-};
-
-tenantSchema.pre('save', async function (next) {
-    if (!this.isNew) return next();
-
-    try {
-        const property = await Property.findById(this.property);
-
-        if (!property) {
-            return next(new Error('Property not found.'));
-        }
-
-        if (property.vacant <= 0) {
-            return next(new Error('No available units in this property.'));
-        }
-
-        property.tenants.push(this._id);
-        property.vacant -= 1;
-        await property.save();
-        next();
-    } catch (err) {
-        console.error(err);
-        next(err);
-    }
-});
-
-tenantSchema.pre('remove', async function (next) {
-    try {
-        const property = await Property.findById(this.property);
-
-        if (!property) {
-            return next(new Error('Property not found.'));
-        }
-
-        property.tenants.pull(this._id);
-        property.vacant += 1;
-        await property.save();
-
-        next();
-    } catch (err) {
-        console.error(err);
-        next(err);
-    }
-});
-
+// Export the Tenant model
 module.exports = mongoose.model('Tenant', tenantSchema);

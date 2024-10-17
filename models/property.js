@@ -20,8 +20,7 @@ const PropertySchema = new Schema({
     },
     units: [{
         type: Schema.Types.ObjectId,
-        ref: 'PropertyUnit',
-        default: []
+        ref: 'PropertyUnit'
     }],
     propertyType: {
         type: String,
@@ -62,24 +61,26 @@ const PropertySchema = new Schema({
         type: Boolean,
         default: true
     },
-    payments: [
-        {
-            tenantId: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Tenant',
-                required: [true, 'Tenant ID is required'],
-            },
-            amount: {
-                type: Number,
-                required: [true, 'Payment amount is required'],
-                min: [0, 'Payment amount cannot be negative'],
-            },
-            date: {
-                type: Date,
-                default: Date.now,
-            },
+    payments: [{
+        tenantId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Tenant',
+            required: [true, 'Tenant ID is required']
         },
-    ],
+        amount: {
+            type: Number,
+            required: [true, 'Payment amount is required'],
+            min: [0, 'Payment amount cannot be negative']
+        },
+        date: {
+            type: Date,
+            default: Date.now
+        }
+    }],
+    vacant: { 
+        type: Number,
+        default: 0
+    }
 }, { timestamps: true });
 
 module.exports = mongoose.models.Property || mongoose.model('Property', PropertySchema);

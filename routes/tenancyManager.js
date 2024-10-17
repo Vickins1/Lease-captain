@@ -442,33 +442,33 @@ router.post('/tenancy-manager/tenant/new', async (req, res) => {
 
 
 
-
-
 router.get('/tenancy-manager/payments', isTenancyManager, async (req, res) => {
     try {
-        const pageSize = 10; 
+        const pageSize = 10;
         const currentPage = Number(req.query.page) || 1;
-        const searchQuery = req.query.search || ''; 
-
-        // Create a regex pattern for tenantName
+        const searchQuery = req.query.search || '';
         const regex = new RegExp(searchQuery, 'i');
+        const searchCondition = { tenantName: regex };
 
-        // Create a search condition that only uses tenantName
-        const searchCondition = {
-            tenantName: regex
-        };
-
-        // Count the total payments that match the search condition
         const totalPayments = await Payment.countDocuments(searchCondition);
 
-        // Fetch the payments with pagination
         const payments = await Payment.find(searchCondition)
+            .populate({
+                path: 'tenant',
+                populate: [
+                    { path: 'property', select: 'name' },
+                    { path: 'unit', select: 'name' }  
+                ]
+            })
             .skip((currentPage - 1) * pageSize)
-            .limit(pageSize); 
+            .limit(pageSize)
+            .sort({ datePaid: -1 });
 
         const totalPages = Math.ceil(totalPayments / pageSize);
-        
-        const currentUser = req.user || null; 
+        const currentUser = req.user || null;
+
+        // Flash messages can be set here as needed
+        req.flash('success', 'Payments fetched successfully.'); 
 
         res.render('tenancyManager/payments', {
             title: 'Manage Payments',
@@ -476,14 +476,20 @@ router.get('/tenancy-manager/payments', isTenancyManager, async (req, res) => {
             currentPage,
             totalPages,
             pageSize,
-            currentUser, 
-            searchQuery 
+            currentUser,
+            searchQuery,
         });
     } catch (error) {
         console.error("Error fetching payments:", error);
-        res.status(500).send("Internal Server Error");
+        req.flash('error', 'Internal Server Error while fetching payments.');
+        res.redirect('/tenancy-manager/payments'); 
     }
 });
+
+
+
+
+
 
 
 

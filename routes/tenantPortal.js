@@ -40,8 +40,14 @@ router.post('/tenant/login', async (req, res) => {
             return res.redirect('/tenantPortal/login');
         }
 
+        // Store tenant information in session
         req.session.tenantId = tenant._id;
-        req.session.name = tenant.name;
+        req.session.tenant = {
+            name: tenant.name,
+            email: tenant.email,
+            property: tenant.property, // if you need to access property details later
+            unit: tenant.unit          // and/or unit details
+        };
 
         req.flash('success', `Login successful. Welcome, ${tenant.name}! Manage your payments efficiently and easily.`);
         return res.redirect('/tenantPortal/dashboard');
@@ -51,7 +57,6 @@ router.post('/tenant/login', async (req, res) => {
         return res.redirect('/tenantPortal/login');
     }
 });
-
 
 
 router.get('/tenantPortal/dashboard', async (req, res) => {
@@ -146,13 +151,8 @@ router.get('/payments', async (req, res) => {
             return res.redirect('/tenantPortal/login');
         }
 
-        // Fetch tenant and populate payments
         const tenant = await Tenant.findById(tenantId).exec();
 
-        // Log fetched tenant for debugging
-        console.log('Fetched Tenant:', tenant);
-
-        // Check if tenant was found
         if (!tenant) {
             req.flash('error', 'Tenant not found.');
             return res.redirect('/tenantPortal/login');
@@ -183,10 +183,6 @@ router.get('/payments', async (req, res) => {
         res.redirect('/tenantPortal/dashboard');
     }
 });
-
-
-
-
 
 
 

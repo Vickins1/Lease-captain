@@ -5,212 +5,230 @@ const PaymentAccount = require('../models/account');
 const Tenant = require('../models/tenant');
 const Payment = require('../models/payment');
 require('dotenv').config();
-const { v4: uuidv4 } = require('uuid'); // Import uuid
 
-// Rent Payment Endpoint
-router.post('/payment/rent', async (req, res) => {
-    const { amount, phoneNumber } = req.body;
-    const tenantId = req.session.tenantId;
+const generateTransactionId = (prefix) => {
+    const randomDigits = Math.floor(100000 + Math.random() * 900000);
+    return `${prefix}${randomDigits}`;
+};
 
-    if (!tenantId) {
-        req.flash('error', 'Unauthorized: Tenant not found in session.');
-        return res.redirect('/payments');
-    }
-
-    if (!phoneNumber) {
-        req.flash('error', 'Phone number is required.');
-        return res.redirect('/payments');
-    }
-
+// Utility function to send payment requests
+async function sendPaymentRequest(payload) {
     try {
-        const tenant = await Tenant.findById(tenantId);
-        if (!tenant) {
-            req.flash('error', 'Tenant not found.');
-            return res.redirect('/payments');
-        }
-
-        const creatorId = tenant.userId;
-        const userPaymentAccount = await PaymentAccount.findOne({ userId: creatorId });
-        if (!userPaymentAccount) {
-            req.flash('error', 'Payment account for creator not found.');
-            return res.redirect('/payments');
-        }
-
-        const payload = {
-            api_key: userPaymentAccount.apiKey,
-            email: userPaymentAccount.accountEmail,
-            account_id: userPaymentAccount.accountId,
-            amount: parseFloat(amount), 
-            msisdn: phoneNumber,
-            reference: Date.now().toString(),
-        };
-
-        // Make the payment request
-        const response = await axios.post(
-            'https://api.umeskiasoftwares.com/api/v1/intiatestk',
-            payload,
-            { headers: { 'Content-Type': 'application/json' }, timeout: 10000 }
-        );
-
-        // Process rent due
-        const rentDue = parseFloat(tenant.rentDue) || 0; 
-        const rentPaid = parseFloat(amount) || 0;
-
-        if (isNaN(rentDue) || isNaN(rentPaid)) {
-            throw new Error("Rent due or amount is not a valid number.");
-        }
-
-        const newDue = rentDue - rentPaid;
-
-        // Generate a unique transaction ID
-        const transactionId = uuidv4(); 
-
-        // Create the payment
-        const payment = await Payment.create({
-            tenantName: tenant.name,
-            property: tenant.property,
-            unit: tenant.unit,
-            doorNumber: tenant.doorNumber,
-            amount: rentPaid,
-            paymentType: 'rent',
-            totalPaid: rentPaid,
-            due: newDue,
-            datePaid: new Date(),
-            method: 'mobile',
-            status: 'pending',
-            transactionId: transactionId, 
-        });
-
-        // Log the created payment for debugging
-        console.log('Payment created:', payment);
-
-        // Automatically update the payment status to 'completed'
-        payment.status = 'completed'; 
-        await payment.save(); 
-
-        // Log the updated payment for debugging
-        console.log('Payment status updated to completed:', payment);
-
-        req.flash('success', 'Rent payment initiated successfully.');
-        return res.redirect('/payments');
-    } catch (error) {
-        handlePaymentError(error, res);
+        const response = await axios.post(process.env.INITIATE_STK_URL, payload);
+        console.log('Payment request successful.');
+        return response.data;
+    } catch (err) {
+        console.error('Payment request failed:', err.message);
+        return { success: false, error: err.message };
     }
-});
-
-
-// Utility Payment Endpoint
-router.post('/payment/utility', async (req, res) => {
-    const { amount, phoneNumber } = req.body;
-    const tenantId = req.session.tenantId;
-
-    if (!tenantId) {
-        req.flash('error', 'Unauthorized: Tenant not found in session.');
-        return res.redirect('/payments');
-    }
-
-    if (!phoneNumber) {
-        req.flash('error', 'Phone number is required.');
-        return res.redirect('/payments');
-    }
-
-    try {
-        const tenant = await Tenant.findById(tenantId);
-        if (!tenant) {
-            req.flash('error', 'Tenant not found.');
-            return res.redirect('/payments');
-        }
-
-        const creatorId = tenant.userId;
-        const userPaymentAccount = await PaymentAccount.findOne({ userId: creatorId });
-        if (!userPaymentAccount) {
-            req.flash('error', 'Payment account for creator not found.');
-            return res.redirect('/payments');
-        }
-
-        const payload = {
-            api_key: userPaymentAccount.apiKey,
-            email: userPaymentAccount.accountEmail,
-            account_id: userPaymentAccount.accountId,
-            amount: parseFloat(amount),
-            msisdn: phoneNumber,
-            reference: Date.now().toString(),
-        };
-
-        const response = await axios.post(
-            'https://api.umeskiasoftwares.com/api/v1/intiatestk',
-            payload,
-            { headers: { 'Content-Type': 'application/json' }, timeout: 10000 }
-        );
-
-        const utilityDue = parseFloat(tenant.utilityDue) || 0;
-        const totalPaid = parseFloat(amount) || 0;
-        if (isNaN(utilityDue) || isNaN(totalPaid)) {
-            throw new Error("Utility due or amount is not a valid number.");
-        }
-
-        const newUtilityDue = utilityDue - totalPaid;
-
-        await Payment.create({
-            tenantName: tenant.name,
-            property: tenant.property,
-            unit: tenant.unit,
-            doorNumber: tenant.doorNumber,
-            amount: totalPaid,
-            paymentType: 'utility',
-            totalPaid: totalPaid,
-            due: newUtilityDue,
-            datePaid: new Date(),
-            method: 'mobile',
-            status: 'pending'
-        });
-
-        req.flash('success', 'Utility payment initiated successfully.');
-        return res.redirect('/payments');
-    } catch (error) {
-        handlePaymentError(error, res);
-    }
-});
-
-// Error Handling Function
-function handlePaymentError(error, res) {
-    if (error.response) {
-        console.error('Error response data:', error.response.data);
-        req.flash('error', error.response.data.message || 'Payment failed.');
-    } else if (error.request) {
-        console.error('No response received:', error.request);
-        req.flash('error', 'No response from payment server. Please try again.'); 
-    } else {
-        console.error('Payment initiation failed:', error.message);
-        req.flash('error', 'Payment initiation failed. Please try again.');
-    }
-    return res.redirect('/payments');
 }
 
-// Webhook Route for Payment Status Updates
-router.post('/webhook/payment', async (req, res) => {
-    try {
-        const { tenantName, property, amount, method, status, paymentType, totalPaid, due, datePaid } = req.body;
+// STK Push initiation route
+router.post('/payment/rent', async (req, res) => {
+       const { amount, phoneNumber, paymentMethod } = req.body;
+       const tenantId = req.session.tenantId;
+   
+       if (!tenantId || !phoneNumber) {
+           req.flash('error', 'Tenant or phone number missing.');
+           return res.redirect('/payments');
+       }
+   
+       try {
+           const tenant = await Tenant.findById(tenantId).populate('property unit').lean();
+           if (!tenant) throw new Error('Tenant not found.');
+   
+           const rentPaid = parseFloat(amount);
+           const transactionId = generateTransactionId('RNT-');
+   
+           const userPaymentAccount = await PaymentAccount.findOne({ userId: tenant.userId });
+           if (!userPaymentAccount) throw new Error('Payment account not found.');
+   
+           const payload = {
+               api_key: userPaymentAccount.apiKey,
+               email: userPaymentAccount.accountEmail,
+               account_id: userPaymentAccount.accountId,
+               amount: rentPaid,
+               msisdn: phoneNumber,
+               reference: transactionId,
+           };
+   
+           const paymentResponse = await sendPaymentRequest(payload);
+           console.log('Payment initiation response:', paymentResponse);
+   
+           if (paymentResponse.success) {
+               const transactionRequestId = paymentResponse.transaction_request_id || paymentResponse.transaction_id;
+   
+               if (!transactionRequestId) {
+                   req.flash('error', 'Transaction request ID is missing. Payment initiation failed.');
+                   return res.redirect('/payments');
+               }
+   
+               // Store payment details in the session
+               req.session.paymentData = {
+                   tenant: tenantId,
+                   tenantName: tenant.name,
+                   property: tenant.property,
+                   amount: rentPaid,
+                   totalPaid: rentPaid,
+                   doorNumber: tenant.unit && tenant.unit.doorNumber ? tenant.unit.doorNumber : 'N/A',
+                   paymentType: 'rent',
+                   due: tenant.rentDue || 0,
+                   datePaid: new Date(),
+                   method: paymentMethod,
+                   status: 'pending',
+                   transactionId,
+                   transactionRequestId,
+               };
+   
+               req.flash('info', 'Payment initiated. Awaiting confirmation.');
+               req.session.transactionId = transactionId;
+   
+               // Start polling for payment status
+               pollPaymentStatus(req, userPaymentAccount.apiKey, userPaymentAccount.accountEmail);
+   
+               return res.redirect('/payments');
+           } else {
+               req.flash('error', 'Payment initiation failed. Please try again.');
+               return res.redirect('/payments');
+           }
+       } catch (error) {
+           console.error('Payment initiation error:', error);
+           req.flash('error', 'Something went wrong. Please try again.');
+           res.redirect('/payments');
+       }
+   });
+   
+   // Function to periodically check the status of a payment
+   function pollPaymentStatus(req, api_key, email) {
+       const interval = setInterval(async () => {
+           try {
+               const paymentData = req.session.paymentData;
+               if (!paymentData) {
+                   clearInterval(interval);
+                   return;
+               }
+   
+               const verificationPayload = {
+                   api_key,
+                   email,
+                   transaction_request_id: paymentData.transactionRequestId,
+               };
+   
+               console.log('Verifying payment with payload:', verificationPayload);
+   
+               const response = await axios.post('https://api.umeskiasoftwares.com/api/v1/transactionstatus', verificationPayload, {
+                   headers: {
+                       'Content-Type': 'application/json',
+                   },
+               });
+               console.log('Verification response:', response.data);
+   
+               if (response.data && response.data.ResultCode === '200') {
+                   paymentData.status = 'completed';
+   
+                   const payment = new Payment(paymentData);
+                   await payment.save();
+   
+                   console.log(`Payment verified and saved successfully: ${payment.transactionId}`);
+                   clearInterval(interval);
+                   
+               } else if (response.data && response.data.ResultCode !== '200') {
+                   paymentData.status = 'failed';
+   
+                   const payment = new Payment(paymentData);
+                   await payment.save();
+   
+                   console.warn(`Payment verification failed and saved as failed: ${payment.transactionId}`);
+                   clearInterval(interval);
+               }
+           } catch (error) {
+               if (error.response && error.response.status === 404) {
+                   console.error(`Verification endpoint not found: ${error.response.status}`);
+                   clearInterval(interval);
+               } else {
+                   console.error('Error during payment verification:', error.message);
+               }
+           }
+       }, 5000);
+   }
+   
+   
+   
+   
+   
+   
+   
 
-        console.log('Webhook received:', req.body);
+// Utility Payment Route
+router.post('/payment/utility', async (req, res) => {
+       const { amount, phoneNumber, paymentMethod } = req.body;
+       const tenantId = req.session.tenantId;
+   
+       if (!tenantId || !phoneNumber) {
+           req.flash('error', 'Tenant or phone number missing.');
+           return res.redirect('/payments');
+       }
+   
+       try {
+           // Fetch tenant details, including the unit
+           const tenant = await Tenant.findById(tenantId).populate('unit').lean();
+           if (!tenant) throw new Error('Tenant not found.');
+   
+           const totalPaid = parseFloat(amount) || 0;
+           const newUtilityDue = (tenant.utilityDue || 0) - totalPaid;
+           tenant.utilityDue = newUtilityDue;
+           await Tenant.findByIdAndUpdate(tenantId, { utilityDue: newUtilityDue });
+   
+           const transactionId = generateTransactionId('UTL-');
+           const userPaymentAccount = await PaymentAccount.findOne({ userId: tenant.userId });
+           if (!userPaymentAccount) throw new Error('Payment account not found.');
+   
+           const payload = {
+               api_key: userPaymentAccount.apiKey,
+               email: userPaymentAccount.accountEmail,
+               account_id: userPaymentAccount.accountId,
+               amount: totalPaid,
+               msisdn: phoneNumber,
+               reference: transactionId,
+           };
+   
+           const paymentResponse = await sendPaymentRequest(payload);
+   
+           const payment = await Payment.create({
+               tenant: tenantId,
+               tenantName: tenant.name,
+               property: tenant.property,
+               amount: totalPaid,
+               totalPaid: totalPaid,
+               doorNumber: tenant.unit.doorNumber || 'N/A', // Ensure doorNumber is populated
+               paymentType: 'utility',
+               due: newUtilityDue,
+               datePaid: new Date(),
+               method: paymentMethod,
+               status: paymentResponse.success ? 'pending' : 'failed',
+               transactionId,
+           });
+   
+           if (paymentResponse.success) {
+               // Start polling for payment status
+               pollPaymentStatus(payment, userPaymentAccount.apiKey);
+               req.flash('success', 'Utility payment initiated successfully.');
+           } else {
+               req.flash('error', 'Payment initiation failed. Please try again.');
+           }
+   
+           return res.redirect('/payments');
+       } catch (error) {
+           handlePaymentError(error, req, res);
+       }
+   });
+   
 
-        await Payment.create({
-            tenantName,
-            property,
-            amount,
-            paymentType,
-            method,
-            status,
-            totalPaid,
-            due,
-            datePaid: datePaid || new Date(),
-        });
-
-        res.status(200).json({ message: 'Payment recorded successfully.' });
-    } catch (error) {
-        console.error('Error processing webhook:', error.message);
-        res.status(500).json({ message: 'Failed to record payment.' });
-    }
-});
+// Handle Payment Errors
+function handlePaymentError(error, req, res) {
+    console.error('Payment error:', error);
+    req.flash('error', 'An error occurred while processing your payment. Please try again later.');
+    res.redirect('/payments');
+}
 
 module.exports = router;

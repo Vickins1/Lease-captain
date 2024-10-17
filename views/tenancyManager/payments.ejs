@@ -297,218 +297,248 @@
                 </li>
             </ul>
         </nav>
-    
+
         <div class="container">
             <h4 class="text-center mt-4"><strong>Transactions</strong></h4>
 
-<!-- Error Message -->
-<% if (error && error.length > 0) { %>
-    <div class="alert alert-danger text-center" role="alert" style="font-size: 0.9rem;">
-        <%= error %>
-    </div>
-<% } %>
+            <!-- Error Message -->
+            <% if (error && error.length> 0) { %>
+                <div class="alert alert-danger text-center" role="alert" style="font-size: 0.9rem;">
+                    <%= error %>
+                </div>
+                <% } %>
 
-<!-- Success Message -->
-<% if (success && success.length > 0) { %>
-    <div class="alert alert-success text-center" role="alert" style="font-size: 0.9rem;">
-        <%= success %>
-    </div>
-<% } %>
-<style>
-    @media (max-width: 576px) {
- .alert {
-     font-size: 0.8rem;
- }
-}
-</style>  
-        
-           <!-- Search Form -->
-<div class="mb-3">
-    <form id="searchForm" action="/tenancy-manager/payments" method="GET" class="d-flex flex-column flex-sm-row justify-content-center">
-        <input type="text" id="searchInput" name="search" class="form-control me-2 mb-2 mb-sm-0" placeholder="Search by Tenant Name or Property" aria-label="Search">
-    </form>
-</div>
+                    <!-- Success Message -->
+                    <% if (success && success.length> 0) { %>
+                        <div class="alert alert-success text-center" role="alert" style="font-size: 0.9rem;">
+                            <%= success %>
+                        </div>
+                        <% } %>
+                            <style>
+                                @media (max-width: 576px) {
+                                    .alert {
+                                        font-size: 0.8rem;
+                                    }
+                                }
+                            </style>
 
-        
-<div class="table-container">
-    <div class="table-responsive">
-        <table class="table table-sm table-striped table-hover table-bordered" style="border: 1px solid #003366;">
-            <thead class="text-center" style="background-color: #00172f; color: white;">
-                <tr>
-                    <th>#</th>
-                    <th>Transaction ID</th>
-                    <th>Tenant Name</th>
-                    <th>Property</th>
-                    <th>Rent Paid</th>
-                    <th>Utility Paid</th>
-                    <th>Total Amount</th>
-                    <th>Date Paid</th>
-                    <th>Payment Method</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody class="text-center" style="background-color: white; color: black;">
-                <% payments.forEach((payment, index) => { %>
-                <tr>
-                    <td><%= (currentPage - 1) * pageSize + index + 1 %></td>
-                    <td><%= payment.transactionId || 'N/A' %></td>
-                    <td><%= payment.tenantName || 'N/A' %></td>
-                    <td><%= payment.property || 'N/A' %></td>
-                    <td>$<%= (payment.rentPaid || 0).toFixed(2) %></td>
-                    <td>$<%= (payment.utilityPaid || 0).toFixed(2) %></td>
-                    <td>$<%= ((payment.rentPaid || 0) + (payment.utilityPaid || 0)).toFixed(2) %></td>
-                    <td><%= payment.datePaid ? new Date(payment.datePaid).toLocaleDateString() : 'N/A' %></td>
-                    <td><%= payment.method || 'N/A' %></td>
-                    <td>
-                        <span class="badge 
-                            <%= payment.status === 'completed' ? 'bg-success' : 
-                                payment.status === 'pending' ? 'bg-warning' : 
-                                payment.status === 'failed' ? 'bg-danger' : 'bg-secondary' %>">
-                            <%= payment.status || 'Unknown' %>
-                        </span>
-                    </td>
-                </tr>
-                <% }); %>
-            </tbody>
-        </table>
-    </div>
-</div>
+                            <!-- Search Form -->
+                            <div class="mb-3">
+                                <form id="searchForm" action="/tenancy-manager/payments" method="GET"
+                                    class="d-flex flex-column flex-sm-row justify-content-center">
+                                    <input type="text" id="searchInput" name="search"
+                                        class="form-control me-2 mb-2 mb-sm-0"
+                                        placeholder="Search by Tenant Name or Property" aria-label="Search">
+                                </form>
+                            </div>
 
 
-        
-            <!-- Pagination -->
-            <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center">
-                    <% if (currentPage > 1) { %>
-                        <li class="page-item">
-                            <a class="page-link" href="/tenancy-manager/payments?page=<%= currentPage - 1 %>" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
-                        </li>
-                    <% } %>
-                    <% for (let i = 1; i <= totalPages; i++) { %>
-                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                            <a class="page-link" href="/tenancy-manager/payments?page=<%= i %>"><%= i %></a>
-                        </li>
-                    <% } %>
-                    <% if (currentPage < totalPages) { %>
-                        <li class="page-item">
-                            <a class="page-link" href="/tenancy-manager/payments?page=<%= currentPage + 1 %>" aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
-                        </li>
-                    <% } %>
-                </ul>
-            </nav>
+                            <div class="table-container">
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-striped table-hover table-bordered"
+                                        style="border: 1px solid #003366;">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Transaction ID</th>
+                                                <th>Tenant Name</th>
+                                                <th>Property</th>
+                                                <th>Unit</th> <!-- Added Unit Name -->
+                                                <th>Door</th> <!-- Added Door Number -->
+                                                <th>Payment Type</th> <!-- New Payment Type Column -->
+                                                <th>Total Amount</th>
+                                                <th>Date Paid</th>
+                                                <th>Payment Method</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-center" style="background-color: white; color: black;">
+                                            <% payments.forEach((payment, index) => { %>
+                                                <tr>
+                                                    <td>
+                                                        <%= (currentPage - 1) * pageSize + index + 1 %>
+                                                    </td>
+                                                    <td>
+                                                        <%= payment.transactionId || 'N/A' %>
+                                                    </td>
+                                                    <td>
+                                                        <%= payment.tenantName || 'N/A' %>
+                                                    </td>
+                                                    <td>
+                                                        <%= payment.tenant && payment.tenant.property ? payment.tenant.property.name : 'N/A' %>
+                                                    </td>
+                                                    <td>
+                                                        <%= payment.tenant && payment.tenant.unit ? payment.tenant.unit.name : 'N/A' %>
+                                                    </td>
+                                                    
+                                                    <td>
+                                                        <%= payment.tenant ? payment.tenant.doorNumber || 'N/A' : 'N/A' %>
+                                                    </td> <!-- Display Door Number -->
+                                                    <td>
+                                                        <%= payment.paymentType || 'N/A' %> <!-- Display Payment Type -->
+                                                    </td>
+                                                    <td>Ksh.<%= payment.amount.toFixed(2) %></td>
+
+                                                    <td>
+                                                        <%= payment.datePaid ? new Date(payment.datePaid).toLocaleDateString() : 'N/A' %>
+                                                    </td>
+                                                    <td>
+                                                        <%= payment.method || 'N/A' %>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge 
+                                                            <%= payment.status === 'completed' ? 'bg-success' : 
+                                                                payment.status === 'pending' ? 'bg-warning' : 
+                                                                payment.status === 'failed' ? 'bg-danger' : 'bg-secondary' %>">
+                                                            <%= payment.status || 'Unknown' %>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+
+
+                            <!-- Pagination -->
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center">
+                                    <% if (currentPage> 1) { %>
+                                        <li class="page-item">
+                                            <a class="page-link"
+                                                href="/tenancy-manager/payments?page=<%= currentPage - 1 %>"
+                                                aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+                                        <% } %>
+                                            <% for (let i=1; i <=totalPages; i++) { %>
+                                                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                                    <a class="page-link" href="/tenancy-manager/payments?page=<%= i %>">
+                                                        <%= i %>
+                                                    </a>
+                                                </li>
+                                                <% } %>
+                                                    <% if (currentPage < totalPages) { %>
+                                                        <li class="page-item">
+                                                            <a class="page-link"
+                                                                href="/tenancy-manager/payments?page=<%= currentPage + 1 %>"
+                                                                aria-label="Next">
+                                                                <span aria-hidden="true">&raquo;</span>
+                                                            </a>
+                                                        </li>
+                                                        <% } %>
+                                </ul>
+                            </nav>
         </div>
-<style>
-   
-@media (max-width: 768px) {
-   
-    .form-control {
-        font-size: 10px; 
-        padding: 5px;    
-    }
+        <style>
+            @media (max-width: 768px) {
 
-   
-    .table th, .table td {
-        font-size: 10px; 
-        padding: 8px;
-    }
-    
-    
-    .pagination .page-link {
-        font-size: 12px;
-    }
-
-   
-    .table thead th {
-        padding: 10px; 
-    }
-}
+                .form-control {
+                    font-size: 10px;
+                    padding: 5px;
+                }
 
 
-</style>        
-                 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const searchInput = document.getElementById('searchInput');
-        
-        searchInput.addEventListener('input', function() {
-            const query = searchInput.value;
-    
-            // Perform an AJAX request or filter results
-            
-            fetch(`/tenancy-manager/payments?search=${encodeURIComponent(query)}`)
-                .then(response => response.text())
-                .then(data => {
-                    // Update your results section with the new data
-                    document.querySelector('.table-container').innerHTML = data;
-                })
-                .catch(error => console.error('Error fetching data:', error));
-        });
-    });
-    </script>
-     
-                 
-                 <footer class="text-center py-0">
-                    &copy; 2024 Lease Captain. All Rights Reserved || powered by
-                    <a href="https://vickinstechnologies.com" target="_blank">Vickins Technologies</a>
-                </footer>
-                
-                <style>
-                    footer {
-                        font-size: 0.7rem; 
+                .table th,
+                .table td {
+                    font-size: 10px;
+                    padding: 8px;
+                }
+
+
+                .pagination .page-link {
+                    font-size: 12px;
+                }
+
+
+                .table thead th {
+                    padding: 10px;
+                }
+            }
+        </style>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const searchInput = document.getElementById('searchInput');
+
+                searchInput.addEventListener('input', function () {
+                    const query = searchInput.value;
+
+                    // Perform an AJAX request or filter results
+
+                    fetch(`/tenancy-manager/payments?search=${encodeURIComponent(query)}`)
+                        .then(response => response.text())
+                        .then(data => {
+                            // Update your results section with the new data
+                            document.querySelector('.table-container').innerHTML = data;
+                        })
+                        .catch(error => console.error('Error fetching data:', error));
+                });
+            });
+        </script>
+
+
+        <footer class="text-center py-0">
+            &copy; 2024 Lease Captain. All Rights Reserved || powered by
+            <a href="https://vickinstechnologies.com" target="_blank">Vickins Technologies</a>
+        </footer>
+
+        <style>
+            footer {
+                font-size: 0.7rem;
+            }
+
+            @media (max-width: 768px) {
+                footer {
+                    font-size: 0.6rem;
+                    padding: 5px;
+                }
+            }
+
+            @media (max-width: 576px) {
+                footer {
+                    font-size: 0.5rem;
+                    padding: 2px;
+                }
+            }
+        </style>
+
+
+
+
+
+        <!-- Bootstrap JS -->
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+        <script>
+            $(document).ready(function () {
+                // Toggle sidebar on button click
+                $('#sidebarToggle').click(function () {
+                    $('#sidebarMenu').toggleClass('active');
+                });
+
+                // Collapse sidebar when clicking outside
+                $(document).click(function (event) {
+                    if (!$(event.target).closest('#sidebarMenu, #sidebarToggle').length) {
+                        $('#sidebarMenu').removeClass('active');
                     }
-                
-                    @media (max-width: 768px) {
-                        footer {
-                            font-size: 0.6rem; 
-                            padding: 5px; 
-                        }
-                    }
-                
-                    @media (max-width: 576px) {
-                        footer {
-                            font-size: 0.5rem; 
-                            padding: 2px;
-                        }
-                    }
-                </style>
-                
-        
-        
-        
-        
-                <!-- Bootstrap JS -->
-                <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        
-             
-                <script>
-                    $(document).ready(function () {
-                        // Toggle sidebar on button click
-                        $('#sidebarToggle').click(function () {
-                            $('#sidebarMenu').toggleClass('active');
-                        });
-                
-                        // Collapse sidebar when clicking outside
-                        $(document).click(function (event) {
-                            if (!$(event.target).closest('#sidebarMenu, #sidebarToggle').length) {
-                                $('#sidebarMenu').removeClass('active');
-                            }
-                        });
-                
-                        // Close other collapsibles when one is opened
-                        $('.collapse').on('show.bs.collapse', function () {
-                            $('.collapse').not(this).collapse('hide');
-                        });
-                    });
-                </script>
-                
-                
-                
-        
-        </body>
-        
-        </html>
+                });
+
+                // Close other collapsibles when one is opened
+                $('.collapse').on('show.bs.collapse', function () {
+                    $('.collapse').not(this).collapse('hide');
+                });
+            });
+        </script>
+
+
+
+
+</body>
+
+</html>
