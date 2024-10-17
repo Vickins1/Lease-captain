@@ -53,11 +53,11 @@ router.post('/payment/rent', async (req, res) => {
            };
    
            const paymentResponse = await sendPaymentRequest(payload);
-           console.log('Payment initiation response:', paymentResponse);
-   
-           if (paymentResponse.success) {
-               const transactionRequestId = paymentResponse.transaction_request_id || paymentResponse.transaction_id;
-   
+           console.log('HERE Payment initiation response:', paymentResponse);
+           console.log("CHECKING STATUS : " + paymentResponse.success)
+           if (paymentResponse.success === "200") {
+               const transactionRequestId = paymentResponse.tranasaction_request_id;
+               console.log("RESPONSE TXT : " + transactionRequestId)
                if (!transactionRequestId) {
                    req.flash('error', 'Transaction request ID is missing. Payment initiation failed.');
                    return res.redirect('/payments');
@@ -79,20 +79,21 @@ router.post('/payment/rent', async (req, res) => {
                    transactionId,
                    transactionRequestId,
                };
-   
+               console.log("TXT "+transactionId)
                req.flash('info', 'Payment initiated. Awaiting confirmation.');
                req.session.transactionId = transactionId;
-   
+               console.log("TXT CHCKER CALLED BEFOR")
                // Start polling for payment status
                pollPaymentStatus(req, userPaymentAccount.apiKey, userPaymentAccount.accountEmail);
-   
+               console.log("TXT CHCKER CALLED")
                return res.redirect('/payments');
            } else {
+              console.log("FAILED TO CHECK")
                req.flash('error', 'Payment initiation failed. Please try again.');
                return res.redirect('/payments');
            }
        } catch (error) {
-           console.error('Payment initiation error:', error);
+           console.error('Failed Payment initiation error:', error);
            req.flash('error', 'Something went wrong. Please try again.');
            res.redirect('/payments');
        }
@@ -103,6 +104,7 @@ router.post('/payment/rent', async (req, res) => {
        const interval = setInterval(async () => {
            try {
                const paymentData = req.session.paymentData;
+               console.log("SESSON DATA => "+ paymentData.transactionRequestId)
                if (!paymentData) {
                    clearInterval(interval);
                    return;
@@ -111,7 +113,7 @@ router.post('/payment/rent', async (req, res) => {
                const verificationPayload = {
                    api_key,
                    email,
-                   transaction_request_id: paymentData.transactionRequestId,
+                   tranasaction_request_id : paymentData.transactionRequestId,
                };
    
                console.log('Verifying payment with payload:', verificationPayload);
@@ -131,7 +133,7 @@ router.post('/payment/rent', async (req, res) => {
    
                    console.log(`Payment verified and saved successfully: ${payment.transactionId}`);
                    clearInterval(interval);
-                   
+
                } else if (response.data && response.data.ResultCode !== '200') {
                    paymentData.status = 'failed';
    

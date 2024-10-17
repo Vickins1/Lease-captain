@@ -144,6 +144,8 @@ router.get('/payments', async (req, res) => {
     try {
         const tenantId = req.session.tenantId;
 
+       // console.log('Session data:', req.session);
+
         // Check if tenantId is defined
         if (!tenantId) {
             console.log('Tenant ID is undefined');
@@ -160,8 +162,6 @@ router.get('/payments', async (req, res) => {
 
         // Fetch payments associated with the tenant
         const payments = await Payment.find({ tenant: tenantId }).exec();
-
-        console.log('Payments:', payments);
 
         // Check if there are payments and handle accordingly
         if (payments.length === 0) {
