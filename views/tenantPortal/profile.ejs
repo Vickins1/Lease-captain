@@ -252,14 +252,16 @@
        </div>
        <div class="card-body">
            <h6 class="text-secondary">Your Current Balance:</h6>
-           <p class="lead text-success">Ksh. <%= tenant.walletBalance.toFixed(2) || 0 %></p>
+           <p class="lead <%= tenant.walletBalance >= 0 ? 'text-success' : 'text-danger' %>">
+               Ksh. <%= tenant.walletBalance != null ? tenant.walletBalance.toFixed(2) : '0.00' %>
+           </p>
            <p class="text-muted">
-              Any overpayments will be reflected in your wallet balance. You have the option to request a refund or apply these funds toward your next rental payment.
-          </p>
+               Any overpayments will be reflected in your wallet balance. You have the option to request a refund or apply these funds toward your next rental payment.
+           </p>
    
            <form action="/tenant/requestRefund" method="POST" id="refundForm" class="mt-3">
-               <input type="hidden" name="amount" value="<%= tenant.walletBalance %>">
-               <button type="submit" class="btn btn-dark" style="background-color: #003366;" 
+               <input type="hidden" name="amount" value="<%= tenant.walletBalance != null ? tenant.walletBalance : 0 %>">
+               <button type="submit" class="btn btn-dark" style="background-color: #003366;"
                    <%= tenant.walletBalance <= 0 ? 'disabled' : '' %>>Request Refund</button>
            </form>
    
@@ -270,6 +272,7 @@
            <% } %>
        </div>
    </div>
+   
    
      
 

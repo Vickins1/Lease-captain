@@ -280,13 +280,19 @@
                                                             <td>Ksh. <%= payment.totalPaid.toFixed(2) %></td>
                                                             <td><%= payment.method || 'N/A' %></td>
                                                             <td>
-                                                                <span class="badge 
-                                                                    <%= payment.status === 'completed' ? 'bg-success' : 
-                                                                        payment.status === 'pending' ? 'bg-warning' : 
-                                                                        payment.status === 'failed' ? 'bg-danger' : 'bg-secondary' %>">
-                                                                    <%= payment.status || 'Unknown' %>
+                                                                <span class="
+                                                                    <%= payment.status === 'completed' ? 'text-success' : 
+                                                                        payment.status === 'pending' ? 'text-warning' : 
+                                                                        payment.status === 'failed' ? 'text-danger' : 'text-secondary' %>">
+                                                                    
+                                                                    <i class="fas 
+                                                                        <%= payment.status === 'completed' ? 'fa-check-circle' : 
+                                                                            payment.status === 'pending' ? 'fa-hourglass-half' : 
+                                                                            payment.status === 'failed' ? 'fa-times-circle' : 'fa-question-circle' %>">
+                                                                    </i>
                                                                 </span>
                                                             </td>
+                                                            
                                                             <td>
                                                                 <a href="/download-receipt/<%= payment._id %>" 
                                                                     class="text-primary" title="Download Receipt">

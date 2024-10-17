@@ -332,29 +332,33 @@
                                         </div>
                                         <div class="card-body d-flex flex-column bg-light"
                                             style="border-radius: 0 0 0.5rem 0.5rem;">
-                                            <p style="font-size: 1.1rem;">Monthly Rent: <strong
-                                                    style="color: #003366;">Ksh.<%= tenant.unit && tenant.unit.unitPrice
-                                                        ? tenant.unit.unitPrice.toFixed(2) : 'N/A' %></strong></p>
-                                            <p style="font-size: 1.1rem;">Deposit Paid: <strong
-                                                    style="color: #003366;">Ksh.<%= tenant.deposit ?
-                                                        tenant.deposit.toFixed(2) : 'N/A' %></strong></p>
-                                            <p style="font-size: 1.1rem;">Rent Paid: <strong
-                                                    style="color: #003366;">Ksh.<%= totalRentPaid ?
-                                                        totalRentPaid.toFixed(2) : '0' %></strong></p>
-                                            <p style="font-size: 1.1rem;">Utility Paid: <strong
-                                                    style="color: #003366;">Ksh.<%= utilityPaid ? utilityPaid.toFixed(2)
-                                                        : '0' %></strong></p>
-                                                        <p style="font-size: 1.1rem;">
-                                                            Rent Due: <strong style="color: #003366;">
-                                                            Ksh. <%= (rentDue || 0).toFixed(2) %>
-                                                            </strong>
-                                                        </p>
-                                                        <p style="font-size: 1.1rem;">
-                                                            Utility Due: <strong style="color: #003366;">
-                                                            Ksh. <%= (utilityDue || 0).toFixed(2) %>
-                                                            </strong>
-                                                        </p>
-                                                        
+                                            <p style="font-size: 1.1rem;">Monthly Rent: <strong style="color: #003366;">
+                                                Ksh. <%= tenant.unit && tenant.unit.unitPrice ? tenant.unit.unitPrice.toFixed(2) : 'N/A' %>
+                                            </strong></p>
+
+                                            <p style="font-size: 1.1rem;">Rent Paid: <strong style="color: #003366;">
+                                                Ksh. <%= totalRentPaid ? totalRentPaid.toFixed(2) : '0' %>
+                                            </strong></p>
+                                            
+                                            <p style="font-size: 1.1rem;">Utility Paid: <strong style="color: #003366;">
+                                                Ksh. <%= utilityPaid ? utilityPaid.toFixed(2) : '0' %>
+                                            </strong></p>
+                                            <p style="font-size: 1.1rem;">Deposit Required: <strong style="color: #003366;">
+                                                Ksh. <%= depositAmount.toFixed(2) %>
+                                            </strong></p>
+                                            <p style="font-size: 1.1rem;">Deposit Paid: <strong style="color: #003366;">
+                                                <br>Ksh. <%= depositPaid.toFixed(2) %> of Ksh. <%= depositAmount.toFixed(2) %>
+                                            </strong></p>
+                                            
+                                            
+                                            <p style="font-size: 1.1rem;">Rent Due: <strong style="color: #003366;">
+                                                Ksh. <%= (rentDue || 0).toFixed(2) %>
+                                            </strong></p>
+                                            
+                                            <p style="font-size: 1.1rem;">Utility Due: <strong style="color: #003366;">
+                                                Ksh. <%= (utilityDue || 0).toFixed(2) %>
+                                            </strong></p>
+                                            
                                         </div>
                                     </div>
                                 </div>

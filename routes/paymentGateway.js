@@ -53,11 +53,9 @@ router.post('/payment/rent', async (req, res) => {
            };
    
            const paymentResponse = await sendPaymentRequest(payload);
-           console.log('HERE Payment initiation response:', paymentResponse);
-           console.log("CHECKING STATUS : " + paymentResponse.success)
+           console.log('Payment initiation response:', paymentResponse);
            if (paymentResponse.success === "200") {
                const transactionRequestId = paymentResponse.tranasaction_request_id;
-               console.log("RESPONSE TXT : " + transactionRequestId)
                if (!transactionRequestId) {
                    req.flash('error', 'Transaction request ID is missing. Payment initiation failed.');
                    return res.redirect('/payments');
@@ -79,16 +77,12 @@ router.post('/payment/rent', async (req, res) => {
                    transactionId,
                    transactionRequestId,
                };
-               console.log("TXT "+transactionId)
                req.flash('info', 'Payment initiated. Awaiting confirmation.');
                req.session.transactionId = transactionId;
-               console.log("TXT CHCKER CALLED BEFOR")
                // Start polling for payment status
                pollPaymentStatus(req, userPaymentAccount.apiKey, userPaymentAccount.accountEmail);
-               console.log("TXT CHCKER CALLED")
                return res.redirect('/payments');
            } else {
-              console.log("FAILED TO CHECK")
                req.flash('error', 'Payment initiation failed. Please try again.');
                return res.redirect('/payments');
            }
@@ -99,53 +93,62 @@ router.post('/payment/rent', async (req, res) => {
        }
    });
    
-   // Function to periodically check the status of a payment
-   function pollPaymentStatus(req, api_key, email) {
+// Function to periodically check the status of a payment
+function pollPaymentStatus(req, api_key, email) {
        const interval = setInterval(async () => {
            try {
                const paymentData = req.session.paymentData;
-               console.log("SESSON DATA => "+ paymentData.transactionRequestId)
+   
                if (!paymentData) {
+                   console.warn('No payment data found in session. Stopping polling.');
                    clearInterval(interval);
                    return;
                }
    
+               console.log("Session Data => Transaction Request ID:", paymentData.transactionRequestId);
+   
                const verificationPayload = {
                    api_key,
                    email,
-                   tranasaction_request_id : paymentData.transactionRequestId,
+                   tranasaction_request_id: paymentData.transactionRequestId,
                };
    
                console.log('Verifying payment with payload:', verificationPayload);
    
-               const response = await axios.post('https://api.umeskiasoftwares.com/api/v1/transactionstatus', verificationPayload, {
-                   headers: {
-                       'Content-Type': 'application/json',
-                   },
-               });
+               const response = await axios.post(
+                   'https://api.umeskiasoftwares.com/api/v1/transactionstatus',
+                   verificationPayload,
+                   { headers: { 'Content-Type': 'application/json' } }
+               );
+   
                console.log('Verification response:', response.data);
    
-               if (response.data && response.data.ResultCode === '200') {
-                   paymentData.status = 'completed';
+               if (response.data) {
+                   const { ResultCode, TransactionStatus } = response.data;
    
+                   if (TransactionStatus === 'Completed' && ResultCode === '200') {
+                       paymentData.status = 'completed';
+                       console.log('Payment completed.');
+   
+                   } else if (TransactionStatus === 'Pending') {
+                       paymentData.status = 'pending';
+                       console.log('Payment still pending, continuing to poll...');
+                       return; 
+                   } else {
+                       paymentData.status = 'failed';
+                       console.warn('Payment failed or canceled.');
+                   }
+   
+                   // Save payment data to the database
                    const payment = new Payment(paymentData);
                    await payment.save();
    
-                   console.log(`Payment verified and saved successfully: ${payment.transactionId}`);
-                   clearInterval(interval);
-
-               } else if (response.data && response.data.ResultCode !== '200') {
-                   paymentData.status = 'failed';
-   
-                   const payment = new Payment(paymentData);
-                   await payment.save();
-   
-                   console.warn(`Payment verification failed and saved as failed: ${payment.transactionId}`);
+                   console.log(`Payment saved with status: ${paymentData.status}`);
                    clearInterval(interval);
                }
            } catch (error) {
                if (error.response && error.response.status === 404) {
-                   console.error(`Verification endpoint not found: ${error.response.status}`);
+                   console.error('Verification endpoint not found:', error.response.status);
                    clearInterval(interval);
                } else {
                    console.error('Error during payment verification:', error.message);
@@ -154,13 +157,6 @@ router.post('/payment/rent', async (req, res) => {
        }, 5000);
    }
    
-   
-   
-   
-   
-   
-   
-
 // Utility Payment Route
 router.post('/payment/utility', async (req, res) => {
        const { amount, phoneNumber, paymentMethod } = req.body;
@@ -172,16 +168,13 @@ router.post('/payment/utility', async (req, res) => {
        }
    
        try {
-           // Fetch tenant details, including the unit
-           const tenant = await Tenant.findById(tenantId).populate('unit').lean();
+           // Fetch tenant details, including the unit and property
+           const tenant = await Tenant.findById(tenantId).populate('property unit').lean();
            if (!tenant) throw new Error('Tenant not found.');
    
            const totalPaid = parseFloat(amount) || 0;
-           const newUtilityDue = (tenant.utilityDue || 0) - totalPaid;
-           tenant.utilityDue = newUtilityDue;
-           await Tenant.findByIdAndUpdate(tenantId, { utilityDue: newUtilityDue });
-   
            const transactionId = generateTransactionId('UTL-');
+   
            const userPaymentAccount = await PaymentAccount.findOne({ userId: tenant.userId });
            if (!userPaymentAccount) throw new Error('Payment account not found.');
    
@@ -195,42 +188,48 @@ router.post('/payment/utility', async (req, res) => {
            };
    
            const paymentResponse = await sendPaymentRequest(payload);
+           console.log('Payment initiation response:', paymentResponse);
    
-           const payment = await Payment.create({
-               tenant: tenantId,
-               tenantName: tenant.name,
-               property: tenant.property,
-               amount: totalPaid,
-               totalPaid: totalPaid,
-               doorNumber: tenant.unit.doorNumber || 'N/A', // Ensure doorNumber is populated
-               paymentType: 'utility',
-               due: newUtilityDue,
-               datePaid: new Date(),
-               method: paymentMethod,
-               status: paymentResponse.success ? 'pending' : 'failed',
-               transactionId,
-           });
+           if (paymentResponse.success === "200") {
+               const transactionRequestId = paymentResponse.tranasaction_request_id;
+               if (!transactionRequestId) {
+                   req.flash('error', 'Transaction request ID is missing. Payment initiation failed.');
+                   return res.redirect('/payments');
+               }
    
-           if (paymentResponse.success) {
+               // Store payment details in session for status polling
+               req.session.paymentData = {
+                   tenant: tenantId,
+                   tenantName: tenant.name,
+                   property: tenant.property,
+                   amount: totalPaid,
+                   totalPaid: totalPaid,
+                   doorNumber: tenant.unit && tenant.unit.doorNumber ? tenant.unit.doorNumber : 'N/A',
+                   paymentType: 'utility',
+                   due: tenant.utilityDue || 0,
+                   datePaid: new Date(),
+                   method: paymentMethod,
+                   status: 'pending',
+                   transactionId,
+                   transactionRequestId,
+               };
+   
+               req.flash('info', 'Utility payment initiated. Awaiting confirmation.');
+               req.session.transactionId = transactionId;
+   
                // Start polling for payment status
-               pollPaymentStatus(payment, userPaymentAccount.apiKey);
-               req.flash('success', 'Utility payment initiated successfully.');
+               pollPaymentStatus(req, userPaymentAccount.apiKey, userPaymentAccount.accountEmail);
+               return res.redirect('/payments');
            } else {
                req.flash('error', 'Payment initiation failed. Please try again.');
+               return res.redirect('/payments');
            }
-   
-           return res.redirect('/payments');
        } catch (error) {
-           handlePaymentError(error, req, res);
+           console.error('Failed Utility Payment initiation error:', error);
+           req.flash('error', 'Something went wrong. Please try again.');
+           res.redirect('/payments');
        }
    });
    
-
-// Handle Payment Errors
-function handlePaymentError(error, req, res) {
-    console.error('Payment error:', error);
-    req.flash('error', 'An error occurred while processing your payment. Please try again later.');
-    res.redirect('/payments');
-}
 
 module.exports = router;

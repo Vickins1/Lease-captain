@@ -6,14 +6,13 @@ const MaintenanceRequest = require('../models/maintenanceRequest')
 const Payment = require('../models/payment')
 
 
-// Tenant login route 
+
 router.get('/tenantPortal/login', (req, res) => {
     res.render('tenantPortal/login');
 });
-
-// Tenant login route 
+ 
 router.post('/tenant/login', async (req, res) => {
-    const { name, password } = req.body; 
+    const { name, password } = req.body;
 
     if (!name || !password) {
         req.flash('error', 'Name and password are required.');
@@ -66,49 +65,73 @@ router.get('/tenantPortal/dashboard', async (req, res) => {
         const tenant = await Tenant.findById(tenantId)
             .populate({
                 path: 'property',
-                select: 'name paymentDay', 
+                select: 'name paymentDay',
             })
             .populate({
                 path: 'unit',
-                select: 'unitName unitPrice utilities', 
+                select: 'unitName unitPrice utilities',
             })
             .populate({
                 path: 'maintenanceRequests',
                 select: 'scheduleDate description status',
-            })
-            .exec();
+            });
 
         if (!tenant) {
             req.flash('error', 'Tenant not found');
             return res.redirect('/tenantPortal/login');
         }
 
-        // Fetch maintenance requests
-        const maintenanceRequests = await MaintenanceRequest.find({ tenantId });
-        const maintenanceScheduleDates = maintenanceRequests.map(request => ({
+        console.log('Tenant object:', tenant);
+
+        // Fetch rent payments
+        const rentPayments = await Payment.find({
+            tenant: tenantId,
+            paymentType: 'rent',
+        });
+        const totalRentPaid = rentPayments.reduce((acc, payment) => acc + (payment.amount || 0), 0);
+        console.log('Total Rent Paid:', totalRentPaid);
+
+        // Fetch utility payments (if needed for other parts of the dashboard)
+        const utilityPayments = await Payment.find({
+            tenant: tenantId,
+            paymentType: 'utility',
+        });
+        const totalUtilityPaid = utilityPayments.reduce((acc, payment) => acc + (payment.amount || 0), 0);
+        console.log('Total Utility Paid:', totalUtilityPaid);
+
+        // Calculate utility due
+        const unitUtilities = Array.isArray(tenant.unit?.utilities) ? tenant.unit.utilities : [];
+        const totalUtilityCharges = unitUtilities.reduce((acc, utility) => acc + (utility.amount || 0), 0);
+        const utilityDue = Math.max(totalUtilityCharges - totalUtilityPaid, 0);
+        console.log('Utility Due:', utilityDue);
+
+        // Calculate rent due based on time elapsed
+        const today = new Date();
+        const leaseStartDate = new Date(tenant.leaseStartDate);
+        const monthsElapsed = (today.getFullYear() - leaseStartDate.getFullYear()) * 12 + (today.getMonth() - leaseStartDate.getMonth()) + 1;
+        const totalRentExpected = monthsElapsed * (tenant.unit?.unitPrice || 0);
+        const rentDue = Math.max(totalRentExpected - totalRentPaid, 0);
+        console.log('Rent Due:', rentDue);
+
+        // Calculate deposit and wallet balance
+        const depositAmount = tenant.deposit || 0;
+        const walletBalance = tenant.walletBalance || -depositAmount;
+        const depositPaid = Math.min(depositAmount, Math.max(0, walletBalance + depositAmount));
+
+        // Prepare maintenance request data
+        const maintenanceScheduleDates = tenant.maintenanceRequests.map(request => ({
             date: request.scheduleDate,
             description: request.description,
             status: request.status,
         }));
 
-        // Calculate total rent paid and rent due
-        const totalRentPaid = tenant.paymentHistory.reduce((acc, payment) => acc + (payment.amount || 0), 0);
-        const unitPrice = tenant.unit?.unitPrice || 0;
-        const rentDue = Math.max(0, unitPrice - totalRentPaid); 
-
-        // Calculate utility due based on utilities from the unit
-        const unitUtilities = tenant.unit?.utilities || [];
-        const utilityDue = unitUtilities.reduce((acc, utility) => acc + (utility.amount || 0), 0); 
-        // Get payment details
+        // Calculate next rent due date
         const paymentDay = tenant.property?.paymentDay || 1;
-        const today = new Date();
         let nextRentDue = new Date(today.getFullYear(), today.getMonth(), paymentDay);
-
         if (nextRentDue <= today) {
-            nextRentDue.setMonth(nextRentDue.getMonth() + 1); 
+            nextRentDue.setMonth(nextRentDue.getMonth() + 1);
         }
-
-        const rentDueInDays = Math.ceil((nextRentDue - today) / (1000 * 60 * 60 * 24)); 
+        const rentDueInDays = Math.ceil((nextRentDue - today) / (1000 * 60 * 60 * 24));
         const formattedNextRentDue = nextRentDue.toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
@@ -120,31 +143,33 @@ router.get('/tenantPortal/dashboard', async (req, res) => {
         // Render the dashboard with all necessary data
         res.render('tenantPortal/dashboard', {
             tenant,
+            walletBalance,
             nextRentDue: formattedNextRentDue,
             totalRentPaid,
-            utilityPaid: tenant.utilityPaid || 0,
+            utilityPaid: totalUtilityPaid,
             rentDue,
             utilityDue,
+            depositAmount,
+            depositPaid,
             announcements,
             rentDueInDays,
             leaseEndDate: tenant.leaseEndDate,
             maintenanceScheduleDates,
             unitName: tenant.unit?.unitName || 'N/A',
             roomNumber: tenant.doorNumber || 'N/A',
-            monthlyRent: unitPrice ? unitPrice.toFixed(2) : 'N/A',
+            monthlyRent: tenant.unit?.unitPrice ? tenant.unit.unitPrice.toFixed(2) : 'N/A',
         });
     } catch (error) {
-        console.error('Error fetching tenant data:', error.message);
+        console.error('Error fetching tenant data:', error);
         req.flash('error', 'Error fetching tenant data');
         return res.redirect('/tenantPortal/login');
     }
 });
 
+
 router.get('/payments', async (req, res) => {
     try {
         const tenantId = req.session.tenantId;
-
-       // console.log('Session data:', req.session);
 
         // Check if tenantId is defined
         if (!tenantId) {
@@ -184,9 +209,6 @@ router.get('/payments', async (req, res) => {
     }
 });
 
-
-
-// Lease route to display tenant's lease information
 router.get('/lease', async (req, res) => {
     try {
         const tenant = await Tenant.findById(req.session.tenantId).populate('property').exec();
@@ -210,9 +232,6 @@ router.get('/lease', async (req, res) => {
 });
 
 
-
-
-// Logout route
 router.get('/tenantPortal/logout', (req, res) => {
     req.session.destroy(err => {
         if (err) {
@@ -224,7 +243,6 @@ router.get('/tenantPortal/logout', (req, res) => {
     });
 });
 
-// Serve Profile Settings Page
 router.get('/tenant/profile', async (req, res) => {
     try {
         const tenantId = req.session.tenantId;
@@ -232,30 +250,31 @@ router.get('/tenant/profile', async (req, res) => {
             return res.redirect('/tenantPortal/login');
         }
 
-        const tenant = await Tenant.findById(tenantId)
-            .populate('utilityPayments') 
-            .exec();
+        const tenant = await Tenant.findById(tenantId).populate('unit');
 
         if (!tenant) {
             return res.status(404).send('Tenant not found');
         }
 
-        // Calculate total utility paid
-        const totalUtilityPaid = tenant.utilityPayments.reduce((acc, utility) => acc + (utility.amount || 0), 0);
-        
-        // Calculate total rent paid
-        const totalRentPaid = tenant.paymentHistory.reduce((acc, payment) => acc + (payment.amount || 0), 0);
-        const unitPrice = tenant.unit?.unitPrice || 0;
-        const rentDue = Math.max(0, unitPrice - totalRentPaid);
-        
-        const depositAmount = tenant.deposit || 0;
-        const walletBalance = totalUtilityPaid - depositAmount;
+        const rentPayments = await Payment.find({ tenant: tenantId, paymentType: 'rent' });
+        const totalRentPaid = rentPayments.reduce((acc, payment) => acc + (payment.amount || 0), 0);
+        console.log('Total Rent Paid:', totalRentPaid);
 
-        res.render('tenantPortal/profile', { 
+        const unitPrice = tenant.unit?.unitPrice || 0;
+
+        const rentDue = Math.max(0, unitPrice - totalRentPaid);
+
+        const depositAmount = tenant.deposit || 0;
+        let walletBalance = -depositAmount;
+
+        walletBalance += totalRentPaid;
+
+        res.render('tenantPortal/profile', {
             tenant,
-            totalUtilityPaid,
+            totalRentPaid,
             walletBalance,
-            rentDue
+            rentDue,
+            depositAmount
         });
     } catch (error) {
         console.error('Error fetching tenant profile:', error);
@@ -263,9 +282,6 @@ router.get('/tenant/profile', async (req, res) => {
     }
 });
 
-
-
-// Handle Refund Request
 router.post('/tenant/requestRefund', async (req, res) => {
     try {
         const tenantId = req.session.tenantId;
@@ -295,8 +311,6 @@ router.post('/tenant/requestRefund', async (req, res) => {
         res.redirect('/tenant/profile');
     }
 });
-
-
 
 // Change Password Route
 router.post('/tenant/profile/change-password', async (req, res) => {
@@ -480,73 +494,6 @@ router.post('/requests/:id/delete', async (req, res) => {
         res.redirect('/requestMaintenance');
     }
 });
-
-async function handlePayment(tenantId, amount) {
-    const tenant = await Tenant.findById(tenantId);
-
-    if (!tenant) {
-        throw new Error('Tenant not found');
-    }
-
-    const expectedAmount = tenant.unit?.unitPrice || 0; 
-
-    if (amount > expectedAmount) {
-        const overpaymentAmount = amount - expectedAmount;
-
-        // Update tenant wallet balance and overpayment amount
-        tenant.walletBalance += overpaymentAmount;
-        tenant.overpayment = (tenant.overpayment || 0) + overpaymentAmount; 
-    } else {
-        tenant.rentPaid += amount;
-    }
-
-    await tenant.save();
-}
-
-async function getNextPaymentDetails(tenantId) {
-    const tenant = await Tenant.findById(tenantId);
-    if (!tenant) {
-        throw new Error('Tenant not found');
-    }
-
-    const paymentDay = tenant.property?.paymentDay || 1;
-    const today = new Date();
-    let nextRentDue = new Date(today.getFullYear(), today.getMonth(), paymentDay);
-
-    if (nextRentDue <= today) {
-        nextRentDue.setMonth(nextRentDue.getMonth() + 1);
-    }
-
-    // Deduct from wallet if available
-    if (tenant.walletBalance > 0) {
-        const amountToDeduct = Math.min(tenant.walletBalance, tenant.unit?.unitPrice || 0);
-        tenant.walletBalance -= amountToDeduct;
-        await tenant.save();
-        nextRentDue.setDate(nextRentDue.getDate() + 30); 
-    }
-
-    return {
-        nextRentDue,
-        rentDueInDays: Math.ceil((nextRentDue - today) / (1000 * 60 * 60 * 24)),
-    };
-}
-
-
-async function withdrawFromWallet(tenantId, amount) {
-    const tenant = await Tenant.findById(tenantId);
-
-    if (!tenant) {
-        throw new Error('Tenant not found');
-    }
-
-    if (amount > tenant.walletBalance) {
-        throw new Error('Insufficient wallet balance.');
-    }
-
-    tenant.walletBalance -= amount; 
-    await tenant.save();
-}
-
 
 
 module.exports = router;

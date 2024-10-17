@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const Property = require('../models/property');
 const PropertyUnit = require('../models/unit');
+const Payment = require('../models/payment');
 
 const tenantSchema = new Schema({
     name: {
@@ -13,7 +13,7 @@ const tenantSchema = new Schema({
         required: true,
         unique: true,
         match: /.+\@.+\..+/,
-        index: true // Index for better performance
+        index: true
     },
     phone: {
         type: String,
@@ -103,42 +103,6 @@ const tenantSchema = new Schema({
         type: Number,
         default: 0
     },
-    paymentHistory: [{
-        date: {
-            type: Date,
-            required: true
-        },
-        amount: {
-            type: Number,
-            required: true
-        },
-        paymentMethod: {
-            type: String,
-            required: true
-        },
-        note: {
-            type: String,
-            default: null
-        }
-    }],
-    utilityPayments: [{
-        date: {
-            type: Date,
-            required: true
-        },
-        amount: {
-            type: Number,
-            required: true
-        },
-        note: {
-            type: String,
-            default: null
-        }
-    }],
-    utilityPaid: {
-        type: Number,
-        default: 0
-    },
     userId: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'User', 
@@ -146,21 +110,65 @@ const tenantSchema = new Schema({
     }
 });
 
-// Methods for rent and utility due calculations
 tenantSchema.methods.getRentDue = async function () {
     const unit = await PropertyUnit.findById(this.unit);
     if (!unit) throw new Error('Unit not found');
+
     const today = new Date();
-    const leaseStartMonth = this.leaseStartDate.getMonth();
-    const leaseStartYear = this.leaseStartDate.getFullYear();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-    const totalMonths = (currentYear - leaseStartYear) * 12 + (currentMonth - leaseStartMonth);
-    const totalRentExpected = Math.max(totalMonths, 0) * unit.unitPrice;
-    const totalRentPaid = this.rentPayments.reduce((total, payment) => total + payment.amount, 0);
-    const rentDue = totalRentExpected - totalRentPaid;
-    return Math.max(rentDue, 0);
+    const leaseStartDate = this.leaseStartDate;
+    
+    const totalMonths = 
+        (today.getFullYear() - leaseStartDate.getFullYear()) * 12 +
+        (today.getMonth() - leaseStartDate.getMonth());
+
+    const monthsDue = Math.max(totalMonths + 1, 0);
+
+    const totalRentExpected = monthsDue * unit.unitPrice;
+
+    const rentPayments = await Payment.find({
+        tenant: this._id,
+        type: 'rent' 
+    });
+
+    const totalRentPaid = rentPayments.reduce(
+        (total, payment) => total + (payment.amount || 0),
+        0
+    );
+
+    const rentDue = Math.max(totalRentExpected - totalRentPaid, 0);
+
+    return rentDue;
 };
+
+
+tenantSchema.methods.getUtilityDue = async function () {
+    const unit = await PropertyUnit.findById(this.unit);
+    if (!unit) throw new Error('Unit not found');
+
+    const utilityBills = this.utilityBills || [];
+
+    const totalUtilityCharges = utilityBills.reduce(
+        (total, bill) => total + (bill.amount || 0), 
+        0
+    );
+
+    const utilityPayments = await Payment.find({
+        tenant: this._id,
+        type: 'utility'
+    });
+
+    const totalUtilityPaid = utilityPayments.reduce(
+        (total, payment) => total + (payment.amount || 0),
+        0
+    );
+
+    const utilityDue = Math.max(totalUtilityCharges - totalUtilityPaid, 0);
+
+    return utilityDue;
+};
+
+
+
 
 // Export the Tenant model
 module.exports = mongoose.model('Tenant', tenantSchema);
