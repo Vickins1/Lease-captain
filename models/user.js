@@ -29,7 +29,6 @@ const userSchema = new mongoose.Schema({
     timestamps: true 
 });
 
-// Apply the passport-local-mongoose plugin to the user schema
 userSchema.plugin(passportLocalMongoose, {
     usernameField: 'username', 
     hashField: 'password' 

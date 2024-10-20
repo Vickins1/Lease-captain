@@ -39,17 +39,16 @@ router.get('/tenancy-manager/dashboard', isTenancyManager, async (req, res) => {
         let totalRentDue = 0;
         let utilityCollected = 0;
         let utilityDue = 0;
-        let numberOfTenants = 0;  // Initialize tenant count
-        let occupiedUnitsCount = 0;  // Initialize occupied units count
+        let numberOfTenants = 0;  
+        let occupiedUnitsCount = 0; 
 
         const rentCollectionData = {}; 
 
-        // Iterate over units to calculate total tenants and occupied units
         units.forEach(unit => {
-            numberOfTenants += unit.tenants.length;  // Sum tenants in each unit
+            numberOfTenants += unit.tenants.length;  
 
             if (unit.tenants.length > 0) {
-                occupiedUnitsCount += 1;  // Count the unit as occupied if it has tenants
+                occupiedUnitsCount += 1; s
             }
 
             // Aggregate rent and utility details from tenants
@@ -96,9 +95,9 @@ router.get('/tenancy-manager/dashboard', isTenancyManager, async (req, res) => {
             utilityDue,
             averageRent,
             upcomingLeaseExpirations,
-            numberOfTenants,  // Pass the number of tenants to the template
+            numberOfTenants, 
             numberOfUnits,
-            occupiedUnitsCount,  // Pass the occupied units count to the template
+            occupiedUnitsCount,
             users,
             totalRequests,
             rentDataArray,
@@ -206,9 +205,6 @@ router.post('/tenancy-manager/security', isTenancyManager, async (req, res) => {
 });
 
 
-
-
-
 // Update User Profile
 router.post('/tenancy-manager/profile', isTenancyManager, async (req, res) => {
     try {
@@ -229,8 +225,6 @@ router.post('/tenancy-manager/profile', isTenancyManager, async (req, res) => {
         res.redirect('/tenancy-manager/profile');
     }
 });
-
-
 
 
 const transporter = nodemailer.createTransport({
@@ -453,7 +447,6 @@ router.post('/tenancy-manager/tenant/new', async (req, res) => {
 });
 
 
-
 router.get('/tenancy-manager/payments', isTenancyManager, async (req, res) => {
     try {
         const pageSize = 10;
@@ -497,13 +490,6 @@ router.get('/tenancy-manager/payments', isTenancyManager, async (req, res) => {
         res.redirect('/tenancy-manager/payments'); 
     }
 });
-
-
-
-
-
-
-
 
 
 // Route for Reports & Invoices page
