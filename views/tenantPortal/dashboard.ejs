@@ -20,61 +20,171 @@
             padding-top: 40px;
         }
 
+        /* Sidebar with White Background */
         .sidebar {
-            background-color: #000000;
+            background-color: #ffffff;
+            color: #333333;
             height: 100vh;
-            padding: 10px;
+            padding: 30px 10px;
             position: fixed;
             top: 0;
             left: 0;
-            width: 200px;
+            width: 250px;
             overflow-y: auto;
-            z-index: 1000;
             transition: all 0.3s ease;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            /* Ensure it's on top of content */
         }
 
-        .sidebar h3 {
-            margin-bottom: 20px;
-            color: #ffffff;
-            font-size: 1.3em;
+        /* Sidebar Title Styling */
+        .sidebar-title {
+            margin-bottom: 30px;
+            color: #000000;
+            font-size: 1.5em;
+            text-align: center;
+            font-weight: 700;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
         }
 
-        .sidebar a {
-            color: #adb5bd;
-            display: block;
-            padding: 20px;
-            margin: 5px 0;
+        /* Navigation Link Styles */
+        .sidebar .nav-link {
+            color: #333333;
+            padding: 15px 20px;
+            margin: 10px 0;
             text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-            font-weight: bold;
-            font-size: 0.9em;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            border-radius: 10px;
+            transition: background-color 0.3s, color 0.3s;
         }
 
-        .sidebar a:hover,
-        .sidebar a.active {
-            color: #ffffff;
-            background-color: #4d4d4d;
+        .sidebar .nav-link i {
+            margin-right: 15px;
+            color: #555555;
+            /* Icon color */
         }
+
+        /* Hover Effects */
+        .sidebar .nav-link:hover {
+            background-color: #f8f9fa;
+            color: #003366;
+        }
+
+        .sidebar .nav-link:hover i {
+            color: #003366;
+        }
+
+        /* Active Link Styling */
+        .sidebar .nav-link.active {
+            background-color: #003366;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .sidebar .nav-link.active i {
+            color: #ffffff;
+        }
+
+        .sidebar .nav-link:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 220px;
+                position: absolute;
+                top: 0;
+                left: -250px;
+                z-index: 2000;
+                transition: all 0.3s ease-in-out;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .content.active {
+                margin-left: 220px;
+            }
+        }
+
+        #sidebarToggle {
+            display: block;
+            background-color: #ffffff;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            border: 2px solid #ffffff;
+            border-radius: 5px;
+            z-index: 3000;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        @media (min-width: 969px) {
+            #sidebarToggle {
+                display: none;
+            }
+        }
+
+        .content {
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+
 
         .header {
-            background-color: #000000;
-            color: white;
-            padding: 10px 15px;
+            background-color: #ffffff;
+            color: #000000;
+            padding: 10px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: fixed;
-            width: 100%;
+            width: calc(100% - 220px);
             top: 0;
-            left: 0;
-            z-index: 1000;
+            left: 220px;
+            z-index: 1001;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: left 0.3s ease, width 0.3s ease;
         }
+
+        .header-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+        }
+
+        @media (max-width: 968px) {
+            .header {
+                width: 100%;
+                left: 0;
+            }
+
+            .header-right {
+                justify-content: flex-end;
+                width: 100%;
+            }
+
+            .mobile-sidebar-btn {
+                margin-right: auto;
+            }
+        }
+
 
         .content {
-            padding: 15px;
+            margin-left: 220px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
         }
 
+        .content.collapsed {
+            margin-left: 60px;
+        }
 
         footer {
             position: fixed;
@@ -88,39 +198,53 @@
 
         .mobile-sidebar-btn {
             display: block;
-            color: white;
-            padding: 0.5rem 0.75rem;
-            font-size: 1rem;
+            background-color: #ffffff;
+            color: rgb(255, 255, 255);
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            border: 2px solid #ffffff;
+            border-radius: 5px;
             z-index: 2000;
             cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s, box-shadow 0.3s;
         }
 
-        @media (min-width: 768px) {
+        .mobile-sidebar-btn i {
+            color: #000000;
+        }
+
+        @media (min-width: 968px) {
             .sidebar {
                 width: 250px;
             }
+
+            .header {
+                width: calc(100% - 250px);
+                left: 250px;
+            }
+
+            .content {
+                margin-left: 250px;
+            }
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 968px) {
             .sidebar {
-                transform: translateX(-200px);
+                transform: translateX(-220px);
             }
 
             .sidebar.active {
                 transform: translateX(0);
             }
 
-            .sidebar a {
-                font-size: 0.8em;
+            .header {
+                width: 100%;
+                left: 0;
             }
 
-            .alert {
-                font-size: 0.8rem;
-                padding: 10px;
-            }
-
-            .alert h5 {
-                font-size: 0.8rem;
+            .content {
+                margin-left: 0;
             }
         }
     </style>
@@ -128,41 +252,56 @@
 
 <body>
     <div class="header">
-        <button class="btn btn-dark mobile-sidebar-btn" id="sidebarToggle"><i class="fas fa-bars"></i></button>
-        <div class="dropdown">
-            <button class="btn btn-dark dropdown-toggle" style="background-color: #000000;" type="button"
-                id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-user"></i>
-                <% if (tenant) { %>
-                    Welcome, <%= tenant.name %>
-                        <% } else { %>
-                            Welcome, Guest
-                            <% } %>
-            </button>
-            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
-                <a class="dropdown-item" href="/tenantPortal/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        <button class="btn mobile-sidebar-btn" id="sidebarToggle" style="background-color: #ffffff;">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="header-right">
+            <div class="dropdown">
+                <button class="btn dropdown-toggle" style="background-color: #ffffff; color: #000000;" type="button"
+                    id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-user"></i>
+                    <% if (tenant) { %>
+                        Welcome, <%= tenant.name %>
+                            <% } else { %>
+                                Welcome, Guest
+                                <% } %>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
+                    <a class="dropdown-item" href="/tenantPortal/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
             </div>
         </div>
     </div>
+    
 
 
     <div class="d-flex">
         <nav class="sidebar fixed" id="sidebarMenu">
-            <h2 class="text-white"><strong>Tenant Portal</strong></h2>
+            <h2 class="sidebar-title"><strong>Tenant Portal</strong></h2>
             <ul class="nav flex-column">
-                <li><a class="nav-link" href="/tenantPortal/dashboard"><i class="fas fa-tachometer-alt"></i>
-                        Dashboard</a></li>
-                <li><a class="nav-link" href="/payments"><i class="fas fa-money-bill-wave"></i>
-                        Payment Management</a></li>
-                <li><a class="nav-link" href="/requestMaintenance"><i class="fas fa-wrench"></i>
-                        Request Maintenance</a></li>
-                <li><a class="nav-link" href="/lease"><i class="fas fa-file-contract"></i>
-                        Lease</a></li>
-                <li><a class="nav-link" href="/tenant/profile"><i class="fas fa-file-contract"></i>
-                        Profile Settings</a></li>
-
+                <li><a class="nav-link" href="/tenantPortal/dashboard">
+                        <i class="fas fa-tachometer-alt"></i> <strong>Dashboard</strong>
+                    </a></li>
+                <li><a class="nav-link" href="/payments">
+                        <i class="fas fa-money-bill-wave"></i> <strong>Payments</strong>
+                    </a></li>
+                <li><a class="nav-link" href="/requestMaintenance">
+                        <i class="fas fa-wrench"></i> <strong>Maintenance</strong>
+                    </a></li>
+                <li><a class="nav-link" href="/lease">
+                        <i class="fas fa-file-contract"></i> <strong>Lease</strong>
+                    </a></li>
+                <li><a class="nav-link" href="/tenant/agreement">
+                        <i class="fas fa-hourglass-half"></i> <strong>Agreement</strong>
+                    </a></li>
+                <li><a class="nav-link" href="/tenant/profile">
+                        <i class="fas fa-user"></i> <strong>Profile</strong>
+                    </a></li>
             </ul>
         </nav>
+
+
+
 
         <div class="container mt-4">
 
@@ -184,181 +323,264 @@
                         </div>
                         <% } %>
 
-
-
-                            <!-- Carousel for Important Announcements -->
-                            <div id="announcementCarousel" class="carousel slide mt-4" data-ride="carousel">
-                                <div class="carousel-inner">
-                                    <% announcements.forEach((announcement, index)=> { %>
-                                        <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
-                                            <div class="alert alert-<%= announcement.type %> text-center">
-                                                <h5>
-                                                    <%= announcement.message %>
-                                                </h5>
-                                            </div>
-                                        </div>
-                                        <% }); %>
-                                </div>
-
-                                <a class="carousel-control-prev" href="#announcementCarousel" role="button"
-                                    data-slide="prev">
-                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                    <span class="sr-only">Previous</span>
-                                </a>
-                                <a class="carousel-control-next" href="#announcementCarousel" role="button"
-                                    data-slide="next">
-                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                    <span class="sr-only">Next</span>
-                                </a>
-                            </div>
-
                             <!-- Responsive Cards -->
                             <div class="row mt-4">
 
-                                <!-- Important Dates Card -->
+                                <!-- Rent Due Card -->
                                 <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
                                     <div class="card shadow-lg border-0 h-100">
                                         <div class="card-header text-white"
                                             style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                            <h5 class="mb-0">Important Dates</h5>
+                                            <h5 class="mb-0">Rent Due</h5>
                                         </div>
-
-                                        <div class="card-body d-flex flex-column bg-light"
-                                            style="border-radius: 0 0 0.5rem 0.5rem;">
-                                            <ul class="list-unstyled">
-                                                <li class="d-flex align-items-center mb-3">
-                                                    <i class="fas fa-calendar-alt mr-3 text-warning"
-                                                        style="font-size: 1.5rem;"></i>
-                                                    <span style="font-size: 1.1rem;">Rent due: <br><strong
-                                                            style="color: #003366;">
-                                                            <%= nextRentDue %>
-                                                        </strong></span>
-                                                </li>
-                                                <li class="d-flex align-items-center mb-3">
-                                                    <i class="fas fa-calendar-check mr-3 text-success"
-                                                        style="font-size: 1.5rem;"></i>
-                                                    <span style="font-size: 1.1rem;">Lease Start Date: <br><strong
-                                                            style="color: #003366;">
-                                                            <%= tenant.leaseStartDate ?
-                                                                tenant.leaseStartDate.toDateString() : 'N/A' %>
-                                                        </strong></span>
-                                                </li>
-
-
-                                                <% if (maintenanceScheduleDates && maintenanceScheduleDates.length> 0) {
-                                                    %>
-                                                    <% maintenanceScheduleDates.forEach(schedule=> { %>
-                                                        <li class="d-flex align-items-center mb-3">
-                                                            <i class="fas fa-wrench mr-3 text-danger"
-                                                                style="font-size: 1.5rem;"></i>
-                                                            <span style="font-size: 1.1rem;">Maintenance Schedule: <br>
-
-                                                                <strong style="color: #003366;">
-                                                                    <%= schedule.date.toLocaleDateString('en-US', {
-                                                                        year: 'numeric' , month: 'long' , day: 'numeric'
-                                                                        }) %>
-                                                                </strong>
-                                                            </span>
-                                                        </li>
-                                                        <% }); %>
-                                                            <% } else { %>
-                                                                <li class="d-flex align-items-center mb-3">
-                                                                    <span style="font-size: 1.1rem;">
-                                                                        No maintenance requests scheduled.
-                                                                    </span>
-                                                                </li>
-                                                                <% } %>
-                                            </ul>
+                                        <div class="card-body bg-light" style="border-radius: 0 0 0.5rem 0.5rem;">
+                                            <p class="mb-0" style="font-size: 1.1rem;">
+                                                <i class="fas fa-calendar-alt mr-3 text-warning"
+                                                    style="font-size: 1.5rem;"></i>
+                                                <strong style="color: #003366;">
+                                                    <%= nextRentDue %>
+                                                </strong>
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
 
-
-                                <!-- Rental Overview Card -->
+                                <!-- Lease Start Date Card -->
                                 <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
                                     <div class="card shadow-lg border-0 h-100">
                                         <div class="card-header text-white"
                                             style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                            <h5 class="mb-0">Rental Overview</h5>
+                                            <h5 class="mb-0">Lease Start Date</h5>
                                         </div>
-                                        <div class="card-body d-flex flex-column bg-light"
-                                            style="border-radius: 0 0 0.5rem 0.5rem;">
-                                            <ul class="list-unstyled">
-                                                <li class="d-flex align-items-center mb-3">
-                                                    <i class="fas fa-home mr-3 text-primary"
-                                                        style="font-size: 1.5rem;"></i>
-                                                    <span style="font-size: 1.1rem;">
-                                                        Property Name:<br>
-
-                                                        <strong style="color: #003366;">
-                                                            <%= tenant.property? tenant.property.name : 'N/A' %>
-                                                        </strong>
-                                                    </span>
-                                                </li>
-                                                <li class="d-flex align-items-center mb-3">
-                                                    <i class="fas fa-door-open mr-3 text-info"
-                                                        style="font-size: 1.5rem;"></i>
-                                                    <span style="font-size: 1.1rem;">
-                                                        Unit Name:<br>
-
-                                                        <strong style="color: #003366;">
-                                                            <%= tenant.unit.unitName || 'N/A' %>
-                                                        </strong>
-                                                    </span>
-                                                </li>
-                                                <li class="d-flex align-items-center mb-3">
-                                                    <i class="fas fa-door-closed mr-3 text-warning"
-                                                        style="font-size: 1.5rem;"></i>
-                                                    <span style="font-size: 1.1rem;">
-                                                        Room Number: <br>
-
-                                                        <strong style="color: #003366;">
-                                                            <%= tenant.doorNumber || 'N/A' %>
-                                                        </strong>
-                                                    </span>
-                                                </li>
-                                            </ul>
+                                        <div class="card-body bg-light" style="border-radius: 0 0 0.5rem 0.5rem;">
+                                            <p class="mb-0" style="font-size: 1.1rem;">
+                                                <i class="fas fa-calendar-check mr-3 text-success"
+                                                    style="font-size: 1.5rem;"></i>
+                                                <strong style="color: #003366;">
+                                                    <%= tenant.leaseStartDate ? tenant.leaseStartDate.toDateString()
+                                                        : 'N/A' %>
+                                                </strong>
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
 
-
-                                <!-- Payment Status Card -->
-                                <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                                    <div class="card shadow-lg border-0 h-100">
-                                        <div class="card-header text-white"
-                                            style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                            <h5 class="mb-0">Payment Status</h5>
+                                <!-- Maintenance Schedule Card -->
+                                <% if (maintenanceScheduleDates && maintenanceScheduleDates.length> 0) { %>
+                                    <% maintenanceScheduleDates.forEach(schedule=> { %>
+                                        <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                            <div class="card shadow-lg border-0 h-100">
+                                                <div class="card-header text-white"
+                                                    style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                                    <h5 class="mb-0">Maintenance Schedule</h5>
+                                                </div>
+                                                <div class="card-body bg-light"
+                                                    style="border-radius: 0 0 0.5rem 0.5rem;">
+                                                    <p class="mb-0" style="font-size: 1.1rem;">
+                                                        <i class="fas fa-wrench mr-3 text-danger"
+                                                            style="font-size: 1.5rem;"></i>
+                                                        <strong style="color: #003366;">
+                                                            <%= schedule.date.toLocaleDateString('en-US', {
+                                                                year: 'numeric' , month: 'long' , day: 'numeric' }) %>
+                                                        </strong>
+                                                    </p>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="card-body d-flex flex-column bg-light"
-                                            style="border-radius: 0 0 0.5rem 0.5rem;">
-                                            <p style="font-size: 1.1rem;">Monthly Rent: <strong style="color: #003366;">
-                                                Ksh. <%= tenant.unit && tenant.unit.unitPrice ? tenant.unit.unitPrice.toFixed(2) : 'N/A' %>
-                                            </strong></p>
+                                        <% }); %>
+                                            <% } else { %>
+                                                <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                                    <div class="card shadow-lg border-0 h-100">
+                                                        <div class="card-header text-white"
+                                                            style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                                            <h5 class="mb-0">Maintenance Schedule</h5>
+                                                        </div>
+                                                        <div class="card-body bg-light"
+                                                            style="border-radius: 0 0 0.5rem 0.5rem;">
+                                                            <p class="mb-0" style="font-size: 1.1rem;">No maintenance
+                                                                requests scheduled.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <% } %>
 
-                                            <p style="font-size: 1.1rem;">Rent Paid: <strong style="color: #003366;">
-                                                Ksh. <%= totalRentPaid ? totalRentPaid.toFixed(2) : '0' %>
-                                            </strong></p>
-                                            
-                                            <p style="font-size: 1.1rem;">Utility Paid: <strong style="color: #003366;">
-                                                Ksh. <%= utilityPaid ? utilityPaid.toFixed(2) : '0' %>
-                                            </strong></p>
-                                            <p style="font-size: 1.1rem;">Deposit Paid: <strong style="color: #003366;">
-                                                <br>Ksh. <%= depositPaid.toFixed(2) %> of Ksh. <%= depositAmount.toFixed(2) %>
-                                            </strong></p>
-                                            
-                                            
-                                            <p style="font-size: 1.1rem;">Rent Due: <strong style="color: #003366;">
-                                                Ksh. <%= (rentDue || 0).toFixed(2) %>
-                                            </strong></p>
-                                            
-                                            <p style="font-size: 1.1rem;">Utility Due: <strong style="color: #003366;">
-                                                Ksh. <%= (utilityDue || 0).toFixed(2) %>
-                                            </strong></p>
-                                            
-                                        </div>
-                                    </div>
-                                </div>
+                                                    <!-- Property Name Card -->
+                                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                                        <div class="card shadow-lg border-0 h-100">
+                                                            <div class="card-header text-white"
+                                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                                                <h5 class="mb-0">Property Name</h5>
+                                                            </div>
+                                                            <div class="card-body bg-light"
+                                                                style="border-radius: 0 0 0.5rem 0.5rem;">
+                                                                <p class="mb-0" style="font-size: 1.1rem;">
+                                                                    <i class="fas fa-home mr-3 text-primary"
+                                                                        style="font-size: 1.5rem;"></i>
+                                                                    <strong style="color: #003366;">
+                                                                        <%= tenant.property ? tenant.property.name
+                                                                            : 'N/A' %>
+                                                                    </strong>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Unit Name Card -->
+                                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                                        <div class="card shadow-lg border-0 h-100">
+                                                            <div class="card-header text-white"
+                                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                                                <h5 class="mb-0">Unit Name</h5>
+                                                            </div>
+                                                            <div class="card-body bg-light"
+                                                                style="border-radius: 0 0 0.5rem 0.5rem;">
+                                                                <p class="mb-0" style="font-size: 1.1rem;">
+                                                                    <i class="fas fa-door-open mr-3 text-info"
+                                                                        style="font-size: 1.5rem;"></i>
+                                                                    <strong style="color: #003366;">
+                                                                        <%= tenant.unit ? tenant.unit.unitName : 'N/A'
+                                                                            %>
+                                                                    </strong>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Room Number Card -->
+                                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                                        <div class="card shadow-lg border-0 h-100">
+                                                            <div class="card-header text-white"
+                                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                                                <h5 class="mb-0">Room Number</h5>
+                                                            </div>
+                                                            <div class="card-body bg-light"
+                                                                style="border-radius: 0 0 0.5rem 0.5rem;">
+                                                                <p class="mb-0" style="font-size: 1.1rem;">
+                                                                    <i class="fas fa-door-closed mr-3 text-warning"
+                                                                        style="font-size: 1.5rem;"></i>
+                                                                    <strong style="color: #003366;">
+                                                                        <%= tenant.doorNumber || 'N/A' %>
+                                                                    </strong>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+
+                                                    <!-- Monthly Rent Card -->
+                                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                                        <div class="card shadow-lg border-0">
+                                                            <div class="card-header text-white"
+                                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                                                <h5 class="mb-0">Monthly Rent</h5>
+                                                            </div>
+                                                            <div class="card-body bg-light"
+                                                                style="border-radius: 0 0 0.5rem 0.5rem;">
+                                                                <p style="font-size: 1.1rem;">Ksh. <strong
+                                                                        style="color: #003366;">
+                                                                        <%= tenant.unit && tenant.unit.unitPrice ?
+                                                                            tenant.unit.unitPrice.toFixed(2) : 'N/A' %>
+                                                                    </strong></p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Rent Paid Card -->
+                                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                                        <div class="card shadow-lg border-0">
+                                                            <div class="card-header text-white"
+                                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                                                <h5 class="mb-0">Rent Paid</h5>
+                                                            </div>
+                                                            <div class="card-body bg-light"
+                                                                style="border-radius: 0 0 0.5rem 0.5rem;">
+                                                                <p style="font-size: 1.1rem;">Ksh. <strong
+                                                                        style="color: #003366;">
+                                                                        <%= totalRentPaid ? totalRentPaid.toFixed(2)
+                                                                            : '0' %>
+                                                                    </strong></p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Utility Paid Card -->
+                                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                                        <div class="card shadow-lg border-0">
+                                                            <div class="card-header text-white"
+                                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                                                <h5 class="mb-0">Utility Paid</h5>
+                                                            </div>
+                                                            <div class="card-body bg-light"
+                                                                style="border-radius: 0 0 0.5rem 0.5rem;">
+                                                                <p style="font-size: 1.1rem;">Ksh. <strong
+                                                                        style="color: #003366;">
+                                                                        <%= utilityPaid ? utilityPaid.toFixed(2) : '0'
+                                                                            %>
+                                                                    </strong></p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Deposit Paid Card -->
+                                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                                        <div class="card shadow-lg border-0">
+                                                            <div class="card-header text-white"
+                                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                                                <h5 class="mb-0">Deposit Paid</h5>
+                                                            </div>
+                                                            <div class="card-body bg-light"
+                                                                style="border-radius: 0 0 0.5rem 0.5rem;">
+                                                                <p style="font-size: 1.1rem;">
+                                                                    Ksh.
+                                                                    <strong style="color: #003366;">
+                                                                        <%= typeof depositPaid !=='undefined' &&
+                                                                            depositPaid !=null ? depositPaid.toFixed(2)
+                                                                            : '0.00' %>
+                                                                            of Ksh.
+                                                                            <%= typeof depositAmount !=='undefined' &&
+                                                                                depositAmount !=null ?
+                                                                                depositAmount.toFixed(2) : '0.00' %>
+                                                                    </strong>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- Rent Due Card -->
+                                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                                        <div class="card shadow-lg border-0">
+                                                            <div class="card-header text-white"
+                                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                                                <h5 class="mb-0">Rent Due</h5>
+                                                            </div>
+                                                            <div class="card-body bg-light"
+                                                                style="border-radius: 0 0 0.5rem 0.5rem;">
+                                                                <p style="font-size: 1.1rem;">Ksh. <strong
+                                                                        style="color: #003366;">
+                                                                        <%= (rentDue || 0).toFixed(2) %>
+                                                                    </strong></p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Utility Due Card -->
+                                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                                        <div class="card shadow-lg border-0">
+                                                            <div class="card-header text-white"
+                                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                                                <h5 class="mb-0">Utility Due</h5>
+                                                            </div>
+                                                            <div class="card-body bg-light"
+                                                                style="border-radius: 0 0 0.5rem 0.5rem;">
+                                                                <p style="font-size: 1.1rem;">Ksh. <strong
+                                                                        style="color: #003366;">
+                                                                        <%= (utilityDue || 0).toFixed(2) %>
+                                                                    </strong></p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
 
                             </div>
 
@@ -412,7 +634,11 @@
                                     .card-body p,
                                     .card-body span,
                                     .card-body ul li span {
-                                        font-size: 14px;
+                                        font-size: 10px;
+                                    }
+
+                                    .p {
+                                        font-size: 10px;
                                     }
 
                                     .card {
@@ -435,7 +661,7 @@
                                     }
 
                                     .card-header {
-                                        padding: 0.75rem 1rem;
+                                        padding: 0.65rem 1rem;
                                     }
 
                                     .alert {
@@ -443,7 +669,7 @@
                                     }
 
                                     .btn {
-                                        font-size: 12px;
+                                        font-size: 10px;
                                     }
 
                                     .dropdown-menu {
@@ -457,11 +683,11 @@
                                     .card-body p,
                                     .card-body span,
                                     .card-body ul li span {
-                                        font-size: 12px;
+                                        font-size: 10px;
                                     }
 
                                     .btn-block {
-                                        font-size: 12px;
+                                        font-size: 10px;
                                     }
 
 
@@ -471,11 +697,11 @@
                                     }
 
                                     .carousel-inner .carousel-item h5 {
-                                        font-size: 14px;
+                                        font-size: 12px;
                                     }
 
                                     .card-body {
-                                        padding: 0.75rem;
+                                        padding: 0.65rem;
                                     }
 
                                     .card-header {

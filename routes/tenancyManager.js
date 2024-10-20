@@ -24,8 +24,11 @@ const crypto = require('crypto');
 
 router.get('/tenancy-manager/dashboard', isTenancyManager, async (req, res) => {
     try {
+        // Fetch all properties owned by the user
         const properties = await Property.find({ owner: req.user._id }).populate('tenants');
-        const units = await PropertyUnit.find({ propertyId: { $in: properties.map(prop => prop._id) } });
+
+        // Fetch all units for the properties
+        const units = await PropertyUnit.find({ propertyId: { $in: properties.map(prop => prop._id) } }).populate('tenants');
 
         const numberOfUnits = units.length;
         const users = await User.countDocuments();
@@ -36,14 +39,21 @@ router.get('/tenancy-manager/dashboard', isTenancyManager, async (req, res) => {
         let totalRentDue = 0;
         let utilityCollected = 0;
         let utilityDue = 0;
-        let numberOfTenants = 0;
+        let numberOfTenants = 0;  // Initialize tenant count
+        let occupiedUnitsCount = 0;  // Initialize occupied units count
 
         const rentCollectionData = {}; 
 
-        properties.forEach(property => {
-            numberOfTenants += property.tenants.length;
+        // Iterate over units to calculate total tenants and occupied units
+        units.forEach(unit => {
+            numberOfTenants += unit.tenants.length;  // Sum tenants in each unit
 
-            property.tenants.forEach(tenant => {
+            if (unit.tenants.length > 0) {
+                occupiedUnitsCount += 1;  // Count the unit as occupied if it has tenants
+            }
+
+            // Aggregate rent and utility details from tenants
+            unit.tenants.forEach(tenant => {
                 totalRentCollected += tenant.rentPaid || 0;
                 totalRentDue += tenant.rentDue || 0;
                 utilityCollected += tenant.utilityPaid || 0;
@@ -55,8 +65,6 @@ router.get('/tenancy-manager/dashboard', isTenancyManager, async (req, res) => {
                 rentCollectionData[month].collected += tenant.rentPaid || 0;
                 rentCollectionData[month].due += tenant.rentDue || 0;
             });
-
-            property.status = property.vacant > 0 ? 'Available' : 'Occupied';
         });
 
         const totalProperties = properties.length;
@@ -79,6 +87,7 @@ router.get('/tenancy-manager/dashboard', isTenancyManager, async (req, res) => {
             due: rentCollectionData[month].due
         }));
 
+        // Pass the data to the template
         res.render('tenancyManager/dashboard', {
             properties,
             totalRentCollected,
@@ -87,19 +96,22 @@ router.get('/tenancy-manager/dashboard', isTenancyManager, async (req, res) => {
             utilityDue,
             averageRent,
             upcomingLeaseExpirations,
-            numberOfTenants,
+            numberOfTenants,  // Pass the number of tenants to the template
             numberOfUnits,
+            occupiedUnitsCount,  // Pass the occupied units count to the template
             users,
             totalRequests,
             rentDataArray,
             currentUser: req.user
         });
     } catch (err) {
-        console.error(err);
+        console.error('Error fetching dashboard data:', err);
         req.flash('error', 'Error fetching dashboard data.');
         res.redirect('/login');
     }
 });
+
+
 
 
 

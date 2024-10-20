@@ -5,12 +5,10 @@ const bcrypt = require('bcrypt');
 const MaintenanceRequest = require('../models/maintenanceRequest')
 const Payment = require('../models/payment')
 
-
-
 router.get('/tenantPortal/login', (req, res) => {
     res.render('tenantPortal/login');
 });
- 
+
 router.post('/tenant/login', async (req, res) => {
     const { name, password } = req.body;
 
@@ -62,6 +60,7 @@ router.get('/tenantPortal/dashboard', async (req, res) => {
     try {
         const tenantId = req.session.tenantId;
 
+        // Fetch tenant and related data
         const tenant = await Tenant.findById(tenantId)
             .populate({
                 path: 'property',
@@ -81,42 +80,45 @@ router.get('/tenantPortal/dashboard', async (req, res) => {
             return res.redirect('/tenantPortal/login');
         }
 
-        console.log('Tenant object:', tenant);
-
         // Fetch rent payments
         const rentPayments = await Payment.find({
             tenant: tenantId,
             paymentType: 'rent',
         });
         const totalRentPaid = rentPayments.reduce((acc, payment) => acc + (payment.amount || 0), 0);
-        console.log('Total Rent Paid:', totalRentPaid);
 
-        // Fetch utility payments (if needed for other parts of the dashboard)
+        // Fetch utility payments
         const utilityPayments = await Payment.find({
             tenant: tenantId,
             paymentType: 'utility',
         });
         const totalUtilityPaid = utilityPayments.reduce((acc, payment) => acc + (payment.amount || 0), 0);
-        console.log('Total Utility Paid:', totalUtilityPaid);
 
-        // Calculate utility due
+        // Calculate utility charges due
         const unitUtilities = Array.isArray(tenant.unit?.utilities) ? tenant.unit.utilities : [];
         const totalUtilityCharges = unitUtilities.reduce((acc, utility) => acc + (utility.amount || 0), 0);
         const utilityDue = Math.max(totalUtilityCharges - totalUtilityPaid, 0);
-        console.log('Utility Due:', utilityDue);
 
-        // Calculate rent due based on time elapsed
+        // Calculate rent due based on lease start date and months elapsed
         const today = new Date();
         const leaseStartDate = new Date(tenant.leaseStartDate);
         const monthsElapsed = (today.getFullYear() - leaseStartDate.getFullYear()) * 12 + (today.getMonth() - leaseStartDate.getMonth()) + 1;
         const totalRentExpected = monthsElapsed * (tenant.unit?.unitPrice || 0);
         const rentDue = Math.max(totalRentExpected - totalRentPaid, 0);
-        console.log('Rent Due:', rentDue);
 
-        // Calculate deposit and wallet balance
+        // Calculate deposit paid based on tenant wallet balance
         const depositAmount = tenant.deposit || 0;
-        const walletBalance = tenant.walletBalance || -depositAmount;
-        const depositPaid = Math.min(depositAmount, Math.max(0, walletBalance + depositAmount));
+        const walletBalance = tenant.walletBalance || 0;
+
+        // Deposit paid logic:
+        // - If walletBalance is negative, depositPaid will reflect the unpaid deposit.
+        // - If walletBalance is positive, depositPaid is the walletBalance added to depositAmount, capped at depositAmount.
+        let depositPaid;
+        if (walletBalance < 0) {
+            depositPaid = depositAmount + walletBalance; // Negative balance reduces deposit paid.
+        } else {
+            depositPaid = Math.min(depositAmount + walletBalance, depositAmount); // Cap at depositAmount.
+        }
 
         // Prepare maintenance request data
         const maintenanceScheduleDates = tenant.maintenanceRequests.map(request => ({
@@ -140,7 +142,7 @@ router.get('/tenantPortal/dashboard', async (req, res) => {
 
         const announcements = [{ type: 'info', message: 'This is your daily announcement!' }];
 
-        // Render the dashboard with all necessary data
+        // Render the dashboard view with the calculated data
         res.render('tenantPortal/dashboard', {
             tenant,
             walletBalance,
@@ -165,6 +167,7 @@ router.get('/tenantPortal/dashboard', async (req, res) => {
         return res.redirect('/tenantPortal/login');
     }
 });
+
 
 
 router.get('/payments', async (req, res) => {
@@ -243,6 +246,23 @@ router.get('/tenantPortal/logout', (req, res) => {
     });
 });
 
+function calculateWalletBalance(leaseStartDate, currentRentPaid, monthlyRent, depositAmount, currentDate) {
+    let leaseStart = new Date(leaseStartDate);
+    let current = new Date(currentDate);
+
+    let monthsSinceStart = (current.getFullYear() - leaseStart.getFullYear()) * 12 + (current.getMonth() - leaseStart.getMonth());
+    monthsSinceStart = Math.max(monthsSinceStart, 1);
+
+    let totalRentDue = monthsSinceStart * monthlyRent;
+    let overpayment = Math.max(currentRentPaid - totalRentDue, 0);
+
+    let walletBalance = -depositAmount;
+    walletBalance += overpayment;
+
+    return walletBalance;
+}
+
+
 router.get('/tenant/profile', async (req, res) => {
     try {
         const tenantId = req.session.tenantId;
@@ -251,36 +271,72 @@ router.get('/tenant/profile', async (req, res) => {
         }
 
         const tenant = await Tenant.findById(tenantId).populate('unit');
-
         if (!tenant) {
             return res.status(404).send('Tenant not found');
         }
 
-        const rentPayments = await Payment.find({ tenant: tenantId, paymentType: 'rent' });
+        const rentPayments = await Payment.find({
+            tenant: tenantId,
+            paymentType: 'rent',
+        });
+
         const totalRentPaid = rentPayments.reduce((acc, payment) => acc + (payment.amount || 0), 0);
-        console.log('Total Rent Paid:', totalRentPaid);
-
-        const unitPrice = tenant.unit?.unitPrice || 0;
-
-        const rentDue = Math.max(0, unitPrice - totalRentPaid);
-
+        const monthlyRent = tenant.unit?.unitPrice || 0;
         const depositAmount = tenant.deposit || 0;
-        let walletBalance = -depositAmount;
+        const leaseStartDate = tenant.leaseStartDate || new Date();
+        const currentDate = new Date();
 
-        walletBalance += totalRentPaid;
+        let walletBalance = calculateWalletBalance(leaseStartDate, totalRentPaid, monthlyRent, depositAmount, currentDate);
+
+        let depositPaid = depositAmount + walletBalance;
+
+        depositPaid = Math.min(depositPaid, depositAmount);
+
+        tenant.walletBalance = walletBalance;
+        await tenant.save();
 
         res.render('tenantPortal/profile', {
             tenant,
             totalRentPaid,
             walletBalance,
-            rentDue,
-            depositAmount
+            monthlyRent,
+            depositAmount,
+            depositPaid,
         });
     } catch (error) {
         console.error('Error fetching tenant profile:', error);
         res.status(500).send('Error fetching tenant profile');
     }
 });
+
+
+// Route to render the agreement page
+router.get('/tenant/agreement', async (req, res) => {
+    try {
+        const tenantId = req.session.tenantId; 
+        if (!tenantId) {
+            req.flash('error', 'Please log in to view the agreement.');
+            return res.redirect('/tenantPortal/login');
+        }
+
+        // Fetch tenant details from the database
+        const tenant = await Tenant.findById(tenantId).populate('unit').populate('property');
+        if (!tenant) {
+            req.flash('error', 'Tenant not found.');
+            return res.redirect('/tenantPortal/dashboard');
+        }
+
+        // Render the agreement page, passing tenant information to the view
+        res.render('tenantPortal/agreement', {
+            tenant,
+        });
+    } catch (error) {
+        console.error('Error fetching tenant data for agreement page:', error);
+        req.flash('error', 'An error occurred while fetching tenant data.');
+        return res.redirect('/tenantPortal/dashboard');
+    }
+});
+
 
 router.post('/tenant/requestRefund', async (req, res) => {
     try {

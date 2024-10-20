@@ -5,7 +5,7 @@ const paymentSchema = new Schema({
     tenant: { type: Schema.Types.ObjectId, ref: 'Tenant', required: true },
     tenantName: { type: String, required: true },
     property: { type: Schema.Types.ObjectId, ref: 'Property', required: true },
-    unit: { type: Schema.Types.ObjectId, ref: 'PropertyUnit', required: false }, // Optional
+    unit: { type: Schema.Types.ObjectId, ref: 'PropertyUnit', required: false },
     doorNumber: { type: String, required: [true, 'Door number is required'] },
     amount: { type: Number, required: true, min: [0, 'Amount must be non-negative'] },
     datePaid: { type: Date, default: Date.now },
@@ -33,22 +33,36 @@ const paymentSchema = new Schema({
     timestamps: true
 });
 
-// Static method to update payment status
+// Static method to update payment status and corresponding fields
 paymentSchema.statics.updatePaymentStatus = async function(transactionId) {
     try {
-        const payment = await this.findOneAndUpdate(
-            { transactionId },
-            { status: 'completed' },
-            { new: true }
-        );
+        const payment = await this.findOne({ transactionId });
 
-        if (payment) {
-            console.log(`Payment status updated for transaction ID: ${transactionId}`);
-        } else {
+        if (!payment) {
             console.log(`Payment not found for transaction ID: ${transactionId}`);
+            return null;
         }
+
+        if (payment.status === 'completed') {
+            console.log(`Payment already completed for transaction ID: ${transactionId}`);
+            return payment; 
+        }
+        payment.status = 'completed';
+
+        if (payment.paymentType === 'rent') {
+            payment.rentPaid = payment.amount;
+            console.log(`Rent payment updated for transaction ID: ${transactionId}`);
+        } else if (payment.paymentType === 'utility') {
+            payment.utilityPaid = payment.amount;
+            console.log(`Utility payment updated for transaction ID: ${transactionId}`);
+        }
+
+        await payment.save();
+
+        return payment;
     } catch (error) {
         console.error('Error updating payment status:', error);
+        throw error;
     }
 };
 

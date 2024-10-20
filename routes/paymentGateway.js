@@ -11,17 +11,36 @@ const generateTransactionId = (prefix) => {
     return `${prefix}${randomDigits}`;
 };
 
-// Utility function to send payment requests
 async function sendPaymentRequest(payload) {
-    try {
-        const response = await axios.post(process.env.INITIATE_STK_URL, payload);
-        console.log('Payment request successful.');
-        return response.data;
-    } catch (err) {
-        console.error('Payment request failed:', err.message);
-        return { success: false, error: err.message };
-    }
-}
+       try {
+           const response = await axios.post(
+               'https://api.umeskiasoftwares.com/api/v1/intiatestk',
+               payload,
+               { headers: { 'Content-Type': 'application/json' } }
+           );
+   
+           if (response && response.status === 200) {
+               console.log('Payment request successful.');
+               return response.data; 
+           } else {
+               console.error('Payment request failed: Invalid response status:', response.status);
+               return { success: false, error: `Unexpected response status: ${response.status}` };
+           }
+       } catch (err) {
+           if (err.response) {
+               console.error('Server error:', err.response.data);
+               return { success: false, error: err.response.data.message || 'Server error occurred.' };
+           } else if (err.request) {
+               console.error('Network error: No response received:', err.request);
+               return { success: false, error: 'No response from server. Please check your network connection.' };
+           } else {
+               console.error('Payment request failed:', err.message);
+               return { success: false, error: err.message || 'Unknown error occurred during payment request.' };
+           }
+       }
+   }
+   
+   
 
 // STK Push initiation route
 router.post('/payment/rent', async (req, res) => {
@@ -38,7 +57,7 @@ router.post('/payment/rent', async (req, res) => {
            if (!tenant) throw new Error('Tenant not found.');
    
            const rentPaid = parseFloat(amount);
-           const transactionId = generateTransactionId('RNT-');
+           const transactionId = generateTransactionId('RNT');
    
            const userPaymentAccount = await PaymentAccount.findOne({ userId: tenant.userId });
            if (!userPaymentAccount) throw new Error('Payment account not found.');
@@ -51,7 +70,7 @@ router.post('/payment/rent', async (req, res) => {
                msisdn: phoneNumber,
                reference: transactionId,
            };
-   
+
            const paymentResponse = await sendPaymentRequest(payload);
            console.log('Payment initiation response:', paymentResponse);
            if (paymentResponse.success === "200") {
@@ -61,7 +80,6 @@ router.post('/payment/rent', async (req, res) => {
                    return res.redirect('/payments');
                }
    
-               // Store payment details in the session
                req.session.paymentData = {
                    tenant: tenantId,
                    tenantName: tenant.name,
@@ -70,16 +88,16 @@ router.post('/payment/rent', async (req, res) => {
                    totalPaid: rentPaid,
                    doorNumber: tenant.unit && tenant.unit.doorNumber ? tenant.unit.doorNumber : 'N/A',
                    paymentType: 'rent',
-                   due: tenant.rentDue || 0,
+                   due: tenant.rentDue || 0, 
                    datePaid: new Date(),
                    method: paymentMethod,
                    status: 'pending',
                    transactionId,
                    transactionRequestId,
                };
+                 
                req.flash('info', 'Payment initiated. Awaiting confirmation.');
                req.session.transactionId = transactionId;
-               // Start polling for payment status
                pollPaymentStatus(req, userPaymentAccount.apiKey, userPaymentAccount.accountEmail);
                return res.redirect('/payments');
            } else {
@@ -116,6 +134,7 @@ function pollPaymentStatus(req, api_key, email) {
                console.log('Verifying payment with payload:', verificationPayload);
    
                const response = await axios.post(
+                     
                    'https://api.umeskiasoftwares.com/api/v1/transactionstatus',
                    verificationPayload,
                    { headers: { 'Content-Type': 'application/json' } }
@@ -173,10 +192,12 @@ router.post('/payment/utility', async (req, res) => {
            if (!tenant) throw new Error('Tenant not found.');
    
            const totalPaid = parseFloat(amount) || 0;
-           const transactionId = generateTransactionId('UTL-');
+           const transactionId = generateTransactionId('UTL');
    
            const userPaymentAccount = await PaymentAccount.findOne({ userId: tenant.userId });
            if (!userPaymentAccount) throw new Error('Payment account not found.');
+
+           console.log( 'API Key '+userPaymentAccount.apiKey+' EMEIL : '+userPaymentAccount.accountEmail +'Account id'+userPaymentAccount.accountEmail)
    
            const payload = {
                api_key: userPaymentAccount.apiKey,
@@ -186,9 +207,9 @@ router.post('/payment/utility', async (req, res) => {
                msisdn: phoneNumber,
                reference: transactionId,
            };
-   
+          // console.log(payload)
            const paymentResponse = await sendPaymentRequest(payload);
-           console.log('Payment initiation response:', paymentResponse);
+          // console.log('Payment initiation response:', paymentResponse);
    
            if (paymentResponse.success === "200") {
                const transactionRequestId = paymentResponse.tranasaction_request_id;

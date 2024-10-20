@@ -10,11 +10,13 @@ router.get('/tenancy-manager/properties', isTenancyManager, async (req, res) => 
         const limit = 10;
         const skip = (page - 1) * limit;
 
+        // Aggregation pipeline to calculate rent, utilities, and tenant count for properties
         const properties = await Property.aggregate([
             {
                 $match: { owner: req.user._id }
             },
             {
+                // Lookup for units within the property
                 $lookup: {
                     from: 'propertyunits',
                     localField: '_id',
@@ -23,174 +25,120 @@ router.get('/tenancy-manager/properties', isTenancyManager, async (req, res) => 
                 }
             },
             {
-                $unwind: {
-                    path: '$units',
-                    preserveNullAndEmptyArrays: true
-                }
-            },
-            {
+                // Lookup for tenants associated with each unit
                 $lookup: {
                     from: 'tenants',
-                    localField: 'units.tenantId',
-                    foreignField: '_id',
-                    as: 'units.tenants'
+                    localField: 'units._id',
+                    foreignField: 'unit',
+                    as: 'tenants'
                 }
             },
             {
-                $unwind: {
-                    path: '$units.tenants',
-                    preserveNullAndEmptyArrays: true
-                }
-            },
-            {
+                // Lookup for payments associated with each unit
                 $lookup: {
                     from: 'payments',
                     localField: 'units._id',
                     foreignField: 'unitId',
-                    as: 'units.payments'
+                    as: 'payments'
                 }
             },
             {
                 $addFields: {
-                    // Calculate total paid rent and utilities
+                    numberOfUnits: { $size: '$units' },
+                    numberOfTenants: { $size: '$tenants' }, 
                     totalPaidRent: {
                         $sum: {
                             $map: {
-                                input: '$units.payments',
-                                as: 'payment',
-                                in: { $ifNull: ['$$payment.amount', 0] }
+                                input: '$payments',
+                                as: 'p',
+                                in: { $ifNull: ['$$p.amount', 0] }
                             }
                         }
                     },
                     totalPaidUtilities: {
                         $sum: {
                             $map: {
-                                input: '$units.payments',
-                                as: 'payment',
-                                in: { $ifNull: ['$$payment.utilitiesAmount', 0] }
+                                input: '$payments',
+                                as: 'p',
+                                in: { $ifNull: ['$$p.utilitiesAmount', 0] }
                             }
                         }
                     },
-                    // Calculate dues based on unit prices and paid amounts
-                    rentDue: {
-                        $let: {
-                            vars: {
-                                rentDue: { $ifNull: ['$units.rentDue', 0] },
-                                monthsElapsed: {
-                                    $floor: {
-                                        $divide: [
-                                            { 
-                                                $subtract: [
-                                                    new Date(), 
-                                                    { 
-                                                        $toDate: { 
-                                                            $arrayElemAt: ['$units.tenants.leaseStart', 0] 
-                                                        } 
-                                                    }
-                                                ]
-                                            },
-                                            1000 * 60 * 60 * 24 * 30 
-                                        ]
-                                    }
+                    vacancies: {
+                        $sum: {
+                            $map: {
+                                input: '$units',
+                                as: 'unit',
+                                in: {
+                                    $cond: [{ $eq: ['$$unit.tenantId', null] }, 1, 0]
                                 }
-                            },
-                            in: {
-                                $multiply: ['$$rentDue', '$$monthsElapsed']
+                            }
+                        }
+                    },
+                    rentDue: {
+                        $sum: {
+                            $map: {
+                                input: '$units',
+                                as: 'unit',
+                                in: {
+                                    $cond: [
+                                        { $ne: ['$$unit.tenantId', null] }, 
+                                        { $subtract: ['$$unit.unitPrice', '$$unit.totalRentPaid'] }, 
+                                        0
+                                    ]
+                                }
                             }
                         }
                     },
                     utilitiesDue: {
-                        $let: {
-                            vars: {
-                                utilitiesDue: { $ifNull: ['$units.utilitiesDue', 0] },
-                                monthsElapsed: {
-                                    $floor: {
-                                        $divide: [
-                                            { 
-                                                $subtract: [
-                                                    new Date(), 
-                                                    { 
-                                                        $toDate: { 
-                                                            $arrayElemAt: ['$units.tenants.leaseStart', 0] 
-                                                        } 
-                                                    }
-                                                ]
-                                            },
-                                            1000 * 60 * 60 * 24 * 30
-                                        ]
-                                    }
+                        $sum: {
+                            $map: {
+                                input: '$units',
+                                as: 'unit',
+                                in: {
+                                    $cond: [
+                                        { $ne: ['$$unit.tenantId', null] }, 
+                                        { $subtract: ['$$unit.utilitiesAmount', '$$unit.totalUtilitiesPaid'] }, 
+                                        0
+                                    ]
                                 }
-                            },
-                            in: {
-                                $multiply: ['$$utilitiesDue', '$$monthsElapsed']
                             }
-                        }
-                    },
-                    isVacant: {
-                        $cond: {
-                            if: { $eq: [{ $size: { $ifNull: ['$units.tenants', []] } }, 0] },
-                            then: true, 
-                            else: false 
                         }
                     }
-                }
-            },
-            {
-                $group: {
-                    _id: '$_id',
-                    name: { $first: '$name' },
-                    address: { $first: '$address' },
-                    paymentDay: { $first: '$paymentDay' },
-                    propertyType: { $first: '$propertyType' },
-                    rentCollected: {
-                        $sum: {
-                            $reduce: {
-                                input: '$units.payments',
-                                initialValue: 0,
-                                in: { $add: ['$$value', { $ifNull: ['$$this.amount', 0] }] }
-                            }
-                        }
-                    },
-                    utilitiesCollected: {
-                        $sum: {
-                            $reduce: {
-                                input: '$units.payments',
-                                initialValue: 0,
-                                in: { $add: ['$$value', { $ifNull: ['$$this.utilitiesAmount', 0] }] }
-                            }
-                        }
-                    },
-                    totalRentDue: { $sum: '$rentDue' },
-                    totalUtilitiesDue: { $sum: '$utilitiesDue' },
-                    totalDue: { $sum: { $add: ['$rentDue', '$utilitiesDue'] } },
-                    numberOfUnits: { $sum: 1 },
-                    vacancies: { $sum: { $cond: [{ $eq: ['$isVacant', true] }, 1, 0] } } 
                 }
             },
             {
                 $addFields: {
                     status: {
-                        $cond: {
-                            if: { $gt: ['$vacancies', 0] },
-                            then: 'Vacancies available',
-                            else: 'Fully occupied'
-                        }
+                        $cond: { if: { $gt: ['$vacancies', 0] }, then: 'Vacancies available', else: 'Fully occupied' }
                     }
                 }
             },
-            {
-                $skip: skip
-            },
-            {
-                $limit: limit
-            }
+            { $skip: skip },
+            { $limit: limit }
         ]);
 
-        // Calculate total properties and pages for pagination
+        // Step 2: Update properties in the database with the calculated fields
+        await Promise.all(
+            properties.map(async (property) => {
+                await Property.findByIdAndUpdate(
+                    property._id,
+                    {
+                        rentCollected: property.totalPaidRent,
+                        rentDue: property.rentDue,
+                        utilitiesCollected: property.totalPaidUtilities,
+                        utilitiesDue: property.utilitiesDue,
+                        status: property.status,
+                        numberOfTenants: property.numberOfTenants 
+                    }
+                );
+            })
+        );
+
         const totalProperties = await Property.countDocuments({ owner: req.user._id });
         const totalPages = Math.ceil(totalProperties / limit);
 
-        // Render the properties page
+        // Render the properties list with the calculated values
         res.render('tenancyManager/properties', {
             properties,
             currentUser: req.user,
@@ -198,68 +146,62 @@ router.get('/tenancy-manager/properties', isTenancyManager, async (req, res) => 
             totalPages
         });
     } catch (err) {
-        console.error(err);
+        console.error('Error fetching properties:', err);
         req.flash('error', 'Error fetching properties.');
-        res.redirect('/tenancyManager/dashboard');
+        res.redirect('/tenancy-manager/dashboard');
     }
 });
-
-  
-
-
 
 
 router.get('/tenancy-manager/property/units', isTenancyManager, async (req, res) => {
     try {
-        // Ensure user is authenticated
         if (!req.user) {
             req.flash('error', 'User not authenticated.');
             return res.redirect('/login');
         }
 
-        // Fetch property units where the property owner is the current user
         const units = await PropertyUnit.find()
-            .populate('tenants') 
+            .populate({
+                path: 'tenants',
+                select: 'name'
+            })
             .populate({
                 path: 'propertyId',
-                match: { owner: req.user._id }, 
-                select: 'name' 
+                match: { owner: req.user._id },
+                select: 'name'
             })
-            .setOptions({ strictPopulate: false }) 
             .exec();
 
-       
         const filteredUnits = units.filter(unit => unit.propertyId !== null);
 
-        
         const unitsWithInfo = filteredUnits.map(unit => {
-            
-            const utilitiesAmount = unit.utilities.reduce((total, utility) => total + utility.amount, 0);
+            const utilitiesAmount = unit.utilities 
+                ? unit.utilities.reduce((total, utility) => total + (utility.amount || 0), 0)
+                : 0;
+
             return {
-                id: unit._id, 
+                id: unit._id,
                 unitName: unit.unitName,
                 unitType: unit.unitType,
                 unitCount: unit.unitCount,
                 unitPrice: unit.unitPrice,
                 vacantUnits: unit.vacantUnits,
                 description: unit.description,
-                tenants: unit.tenants.length || 0, 
+                tenants: unit.tenants.length || 0,
                 property: unit.propertyId.name,
                 utilitiesAmount: utilitiesAmount,
-                totalRentCollected: unit.totalRentCollected || 0, 
-                rentDue: unit.rentDue || 0, 
-                totalUtilitiesPaid: unit.totalUtilitiesCollected || 0,
+                totalRentCollected: unit.totalRentCollected || 0,
+                rentDue: unit.rentDue || 0,
+                totalUtilitiesPaid: unit.totalUtilitiesPaid || 0,
                 utilitiesDue: unit.utilitiesDue || 0,
-                deposit: unit.deposit || 0 
+                deposit: unit.deposit || 0
             };
         });
 
-        // Fetch properties for the current user
         const properties = await Property.find({ owner: req.user._id }, 'name');
 
-        
-        res.render('tenancyManager/units', { 
-            units: unitsWithInfo, 
+        res.render('tenancyManager/units', {
+            units: unitsWithInfo,
             properties: properties,
             currentUser: req.user
         });
@@ -270,8 +212,6 @@ router.get('/tenancy-manager/property/units', isTenancyManager, async (req, res)
         res.redirect('/tenancy-manager/dashboard');
     }
 });
-
-
 
 
 // GET route to fetch units for a specific property
@@ -288,7 +228,6 @@ router.get('/tenancy-manager/units/:propertyId', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-
 
 
 // Create Property Unit
@@ -328,8 +267,6 @@ router.post('/tenancy-manager/property/units', isTenancyManager, async (req, res
 });
 
 
-
-
 // Create Property
 router.post('/tenancy-manager/property', isTenancyManager, async (req, res) => {
     const { name, address, paymentDay, propertyType, rentCollected } = req.body;
@@ -337,15 +274,9 @@ router.post('/tenancy-manager/property', isTenancyManager, async (req, res) => {
     // Input Validation
     if (!name || !address || !paymentDay || !propertyType) {
         req.flash('error', 'All fields are required.');
-        return res.redirect('/tenancy-manager/property/new');
+        return res.redirect('/tenancy-manager/property');
     }
 
-    // Parse and validate rentCollected if it's expected to be a number
-    const parsedRentCollected = parseFloat(rentCollected);
-    if (isNaN(parsedRentCollected) || !isFinite(parsedRentCollected)) {
-        req.flash('error', 'Rent collected must be a valid number.');
-        return res.redirect('/tenancy-manager/property/new');
-    }
 
     try {
         // Create a new property object
@@ -354,7 +285,6 @@ router.post('/tenancy-manager/property', isTenancyManager, async (req, res) => {
             address,
             paymentDay, 
             propertyType,
-            rentCollected: parsedRentCollected, 
             owner: req.user._id,
         });
 
@@ -365,7 +295,7 @@ router.post('/tenancy-manager/property', isTenancyManager, async (req, res) => {
     } catch (err) {
         console.error(err);
         req.flash('error', 'Error adding property: ' + err.message);
-        res.redirect('/tenancy-manager/property/new'); 
+        res.redirect('/tenancy-manager/properties'); 
     }
 });
 
@@ -491,8 +421,6 @@ router.post('/tenancy-manager/property/units/delete/:id', isTenancyManager, asyn
         res.redirect('/tenancy-manager/property/units');
     }
 });
-
-
 
 // Export the router
 module.exports = router;

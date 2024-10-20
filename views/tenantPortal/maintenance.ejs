@@ -20,60 +20,173 @@
             padding-top: 40px;
         }
 
+        /* Sidebar with White Background */
         .sidebar {
-            background-color: #000000;
+            background-color: #ffffff;
+            color: #333333;
             height: 100vh;
-            padding: 10px;
+            padding: 30px 10px;
             position: fixed;
             top: 0;
             left: 0;
-            width: 200px;
+            width: 250px;
             overflow-y: auto;
-            z-index: 1000;
             transition: all 0.3s ease;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            /* Ensure it's on top of content */
         }
 
-        .sidebar h3 {
-            margin-bottom: 20px;
-            color: #ffffff;
-            font-size: 1.3em;
+        /* Sidebar Title Styling */
+        .sidebar-title {
+            margin-bottom: 30px;
+            color: #000000;
+            font-size: 1.5em;
+            text-align: center;
+            font-weight: 700;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
         }
 
-        .sidebar a {
-            color: #adb5bd;
-            display: block;
-            padding: 10px;
-            margin: 5px 0;
+        /* Navigation Link Styles */
+        .sidebar .nav-link {
+            color: #333333;
+            padding: 15px 20px;
+            margin: 10px 0;
             text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-            font-weight: bold;
-            font-size: 0.9em;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            border-radius: 10px;
+            transition: background-color 0.3s, color 0.3s;
         }
 
-        .sidebar a:hover,
-        .sidebar a.active {
-            color: #ffffff;
-            background-color: #4d4d4d;
+        .sidebar .nav-link i {
+            margin-right: 15px;
+            color: #555555;
+            /* Icon color */
         }
+
+        /* Hover Effects */
+        .sidebar .nav-link:hover {
+            background-color: #f8f9fa;
+            color: #003366;
+        }
+
+        .sidebar .nav-link:hover i {
+            color: #003366;
+            /* Icon hover color */
+        }
+
+        /* Active Link Styling */
+        .sidebar .nav-link.active {
+            background-color: #003366;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .sidebar .nav-link.active i {
+            color: #ffffff;
+        }
+
+        .sidebar .nav-link:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 220px;
+                position: absolute;
+                top: 0;
+                left: -250px;
+                z-index: 2000;
+                transition: all 0.3s ease-in-out;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .content.active {
+                margin-left: 220px;
+            }
+        }
+
+        #sidebarToggle {
+            display: block;
+            background-color: #ffffff;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            border: 2px solid #ffffff;
+            border-radius: 5px;
+            z-index: 3000;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        @media (min-width: 969px) {
+            #sidebarToggle {
+                display: none;
+            }
+        }
+
+        .content {
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+
 
         .header {
-            background-color: #000000;
-            color: white;
-            padding: 10px 15px;
+            background-color: #ffffff;
+            color: #000000;
+            padding: 10px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: fixed;
-            width: 100%;
+            width: calc(100% - 220px);
             top: 0;
-            left: 0;
-            z-index: 1000;
+            left: 220px;
+            z-index: 1001;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: left 0.3s ease, width 0.3s ease;
         }
 
-        .content {
-            padding: 15px;
+        .header-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
         }
+
+        @media (max-width: 968px) {
+            .header {
+                width: 100%;
+                left: 0;
+            }
+
+            .header-right {
+                justify-content: flex-end;
+                width: 100%;
+            }
+
+            .mobile-sidebar-btn {
+                margin-right: auto;
+            }
+        }
+
+
+        .content {
+            margin-left: 220px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .content.collapsed {
+            margin-left: 60px;
+        }
+
         footer {
             position: fixed;
             left: 0;
@@ -86,39 +199,53 @@
 
         .mobile-sidebar-btn {
             display: block;
-            color: white;
-            padding: 0.5rem 0.75rem;
-            font-size: 1rem;
+            background-color: #ffffff;
+            color: rgb(255, 255, 255);
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            border: 2px solid #ffffff;
+            border-radius: 5px;
             z-index: 2000;
             cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s, box-shadow 0.3s;
         }
 
-        @media (min-width: 768px) {
+        .mobile-sidebar-btn i {
+            color: #000000;
+        }
+
+        @media (min-width: 968px) {
             .sidebar {
                 width: 250px;
             }
+
+            .header {
+                width: calc(100% - 250px);
+                left: 250px;
+            }
+
+            .content {
+                margin-left: 250px;
+            }
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 968px) {
             .sidebar {
-                transform: translateX(-200px);
+                transform: translateX(-220px);
             }
 
             .sidebar.active {
                 transform: translateX(0);
             }
 
-            .sidebar a {
-                font-size: 0.8em;
+            .header {
+                width: 100%;
+                left: 0;
             }
 
-            .alert {
-                font-size: 0.8rem;
-                padding: 10px;
-            }
-
-            .alert h5 {
-                font-size: 0.8rem;
+            .content {
+                margin-left: 0;
             }
         }
     </style>
@@ -126,40 +253,54 @@
 
 <body>
     <div class="header">
-        <button class="btn btn-dark mobile-sidebar-btn" id="sidebarToggle"><i class="fas fa-bars"></i></button>
-        <div class="dropdown">
-            <button class="btn btn-dark dropdown-toggle" style="background-color: #000000;" type="button"
-                id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-user"></i>
-                <% if (tenant) { %>
-                    Welcome, <%= tenant.name %>
-                        <% } else { %>
-                            Welcome, Guest
-                            <% } %>
-            </button>
-            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
-                <a class="dropdown-item" href="/tenantPortal/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        <button class="btn mobile-sidebar-btn" id="sidebarToggle" style="background-color: #ffffff;">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="header-right">
+            <div class="dropdown">
+                <button class="btn dropdown-toggle" style="background-color: #ffffff; color: #000000;" type="button"
+                    id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-user"></i>
+                    <% if (tenant) { %>
+                        Welcome, <%= tenant.name %>
+                            <% } else { %>
+                                Welcome, Guest
+                                <% } %>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
+                    <a class="dropdown-item" href="/tenantPortal/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
             </div>
         </div>
     </div>
+    
+
 
     <div class="d-flex">
         <nav class="sidebar fixed" id="sidebarMenu">
-            <h2 class="text-white"><strong>Tenant Portal</strong></h2>
+            <h2 class="sidebar-title"><strong>Tenant Portal</strong></h2>
             <ul class="nav flex-column">
-                <li><a class="nav-link" href="/tenantPortal/dashboard"><i class="fas fa-tachometer-alt"></i>
-                        Dashboard</a></li>
-                <li><a class="nav-link" href="/payments"><i class="fas fa-money-bill-wave"></i>
-                        Payment Management</a></li>
-                <li><a class="nav-link" href="/requestMaintenance"><i class="fas fa-wrench"></i>
-                        Request Maintenance</a></li>
-                <li><a class="nav-link" href="/lease"><i class="fas fa-file-contract"></i>
-                        Lease</a></li>
-                <li><a class="nav-link" href="/tenant/profile"><i class="fas fa-file-contract"></i>
-                        Profile Settings</a></li>
-
+                <li><a class="nav-link" href="/tenantPortal/dashboard">
+                        <i class="fas fa-tachometer-alt"></i> <strong>Dashboard</strong>
+                    </a></li>
+                <li><a class="nav-link" href="/payments">
+                        <i class="fas fa-money-bill-wave"></i> <strong>Payments</strong>
+                    </a></li>
+                <li><a class="nav-link" href="/requestMaintenance">
+                        <i class="fas fa-wrench"></i> <strong>Maintenance</strong>
+                    </a></li>
+                <li><a class="nav-link" href="/lease">
+                        <i class="fas fa-file-contract"></i> <strong>Lease</strong>
+                    </a></li>
+                <li><a class="nav-link" href="/tenant/agreement">
+                        <i class="fas fa-hourglass-half"></i> <strong>Agreement</strong>
+                    </a></li>
+                <li><a class="nav-link" href="/tenant/profile">
+                        <i class="fas fa-user"></i> <strong>Profile</strong>
+                    </a></li>
             </ul>
         </nav>
+
 
         <div class="container mt-5">
             <h2>Maintenance Requests</h2>
@@ -401,10 +542,6 @@
                                             textarea.form-control {
                                                 border-radius: 5px;
                                                 resize: none;
-                                            }
-
-                                            .btn {
-                                                font-size: 13px;
                                             }
 
                                             .modal-header {

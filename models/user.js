@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema({
 // Apply the passport-local-mongoose plugin to the user schema
 userSchema.plugin(passportLocalMongoose, {
     usernameField: 'username', 
-    hashField: 'password' // Specify the hashField if not default
+    hashField: 'password' 
 });
 
 // Export the user model
