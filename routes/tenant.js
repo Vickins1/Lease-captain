@@ -3,7 +3,7 @@ const router = express.Router();
 const Tenant = require('../models/tenant');
 const Property = require('../models/property');
 const Payment = require('../models/payment');
-const { isTenancyManager } = require('../middleware');
+const {  checkRole,isTenancyManager } = require('../middleware');
 const PropertyUnit = require('../models/unit');
 const moment = require('moment') 
 

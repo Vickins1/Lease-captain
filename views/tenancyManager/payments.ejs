@@ -348,12 +348,12 @@
                                 <tr>
                                     <td><%= (currentPage - 1) * pageSize + index + 1 %></td>
                                     <td><%= payment.transactionId || 'N/A' %></td>
-                                    <td><%= payment.tenantName || 'N/A' %></td>
+                                    <td><%= payment.tenant ? payment.tenant.name || 'N/A' : 'N/A' %></td>
                                     <td><%= payment.tenant && payment.tenant.property ? payment.tenant.property.name : 'N/A' %></td>
                                     <td><%= payment.tenant && payment.tenant.unit ? payment.tenant.unit.name : 'N/A' %></td>
                                     <td><%= payment.tenant ? payment.tenant.doorNumber || 'N/A' : 'N/A' %></td>
                                     <td><%= payment.paymentType || 'N/A' %></td>
-                                    <td>Ksh.<%= payment.amount.toFixed(2) %></td>
+                                    <td>Ksh.<%= payment.amount ? payment.amount.toFixed(2) : '0.00' %></td>
                                     <td><%= payment.datePaid ? new Date(payment.datePaid).toLocaleDateString() : 'N/A' %></td>
                                     <td><%= payment.method || 'N/A' %></td>
                                     <td>
@@ -369,6 +369,7 @@
                                 </tr>
                             <% }); %>
                         </tbody>
+                        
                     </table>
                 </div>
             </div>

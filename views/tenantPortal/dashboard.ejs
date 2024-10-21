@@ -124,11 +124,6 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: background-color 0.3s, box-shadow 0.3s;
         }
-        @media (min-width: 969px) {
-            #sidebarToggle {
-                display: none;
-            }
-        }
 
         .content {
             padding: 20px;
@@ -272,7 +267,7 @@
             </div>
         </div>
     </div>
-    
+
 
 
     <div class="d-flex">
@@ -325,6 +320,65 @@
 
                             <!-- Responsive Cards -->
                             <div class="row mt-4">
+
+
+
+                                <!-- Property Name Card -->
+                                <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                    <div class="card shadow-lg border-0 h-100">
+                                        <div class="card-header text-white"
+                                            style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                            <h5 class="mb-0">Property Name</h5>
+                                        </div>
+                                        <div class="card-body bg-light" style="border-radius: 0 0 0.5rem 0.5rem;">
+                                            <p class="mb-0" style="font-size: 1.1rem;">
+                                                <i class="fas fa-home mr-3 text-primary" style="font-size: 1.5rem;"></i>
+                                                <strong style="color: #003366;">
+                                                    <%= tenant.property ? tenant.property.name : 'N/A' %>
+                                                </strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Unit Name Card -->
+                                <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                    <div class="card shadow-lg border-0 h-100">
+                                        <div class="card-header text-white"
+                                            style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                            <h5 class="mb-0">Unit Name</h5>
+                                        </div>
+                                        <div class="card-body bg-light" style="border-radius: 0 0 0.5rem 0.5rem;">
+                                            <p class="mb-0" style="font-size: 1.1rem;">
+                                                <i class="fas fa-door-open mr-3 text-info"
+                                                    style="font-size: 1.5rem;"></i>
+                                                <strong style="color: #003366;">
+                                                    <%= tenant.unit ? tenant.unit.unitName : 'N/A' %>
+                                                </strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Room Number Card -->
+                                <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                    <div class="card shadow-lg border-0 h-100">
+                                        <div class="card-header text-white"
+                                            style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                            <h5 class="mb-0">Room Number</h5>
+                                        </div>
+                                        <div class="card-body bg-light" style="border-radius: 0 0 0.5rem 0.5rem;">
+                                            <p class="mb-0" style="font-size: 1.1rem;">
+                                                <i class="fas fa-door-closed mr-3 text-warning"
+                                                    style="font-size: 1.5rem;"></i>
+                                                <strong style="color: #003366;">
+                                                    <%= tenant.doorNumber || 'N/A' %>
+                                                </strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
 
                                 <!-- Rent Due Card -->
                                 <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
@@ -380,8 +434,7 @@
                                                         <i class="fas fa-wrench mr-3 text-danger"
                                                             style="font-size: 1.5rem;"></i>
                                                         <strong style="color: #003366;">
-                                                            <%= schedule.date.toLocaleDateString('en-US', {
-                                                                year: 'numeric' , month: 'long' , day: 'numeric' }) %>
+                                                            <%= schedule.date %>
                                                         </strong>
                                                     </p>
                                                 </div>
@@ -403,69 +456,6 @@
                                                     </div>
                                                 </div>
                                                 <% } %>
-
-                                                    <!-- Property Name Card -->
-                                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                                                        <div class="card shadow-lg border-0 h-100">
-                                                            <div class="card-header text-white"
-                                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                                                <h5 class="mb-0">Property Name</h5>
-                                                            </div>
-                                                            <div class="card-body bg-light"
-                                                                style="border-radius: 0 0 0.5rem 0.5rem;">
-                                                                <p class="mb-0" style="font-size: 1.1rem;">
-                                                                    <i class="fas fa-home mr-3 text-primary"
-                                                                        style="font-size: 1.5rem;"></i>
-                                                                    <strong style="color: #003366;">
-                                                                        <%= tenant.property ? tenant.property.name
-                                                                            : 'N/A' %>
-                                                                    </strong>
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Unit Name Card -->
-                                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                                                        <div class="card shadow-lg border-0 h-100">
-                                                            <div class="card-header text-white"
-                                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                                                <h5 class="mb-0">Unit Name</h5>
-                                                            </div>
-                                                            <div class="card-body bg-light"
-                                                                style="border-radius: 0 0 0.5rem 0.5rem;">
-                                                                <p class="mb-0" style="font-size: 1.1rem;">
-                                                                    <i class="fas fa-door-open mr-3 text-info"
-                                                                        style="font-size: 1.5rem;"></i>
-                                                                    <strong style="color: #003366;">
-                                                                        <%= tenant.unit ? tenant.unit.unitName : 'N/A'
-                                                                            %>
-                                                                    </strong>
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Room Number Card -->
-                                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                                                        <div class="card shadow-lg border-0 h-100">
-                                                            <div class="card-header text-white"
-                                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                                                <h5 class="mb-0">Room Number</h5>
-                                                            </div>
-                                                            <div class="card-body bg-light"
-                                                                style="border-radius: 0 0 0.5rem 0.5rem;">
-                                                                <p class="mb-0" style="font-size: 1.1rem;">
-                                                                    <i class="fas fa-door-closed mr-3 text-warning"
-                                                                        style="font-size: 1.5rem;"></i>
-                                                                    <strong style="color: #003366;">
-                                                                        <%= tenant.doorNumber || 'N/A' %>
-                                                                    </strong>
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
 
 
                                                     <!-- Monthly Rent Card -->
@@ -546,7 +536,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     <!-- Rent Due Card -->
                                                     <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
                                                         <div class="card shadow-lg border-0">
@@ -580,8 +570,6 @@
                                                             </div>
                                                         </div>
                                                     </div>
-
-
                             </div>
 
                             <style>

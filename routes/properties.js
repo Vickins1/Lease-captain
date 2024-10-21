@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Property = require('../models/property');
 const PropertyUnit = require('../models/unit');
-const { isTenancyManager } = require('../middleware');
+const {  checkRole,isTenancyManager } = require('../middleware');
 
 router.get('/tenancy-manager/properties', isTenancyManager, async (req, res) => {
     try {

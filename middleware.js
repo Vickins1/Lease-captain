@@ -35,34 +35,46 @@ function isTenancyManager(req, res, next) {
     return res.redirect(LOGIN_REDIRECT);
 }
 
-// Middleware to check if the user has a specific permission
-function checkPermission(permission) {
+// Middleware to check if the user has a specific role
+function checkRole(role) {
     return async (req, res, next) => {
         if (!req.isAuthenticated() || !req.user) {
             req.flash('error', 'You need to log in to access this page.');
             return res.redirect(LOGIN_REDIRECT);
         }
-
         try {
-            const user = await User.findById(req.user._id);
-            if (user && user.permissions.includes(permission)) {
-                return next();
+            // Fetch the user and populate their roles
+            const user = await User.findById(req.user._id).populate('roles');
+
+            // Ensure the user and roles exist
+            if (user && user.roles && user.roles.length > 0) {
+                const hasRole = user.roles.some(userRole => userRole.name === role);
+                
+                if (hasRole) {
+                    return next();
+                } else {
+                    req.flash('error', 'Forbidden: You do not have the required role to access this resource.');
+                    return res.redirect('/tenancy-manager/dashboard');
+                }
             } else {
-                req.flash('error', 'Forbidden: You do not have permission to access this resource.');
-                return res.status(403).send('Forbidden');
+                req.flash('error', 'Forbidden: You do not have the required role to access this resource.');
+                return res.redirect('/tenancy-manager/dashboard');
             }
         } catch (error) {
-            console.error('Error fetching user for permission check:', error);
+            console.error('Error fetching user for role check:', error);
             req.flash('error', 'Internal server error. Please try again later.');
-            return res.status(500).send('Internal Server Error');
+            return res.redirect('/tenancy-manager/dashboard'); 
         }
     };
 }
+
+
+
 
 // Export the middleware functions
 module.exports = {
     isAuthenticated,
     isTenant,
     isTenancyManager,
-    checkPermission, 
+    checkRole, 
 };

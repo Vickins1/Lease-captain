@@ -12,7 +12,6 @@ const tenantRoutes = require('./routes/tenant');
 const tenantPortalRoutes = require('./routes/tenantPortal');
 const authRoutes = require('./routes/auth');
 const paymentGatewayRoutes = require('./routes/paymentGateway');
-const axios = require('axios');
 const fs = require('fs');
 const os = require('os');
 require('dotenv').config();
@@ -60,6 +59,7 @@ app.use(passport.session());
 
 passport.use(User.createStrategy());
 passport.serializeUser((user, done) => done(null, user.id));
+
 passport.deserializeUser(async (id, done) => {
     try {
         const user = await User.findById(id);

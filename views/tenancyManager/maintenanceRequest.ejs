@@ -291,8 +291,8 @@
 
 
 
-        <div class="container">
-              <h1 class="h3 mb-4">Maintenance Requests</h1> <!-- Use Bootstrap's heading classes -->
+        <div class="container mt-4">
+              <h1 class="h3 mb-4">Maintenance Requests</h1>
           
 <!-- Error Message -->
 <% if (error && error.length > 0) { %>
@@ -337,7 +337,7 @@
                                 <%= request.status.charAt(0).toUpperCase() + request.status.slice(1) %>
                             </span>
                         </td>
-                        <td><%= new Date(request.createdAt).toLocaleDateString() %></td>
+                        <td><%= request.createdAt ? new Date(request.createdAt).toLocaleDateString() : 'N/A' %></td>
                         <td>
                             <form action="/maintenance-requests/<%= request._id %>" method="POST" class="form-inline" style="display:inline;">
                                 <div class="input-group mb-3" style="width: auto;">

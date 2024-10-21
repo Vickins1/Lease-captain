@@ -4,7 +4,7 @@ const nodemailer = require('nodemailer');
 require('dotenv').config();
 const Property = require('../models/property');
 const Tenant = require('../models/tenant');
-const { isTenancyManager } = require('../middleware');
+const {  checkRole,isTenancyManager } = require('../middleware');
 const bcrypt = require('bcrypt');
 const Payment = require('../models/payment');
 const User = require('../models/user');
@@ -12,13 +12,14 @@ const PropertyUnit = require('../models/unit');
 const Invoice = require('../models/invoice')
 const Expense = require('../models/expense');
 const Role = require('../models/role');
-const permissions = require('../models/permissions');
 const MaintenanceRequest = require('../models/maintenanceRequest');
 const Account = require('../models/account');
 const Topups = require('../models/topups');
 const Reminder = require('../models/reminder');
 const Template = require('../models/template');
 const crypto = require('crypto');
+const Permission = require('../models/permissions'); 
+
 
 
 
@@ -111,11 +112,8 @@ router.get('/tenancy-manager/dashboard', isTenancyManager, async (req, res) => {
 });
 
 
-
-
-
 // Serve User Profile Page
-router.get('/tenancy-manager/profile', isTenancyManager, async (req, res) => {
+router.get('/tenancy-manager/profile',   checkRole('manage_settings'), isTenancyManager, async (req, res) => {
     console.log('Session data:', req.session);
 
     try {
@@ -144,7 +142,7 @@ router.get('/tenancy-manager/profile', isTenancyManager, async (req, res) => {
 });
 
 // Serve User Security Page
-router.get('/tenancy-manager/security', isTenancyManager, async (req, res) => {
+router.get('/tenancy-manager/security', isTenancyManager,  checkRole('manage_settings'), async (req, res) => {
     try {
         const userId = req.session.passport.user; 
         const user = await User.findById(userId);
@@ -453,16 +451,25 @@ router.get('/tenancy-manager/payments', isTenancyManager, async (req, res) => {
         const currentPage = Number(req.query.page) || 1;
         const searchQuery = req.query.search || '';
         const regex = new RegExp(searchQuery, 'i');
-        const searchCondition = { tenantName: regex };
+        const currentUser = req.user;
 
+        // Add the filter to ensure the payments are for tenants created by the logged-in user
+        const searchCondition = {
+            tenantName: regex,
+            'tenant.createdBy': currentUser._id  // Filter by the logged-in user (tenants created by the user)
+        };
+
+        // Count total payments matching the search condition
         const totalPayments = await Payment.countDocuments(searchCondition);
 
+        // Find payments matching the search condition, with tenant, property, and unit populated
         const payments = await Payment.find(searchCondition)
             .populate({
                 path: 'tenant',
+                match: { createdBy: currentUser._id }, // Ensure tenant is created by the logged-in user
                 populate: [
                     { path: 'property', select: 'name' },
-                    { path: 'unit', select: 'name' }  
+                    { path: 'unit', select: 'name' }
                 ]
             })
             .skip((currentPage - 1) * pageSize)
@@ -470,11 +477,8 @@ router.get('/tenancy-manager/payments', isTenancyManager, async (req, res) => {
             .sort({ datePaid: -1 });
 
         const totalPages = Math.ceil(totalPayments / pageSize);
-        const currentUser = req.user || null;
 
-        // Flash messages can be set here as needed
-        req.flash('success', 'Payments fetched successfully.'); 
-
+        // Render the view with fetched payments
         res.render('tenancyManager/payments', {
             title: 'Manage Payments',
             payments,
@@ -487,42 +491,68 @@ router.get('/tenancy-manager/payments', isTenancyManager, async (req, res) => {
     } catch (error) {
         console.error("Error fetching payments:", error);
         req.flash('error', 'Internal Server Error while fetching payments.');
-        res.redirect('/tenancy-manager/payments'); 
+        res.redirect('/tenancy-manager/payments');
     }
 });
 
 
-// Route for Reports & Invoices page
+
 router.get('/reports-invoices', async (req, res) => {
     try {
+        const { property, dateFrom, dateTo } = req.query;
         const currentPage = req.query.page || 1;
         const pageSize = 10;
+
         if (!req.user) {
             req.flash('error', 'User not authenticated.');
             return res.redirect('/login');
         }
-        
-        const totalRecords = await Payment.countDocuments();
-        const paginatedReports = await Payment.find()
+
+        // Filter for the payments/reports
+        let filter = {};
+        if (property && property !== 'all') {
+            filter.propertyName = property;
+        }
+
+        if (dateFrom && dateTo) {
+            filter.createdAt = {
+                $gte: new Date(dateFrom),
+                $lte: new Date(dateTo),
+            };
+        }
+
+        // Fetch reports (Payments)
+        const totalRecords = await Payment.countDocuments(filter);
+        const paginatedReports = await Payment.find(filter)
             .skip((currentPage - 1) * pageSize)
             .limit(pageSize);
-        
-        
-        const invoices = await Invoice.find(); 
 
+        // Fetch invoices
+        const invoices = await Invoice.find();
+
+        // Fetch properties to populate dropdown
+        const properties = await Property.find().select('name');
+
+        // Render the view with the data
         res.render('tenancyManager/reports&invoices', {
             reports: paginatedReports,
-            invoices: invoices, 
+            properties,
+            invoices,                    // Pass the fetched invoices to the view
             currentPage: parseInt(currentPage),
             pageSize,
             totalRecords,
-            currentUser: req.user  
+            currentUser: req.user,
+            selectedProperty: property || 'all',
+            dateFrom,
+            dateTo,
         });
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');
     }
 });
+
+
 
 router.get('/expenses', async (req, res) => {
     try {
@@ -591,9 +621,11 @@ router.post('/expenses', async (req, res) => {
 });
 
 // Pass the predefined permissions to the view
-router.get('/roles', async (req, res) => {
+router.get('/roles', isTenancyManager, async (req, res) => {
     try {
         const roles = await Role.find();
+        const permissions = await Permission.find(); 
+        
         res.render('tenancyManager/roles', { 
             roles, 
             currentUser: req.user, 
@@ -604,96 +636,141 @@ router.get('/roles', async (req, res) => {
     } catch (err) {
         res.render('tenancyManager/roles', { 
             roles: [], 
-            permissions, 
-            error: 'Error fetching roles.', 
+            permissions: [], 
+            error: 'Error fetching roles or permissions.', 
             success: null 
         });
     }
 });
 
-// Create role route
-router.post('/roles', async (req, res) => {
-    const { roleName, permissions: selectedPermissions } = req.body; 
-
-    try {
-        const newRole = new Role({ 
-            name: roleName,
-            permissions: selectedPermissions || [] 
-        });
-        await newRole.save(); 
-        res.redirect('/roles'); 
-    } catch (err) {
-        res.render('tenancyManager/roles', { 
-            roles: await Role.find(), 
-            currentUser: req.user, 
-            permissions, 
-            error: 'Error creating role.', 
-            success: null 
-        });
-    }
-});
 // Users route
 router.get('/users', isTenancyManager, async (req, res) => {
     try {
-        const users = await User.find({ createdBy: req.user._id });
+        // Log the current user to verify that user information is available
+        console.log("Logged-in User:", req.user);
+
+        // Fetch users created by the logged-in user
+        const users = await User.find({ createdBy: req.user._id }).populate('roles');
+
+        console.log("Fetched Users:", users); // Log the fetched users for debugging
+
         const roles = await Role.find();
+
         res.render('tenancyManager/users', { 
             users, 
             roles, 
             currentUser: req.user, 
-            error: null, 
-            success: null 
+            error: req.flash('error') || null, 
+            success: req.flash('success') || null 
         });
     } catch (err) {
+        console.error('Error fetching users or roles:', err);
+
+        // Handle error and render the page with the error message
         res.render('tenancyManager/users', { 
             users: [], 
             roles: [], 
             currentUser: req.user, 
-            error: 'Error fetching users.', 
+            error: 'Error fetching users or roles. Please try again later.',
             success: null 
         });
     }
 });
 
 
-// Create the user
-router.post('/users/create', isTenancyManager, async (req, res) => {
-    try {
-        const { username, email, password, roleId } = req.body;
 
-        
-        const user = new User({
+
+
+
+// Route to create a new user with multiple roles using passport-local-mongoose
+router.post('/users/create', async (req, res) => {
+    try {
+        const { username, email, password, roleIds } = req.body;
+
+        if (!roleIds || roleIds.length === 0) {
+            req.flash('error', 'Please select at least one role.');
+            return res.redirect('/users/create');
+        }
+
+        // Find the roles based on roleIds
+        const roles = await Role.find({ _id: { $in: roleIds } });
+
+        if (roles.length === 0) {
+            req.flash('error', 'No valid roles found.');
+            return res.redirect('/users/create');
+        }
+
+        const newUser = new User({
             username,
             email,
-            password, 
-            role: roleId
+            roles: roles.map(role => role._id),
+            createdBy: req.user._id,
+            accountId: req.user.accountId || req.user._id
         });
 
-        await user.save();
+        User.register(newUser, password, function (err, user) {
+            if (err) {
+                console.error('Error registering user:', err);
+                req.flash('error', 'Error creating user.');
+                return res.redirect('/users/create');
+            }
 
-        res.redirect('/users'); 
+            req.flash('success', 'User created successfully.');
+            res.redirect('/users');
+        });
     } catch (err) {
-        res.render('tenancyManager/users', {
-            users: [], 
-            roles: [],
-            currentUser: req.user,
-            error: 'Error creating user',
-            success: null
-        });
+        console.error('Error creating user:', err);
+        req.flash('error', 'Error creating user.');
+        res.redirect('/users/create');
     }
 });
 
 
 
-// Route to assign role to a user
+// Route to assign a role to a user
 router.post('/users/:id/assign-role', async (req, res) => {
-    const { roleId } = req.body;
-
     try {
-        await User.findByIdAndUpdate(req.params.id, { role: roleId }); 
-        res.redirect('/users'); 
+        const { id } = req.params;
+        const { roleId } = req.body;
+
+        // Find the user by ID
+        const user = await User.findById(id);
+
+        if (!user) {
+            req.flash('error', 'User not found.');
+            return res.redirect('/users');
+        }
+
+        // Find the role by ID
+        const role = await Role.findById(roleId);
+
+        if (!role) {
+            req.flash('error', 'Role not found.');
+            return res.redirect('/users');
+        }
+
+        // Assign the role to the user
+        user.role = role._id;
+        await user.save();
+
+        req.flash('success', 'Role assigned successfully.');
+        res.redirect('/users');
     } catch (err) {
-        res.redirect('/users?error=Error assigning role');
+        console.error('Error assigning role to user:', err);
+        req.flash('error', 'Error assigning role to user.');
+        res.redirect('/users');
+    }
+});
+
+router.post('/users/:id/delete', async (req, res) => {
+    try {
+        await User.findByIdAndDelete(req.params.id);
+        req.flash('success', 'User deleted successfully.');
+        res.redirect('/users');
+    } catch (err) {
+        console.error('Error deleting user:', err);
+        req.flash('error', 'Error deleting user.');
+        res.redirect('/users');
     }
 });
 
@@ -752,30 +829,33 @@ router.post('/maintenance-requests/:id', isTenancyManager, async (req, res) => {
 });
 
 
-// Route to schedule maintenance
 router.post('/schedule', async (req, res) => {
     const { requestId, scheduleDate, scheduleDescription } = req.body;
 
     try {
-        // Find the maintenance request by ID
         const request = await MaintenanceRequest.findById(requestId);
         if (!request) {
-            return res.status(404).send('Maintenance request not found');
+            req.flash('error', 'Maintenance request not found');
+            return res.redirect('/maintenance-requests');
         }
-
-        request.scheduleDate = scheduleDate;
-        request.description = scheduleDescription || request.description; 
-        request.status = 'in-progress'; 
+        const formattedScheduleDate = new Date(scheduleDate);
+        if (isNaN(formattedScheduleDate.getTime())) {
+            req.flash('error', 'Invalid date format');
+            return res.redirect('/maintenance-requests');
+        }
+        request.scheduleDate = formattedScheduleDate;
+        request.description = scheduleDescription || request.description;
+        request.status = 'in-progress';
 
         await request.save();
-        res.status(200).send('Maintenance scheduled successfully');
+        req.flash('success', 'Maintenance scheduled successfully');
+        res.redirect('/maintenance-requests');
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Server error');
+        console.error('Error scheduling maintenance:', error);
+        req.flash('error', 'Server error occurred');
+        res.redirect('/maintenance-requests');
     }
 });
-
-
 
 
 router.get('/connect', async (req, res) => {
@@ -943,7 +1023,7 @@ router.post('/templates/create', isTenancyManager, async (req, res) => {
             createdBy: req.user._id
         });
         await template.save();
-        res.redirect('/templates');
+        res.redirect('/sms&email');
     } catch (err) {
         res.render('tenancyManager/templates', { templates: [], currentUser: req.user, error: 'Error creating template.' });
     }
@@ -963,7 +1043,7 @@ router.post('/reminders/create', isTenancyManager, async (req, res) => {
         });
 
         await reminder.save();
-        res.redirect('/reminders');
+        res.redirect('/sms&email');
     } catch (err) {
         res.render('tenancyManager/reminders', { reminders: [], currentUser: req.user, error: 'Error creating reminder.' });
     }
