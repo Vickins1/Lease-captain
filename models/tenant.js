@@ -25,15 +25,15 @@ const tenantSchema = new Schema({
     },
     rentDue: {
         type: Number,
-        default: 0  // New field to track rent due
+        default: 0  
     },
     utilityDue: {
         type: Number,
-        default: 0  // New field to track utility due
+        default: 0 
     },
     overpayment: {
         type: Number,
-        default: 0  // New field to track any overpayment
+        default: 0
     },
     deposit: {
         type: Number,

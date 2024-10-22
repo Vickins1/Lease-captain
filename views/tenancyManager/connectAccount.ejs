@@ -577,7 +577,16 @@
        });
    </script>
    
-   
+   <script>
+    $(document).ready(function () {
+        $('#sidebarToggle').on('click', function () {
+            // Toggle the 'collapsed' class on sidebar, header, and content
+            $('#sidebarMenu').toggleClass('collapsed');
+            $('.header').toggleClass('collapsed');
+            $('.content').toggleClass('collapsed');
+        });
+    });
+</script>
    
 
 </body>

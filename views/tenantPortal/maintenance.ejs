@@ -371,11 +371,13 @@
                                                                     </span>
                                                                 </td>
                                                                 <td>
-                                                                    <%= new
-                                                                        Date(request.date).toLocaleDateString('en-US', {
-                                                                        year: 'numeric' , month: '2-digit' ,
-                                                                        day: '2-digit' }) %>
+                                                                    <%= new Date(request.date).toLocaleDateString('en-US', {
+                                                                        year: 'numeric',
+                                                                        month: '2-digit',
+                                                                        day: '2-digit'
+                                                                    }) %>
                                                                 </td>
+                                                                
                                                                 <td>
                                                                     <!-- Edit Button -->
                                                                     <button class="btn btn-primary"

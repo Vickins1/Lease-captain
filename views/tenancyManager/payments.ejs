@@ -289,9 +289,8 @@
         </ul>
     </nav>
 
-        <div class="container">
+        <div class="container mt-4">
             <h4 class="text-center mt-4"><strong>Transactions</strong></h4>
-        
             <!-- Error Message -->
             <% if (error && error.length> 0) { %>
                 <div class="alert alert-danger text-center" role="alert" style="font-size: 0.9rem;">
@@ -324,7 +323,7 @@
             </div>
         
             <!-- Responsive Table -->
-            <div class="table-container">
+            <div class="table-container mt-4">
                 <div class="table-responsive">
                     <table class="table table-sm table-striped table-hover table-bordered"
                         style="border: 1px solid #003366;">
@@ -348,10 +347,10 @@
                                 <tr>
                                     <td><%= (currentPage - 1) * pageSize + index + 1 %></td>
                                     <td><%= payment.transactionId || 'N/A' %></td>
-                                    <td><%= payment.tenant ? payment.tenant.name || 'N/A' : 'N/A' %></td>
-                                    <td><%= payment.tenant && payment.tenant.property ? payment.tenant.property.name : 'N/A' %></td>
-                                    <td><%= payment.tenant && payment.tenant.unit ? payment.tenant.unit.name : 'N/A' %></td>
-                                    <td><%= payment.tenant ? payment.tenant.doorNumber || 'N/A' : 'N/A' %></td>
+                                    <td><%= payment.tenant && payment.tenant.name ? payment.tenant.name : 'N/A' %></td>
+                                    <td><%= payment.tenant && payment.tenant.property && payment.tenant.property.name ? payment.tenant.property.name : 'N/A' %></td>
+                                    <td><%= payment.tenant && payment.tenant.unit && payment.tenant.unit.name ? payment.tenant.unit.name : 'N/A' %></td>
+                                    <td><%= payment.tenant && payment.tenant.doorNumber ? payment.tenant.doorNumber : 'N/A' %></td>
                                     <td><%= payment.paymentType || 'N/A' %></td>
                                     <td>Ksh.<%= payment.amount ? payment.amount.toFixed(2) : '0.00' %></td>
                                     <td><%= payment.datePaid ? new Date(payment.datePaid).toLocaleDateString() : 'N/A' %></td>
@@ -367,6 +366,7 @@
                                         </span>
                                     </td>
                                 </tr>
+                                
                             <% }); %>
                         </tbody>
                         
@@ -449,7 +449,6 @@
             }
         </style>
         
-
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const searchInput = document.getElementById('searchInput');
@@ -526,7 +525,16 @@
             });
         </script>
 
-
+<script>
+    $(document).ready(function () {
+        $('#sidebarToggle').on('click', function () {
+            // Toggle the 'collapsed' class on sidebar, header, and content
+            $('#sidebarMenu').toggleClass('collapsed');
+            $('.header').toggleClass('collapsed');
+            $('.content').toggleClass('collapsed');
+        });
+    });
+</script>
 
 
 </body>

@@ -406,11 +406,9 @@
     .table-striped tbody tr:nth-of-type(odd) {
         background-color: #e9ecef; 
     }
-
     .table-hover tbody tr:hover {
         background-color: #d1e7dd; 
     }
-
     .badge-warning {
         background-color: #ffc107; 
     }
@@ -473,28 +471,24 @@
           
           <style>
               footer {
-                  font-size: 0.7rem; /* Default font size */
+                  font-size: 0.7rem;
               }
           
               @media (max-width: 768px) {
                   footer {
-                      font-size: 0.6rem; /* Smaller font size for small screens */
-                      padding: 5px; /* Adjust padding for smaller screens */
+                      font-size: 0.6rem;
+                      padding: 5px; 
                   }
               }
           
               @media (max-width: 576px) {
                   footer {
-                      font-size: 0.5rem; /* Even smaller font size for extra small screens */
-                      padding: 2px; /* Adjust padding further for extra small screens */
+                      font-size: 0.5rem;
+                      padding: 2px; 
                   }
               }
           </style>
-          
-  
-  
-  
-  
+
           <!-- Bootstrap JS -->
           <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
           <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -525,7 +519,16 @@
     });
           </script>
           
-          
+          <script>
+            $(document).ready(function () {
+                $('#sidebarToggle').on('click', function () {
+                    // Toggle the 'collapsed' class on sidebar, header, and content
+                    $('#sidebarMenu').toggleClass('collapsed');
+                    $('.header').toggleClass('collapsed');
+                    $('.content').toggleClass('collapsed');
+                });
+            });
+        </script>
           
   
   </body>

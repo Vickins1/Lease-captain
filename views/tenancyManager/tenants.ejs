@@ -647,177 +647,167 @@
         </style>
 
 
-        <!-- Modal Structure -->
-        <div class="modal fade" id="addTenantModal" tabindex="-1" role="dialog" aria-labelledby="addTenantModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header" style="background-color: #00172f; color: white;">
-                        <h5 class="modal-title" id="addTenantModalLabel">Add New Tenant</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
+<!-- Modal Structure -->
+<div class="modal fade" id="addTenantModal" tabindex="-1" role="dialog" aria-labelledby="addTenantModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #00172f; color: white;">
+                <h5 class="modal-title" id="addTenantModalLabel">Add New Tenant</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
 
-                    <div class="modal-body">
-                        <!-- Loader -->
-                        <div id="loader" class="text-center" style="display: none;">
-                            <div class="spinner-border" role="status">
-                                <span class="sr-only">Loading...</span>
+            <div class="modal-body">
+
+                <% if (error && error.length> 0) { %>
+                    <div class="alert alert-danger" role="alert">
+                        <%= error %>
+                    </div>
+                <% } %>
+
+                <form action="/tenancy-manager/tenant/new" method="POST">
+                    <div class="row">
+                        <!-- Left Column -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="tenantName">Tenant Name</label>
+                                <input type="text" class="form-control" id="tenantName" name="name"
+                                    required>
                             </div>
-                            <p>Adding Tenant, please wait...</p>
+                            <div class="form-group">
+                                <label for="tenantEmail">Tenant Email</label>
+                                <input type="email" class="form-control" id="tenantEmail" name="email"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label for="tenantPhone">Tenant Phone Number</label>
+                                <input type="text" class="form-control" id="tenantPhone" name="phone"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label for="leaseStartDate">Lease Start Date</label>
+                                <input type="date" class="form-control" id="leaseStartDate"
+                                    name="leaseStartDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="leaseEndDate">Lease End Date</label>
+                                <input type="date" class="form-control" id="leaseEndDate"
+                                    name="leaseEndDate" required>
+                            </div>
                         </div>
 
-                        <% if (error && error.length> 0) { %>
-                            <div class="alert alert-danger" role="alert">
-                                <%= error %>
+                        <!-- Right Column -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="tenantDoorNumber">Door Number</label>
+                                <input type="text" class="form-control" id="tenantDoorNumber"
+                                    name="doorNumber" placeholder="e.g B-20" required>
                             </div>
-                            <% } %>
-
-                                <form action="/tenancy-manager/tenant/new" method="POST">
-                                    <div class="row">
-                                        <!-- Left Column -->
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="tenantName">Tenant Name</label>
-                                                <input type="text" class="form-control" id="tenantName" name="name"
-                                                    required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="tenantEmail">Tenant Email</label>
-                                                <input type="email" class="form-control" id="tenantEmail" name="email"
-                                                    required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="tenantPhone">Tenant Phone Number</label>
-                                                <input type="text" class="form-control" id="tenantPhone" name="phone"
-                                                    required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="leaseStartDate">Lease Start Date</label>
-                                                <input type="date" class="form-control" id="leaseStartDate"
-                                                    name="leaseStartDate" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="leaseEndDate">Lease End Date</label>
-                                                <input type="date" class="form-control" id="leaseEndDate"
-                                                    name="leaseEndDate" required>
-                                            </div>
-                                        </div>
-
-                                        <!-- Right Column -->
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="tenantDoorNumber">Door Number</label>
-                                                <input type="text" class="form-control" id="tenantDoorNumber"
-                                                    name="doorNumber" placeholder="e.g B-20" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="propertySelection">Property</label>
-                                                <select class="form-control" id="propertySelection" name="property"
-                                                    required>
-                                                    <option value="">Select Property</option>
-                                                    <% properties.forEach(property=> { %>
-                                                        <option value="<%= property._id %>">
-                                                            <%= property.name %>
-                                                        </option>
-                                                        <% }); %>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="unitSelection">Unit</label>
-                                                <select class="form-control" id="unitSelection" name="unitId" required>
-                                                    <option value="">Select Unit</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="utilitiesAmount">Utilities</label>
-                                                <input type="number" class="form-control" id="utilitiesAmount"
-                                                    name="utilities" required min="0" step="0.01" readonly>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="tenantRentPaid">Deposit</label>
-                                                <input type="number" class="form-control" id="tenantRentPaid"
-                                                    name="deposit" required min="0" step="0.01" readonly>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <script>
-                                        document.addEventListener('DOMContentLoaded', function () {
-                                            const propertySelect = document.getElementById('propertySelection');
-                                            const unitSelect = document.getElementById('unitSelection');
-                                            const depositInput = document.getElementById('tenantRentPaid');
-                                            const utilitiesInput = document.getElementById('utilitiesAmount');
-
-                                            propertySelect.addEventListener('change', async function () {
-                                                const propertyId = this.value;
-
-                                                // Clear previous unit options and reset inputs
-                                                unitSelect.innerHTML = '<option value="">Select Unit</option>';
-                                                depositInput.value = '';
-                                                utilitiesInput.value = '';
-
-                                                if (propertyId) {
-                                                    try {
-                                                        const response = await fetch(`/api/property/${propertyId}/units`);
-
-                                                        if (!response.ok) {
-                                                            const errorData = await response.json();
-                                                            throw new Error(`Failed to fetch units: ${response.statusText} - ${errorData.error || ''}`);
-                                                        }
-
-                                                        const data = await response.json();
-
-                                                        if (Array.isArray(data.units) && data.units.length > 0) {
-                                                            data.units.forEach(unit => {
-                                                                const option = document.createElement('option');
-                                                                option.value = unit._id;
-                                                                option.textContent = unit.unitName;
-                                                                option.dataset.deposit = unit.deposit || 0;
-                                                                const totalUtilities = (unit.utilities || []).reduce((sum, utility) => sum + utility.amount, 0);
-                                                                option.dataset.utilities = totalUtilities;
-
-                                                                unitSelect.appendChild(option);
-                                                            });
-                                                        } else {
-                                                            console.warn('No units found or incorrect data structure:', data);
-                                                            alert('No units found for the selected property.');
-                                                        }
-                                                    } catch (error) {
-                                                        console.error('Error fetching units:', error);
-                                                        alert(`Failed to fetch units. Error: ${error.message}`);
-                                                    }
-                                                }
-                                            });
-
-                                            unitSelect.addEventListener('change', function () {
-                                                const selectedOption = this.options[this.selectedIndex];
-                                                const depositAmount = selectedOption?.dataset.deposit || 0;
-                                                const utilitiesAmount = selectedOption?.dataset.utilities || 0;
-                                                depositInput.value = depositAmount;
-                                                utilitiesInput.value = utilitiesAmount;
-                                            });
-                                        });
-
-                                        // Show loader and change button text on form submission
-                                        document.querySelector('form').addEventListener('submit', function () {
-                                            document.getElementById('loader').style.display = 'block';
-
-                                            const submitButton = this.querySelector('button[type="submit"]');
-                                            submitButton.disabled = true;
-                                            submitButton.textContent = 'Processing...';
-                                        });
-
-                                    </script>
-
-                                    <button type="submit" class="btn btn-dark w-100"
-                                        style="background-color: #003366; color: #ffffff;">Add Tenant</button>
-                                </form>
+                            <div class="form-group">
+                                <label for="propertySelection">Property</label>
+                                <select class="form-control" id="propertySelection" name="property"
+                                    required>
+                                    <option value="">Select Property</option>
+                                    <% properties.forEach(property => { %>
+                                        <option value="<%= property._id %>">
+                                            <%= property.name %>
+                                        </option>
+                                    <% }); %>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="unitSelection">Unit</label>
+                                <select class="form-control" id="unitSelection" name="unitId" required>
+                                    <option value="">Select Unit</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="utilitiesAmount">Utilities</label>
+                                <input type="number" class="form-control" id="utilitiesAmount"
+                                    name="utilities" required min="0" step="0.01" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="tenantRentPaid">Deposit</label>
+                                <input type="number" class="form-control" id="tenantRentPaid"
+                                    name="deposit" required min="0" step="0.01" readonly>
+                            </div>
+                        </div>
                     </div>
-                </div>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const propertySelect = document.getElementById('propertySelection');
+                            const unitSelect = document.getElementById('unitSelection');
+                            const depositInput = document.getElementById('tenantRentPaid');
+                            const utilitiesInput = document.getElementById('utilitiesAmount');
+
+                            propertySelect.addEventListener('change', async function () {
+                                const propertyId = this.value;
+
+                                // Clear previous unit options and reset inputs
+                                unitSelect.innerHTML = '<option value="">Select Unit</option>';
+                                depositInput.value = '';
+                                utilitiesInput.value = '';
+
+                                if (propertyId) {
+                                    try {
+                                        const response = await fetch(`/api/property/${propertyId}/units`);
+
+                                        if (!response.ok) {
+                                            const errorData = await response.json();
+                                            throw new Error(`Failed to fetch units: ${response.statusText} - ${errorData.error || ''}`);
+                                        }
+
+                                        const data = await response.json();
+
+                                        if (Array.isArray(data.units) && data.units.length > 0) {
+                                            data.units.forEach(unit => {
+                                                const option = document.createElement('option');
+                                                option.value = unit._id;
+                                                option.textContent = unit.unitName;
+                                                option.dataset.deposit = unit.deposit || 0;
+                                                const totalUtilities = (unit.utilities || []).reduce((sum, utility) => sum + utility.amount, 0);
+                                                option.dataset.utilities = totalUtilities;
+
+                                                unitSelect.appendChild(option);
+                                            });
+                                        } else {
+                                            console.warn('No units found or incorrect data structure:', data);
+                                            alert('No units found for the selected property.');
+                                        }
+                                    } catch (error) {
+                                        console.error('Error fetching units:', error);
+                                        alert(`Failed to fetch units. Error: ${error.message}`);
+                                    }
+                                }
+                            });
+
+                            unitSelect.addEventListener('change', function () {
+                                const selectedOption = this.options[this.selectedIndex];
+                                const depositAmount = selectedOption?.dataset.deposit || 0;
+                                const utilitiesAmount = selectedOption?.dataset.utilities || 0;
+                                depositInput.value = depositAmount;
+                                utilitiesInput.value = utilitiesAmount;
+                            });
+                        });
+
+                        // Change button to "Processing..." on form submission
+                        document.querySelector('form').addEventListener('submit', function (event) {
+                            const submitButton = this.querySelector('button[type="submit"]');
+                            submitButton.disabled = true;
+                            submitButton.textContent = 'Processing...';
+                        });
+                    </script>
+
+                    <button type="submit" class="btn btn-dark w-100"
+                        style="background-color: #003366; color: #ffffff;">Add Tenant</button>
+                </form>
             </div>
         </div>
+    </div>
+</div>
 
 
         <style>
