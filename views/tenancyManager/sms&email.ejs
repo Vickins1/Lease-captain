@@ -290,287 +290,469 @@
     </nav>
 
 
-        <div class="container mt-5">
-              <h3 class="text-center"><strong>Templates & Reminders Management</strong></h3>
-          
-<!-- Error Message -->
-<% if (error && error.length > 0) { %>
-       <div class="alert alert-danger text-center" role="alert" style="font-size: 0.9rem;">
-           <%= error %>
-       </div>
-   <% } %>
-   
-   <!-- Success Message -->
-   <% if (success && success.length > 0) { %>
-       <div class="alert alert-success text-center" role="alert" style="font-size: 0.9rem;">
-           <%= success %>
-       </div>
-   <% } %>
-<style>
-       @media (max-width: 576px) {
-    .alert {
-        font-size: 0.8rem;
-    }
-}
-</style>  
-          
-              <!-- Templates Section -->
-              <h5 class="mt-5">Your Templates
-                  <button class="btn btn-info float-right" style="width: 100%;" data-toggle="modal" data-target="#templateModal">Create New Template</button>
-              </h5>
-              <div class="table-responsive">
-                  <table class="table table-bordered text-center">
-                      <thead class="thead-light">
-                          <tr>
-                              <th>Type</th>
-                              <th>Subject</th>
-                              <th>Content</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                          <% templates.forEach(template => { %>
-                              <tr>
-                                  <td><%= template.type %></td>
-                                  <td><%= template.subject || 'N/A' %></td>
-                                  <td><%= template.content %></td>
-                              </tr>
-                          <% }); %>
-                      </tbody>
-                  </table>
-              </div>
-          
-              <!-- Reminders Section -->
-              <h5 class="mt-5">Your Reminders
-                  <button class="btn btn-dark float-right" style="width: 100%;" data-toggle="modal" data-target="#reminderModal">Create New Reminder</button>
-              </h5>
-              <div class="table-responsive">
-                     <table class="table table-bordered text-center">
-                         <thead class="thead-light">
-                             <tr>
-                                 <th>Template</th>
-                                 <th>Send At</th>
-                                 <th>Frequency</th>
-                                 <th>Status</th>
-                             </tr>
-                         </thead>
-                         <tbody>
-                             <% reminders.forEach(reminder => { %>
-                                 <tr>
-                                     <td><%= reminder.template.type %> - <%= reminder.template.subject || 'N/A' %></td>
-                                     <td><%= reminder.sendAt %></td>
-                                     <td><%= reminder.frequency %></td>
-                                     <td><%= reminder.status %></td>
-                                 </tr>
-                             <% }); %>
-                         </tbody>
-                     </table>
-                 </div>
-<style>
-       body {
-    font-family: Arial, sans-serif;
-}
+    <div class="container mt-5">
+        <h3 class="text-center"><strong>Templates & Reminders Management</strong></h3>
 
-.container {
-    padding: 15px;
-}
+        <!-- Error Message -->
+        <% if (error && error.length> 0) { %>
+            <div class="alert alert-danger text-center" role="alert" style="font-size: 0.9rem;">
+                <%= error %>
+            </div>
+            <% } %>
 
-.table {
-    width: 100%;
-    border-collapse: collapse;
-}
+                <!-- Success Message -->
+                <% if (success && success.length> 0) { %>
+                    <div class="alert alert-success text-center" role="alert" style="font-size: 0.9rem;">
+                        <%= success %>
+                    </div>
+                    <% } %>
+                        <style>
+                            @media (max-width: 576px) {
+                                .alert {
+                                    font-size: 0.8rem;
+                                }
+                            }
+                        </style>
 
-.table th, .table td {
-    padding: 8px;
-    text-align: center;
-}
+                        <!-- Templates Section -->
+                        <h5 class="mt-5">Your Templates
+                            <button class="btn btn-info float-right" style="width: 100%;" data-toggle="modal"
+                                data-target="#templateModal">
+                                Create New Template
+                            </button>
+                        </h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered text-center">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Subject</th>
+                                        <th>Content</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% templates.forEach(template=> { %>
+                                        <tr>
+                                            <td>
+                                                <%= template.type %>
+                                            </td>
+                                            <td>
+                                                <%= template.subject || 'N/A' %>
+                                            </td>
+                                            <td>
+                                                <%= template.content %>
+                                            </td>
+                                            <td>
+                                                <!-- Edit Icon -->
+                                                <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#editTemplateModal-<%= template._id %>">
+                                                    <i class="fas fa-edit"></i> <!-- Font Awesome edit icon -->
+                                                </button>
+                                            
+                                                <!-- Delete Icon -->
+                                                <form action="/templates/delete/<%= template._id %>" method="POST" style="display:inline-block;">
+                                                    <button class="btn btn-sm btn-danger" type="submit">
+                                                        <i class="fas fa-trash"></i> <!-- Font Awesome trash icon -->
+                                                    </button>
+                                                </form>
+                                            </td>
+                                            
+                                        </tr>
 
-@media (max-width: 768px) {
-    h3, h5 {
-        font-size: 0.95rem;
-    }
-
-    .btn {
-        margin-bottom: 10px;
-        font-size: 10px;
-    }
-
-    .modal-dialog {
-        max-width: 90%;
-        margin: auto;
-    }
-
-    .form-control {
-        font-size: 0.775rem;
-    }
-
-    .table-responsive {
-        overflow-x: auto;
-        font-size: 10px;
-    }
-}
-
-.alert {
-    margin-bottom: 20px;
-}
-
-.float-right {
-    float: none;
-    display: block;
-    margin-bottom: 10px;
-}
-
-</style>                 
-          
-          <!-- Template Modal -->
-          <div class="modal fade" id="templateModal" tabindex="-1" role="dialog" aria-labelledby="templateModalLabel" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                  <div class="modal-content">
-                      <form action="/templates/create" method="POST">
-                          <div class="modal-header">
-                              <h5 class="modal-title" id="templateModalLabel">Create New Template</h5>
-                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                  <span aria-hidden="true">&times;</span>
-                              </button>
-                          </div>
-                          <div class="modal-body">
-                              <div class="form-group">
-                                  <label for="type">Template Type</label>
-                                  <select class="form-control" id="type" name="type" required>
-                                      <option value="sms">SMS</option>
-                                      <option value="email">Email</option>
-                                  </select>
-                              </div>
-                              <div class="form-group" id="subjectGroup" style="display: none;">
-                                  <label for="subject">Email Subject</label>
-                                  <input type="text" class="form-control" id="subject" name="subject">
-                              </div>
-                              <div class="form-group">
-                                  <label for="content">Template Content</label>
-                                  <textarea class="form-control" id="content" name="content" rows="4" required></textarea>
-                              </div>
-                          </div>
-                          <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                              <button type="submit" class="btn btn-info">Create Template</button>
-                          </div>
-                      </form>
-                  </div>
-              </div>
-          </div>
-          
-          <!-- Reminder Modal -->
-          <div class="modal fade" id="reminderModal" tabindex="-1" role="dialog" aria-labelledby="reminderModalLabel" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                  <div class="modal-content">
-                      <form action="/reminders/create" method="POST">
-                          <div class="modal-header">
-                              <h5 class="modal-title" id="reminderModalLabel">Create New Reminder</h5>
-                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                  <span aria-hidden="true">&times;</span>
-                              </button>
-                          </div>
-                          <div class="modal-body">
-                              <div class="form-group">
-                                  <label for="templateId">Select Template</label>
-                                  <select class="form-control" id="templateId" name="templateId" required>
-                                      <% templates.forEach(template => { %>
-                                          <option value="<%= template._id %>"><%= template.type %> - <%= template.subject || 'N/A' %></option>
-                                      <% }); %>
-                                  </select>
-                              </div>
-                              <div class="form-group">
-                                  <label for="sendAt">Send At</label>
-                                  <input type="datetime-local" class="form-control" id="sendAt" name="sendAt" required>
-                              </div>
-                              <div class="form-group">
-                                  <label for="frequency">Frequency</label>
-                                  <select class="form-control" id="frequency" name="frequency" required>
-                                      <option value="daily">Daily</option>
-                                      <option value="weekly">Weekly</option>
-                                      <option value="monthly">Monthly</option>
-                                  </select>
-                              </div>
-                          </div>
-                          <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                              <button type="submit" class="btn btn-dark">Create Reminder</button>
-                          </div>
-                      </form>
-                  </div>
-              </div>
-          </div>
-          
-          <!-- Script to Show/Hide Subject Input -->
-          <script>
-              document.getElementById('type').addEventListener('change', function () {
-                  if (this.value === 'email') {
-                      document.getElementById('subjectGroup').style.display = 'block';
-                  } else {
-                      document.getElementById('subjectGroup').style.display = 'none';
-                  }
-              });
-          </script>
-          
-   
-
-   <footer class="text-center py-0">
-       &copy; 2024 Lease Captain. All Rights Reserved || powered by
-       <a href="https://vickinstechnologies.com" target="_blank">Vickins Technologies</a>
-   </footer>
-   
-   <style>
-       footer {
-           font-size: 0.7rem; 
-       }
-   
-       @media (max-width: 768px) {
-           footer {
-               font-size: 0.6rem; 
-               padding: 5px; 
-           }
-       }
-   
-       @media (max-width: 576px) {
-           footer {
-               font-size: 0.5rem; 
-               padding: 2px; 
-           }
-       }
-   </style>
-   
+                                        <!-- Edit Template Modal -->
+                                        <div class="modal fade" id="editTemplateModal-<%= template._id %>" tabindex="-1"
+                                            role="dialog" aria-labelledby="editTemplateModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                                <div class="modal-content">
+                                                    <form action="/templates/edit/<%= template._id %>" method="POST">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="editTemplateModalLabel">Edit
+                                                                Template</h5>
+                                                            <button type="button" class="close" data-dismiss="modal"
+                                                                aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="form-group">
+                                                                <label for="type">Type</label>
+                                                                <input type="text" class="form-control" name="type"
+                                                                    value="<%= template.type %>" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="subject">Subject</label>
+                                                                <input type="text" class="form-control" name="subject"
+                                                                    value="<%= template.subject %>" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="content">Content</label>
+                                                                <textarea class="form-control" name="content"
+                                                                    required><%= template.content %></textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-dismiss="modal">Close</button>
+                                                            <button type="submit" class="btn btn-primary">Save
+                                                                Changes</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
 
 
+                        <!-- Reminders Section -->
+                        <h5 class="mt-5">Your Reminders
+                            <button class="btn btn-dark float-right" style="width: 100%;" data-toggle="modal"
+                                data-target="#reminderModal">Create New Reminder</button>
+                        </h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered text-center">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Template</th>
+                                        <th>Send At</th>
+                                        <th>Frequency</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% reminders.forEach(reminder=> { %>
+                                        <tr>
+                                            <td>
+                                                <% if (reminder.templateId) { %>
+                                                    <%= reminder.templateId.type %> - <%= reminder.templateId.subject
+                                                            || 'N/A' %>
+                                                            <% } else { %> N/A <% } %>
+                                            </td>
+                                            <td>
+                                                <%= new Date(reminder.sendAt).toLocaleString() %>
+                                            </td>
+                                            <td>
+                                                <%= reminder.frequency %>
+                                            </td>
+                                            <td>
+                                                <%= reminder.status %>
+                                            </td>
+                                            <td>
+                                                <!-- Edit Icon -->
+                                                <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#editReminderModal-<%= reminder._id %>">
+                                                    <i class="fas fa-edit"></i> <!-- Font Awesome edit icon -->
+                                                </button>
+                                            
+                                                <!-- Delete Icon -->
+                                                <form action="/reminders/delete/<%= reminder._id %>" method="POST" style="display:inline-block;">
+                                                    <button class="btn btn-sm btn-danger" type="submit">
+                                                        <i class="fas fa-trash"></i> <!-- Font Awesome trash icon -->
+                                                    </button>
+                                                </form>
+                                            </td>
+                                            
+                                        </tr>
+
+                                        <!-- Edit Reminder Modal -->
+                                        <div class="modal fade" id="editReminderModal-<%= reminder._id %>" tabindex="-1"
+                                            role="dialog" aria-labelledby="editReminderModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                                <div class="modal-content">
+                                                    <form action="/reminders/edit/<%= reminder._id %>" method="POST">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="editReminderModalLabel">Edit
+                                                                Reminder</h5>
+                                                            <button type="button" class="close" data-dismiss="modal"
+                                                                aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="form-group">
+                                                                <label for="sendAt">Send At</label>
+                                                                <input type="datetime-local" class="form-control"
+                                                                name="sendAt"
+                                                                value="<%= reminder.sendAt ? new Date(reminder.sendAt).toISOString().slice(0, 16) : '' %>"
+                                                                required>                                                            
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="frequency">Frequency</label>
+                                                                <select class="form-control" name="frequency" required>
+                                                                    <option value="daily"
+                                                                    <%=reminder.frequency==='once' ? 'selected'
+                                                                    : '' %>Once</option>
+                                                                    <option value="daily"
+                                                                        <%=reminder.frequency==='daily' ? 'selected'
+                                                                        : '' %>>Daily</option>
+                                                                    <option value="weekly"
+                                                                        <%=reminder.frequency==='weekly' ? 'selected'
+                                                                        : '' %>>Weekly</option>
+                                                                    <option value="monthly"
+                                                                        <%=reminder.frequency==='monthly' ? 'selected'
+                                                                        : '' %>>Monthly</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-dismiss="modal">Close</button>
+                                                            <button type="submit" class="btn btn-dark" style="background-color: #003366;">Save
+                                                                Changes</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <style>
+                            body {
+                                font-family: Arial, sans-serif;
+                            }
+
+                            .container {
+                                padding: 15px;
+                            }
+
+                            .table {
+                                width: 100%;
+                                border-collapse: collapse;
+                            }
+
+                            .table th,
+                            .table td {
+                                padding: 8px;
+                                text-align: center;
+                            }
+
+                            @media (max-width: 768px) {
+
+                                h3,
+                                h5 {
+                                    font-size: 0.95rem;
+                                }
+
+                                .btn {
+                                    margin-bottom: 10px;
+                                    font-size: 10px;
+                                }
+
+                                .modal-dialog {
+                                    max-width: 90%;
+                                    margin: auto;
+                                }
+
+                                .form-control {
+                                    font-size: 0.775rem;
+                                }
+
+                                .table-responsive {
+                                    overflow-x: auto;
+                                    font-size: 10px;
+                                }
+                            }
+
+                            .alert {
+                                margin-bottom: 20px;
+                            }
+
+                            .float-right {
+                                float: none;
+                                display: block;
+                                margin-bottom: 10px;
+                            }
+                        </style>
+
+                        <!-- Template Modal -->
+                        <div class="modal fade" id="templateModal" tabindex="-1" role="dialog"
+                            aria-labelledby="templateModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                <div class="modal-content">
+                                    <form action="/templates/create" method="POST">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="templateModalLabel">Create New Template</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label for="type">Template Type</label>
+                                                <select class="form-control" id="type" name="type" required>
+                                                    <option value="sms">SMS</option>
+                                                    <option value="email">Email</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group" id="subjectGroup" style="display: none;">
+                                                <label for="subject">Email Subject</label>
+                                                <input type="text" class="form-control" id="subject" name="subject">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="content">Template Content</label>
+                                                <textarea class="form-control" id="content" name="content" rows="4"
+                                                    required></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-info">Create Template</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reminder Modal -->
+                        <div class="modal fade" id="reminderModal" tabindex="-1" role="dialog"
+                            aria-labelledby="reminderModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                <div class="modal-content">
+                                    <form action="/reminders/create" method="POST">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="reminderModalLabel">Create New Reminder</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <!-- Select Template -->
+                                            <div class="form-group">
+                                                <label for="templateId">Select Template</label>
+                                                <select class="form-control" id="templateId" name="templateId" required>
+                                                    <option value="" disabled selected>Select a template</option>
+                                                    <% templates.forEach(template=> { %>
+                                                        <option value="<%= template._id %>">
+                                                            <%= template.type %> - <%= template.subject || 'No Subject'
+                                                                    %>
+                                                        </option>
+                                                        <% }); %>
+                                                </select>
+                                            </div>
+
+                                            <!-- Reminder Title -->
+                                            <div class="form-group">
+                                                <label for="title">Reminder Title</label>
+                                                <input type="text" class="form-control" id="title" name="title"
+                                                    placeholder="Enter reminder title" required>
+                                            </div>
+
+                                            <!-- Message -->
+                                            <div class="form-group">
+                                                <label for="message">Message</label>
+                                                <textarea class="form-control" id="message" name="message" rows="3"
+                                                    placeholder="Enter reminder message" required></textarea>
+                                            </div>
+
+                                            <!-- Send At -->
+                                            <div class="form-group">
+                                                <label for="sendAt">Send At</label>
+                                                <input type="datetime-local" class="form-control" id="sendAt"
+                                                    name="sendAt" required>
+                                            </div>
+
+                                            <!-- Frequency -->
+                                            <div class="form-group">
+                                                <label for="frequency">Frequency</label>
+                                                <select class="form-control" id="frequency" name="frequency" required>
+                                                    <option value="" disabled selected>Select frequency</option>
+                                                    <option value="daily">Once</option>
+                                                    <option value="daily">Daily</option>
+                                                    <option value="weekly">Weekly</option>
+                                                    <option value="monthly">Monthly</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-dark">Create Reminder</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
 
 
-   <!-- Bootstrap JS -->
-   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                        <!-- Script to Show/Hide Subject Input -->
+                        <script>
+                            document.getElementById('type').addEventListener('change', function () {
+                                if (this.value === 'email') {
+                                    document.getElementById('subjectGroup').style.display = 'block';
+                                } else {
+                                    document.getElementById('subjectGroup').style.display = 'none';
+                                }
+                            });
+                        </script>
 
 
-   <script>
-       $(document).ready(function () {
-           // Toggle sidebar on button click
-           $('#sidebarToggle').click(function () {
-               $('#sidebarMenu').toggleClass('active');
-           });
-   
-           // Collapse sidebar when clicking outside
-           $(document).click(function (event) {
-               if (!$(event.target).closest('#sidebarMenu, #sidebarToggle').length) {
-                   $('#sidebarMenu').removeClass('active');
-               }
-           });
-   
-           // Close other collapsibles when one is opened
-           $('.collapse').on('show.bs.collapse', function () {
-               // Collapse all other elements except the one being opened
-               $('.collapse').not(this).collapse('hide');
-           });
-       });
-   </script>
-   
-   
-   
+
+                        <footer class="text-center py-0">
+                            &copy; 2024 Lease Captain. All Rights Reserved || powered by
+                            <a href="https://vickinstechnologies.com" target="_blank">Vickins Technologies</a>
+                        </footer>
+
+                        <style>
+                            footer {
+                                font-size: 0.7rem;
+                            }
+
+                            @media (max-width: 768px) {
+                                footer {
+                                    font-size: 0.6rem;
+                                    padding: 5px;
+                                }
+                            }
+
+                            @media (max-width: 576px) {
+                                footer {
+                                    font-size: 0.5rem;
+                                    padding: 2px;
+                                }
+                            }
+                        </style>
+
+
+
+
+
+                        <!-- Bootstrap JS -->
+                        <script
+                            src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+                        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+                        <script>
+                            $(document).ready(function () {
+                                // Toggle sidebar on button click
+                                $('#sidebarToggle').click(function () {
+                                    $('#sidebarMenu').toggleClass('active');
+                                });
+
+                                // Collapse sidebar when clicking outside
+                                $(document).click(function (event) {
+                                    if (!$(event.target).closest('#sidebarMenu, #sidebarToggle').length) {
+                                        $('#sidebarMenu').removeClass('active');
+                                    }
+                                });
+
+                                // Close other collapsibles when one is opened
+                                $('.collapse').on('show.bs.collapse', function () {
+                                    // Collapse all other elements except the one being opened
+                                    $('.collapse').not(this).collapse('hide');
+                                });
+                            });
+                        </script>
+
+
+
 
 </body>
 

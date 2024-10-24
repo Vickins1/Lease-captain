@@ -6,12 +6,29 @@ const paymentSchema = new Schema({
     tenantName: { type: String, required: true },
     property: { type: Schema.Types.ObjectId, ref: 'Property', required: true },
     unit: { type: Schema.Types.ObjectId, ref: 'PropertyUnit', required: false },
-    doorNumber: { type: String, required: [true, 'Door number is required'] },
-    amount: { type: Number, required: true, min: [0, 'Amount must be non-negative'] },
-    datePaid: { type: Date, default: Date.now },
-    method: { type: String, required: [true, 'Payment method is required'] },
-    totalPaid: { type: Number, required: [true, 'Total amount paid is required'], min: 0 },
-    due: { type: Number, required: true },
+    doorNumber: { 
+        type: String, 
+        required: [true, 'Door number is required'] },
+    amount: { 
+        type: Number, 
+        required: true, 
+        min: [0, 'Amount must be non-negative'] },
+    datePaid: { 
+        type: Date, 
+        default: Date.now 
+    },
+    method: { 
+        type: String, 
+        required: [true, 'Payment method is required'] 
+    },
+    totalPaid: { 
+        type: Number, 
+        required: [true, 'Total amount paid is required'], 
+        min: 0 },
+    due: { 
+        type: Number, 
+        required: true 
+    },
     status: {
         type: String,
         enum: ['completed', 'pending', 'failed'],
@@ -28,7 +45,7 @@ const paymentSchema = new Schema({
         type: String,
         required: true,
         unique: true
-    }
+    },
 }, {
     timestamps: true
 });

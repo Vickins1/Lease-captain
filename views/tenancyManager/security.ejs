@@ -338,116 +338,128 @@
    </div>
 
           
-              <!-- Recent Login Activity Card -->
-<div class="card mb-4 shadow">
-       <div class="card-body text-center">
-           <h4 class="responsive-text">Recent Login Activity</h4>
-           <div class="table-responsive">
-               <table class="table table-striped table-bordered text-center">
-                   <thead class="thead-light">
-                       <tr>
-                           <th>Login Time</th>
-                           <th>IP Address</th>
-                           <th>Device</th>
-                       </tr>
-                   </thead>
-                   <tbody>
-                       <% if (user.loginActivity && user.loginActivity.length > 0) { %>
-                           <% user.loginActivity.forEach(activity => { %>
-                               <tr>
-                                   <td><%= new Date(activity.loginTime).toLocaleString() %></td>
-                                   <td><%= activity.ipAddress %></td>
-                                   <td><%= activity.device %></td>
-                               </tr>
-                           <% }); %>
-                       <% } else { %>
-                           <tr>
-                               <td colspan="3" class="text-center">No recent login activity found.</td>
-                           </tr>
-                       <% } %>
-                   </tbody>
-               </table>
-           </div>
-       </div>
-   </div>
-   
+<!-- loginActivity.ejs -->
+<div class="container mt-4">
+    <div class="card mb-4 shadow">
+        <div class="card-body text-center">
+            <h4 class="responsive-text">Recent Login Activity</h4>
+            <div class="activity-tree">
+                <% if (user.loginActivity && user.loginActivity.length > 0) { %>
+                    <% user.loginActivity.forEach((activity, index) => { %>
+                        <div class="activity-item">
+                            <div class="activity-header">
+                                <span class="activity-icon"><i class="fas fa-sign-in-alt"></i></span>
+                                <span class="activity-title">Login <%= index + 1 %></span>
+                            </div>
+                            <div class="activity-details">
+                                <ul>
+                                    <li><strong>Login Time:</strong> <%= new Date(activity.loginTime).toLocaleString() %></li>
+                                    <li><strong>IP Address:</strong> <%= activity.ipAddress %></li>
+                                    <li><strong>Device:</strong> <%= activity.device %></li>
+                                    <li><strong>Email:</strong> <%= user.email %></li>
+                                </ul>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <div class="no-activity">
+                        <i class="fas fa-info-circle"></i> No recent login activity found.
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
-       /* Page background color */
-body {
-    background-color: #f8f9fa; /* Light grey background for better contrast */
-}
+    /* Container styling */
+    .activity-tree {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
 
-/* Custom styles for smaller screens */
-@media (max-width: 576px) {
-    .responsive-text {
-        font-size: 0.9rem; 
+    /* Individual activity item styling */
+    .activity-item {
+        background-color: #f8f9fa;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 10px; /* Reduced padding */
+        width: 100%;
+        margin-bottom: 10px; /* Reduced margin */
+        font-size: 0.85rem; /* Reduced font size */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    .form-group label {
-        font-size: 0.7rem; 
-    }
-    .form-control {
-        font-size: 0.7rem; 
-    }
-    .btn-info {
-        font-size: 0.9rem; 
-    }
-    .table {
-        font-size: 0.8rem;
-    }
-    .container {
-        padding: 15px; 
-    }
-    .btn {
-        font-size: 0.7rem;
-    }
-}
 
-/* Add hover effect for table rows */
-tbody tr:hover {
-    background-color: #e9ecef; /* Light grey for row hover */
-}
+    .activity-item:hover {
+        transform: translateY(-2px); /* Reduced hover effect */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+    }
 
-/* Button styles */
-.btn-info {
-    background-color: #17a2b8; /* Bootstrap's info color */
-    border: none;
-}
+    /* Activity header with icon */
+    .activity-header {
+        display: flex;
+        align-items: center;
+        font-size: 1rem; /* Reduced font size */
+        font-weight: bold;
+        color: #333;
+    }
 
-.btn-info:hover {
-    background-color: #138496; /* Darker shade on hover */
-}
+    .activity-icon {
+        margin-right: 8px; /* Reduced spacing */
+        color: #007bff;
+    }
 
-/* Remove borders from cards */
-.card {
-    border: none;
-}
+    /* Activity details list */
+    .activity-details ul {
+        list-style-type: none;
+        padding-left: 0;
+        margin-top: 8px; /* Reduced spacing */
+    }
 
-</style>          
-   
-   <footer class="text-center py-0">
-       &copy; 2024 Lease Captain. All Rights Reserved || powered by
-       <a href="https://vickinstechnologies.com" target="_blank">Vickins Technologies</a>
-   </footer>
-   
-   <style>
-       footer {
-           font-size: 0.7rem; 
-       }
-   
-       @media (max-width: 768px) {
-           footer {
-               font-size: 0.6rem;
-               padding: 5px;
-           }
-       }
-   
-       @media (max-width: 576px) {
-           footer {
-               font-size: 0.5rem;
-               padding: 2px;
-           }
-       }
-   </style>
+    .activity-details ul li {
+        margin-bottom: 4px; /* Reduced spacing */
+    }
+
+    .activity-details ul li strong {
+        color: #555;
+    }
+
+    /* Styling for no activity message */
+    .no-activity {
+        font-size: 0.9rem; /* Reduced font size */
+        color: #888;
+        text-align: center;
+        padding: 10px;
+        background-color: #f0f0f0;
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .no-activity i {
+        margin-right: 5px;
+        color: #007bff;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 576px) {
+        .activity-item {
+            padding: 8px;
+        }
+
+        .activity-header {
+            font-size: 0.85rem;
+        }
+
+        .activity-details ul li {
+            font-size: 0.8rem;
+        }
+    }
+</style>
+
    
 
 

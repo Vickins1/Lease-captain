@@ -289,34 +289,28 @@
         </ul>
     </nav>
 
-        <div class="container mt-5">
-            <h3 class="text-center"><strong>Top-Up SMS</strong></h3>
-        
-<!-- Error Message -->
-<% if (error && error.length > 0) { %>
-    <div class="alert alert-danger text-center" role="alert" style="font-size: 0.9rem;">
-        <%= error %>
-    </div>
-<% } %>
-
-<!-- Success Message -->
-<% if (success && success.length > 0) { %>
-    <div class="alert alert-success text-center" role="alert" style="font-size: 0.9rem;">
-        <%= success %>
-    </div>
-<% } %>
-<style>
-    @media (max-width: 576px) {
- .alert {
-     font-size: 0.8rem;
- }
-}
-</style>  
-        
-            <button type="button" style="background-color: #003366;" class="btn btn-dark mb-3" data-toggle="modal" data-target="#topupModal">
-                Add New Top-Up
-            </button>
-        
+    <div class="container mt-5">
+        <h3 class="text-center"><strong>Top-Up SMS</strong></h3>
+    
+        <!-- Error Message -->
+        <% if (error && error.length > 0) { %>
+        <div class="alert alert-danger text-center" role="alert" style="font-size: 0.9rem;">
+            <%= error %>
+        </div>
+        <% } %>
+    
+        <!-- Success Message -->
+        <% if (success && success.length > 0) { %>
+        <div class="alert alert-success text-center" role="alert" style="font-size: 0.9rem;">
+            <%= success %>
+        </div>
+        <% } %>
+    
+        <button type="button" class="btn btn-dark mb-3" data-toggle="modal" data-target="#topupModal">
+            Add New Top-Up
+        </button>
+    
+        <div class="table-responsive">
             <table class="table table-bordered text-center">
                 <thead class="thead-light">
                     <tr>
@@ -327,129 +321,164 @@
                 </thead>
                 <tbody>
                     <% topups.forEach(topup => { %>
-                        <tr>
-                            <td><%= topup.amount %></td>
-                            <td><%= new Date(topup.createdAt).toLocaleDateString() %></td>
-                            <td>
-                                <button class="btn btn-danger btn-sm">Delete</button>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td>Ksh. <%= topup.amount %></td>
+                        <td><%= new Date(topup.createdAt).toLocaleDateString() %></td>
+                        <td>
+                            <!-- Delete Button to Trigger Modal -->
+                            <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteTopupModal-<%= topup._id %>">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                        
+                        <!-- Delete Confirmation Modal -->
+                        <div class="modal fade" id="deleteTopupModal-<%= topup._id %>" tabindex="-1" role="dialog" aria-labelledby="deleteTopupModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteTopupModalLabel">Confirm Delete</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to delete this top-up?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                        <!-- Form to delete the top-up -->
+                                        <form action="/topups/<%= topup._id %>/delete" method="POST">
+                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                    </tr>
                     <% }); %>
                 </tbody>
             </table>
         </div>
-        
-        <!-- Modal for Adding New Top-Up -->
-        <div class="modal fade" id="topupModal" tabindex="-1" role="dialog" aria-labelledby="topupModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="topupModalLabel">Add New Top-Up</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <form action="/topups" method="POST">
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label for="amount">Amount</label>
-                                <input type="number" class="form-control" id="amount" name="amount" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="phone">Phone Number</label>
-                                <input type="tel" class="form-control" id="phone" name="phone" placeholder="e.g., 0701234567" required>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-dark">Add Top-Up</button>
-                        </div>
-                    </form>
-                </div>
+    </div>
+    
+    <!-- Modal for Adding New Top-Up -->
+<div class="modal fade" id="topupModal" tabindex="-1" role="dialog" aria-labelledby="topupModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="topupModalLabel">Add New Top-Up</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
+            <form action="/topups" method="POST" onsubmit="handleTopupSubmit(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="amount">Amount</label>
+                        <input type="number" class="form-control" id="amount" name="amount" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="e.g., 0701234567" pattern="07[0-9]{8}" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-dark" id="topupSubmitButton">Add Top-Up</button>
+                </div>
+            </form>
         </div>
-<style>
-body {
-    font-size: 0.9rem; /* Decrease base font size */
-}
+    </div>
+</div>
 
-
-.container {
-    max-width: 600px; /* Set a maximum width for the container */
-    margin: auto; /* Center the container */
+<script>
+function handleTopupSubmit(event) {
+    const submitButton = document.getElementById('topupSubmitButton');
+    submitButton.innerHTML = 'Processing...';
+    submitButton.disabled = true;
 }
+</script>
 
-.modal-content {
-    border-radius: 0.5rem;
-    border: 1px solid #003366;
-}
-
-.modal-header {
-    background-color: #ffffff;
-    border-bottom: 1px solid #003366;
-}
-
-.modal-title {
-    font-size: 0.9rem;
-    font-weight: bold;
-}
-
-.modal-body {
-    padding: 1.0rem;
-}
-
-.modal-footer {
-    background-color: #f8f9fa;
-    border-top: 1px solid #003366;
-}
-
-.modal-footer .btn {
-    background-color: #003366;
-    border: none;
-    color: white;
-    font-size: 10px;
-    transition: background-color 0.3s;
-}
-
-.modal-footer .btn:hover {
-    background-color: #00172f;
-}
-
-.table th, .table td {
-    vertical-align: middle;
-}
-
-@media (max-width: 576px) {
-    .modal-dialog {
-        width: 100%;
-        margin: 0;
-        max-height: 100%;
-        overflow-y: auto;
-    }
-    h3{
-    font-size: 20px;
-}
-}
-
-.table-responsive {
-    font-size: 1.5rem;
-}
-
-.table {
-    min-width: 100%;
-}
-
-th, td {
-    font-size: 0.9rem; 
-    padding: 0.5rem;
-}
-
-.btn {
-    font-size: 0.8rem;
-    padding: 0.4rem 0.8rem;
-}
-
-</style>        
+    
+    <style>
+    
+        .modal-content {
+            border-radius: 0.5rem;
+            border: 1px solid #003366;
+        }
+    
+        .modal-header {
+            background-color: #ffffff;
+            border-bottom: 1px solid #003366;
+        }
+    
+        .modal-title {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+    
+        .modal-body {
+            padding: 1.0rem;
+        }
+    
+        .modal-footer {
+            background-color: #f8f9fa;
+            border-top: 1px solid #003366;
+        }
+    
+        .modal-footer .btn {
+            background-color: #003366;
+            border: none;
+            color: white;
+            transition: background-color 0.3s;
+        }
+    
+        .modal-footer .btn:hover {
+            background-color: #00172f;
+        }
+    
+        .table th, .table td {
+            vertical-align: middle;
+        }
+    
+        @media (max-width: 576px) {
+            .modal-dialog {
+                width: 100%;
+                margin: 0;
+                max-height: 100%;
+                overflow-y: auto;
+            }
+    
+            h3 {
+                font-size: 20px;
+            }
+    
+            .alert {
+                font-size: 0.8rem;
+            }
+        }
+    
+        .table-responsive {
+            font-size: 0.9rem;
+        }
+    
+        .table {
+            min-width: 100%;
+        }
+    
+        th, td {
+            font-size: 0.9rem;
+            padding: 0.5rem;
+        }
+    
+        .btn {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem;
+        }
+    </style>
+     
              
 
           <footer class="text-center py-0">

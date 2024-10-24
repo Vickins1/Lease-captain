@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const User = require('../models/user');
-const { isAuthenticated } = require('../middleware'); 
+const { isAuthenticated } = require('../middleware');
+const useragent = require('useragent');
 
 // Signup route
 router.get('/signup', (req, res) => {
@@ -26,16 +27,16 @@ router.post('/signup', async (req, res) => {
     req.flash('success', 'Successfully signed up! Please log in.');
     res.redirect('/login');
   } catch (err) {
-    
+
     let errorMessage;
-    if (err.code === 11000) { 
+    if (err.code === 11000) {
       errorMessage = 'Username or email already exists. Please choose another.';
     } else {
-      errorMessage = 'Sign up failed: ' + err.message; 
+      errorMessage = 'Sign up failed: ' + err.message;
     }
-    
-    console.log(err.message); 
-    req.flash('error', errorMessage); 
+
+    console.log(err.message);
+    req.flash('error', errorMessage);
     res.redirect('/signup');
   }
 });
@@ -49,16 +50,43 @@ router.get('/login', (req, res) => {
 
 // Handle login form submission
 router.post('/login', (req, res, next) => {
-  passport.authenticate('local', {
-    successRedirect: '/tenancy-manager/dashboard',
-    failureRedirect: '/login',
-    failureFlash: true, 
+  passport.authenticate('local', async (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      req.flash('error', 'Invalid username or password');
+      return res.redirect('/login');
+    }
+    req.logIn(user, async (err) => {
+      if (err) {
+        return next(err);
+      }
+
+      // Capture the login activity
+      const agent = useragent.parse(req.headers['user-agent']);
+      const loginActivity = {
+        loginTime: new Date(),
+        ipAddress: req.ip,
+        device: agent.toString()
+      };
+
+      try {
+        await User.findByIdAndUpdate(user._id, {
+          $push: { loginActivity: { $each: [loginActivity], $slice: -5 } } 
+        });
+
+        res.redirect('/tenancy-manager/dashboard');
+      } catch (error) {
+        console.error('Error logging login activity:', error);
+        res.redirect('/login');
+      }
+    });
   })(req, res, next);
 });
 
-
 // Logout route
-router.get('/logout', isAuthenticated, (req, res, next) => { 
+router.get('/logout', isAuthenticated, (req, res, next) => {
   req.logout((err) => {
     if (err) {
       return next(err);

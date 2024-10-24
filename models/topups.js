@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const topupSchema = new mongoose.Schema({
+const topupSchema = new Schema({
     amount: {
         type: Number,
-        required: true
+        required: true,
+        min: [0, 'Amount must be a positive number'],
     },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
@@ -16,5 +18,6 @@ const topupSchema = new mongoose.Schema({
     }
 });
 
-const Topup = mongoose.model('Topup', topupSchema);
-module.exports = Topup;
+// Export the TopUp model
+const TopUp = mongoose.model('TopUp', topupSchema);
+module.exports = TopUp;

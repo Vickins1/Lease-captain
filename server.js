@@ -12,6 +12,7 @@ const tenantRoutes = require('./routes/tenant');
 const tenantPortalRoutes = require('./routes/tenantPortal');
 const authRoutes = require('./routes/auth');
 const paymentGatewayRoutes = require('./routes/paymentGateway');
+const sendRemindersRoutes = require('./routes/sendReminders');
 const fs = require('fs');
 const os = require('os');
 require('dotenv').config();
@@ -76,6 +77,7 @@ app.use('/', propertyRoutes);
 app.use('/', tenantRoutes);
 app.use('/', tenantPortalRoutes);
 app.use('/', paymentGatewayRoutes);
+app.use('/', sendRemindersRoutes);
 
 // Landing page
 app.get('/', (req, res) => {

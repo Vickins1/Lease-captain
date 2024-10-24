@@ -44,72 +44,78 @@ async function sendPaymentRequest(payload) {
 
 // STK Push initiation route
 router.post('/payment/rent', async (req, res) => {
-       const { amount, phoneNumber, paymentMethod } = req.body;
-       const tenantId = req.session.tenantId;
-   
-       if (!tenantId || !phoneNumber) {
-           req.flash('error', 'Tenant or phone number missing.');
-           return res.redirect('/payments');
-       }
-   
-       try {
-           const tenant = await Tenant.findById(tenantId).populate('property unit').lean();
-           if (!tenant) throw new Error('Tenant not found.');
-   
-           const rentPaid = parseFloat(amount);
-           const transactionId = generateTransactionId('RNT');
-   
-           const userPaymentAccount = await PaymentAccount.findOne({ userId: tenant.userId });
-           if (!userPaymentAccount) throw new Error('Payment account not found.');
-   
-           const payload = {
-               api_key: userPaymentAccount.apiKey,
-               email: userPaymentAccount.accountEmail,
-               account_id: userPaymentAccount.accountId,
-               amount: rentPaid,
-               msisdn: phoneNumber,
-               reference: transactionId,
-           };
+    const { amount, phoneNumber, paymentMethod } = req.body;
+    const tenantId = req.session.tenantId;
 
-           const paymentResponse = await sendPaymentRequest(payload);
-           console.log('Payment initiation response:', paymentResponse);
-           if (paymentResponse.success === "200") {
-               const transactionRequestId = paymentResponse.tranasaction_request_id;
-               if (!transactionRequestId) {
-                   req.flash('error', 'Transaction request ID is missing. Payment initiation failed.');
-                   return res.redirect('/payments');
-               }
-   
-               req.session.paymentData = {
-                   tenant: tenantId,
-                   tenantName: tenant.name,
-                   property: tenant.property,
-                   amount: rentPaid,
-                   totalPaid: rentPaid,
-                   doorNumber: tenant.unit && tenant.unit.doorNumber ? tenant.unit.doorNumber : 'N/A',
-                   paymentType: 'rent',
-                   due: tenant.rentDue || 0, 
-                   datePaid: new Date(),
-                   method: paymentMethod,
-                   status: 'pending',
-                   transactionId,
-                   transactionRequestId,
-               };
-                 
-               req.flash('info', 'Payment initiated. Awaiting confirmation.');
-               req.session.transactionId = transactionId;
-               pollPaymentStatus(req, userPaymentAccount.apiKey, userPaymentAccount.accountEmail);
-               return res.redirect('/payments');
-           } else {
-               req.flash('error', 'Payment initiation failed. Please try again.');
-               return res.redirect('/payments');
-           }
-       } catch (error) {
-           console.error('Failed Payment initiation error:', error);
-           req.flash('error', 'Something went wrong. Please try again.');
-           res.redirect('/payments');
-       }
-   });
+    if (!tenantId || !phoneNumber) {
+        req.flash('error', 'Tenant or phone number missing.');
+        return res.redirect('/payments');
+    }
+
+    try {
+        // Fetch the tenant and ensure userId is populated
+        const tenant = await Tenant.findById(tenantId)
+            .populate('property unit userId') 
+            .lean();
+
+        if (!tenant) throw new Error('Tenant not found.');
+        if (!tenant.userId) throw new Error('Tenant does not have an associated user.');
+
+        const rentPaid = parseFloat(amount);
+        const transactionId = generateTransactionId('RNT');
+
+        // Fetch the payment account using the userId
+        const userPaymentAccount = await PaymentAccount.findOne({ userId: tenant.userId });
+        if (!userPaymentAccount) throw new Error('Payment account not found.');
+
+        const payload = {
+            api_key: userPaymentAccount.apiKey,
+            email: userPaymentAccount.accountEmail,
+            account_id: userPaymentAccount.accountId,
+            amount: rentPaid,
+            msisdn: phoneNumber,
+            reference: transactionId,
+        };
+
+        const paymentResponse = await sendPaymentRequest(payload);
+        if (paymentResponse.success === "200") {
+            const transactionRequestId = paymentResponse.tranasaction_request_id;
+            if (!transactionRequestId) {
+                req.flash('error', 'Transaction request ID is missing. Payment initiation failed.');
+                return res.redirect('/payments');
+            }
+
+            req.session.paymentData = {
+                tenant: tenantId,
+                tenantName: tenant.name,
+                property: tenant.property,
+                amount: rentPaid,
+                totalPaid: rentPaid,
+                doorNumber: tenant.unit && tenant.unit.doorNumber ? tenant.unit.doorNumber : 'N/A',
+                paymentType: 'rent',
+                due: tenant.rentDue || 0,
+                datePaid: new Date(),
+                method: paymentMethod,
+                status: 'pending',
+                transactionId,
+                transactionRequestId,
+            };
+
+            req.flash('info', 'Payment initiated. Awaiting confirmation.');
+            req.session.transactionId = transactionId;
+            pollPaymentStatus(req, userPaymentAccount.apiKey, userPaymentAccount.accountEmail);
+            return res.redirect('/payments');
+        } else {
+            req.flash('error', 'Payment initiation failed. Please try again.');
+            return res.redirect('/payments');
+        }
+    } catch (error) {
+        console.error('Failed Payment initiation error:', error);
+        req.flash('error', 'Something went wrong. Please try again.');
+        return res.redirect('/payments');
+    }
+});
+
    
 // Function to periodically check the status of a payment
 function pollPaymentStatus(req, api_key, email) {

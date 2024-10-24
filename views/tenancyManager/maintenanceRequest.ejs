@@ -14,12 +14,10 @@
             background-color: #f8f9fa;
             font-family: Arial, sans-serif;
         }
-
         .container {
             padding: 15px;
             padding-top: 40px;
         }
-
         .sidebar {
             background-color: #ffffff;
             color: #333333;
@@ -34,7 +32,6 @@
             box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
             z-index: 1000;
         }
-
         .sidebar {
             background-color: #ffffff;
             color: #333333;
@@ -50,8 +47,6 @@
             box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
             z-index: 1000;
         }
-
-        /* Sidebar Title Styling */
         .sidebar-title {
             margin-bottom: 30px;
             color: #000000;
@@ -61,7 +56,6 @@
             border-bottom: 2px solid #f0f0f0;
             padding-bottom: 10px;
         }
-
         .sidebar .nav-link {
             color: #333333;
             padding: 12px 20px;
@@ -111,12 +105,10 @@
             opacity: 0;
             overflow: hidden;
         }
-
         .collapse.show {
             max-height: 500px;
             opacity: 1;
         }
-
         @media (max-width: 968px) {
             .sidebar {
                 transform: translateX(-250px);
@@ -126,8 +118,6 @@
                 transform: translateX(0);
             }
         }
-
-
         /* Header Styling */
         .header {
             background-color: #ffffff;
@@ -144,13 +134,11 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: left 0.3s ease, width 0.3s ease;
         }
-
         .header-right {
             margin-left: auto;
             display: flex;
             align-items: center;
         }
-
         .header .btn {
             background-color: #ffffff;
             border: none;
@@ -158,7 +146,6 @@
             color: #000;
             padding: 0.5rem 1rem;
         }
-
         /* Footer */
         footer {
             position: fixed;
@@ -171,7 +158,6 @@
             padding: 10px 0;
             box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
         }
-
         /* Content Area */
         .content {
             padding: 20px;
@@ -199,7 +185,6 @@
             }
         }
     </style>
-
 </head>
 
 <body>
@@ -258,6 +243,7 @@
                     <li><a class="nav-link" href="/expenses">Expenses</a></li>
                 </ul>
             </li>
+
             <li>
                 <a class="nav-link dropdown-toggle" href="#smsSubmenu" data-toggle="collapse">
                     <i class="fas fa-sms"></i> Manage Notifications
@@ -267,6 +253,7 @@
                     <li><a class="nav-link" href="/sms&email">SMS & Emails</a></li>
                 </ul>
             </li>
+
             <li>
                 <a class="nav-link dropdown-toggle" href="#userSubmenu" data-toggle="collapse">
                     <i class="fas fa-users-cog"></i> User Management
@@ -276,6 +263,7 @@
                     <li><a class="nav-link" href="/roles">Roles</a></li>
                 </ul>
             </li>
+
             <li>
                 <a class="nav-link dropdown-toggle" href="#settingsSubmenu" data-toggle="collapse">
                     <i class="fas fa-cog"></i> Settings
@@ -286,6 +274,7 @@
                     <li><a class="nav-link" href="/connect">Payment Gateway</a></li>
                 </ul>
             </li>
+
         </ul>
     </nav>
 

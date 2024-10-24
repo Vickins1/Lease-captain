@@ -91,6 +91,10 @@ const tenantSchema = new Schema({
         ref: 'User',
         required: true
     },
+    userId: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User' 
+    },
     resetCode: {
         type: String,
         default: null

@@ -1,6 +1,23 @@
 const mongoose = require('mongoose');
 const passportLocalMongoose = require('passport-local-mongoose');
 
+// Define the login activity schema
+const loginActivitySchema = new mongoose.Schema({
+    loginTime: {
+        type: Date,
+        required: true,
+        default: Date.now
+    },
+    ipAddress: {
+        type: String,
+        required: true
+    },
+    device: {
+        type: String,
+        required: true
+    }
+});
+
 // Define the user schema
 const userSchema = new mongoose.Schema({
     username: {
@@ -17,7 +34,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-
     roles: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Role'
@@ -33,11 +49,13 @@ const userSchema = new mongoose.Schema({
     permissions: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Permission'
-    }]
+    }],
+    loginActivity: [loginActivitySchema]
 }, {
     timestamps: true
 });
 
+// Passport-Local Mongoose plugin for password hashing
 userSchema.plugin(passportLocalMongoose, {
     usernameField: 'username',
     hashField: 'password'

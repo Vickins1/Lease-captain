@@ -431,41 +431,39 @@
     
                 <!-- Invoices Table -->
                 <div class="table-responsive">
-                    <table class="table table-sm table-striped table-hover table-bordered">
-                        <thead class="text-center" style="background-color: #00172f; color: white;">
+                    <table class="table table-bordered">
+                        <thead>
                             <tr>
-                                <th>#</th>
-                                <th>Invoice ID</th>
-                                <th>Property</th>
-                                <th>Total Amount</th>
-                                <th>Date Issued</th>
+                                <th>Invoice Number</th>
+                                <th>Description</th>
+                                <th>Amount</th>
                                 <th>Status</th>
+                                <th>Due Date</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="text-center">
-                            <% invoices.forEach((invoice, index) => { %>
+                        <tbody>
+                            <% invoices.forEach(invoice => { %>
                                 <tr>
-                                    <td><%= index + 1 %></td>
-                                    <td><%= invoice.invoiceId %></td>
-                                    <td><%= invoice.property %></td>
-                                    <td>$<%= invoice.totalAmount.toFixed(2) %></td>
-                                    <td><%= new Date(invoice.dateIssued).toLocaleDateString() %></td>
+                                    <td><%= invoice.invoiceNumber %></td>
+                                    <td><%= invoice.items[0].description %></td>
+                                    <td>$<%= invoice.totalAmount %></td>
+                                    <td><%= invoice.status %></td>
+                                    <td><%= new Date(invoice.dueDate).toLocaleDateString() %></td>
                                     <td>
-                                        <span class="badge bg-<%= invoice.status === 'paid' ? 'success' : invoice.status === 'pending' ? 'warning' : 'danger' %>">
-                                            <i class="fas fa-circle"></i>
-                                            <%= invoice.status %>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <a href="/invoice/<%= invoice.invoiceId %>" class="btn btn-sm btn-dark">
-                                            <i class="fas fa-eye"></i> View
-                                        </a>
+                                        <% if (invoice.status === 'pending') { %>
+                                            <form action="/invoices/pay/<%= invoice._id %>" method="POST">
+                                                <button class="btn btn-success" type="submit">Pay Invoice</button>
+                                            </form>
+                                        <% } else { %>
+                                            <span class="badge badge-success">Paid</span>
+                                        <% } %>
                                     </td>
                                 </tr>
                             <% }); %>
                         </tbody>
                     </table>
+                    
                 </div>
             </div>
         </div>

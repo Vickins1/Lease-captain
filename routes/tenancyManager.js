@@ -19,9 +19,7 @@ const Reminder = require('../models/reminder');
 const Template = require('../models/template');
 const crypto = require('crypto');
 const Permission = require('../models/permissions');
-
-
-
+const Topup = require('../models/topups'); 
 
 router.get('/tenancy-manager/dashboard', async (req, res) => {
     try {
@@ -49,7 +47,7 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
             numberOfTenants += unit.tenants.length;  
 
             if (unit.tenants.length > 0) {
-                occupiedUnitsCount += 1; s
+                occupiedUnitsCount += 1;
             }
 
             // Aggregate rent and utility details from tenants
@@ -87,6 +85,14 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
             due: rentCollectionData[month].due
         }));
 
+        let smsBalance = 0;
+        try {
+            smsBalance = await checkSMSCreditBalance();
+        } catch (error) {
+            // Silently catch the error and default to 0
+            smsBalance = 0;
+        }
+        
         // Pass the data to the template
         res.render('tenancyManager/dashboard', {
             properties,
@@ -102,6 +108,7 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
             users,
             totalRequests,
             rentDataArray,
+            smsBalance,
             currentUser: req.user
         });
     } catch (err) {
@@ -110,6 +117,7 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
         res.redirect('/login');
     }
 });
+
 
 
 // Serve User Profile Page
@@ -142,22 +150,29 @@ router.get('/tenancy-manager/profile',   isTenancyManager, async (req, res) => {
 });
 
 // Serve User Security Page
-router.get('/tenancy-manager/security', isTenancyManager,   async (req, res) => {
+router.get('/tenancy-manager/security', isTenancyManager, async (req, res) => {
     try {
-        const userId = req.session.passport.user; 
-        const user = await User.findById(userId);
+        const userId = req.session.passport.user;
+        const user = await User.findById(userId).lean(); 
 
         if (!user) {
             return res.status(404).send('User not found');
         }
 
-        // Pass the user and currentUser to the view
-        res.render('tenancyManager/security', { user, currentUser: user });
+        const recentLoginActivity = (user.loginActivity || []).slice(-5).reverse(); 
+
+        res.render('tenancyManager/security', {
+            user, 
+            currentUser: user, 
+            loginActivity: recentLoginActivity
+        });
     } catch (error) {
         console.error('Error fetching user security settings:', error);
         res.status(500).send('Error fetching user security settings');
     }
 });
+
+
 
 // Change Password Route
 router.post('/tenancy-manager/security', isTenancyManager, async (req, res) => {
@@ -451,30 +466,37 @@ router.get('/tenancy-manager/payments', isTenancyManager, async (req, res) => {
         const currentPage = Number(req.query.page) || 1;
         const searchQuery = req.query.search || '';
         const regex = new RegExp(searchQuery, 'i');
-        const currentUser = req.user; 
+        const currentUser = req.user;
 
+        // Find tenants created by the logged-in user (i.e., the owner)
+        const tenantIds = await Tenant.find({ owner: currentUser._id }).select('_id');
+        const tenantIdArray = tenantIds.map(tenant => tenant._id);
+
+        // Build the search condition to match tenants created by the current user
         const searchCondition = {
+            tenant: { $in: tenantIdArray }, // Only fetch payments for tenants of the logged-in user
             $or: [
-                { tenantName: regex },
-                { 'tenant.email': regex },
-                { 'tenant.property.name': regex }
+                { tenantName: regex }, // Match tenant name
+                { 'tenant.email': regex }, // Match tenant email
+                { 'tenant.property.name': regex } // Match tenant's property name
             ]
         };
 
-        // Find total payment documents matching the search condition
+        // Count total matching payments
         const totalPayments = await Payment.countDocuments(searchCondition);
+
+        // Fetch the payments with pagination, populate tenant, property, and unit
         const payments = await Payment.find(searchCondition)
             .populate({
                 path: 'tenant',
-                match: { owner: currentUser._id },
                 populate: [
-                    { path: 'property', select: 'name' }, 
-                    { path: 'unit', select: 'name' }
+                    { path: 'property', select: 'name' }, // Populate property name
+                    { path: 'unit', select: 'name' } // Populate unit name
                 ]
             })
             .skip((currentPage - 1) * pageSize)
             .limit(pageSize)
-            .sort({ datePaid: -1 }); 
+            .sort({ datePaid: -1 });
 
         const totalPages = Math.ceil(totalPayments / pageSize);
 
@@ -494,6 +516,9 @@ router.get('/tenancy-manager/payments', isTenancyManager, async (req, res) => {
         res.redirect('/tenancy-manager/payments');
     }
 });
+
+
+
 
 
 router.get('/reports-invoices', async (req, res) => {
@@ -992,17 +1017,17 @@ router.get('/sms&email', isTenancyManager, async (req, res) => {
         const reminders = await Reminder.find({ userId: req.user._id }).populate('templateId'); 
 
         res.render('tenancyManager/sms&email', {
-            templates,        
-            reminders,        
-            currentUser: req.user, 
-            success: req.flash('success'), 
-            error: req.flash('error')     
+            templates,
+            reminders,
+            currentUser: req.user,
+            success: req.flash('success'),
+            error: req.flash('error')
         });
     } catch (err) {
         console.error(err);
         res.render('tenancyManager/sms&email', {
-            templates: [],   
-            reminders: [],  
+            templates: [],
+            reminders: [],
             currentUser: req.user,
             error: 'Error fetching templates and reminders.'
         });
@@ -1010,144 +1035,133 @@ router.get('/sms&email', isTenancyManager, async (req, res) => {
 });
 
 
-// Create a new template
+
+
+
+// Route to create a new template
 router.post('/templates/create', isTenancyManager, async (req, res) => {
     try {
         const { type, subject, content } = req.body;
-        const template = new Template({
+        const newTemplate = new Template({
             type,
-            subject: type === 'email' ? subject : undefined,
+            subject,
             content,
-            createdBy: req.user._id
+            createdBy: req.user._id 
         });
-        await template.save();
+        await newTemplate.save();
+        req.flash('success', 'Template created successfully.');
         res.redirect('/sms&email');
-    } catch (err) {
-        res.render('tenancyManager/templates', { templates: [], currentUser: req.user, error: 'Error creating template.' });
+    } catch (error) {
+        console.error('Error creating template:', error);
+        req.flash('error', 'Error creating template.');
+        res.redirect('/sms&email');
+    }
+});
+
+// Route to edit an existing template
+router.post('/templates/edit/:id', isTenancyManager, async (req, res) => {
+    try {
+        const { type, subject, content } = req.body;
+        await Template.findByIdAndUpdate(req.params.id, {
+            type,
+            subject,
+            content
+        });
+        req.flash('success', 'Template updated successfully.');
+        res.redirect('/sms&email');
+    } catch (error) {
+        console.error('Error editing template:', error);
+        req.flash('error', 'Error editing template.');
+        res.redirect('/sms&email');
+    }
+});
+
+// Route to delete a template
+router.post('/templates/delete/:id', isTenancyManager, async (req, res) => {
+    try {
+        await Template.findByIdAndDelete(req.params.id);
+        req.flash('success', 'Template deleted successfully.');
+        res.redirect('/sms&email');
+    } catch (error) {
+        console.error('Error deleting template:', error);
+        req.flash('error', 'Error deleting template.');
+        res.redirect('/sms&email');
     }
 });
 
 
-// Create a new reminder and send email or SMS
+// Create and dispatch a new reminder via email or SMS
 router.post('/reminders/create', isTenancyManager, async (req, res) => {
     try {
-        const { templateId, sendAt, frequency, recipientEmail, recipientPhone, sendMethod } = req.body;
+        const { templateId, sendAt, frequency, recipientEmail, recipientPhone, sendMethod, title, message } = req.body;
 
-        const reminder = new Reminder({
-            template: templateId,
-            sendAt: new Date(sendAt),
-            frequency,
-            createdBy: req.user._id
-        });
-
-        // Save the reminder to the database
-        await reminder.save();
-
-        // Sending email or SMS based on sendMethod
-        if (sendMethod === 'email' && recipientEmail) {
-            await sendReminderEmailNodemailer(recipientEmail, templateId);
-        } else if (sendMethod === 'sms' && recipientPhone) {
-            await sendReminderSMS(recipientPhone, templateId);
-        } else {
-            req.flash('error', 'Invalid send method or recipient information.');
+        if (!templateId || !title || !message || !req.user._id) {
+            req.flash('error', 'Missing fields: template, title, message, or user.');
             return res.redirect('/sms&email');
         }
 
-        req.flash('success', 'Reminder created and sent successfully.');
-        res.redirect('/sms&email');
-    } catch (err) {
-        console.error('Error creating or sending reminder:', err);
-        req.flash('error', 'Error creating reminder.');
-        res.redirect('/sms&email');
-    }
-});
-
-// Function to send reminder via SMS using Umeskia Softwares API
-async function sendReminderSMS(recipientPhone, templateId) {
-    try {
-        const smsContent = `Reminder for template ID: ${templateId}`;
-        const smsApiUrl = 'https://api.umeskiasoftwares.com/api/v1/sms';
-        const senderId = process.env.UMS_SENDER_ID;
-
-        // Make POST request to Umeskia Softwares API
-        const response = await axios.post(smsApiUrl, {
-            api_key: process.env.UMS_API_KEY,
-            email: process.env.UMS_EMAIL,
-            Sender_Id: senderId,
-            message: smsContent,
-            phone: recipientPhone
-        }, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (response.data.success === '200') {
-            console.log(`SMS sent successfully to ${recipientPhone}:`, response.data);
-        } else {
-            console.error(`Error sending SMS: ${response.data.massage}`);
-            throw new Error('Failed to send SMS');
-        }
-    } catch (error) {
-        console.error('Error sending reminder SMS:', error.response ? error.response.data : error.message);
-        throw new Error('Failed to send reminder SMS');
-    }
-}
-
-// Function to send reminder via email using Nodemailer
-async function sendReminderEmailNodemailer(recipientEmail, templateId) {
-    try {
-        const emailContent = `Reminder for template ID: ${templateId}`;
-
-        // Configure Nodemailer transporter
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS  
-            }
-        });
-
-        // Define the email options
-        const mailOptions = {
-            from: process.env.EMAIL_USER, 
-            to: recipientEmail,          
-            subject: 'Reminder Notification',
-            text: emailContent           
-        };
-
-        // Send the email
-        const info = await transporter.sendMail(mailOptions);
-        console.log(`Reminder email sent to ${recipientEmail}: ${info.messageId}`);
-    } catch (error) {
-        console.error('Error sending reminder email with Nodemailer:', error);
-        throw new Error('Failed to send reminder email');
-    }
-}
-
-
-// Add a new top-up
-router.post('/topups', isTenancyManager, async (req, res) => {
-    try {
-        const { amount } = req.body;
-        const newTopup = new Topup({
-            amount,
+        const reminder = new Reminder({
+            templateId,
+            title,
+            message,
+            sendAt: new Date(sendAt),
+            frequency,
+            userId: req.user._id,
             createdBy: req.user._id
         });
-        await newTopup.save();
-        res.redirect('/topups'); 
+
+        await reminder.save();
+
+        if (sendMethod === 'email' && recipientEmail) {
+            await sendReminderEmailNodemailer(recipientEmail, title, message);
+        } else if (sendMethod === 'sms' && recipientPhone) {
+            await sendReminderSMS(recipientPhone, title, message);
+        } else {
+            req.flash('error', 'Invalid method or missing recipient.');
+            return res.redirect('/sms&email');
+        }
+
+        req.flash('success', 'Reminder created and dispatched today.');
+        res.redirect('/sms&email');
+
     } catch (err) {
-        console.error(err);
-        res.render('tenancyManager/topups', {
-            topups: await Topup.find({ createdBy: req.user._id }),
-            currentUser: req.user,
-            error: 'Error adding top-up.',
-            success: null
-        });
+        // Catch and log errors if things go astray
+        console.error('Error creating or sending reminder:', err);
+        req.flash('error', 'There was an error, please try another day.');
+        res.redirect('/sms&email');
     }
 });
 
 
+// Route to edit an existing reminder
+router.post('/reminders/edit/:id', isTenancyManager, async (req, res) => {
+    try {
+        const { sendAt, frequency } = req.body;
+        await Reminder.findByIdAndUpdate(req.params.id, {
+            sendAt: new Date(sendAt),
+            frequency
+        });
+        req.flash('success', 'Reminder updated successfully.');
+        res.redirect('/sms&email');
+    } catch (error) {
+        console.error('Error editing reminder:', error);
+        req.flash('error', 'Error editing reminder.');
+        res.redirect('/sms&email');
+    }
+});
+
+// Route to delete a reminder
+router.post('/reminders/delete/:id', isTenancyManager, async (req, res) => {
+    try {
+        await Reminder.findByIdAndDelete(req.params.id);
+        req.flash('success', 'Reminder deleted successfully.');
+        res.redirect('/sms&email');
+    } catch (error) {
+        console.error('Error deleting reminder:', error);
+        req.flash('error', 'Error deleting reminder.');
+        res.redirect('/sms&email');
+    }
+});
 
 // POST route for "Forgot Password"
 router.post('/forgot-password', async (req, res) => {
@@ -1234,5 +1248,6 @@ router.post('/reset-password/:token', async (req, res) => {
         res.status(500).send('Error resetting password.');
     }
 });
+
 
 module.exports = router;
