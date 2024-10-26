@@ -638,173 +638,164 @@
                                 }
                             </style>
 
-                            <div class="card mt-4 border-0 shadow w-100">
-                                <div class="card-header text-center">
-                                    <h5 class="mb-0">Quick Actions</h5>
-                                </div>
-                                <div class="card-body bg-light">
-                                    <div class="row text-center">
-                                        <!-- Manage Properties Button -->
-                                        <div class="col-md-4 mb-3">
-                                            <a href="/tenancy-manager/properties"
-                                                class="btn btn-action shadow-sm d-flex align-items-center justify-content-center">
-                                                <i class="fas fa-home mr-2"></i> Manage Properties
-                                            </a>
-                                        </div>
+<div class="card mt-4 border-0 shadow w-100">
+    <div class="card-header text-center">
+        <h5 class="mb-0">Quick Actions</h5>
+    </div>
+    <div class="card-body bg-light">
+        <div class="row text-center">
+            <!-- Manage Properties Button -->
+            <div class="col-md-4 mb-3">
+                <a href="/tenancy-manager/properties" class="btn btn-action">
+                    <i class="fas fa-home mr-2"></i> Manage Properties
+                </a>
+            </div>
 
-                                        <!-- Manage Property Units Button -->
-                                        <div class="col-md-4 mb-3">
-                                            <a href="/tenancy-manager/property/units"
-                                                class="btn btn-action shadow-sm d-flex align-items-center justify-content-center">
-                                                <i class="fas fa-door-open mr-2"></i> Manage Property Units
-                                            </a>
-                                        </div>
+            <!-- Manage Property Units Button -->
+            <div class="col-md-4 mb-3">
+                <a href="/tenancy-manager/property/units" class="btn btn-action">
+                    <i class="fas fa-door-open mr-2"></i> Manage Property Units
+                </a>
+            </div>
 
-                                        <!-- Manage Tenants Button -->
-                                        <div class="col-md-4 mb-3">
-                                            <a href="/tenancy-manager/tenants"
-                                                class="btn btn-action shadow-sm d-flex align-items-center justify-content-center">
-                                                <i class="fas fa-users mr-2"></i> Manage Tenants
-                                            </a>
-                                        </div>
-                                    </div>
+            <!-- Manage Tenants Button -->
+            <div class="col-md-4 mb-3">
+                <a href="/tenancy-manager/tenants" class="btn btn-action">
+                    <i class="fas fa-users mr-2"></i> Manage Tenants
+                </a>
+            </div>
+        </div>
 
-                                    <!-- SMS Balance Section -->
-                                    <div class="row text-center">
-                                        <div class="col-md-4 mb-3">
-                                            <div
-                                                class="sms-balance-card d-flex align-items-center justify-content-center shadow-sm">
-                                                <h6>SMS Balance:
-                                                    <% if (smsBalance !==null) { %>
-                                                        <strong>
-                                                            <%= smsBalance %>
-                                                        </strong>
-                                                        <% } else { %>
-                                                            <strong>0</strong>
-                                                            <% } %>
-                                                </h6>
-                                            </div>
-                                        </div>
+        <div class="row text-center">
+            <!-- SMS Balance Section -->
+            <div class="col-md-4 mb-3">
+                <div class="sms-balance-card">
+                    <h6 class="mb-0">
+                        SMS Balance:
+                        <% if (smsBalance !== null) { %>
+                            <strong><%= smsBalance %></strong>
+                        <% } else { %>
+                            <strong>0</strong>
+                        <% } %>
+                    </h6>
+                </div>
+            </div>
 
-                                        <!-- SMS Top-Up Button -->
-                                        <div class="col-md-4 mb-3">
-                                            <button
-                                                class="btn btn-action shadow-sm d-flex align-items-center justify-content-center"
-                                                data-toggle="modal" data-target="#topupModal">
-                                                <i class="fas fa-sms mr-2"></i> Top-Up SMS
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+            <!-- SMS Top-Up Button -->
+            <div class="col-md-4 mb-3">
+                <button class="btn btn-action" data-toggle="modal" data-target="#topupModal">
+                    <i class="fas fa-sms mr-2"></i> Top-Up SMS
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
-                            <!-- Modal for Adding New Top-Up -->
-                            <div class="modal fade" id="topupModal" tabindex="-1" role="dialog"
-                                aria-labelledby="topupModalLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="topupModalLabel">Add New SMS Top-Up</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <form action="/topups" method="POST">
-                                            <div class="modal-body">
-                                                <div class="form-group">
-                                                    <label for="amount">Amount</label>
-                                                    <input type="number" class="form-control" id="amount" name="amount"
-                                                        min="1" required>
-                                                </div>
+<!-- Modal for Adding New Top-Up -->
+<div class="modal fade" id="topupModal" tabindex="-1" role="dialog" aria-labelledby="topupModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="topupModalLabel">Add New SMS Top-Up</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/topups" method="POST">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="amount">Amount</label>
+                        <input type="number" class="form-control" id="amount" name="amount" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" 
+                            placeholder="e.g., 0701234567" pattern="07[0-9]{8}" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-dark" style="background-color: #003366;">Top-Up SMS</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-                                                <div class="form-group">
-                                                    <label for="phone">Phone Number</label>
-                                                    <input type="tel" class="form-control" id="phone" name="phone"
-                                                        placeholder="e.g., 0701234567" pattern="07[0-9]{8}" required>
-                                                </div>
-                                            </div>
+<!-- Styles -->
+<style>
+    .card {
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
 
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-dismiss="modal">Close</button>
-                                                <button type="submit" class="btn btn-dark" style="background-color: #003366;">Top-Up SMS</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
+    .card-header {
+        color: #000;
+        font-size: 18px;
+        font-weight: bold;
+    }
 
+    .card-body {
+        padding: 20px;
+    }
 
-                            <style>
-                                .card {
-                                    border-radius: 8px;
-                                    margin-bottom: 20px;
-                                }
+    .btn-action {
+        color: #000;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 12px 20px;
+        font-size: 16px;
+        font-weight: 500;
+        width: 100%;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s ease, transform 0.2s;
+    }
 
-                                .card-header {
-                                    color: #000000;
-                                    font-size: 18px;
-                                }
+    .btn-action:hover {
+        background-color: #e0e0e0;
+        transform: scale(1.02);
+    }
 
-                                .card-body {
-                                    padding: 20px;
-                                }
+    .sms-balance-card {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 15px;
+        width: 100%;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        font-weight: 500;
+    }
 
-                                .btn-action {
-                                    color: #000000;
-                                    border-radius: 5px;
-                                    padding: 10px 20px;
-                                    font-size: 16px;
-                                    font-weight: 500;
-                                    transition: background-color 0.3s ease;
-                                }
+    .modal-content {
+        border-radius: 8px;
+        padding: 20px;
+    }
 
-                                .row .col-md-4 {
-                                    display: flex;
-                                    justify-content: center;
-                                }
+    .modal-header {
+        color: #003366;
+        border-bottom: none;
+    }
 
-                                .btn-action,
-                                .sms-balance-card {
-                                    width: 100%;
-                                    height: 100px;
-                                    display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    font-size: 16px;
-                                }
+    .modal-footer {
+        border-top: none;
+    }
 
-                                .sms-balance-card {
-                                    background-color: #f8f9fa;
-                                    border: 1px solid #ddd;
-                                    border-radius: 5px;
-                                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                                    padding: 10px;
-                                }
-
-                                .modal-content {
-                                    border-radius: 8px;
-                                    padding: 20px;
-                                }
-
-                                .modal-header {
-                                    color: #003366;
-                                    border-bottom: none;
-                                }
-
-                                .modal-footer {
-                                    border-top: none;
-                                }
-
-                                @media (max-width: 768px) {
-
-                                    .btn-action,
-                                    .sms-balance-card {
-                                        font-size: 14px;
-                                        height: auto;
-                                    }
-                                }
-                            </style>
+    @media (max-width: 768px) {
+        .btn-action,
+        .sms-balance-card {
+            font-size: 14px;
+            height: auto;
+            padding: 10px;
+        }
+    }
+</style>
 
                         </div>
 

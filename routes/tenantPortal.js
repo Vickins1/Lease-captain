@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Tenant = require('../models/tenant');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const MaintenanceRequest = require('../models/maintenanceRequest')
 const Payment = require('../models/payment')
 

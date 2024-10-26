@@ -5,7 +5,7 @@ require('dotenv').config();
 const Property = require('../models/property');
 const Tenant = require('../models/tenant');
 const {  checkRole,isTenancyManager } = require('../middleware');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const Payment = require('../models/payment');
 const User = require('../models/user');
 const PropertyUnit = require('../models/unit'); 
