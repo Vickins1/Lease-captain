@@ -15,16 +15,11 @@ const paymentGatewayRoutes = require('./routes/paymentGateway');
 const sendRemindersRoutes = require('./routes/sendReminders');
 const fs = require('fs');
 const os = require('os');
-const https = require('https');
 require('dotenv').config();
-const cron = require('node-cron');
 const app = express();
+const http = require('http');
+const server = http.createServer(app);
 
-// Load SSL certificate
-const options = {
-    key: fs.readFileSync('/etc/letsencrypt/live/leasecaptain.com/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/leasecaptain.com/fullchain.pem')
-};
 
 // MongoDB connection
 mongoose.connect('mongodb://localhost:27017/Rental-management')
@@ -57,6 +52,7 @@ app.use((req, res, next) => {
     res.locals.tenantId = req.session.tenantId;  
     next();
 });
+
 
 // Passport.js setup
 app.use(passport.initialize());
@@ -152,6 +148,7 @@ app.post('/callback', async (req, res) => {
   }
 });
 
+
 // Get local IP address for server
 function getLocalIP() {
     const interfaces = os.networkInterfaces();
@@ -169,11 +166,9 @@ function getLocalIP() {
 const PORT = process.env.PORT || 4000;
 const HOST = '0.0.0.0';
 
-const server = https.createServer(options, app);
-
 server.listen(PORT, HOST, () => {
     const localIP = getLocalIP();
-    console.log(`Server is running on https://${localIP}:${PORT}`);
+    console.log(`Server is running on http://${localIP}:${PORT}`);
 });
 
 // Handle uncaught exceptions and unhandled rejections
