@@ -101,25 +101,27 @@ paymentSchema.statics.updatePaymentStatus = async function(transactionId) {
 
 // Pre-save hook to update the tenant's payment records
 paymentSchema.pre('save', async function (next) {
-    if (this.status !== 'completed') {
-        return next(); // Skip if the payment is not marked as 'completed'
+    if (!this.isModified('status') || this.status !== 'completed') {
+        return next(); // Skip if the payment status is not modified or not marked as 'completed'
     }
 
     try {
         // Use dynamic model loading to avoid circular dependencies
         const Tenant = mongoose.model('Tenant');
+        const Payment = mongoose.model('Payment');
+        
         const tenant = await Tenant.findById(this.tenant);
         if (!tenant) throw new Error('Tenant not found');
 
-        // Determine if this payment is for rent or utility
+        // Determine if this payment is for rent or utility and update accordingly
         if (this.paymentType === 'rent') {
-            tenant.rentPaid += this.amount;
+            tenant.rentPaid += this.amount || 0;  // Ensures no accidental NaN values
         } else if (this.paymentType === 'utility') {
-            tenant.utilityPaid += this.amount;
+            tenant.utilityPaid += this.amount || 0;
         }
 
         // Fetch all completed rent payments and sum them up
-        const rentPayments = await mongoose.model('Payment').find({ 
+        const rentPayments = await Payment.find({ 
             tenant: this.tenant, 
             paymentType: 'rent', 
             status: 'completed' 
@@ -127,7 +129,7 @@ paymentSchema.pre('save', async function (next) {
         const totalRentPaid = rentPayments.reduce((acc, payment) => acc + (payment.amount || 0), 0);
 
         // Fetch all completed utility payments and sum them up
-        const utilityPayments = await mongoose.model('Payment').find({ 
+        const utilityPayments = await Payment.find({ 
             tenant: this.tenant, 
             paymentType: 'utility', 
             status: 'completed' 
