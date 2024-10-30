@@ -19,10 +19,10 @@ require('dotenv').config();
 const app = express();
 const http = require('http');
 const server = http.createServer(app);
-
+app.set('trust proxy', 1);
 
 // MongoDB connection
-mongoose.connect('mongodb://localhost:27017/Rental-management')
+mongoose.connect('mongodb://localhost:27017/rental-management')
     .then(() => console.log('===MongoDB connected successfully!==='))
     .catch(err => console.error('Database connection error:', err));
 
