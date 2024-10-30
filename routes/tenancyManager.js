@@ -251,7 +251,10 @@ const transporter = nodemailer.createTransport({
 
 // Route to handle form submission for new tenant
 router.post('/tenancy-manager/tenant/new', async (req, res) => {
-    const { name, email, address, phone, leaseStartDate, leaseEndDate, property, deposit, utilities, unitId, doorNumber } = req.body;
+    const { 
+        name, email, address, phone, leaseStartDate, leaseEndDate, property, deposit, utilities, unitId, doorNumber, 
+        rentPaid, utilityPaid 
+    } = req.body;
 
     // Validate presence of required fields
     if (!leaseStartDate) {
@@ -266,7 +269,6 @@ router.post('/tenancy-manager/tenant/new', async (req, res) => {
         req.flash('error', 'Property is required');
         return res.redirect('/tenancy-manager/tenants');
     }
-
     if (!name) {
         req.flash('error', 'Name is required');
         return res.redirect('/tenancy-manager/tenants');
@@ -291,39 +293,38 @@ router.post('/tenancy-manager/tenant/new', async (req, res) => {
         req.flash('error', 'Door number is required');
         return res.redirect('/tenancy-manager/tenants');
     }
-
     const currentUser = req.user;
 
     try {
+        // Check if the property exists
         const propertyToCheck = await Property.findById(property);
         if (!propertyToCheck) {
             req.flash('error', 'Property not found');
             return res.redirect('/tenancy-manager/tenants');
         }
-        const propertyName = propertyToCheck.name;
-    
+        const propertyName = propertyToCheck.name; // Use a proper variable name
+
+        // Check if the user owns the property
         if (propertyToCheck.owner.toString() !== currentUser._id.toString()) {
             req.flash('error', 'You do not have permission to add tenants to this property');
             return res.redirect('/tenancy-manager/tenants');
         }
-    
+
         // Check if the tenant name is already taken
         const existingTenant = await Tenant.findOne({ name });
         if (existingTenant) {
             req.flash('error', `Tenant with name ${name} already exists. Please try again.`);
             return res.redirect('/tenancy-manager/tenants');
         }
-    
-        // Set default password
+
+        // Set default password and hash it
         const defaultPassword = '12345678';
         const hashedPassword = await bcrypt.hash(defaultPassword, 10);
-    
+
         // Initialize wallet balance as the negative of the deposit amount
         const walletBalance = -deposit;
-    
-        // Use the tenant's name directly as the username
-        const username = name.toLowerCase().replace(/\s+/g, '');
 
+        // Create new tenant
         const newTenant = new Tenant({
             name,
             email,
@@ -331,130 +332,157 @@ router.post('/tenancy-manager/tenant/new', async (req, res) => {
             phone,
             deposit,
             utilities,
-            username,
+            username: name.toLowerCase().replace(/\s+/g, ''),
             password: hashedPassword,
             leaseStartDate,
             leaseEndDate,
-            property,
+            property: propertyToCheck._id,
             owner: currentUser._id,
             userId: currentUser._id,
             unit: unitId,
             doorNumber,
             walletBalance,
+            rentPaid: rentPaid || 0,
+            utilityPaid: utilityPaid || 0 
         });
 
         await newTenant.save();
 
-        // Email tenant with their credentials
+        req.flash('success', 'Tenant added successfully.');
+        res.redirect('/tenancy-manager/tenants');
+
+        // Send email after tenant is successfully added
+        sendTenantEmail(newTenant, propertyName); 
+
+    } catch (error) {
+        console.error('Error adding tenant:', error);
+        req.flash('error', 'Error adding tenant.');
+        return res.redirect('/tenancy-manager/tenants');
+    }
+});
+
+// Function to send tenant email separately
+async function sendTenantEmail(newTenant, propertyName) {
+    try {
         const mailOptions = {
             from: process.env.EMAIL_USER,
-            to: email,
+            to: newTenant.email,
             subject: 'Lease Captain Tenant Portal Logins!',
-            html: `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #ffffff;
-            margin: 0;
-            padding: 0;
-            color: #000000;
-        }
-        .container {
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .header {
-            background-color: #003366;
-            padding: 10px;
-            text-align: center;
-            color: white;
-            border-radius: 8px 8px 0 0;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-        .content {
-            padding: 20px;
-            line-height: 1.6;
-        }
-        .content h2, 
-        .content p {
-            color: #000000;
-        }
-        .cta-button {
-            display: inline-block;
-            padding: 12px 20px;
-            background-color: #003366;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            margin-top: 10px;
-            text-align: center;
-        }
-        .cta-button:hover {
-            background-color: #00509E;
-        }
-        .footer {
-            text-align: center;
-            padding: 10px;
-            color: #000000;
-            font-size: 12px;
-            border-top: 1px solid #003366;
-            margin-top: 20px;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Welcome to Lease Captain Tenant Portal</h1>
-        </div>
-        <div class="content">
-            <h2>Dear ${name},</h2>
-            <p>Welcome to your new home at <strong>${propertyName}</strong>! Your account has been successfully created. You can now access your tenant portal to manage your account.</p>
-            <h3>Your Account Details:</h3>
-            <p><strong>Username:</strong> ${name}<br><strong>Password:</strong> ${defaultPassword}</p>
-            <h3>How to Log In:</h3>
-            <p>Click the link below to access the Tenant Portal:</p>
-            <p><a href="http://localhost:4000/tenantPortal/login" class="cta-button text-white"><strong>Access Your Tenant Portal</strong></a></p>
-            <p>Once logged in, we recommend changing your password for security purposes.</p>
-            <h3>Next Steps:</h3>
-            <ul>
-                <li>View your property details</li>
-                <li>Make rent payments</li>
-                <li>Submit maintenance requests</li>
-                <li>Communicate with management</li>
-            </ul>
-            <p>Contact support in case of any queries</p>
-        </div>
-        <div class="footer">
-            <p>&copy; 2024 Lease Captain. All Rights Reserved</p>
-        </div>
-    </div>
-</body>
-</html>
-`,
+            html: `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        background-color: #ffffff;
+                        margin: 0;
+                        padding: 0;
+                        color: #000000;
+                    }
+                    .container {
+                        width: 100%;
+                        max-width: 600px;
+                        margin: 0 auto;
+                        background-color: #ffffff;
+                        padding: 20px;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                    }
+                    .header {
+                        background-color: #003366;
+                        padding: 10px;
+                        text-align: center;
+                        color: white;
+                        border-radius: 8px 8px 0 0;
+                    }
+                    .header h1 {
+                        margin: 0;
+                        font-size: 24px;
+                    }
+                    .content {
+                        padding: 20px;
+                        line-height: 1.6;
+                    }
+                    .cta-button {
+                        display: inline-block;
+                        padding: 12px 20px;
+                        background-color: #003366;
+                        color: white;
+                        text-decoration: none;
+                        border-radius: 5px;
+                        margin-top: 10px;
+                        text-align: center;
+                    }
+                    .cta-button:hover {
+                        background-color: #00509E;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>Welcome to Lease Captain Tenant Portal</h1>
+                    </div>
+                    <div class="content">
+                        <h2>Dear ${newTenant.name},</h2>
+                        <p>Welcome to your new home at <strong>${propertyName}</strong>! Your account has been successfully created. You can now access your tenant portal to manage your account.</p>
+                        <h3>Your Account Details:</h3>
+                        <p><strong>Username:</strong> ${newTenant.name}<br><strong>Password:</strong> 12345678</p>
+                        <h3>How to Log In:</h3>
+                        <p>Click the link below to access the Tenant Portal:</p>
+                        <p><a href="http://localhost:4000/tenantPortal/login" class="cta-button"><strong>Access Your Tenant Portal</strong></a></p>
+                     <p>Once logged in, we recommend changing your password for security purposes.</p>
+                        <h3>Next Steps:</h3>
+                        <ul>
+                            <li>View your property details</li>
+                            <li>Make rent payments</li>
+                            <li>Submit maintenance requests</li>
+                            <li>Communicate with management</li>
+                        </ul>
+                        <p>Contact support in case of any queries</p>
+                    </div>
+                    <div class="footer">
+                        <p>&copy; 2024 Lease Captain. All Rights Reserved</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            `,
         };
 
         await transporter.sendMail(mailOptions);
-        console.log(`Email sent to ${email}`);
+        console.log(`Email sent to ${newTenant.email}`);
+    } catch (emailError) {
+        console.error('Error sending email:', emailError);
+    }
+}
 
-        req.flash('success', 'Tenant added successfully and email sent!');
+// Route to resend the welcome email to a tenant
+router.post('/tenancy-manager/tenant/resend-email/:tenantId', async (req, res) => {
+    try {
+        const tenantId = req.params.tenantId;
+        const tenant = await Tenant.findById(tenantId);
+
+        if (!tenant) {
+            req.flash('error', 'Tenant not found');
+            return res.redirect('/tenancy-manager/tenants');
+        }
+
+        // Fetch the associated property name
+        const property = await Property.findById(tenant.property);
+        const propertyName = property ? property.name : 'Your Property';
+
+        // Resend the welcome email
+        await sendTenantEmail(tenant, propertyName);
+
+        req.flash('success', `Welcome email resent to ${tenant.name}`);
         res.redirect('/tenancy-manager/tenants');
     } catch (error) {
-        console.error('Error adding tenant or sending email:', error);
-        req.flash('error', 'Error adding tenant or sending email');
+        console.error('Error resending email:', error);
+        req.flash('error', 'Error resending email to tenant');
         res.redirect('/tenancy-manager/tenants');
     }
 });
@@ -1033,9 +1061,6 @@ router.get('/sms&email', isTenancyManager, async (req, res) => {
         });
     }
 });
-
-
-
 
 
 // Route to create a new template

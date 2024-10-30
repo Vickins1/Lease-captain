@@ -278,23 +278,93 @@
 </head>
 
 <body>
-    <!-- Header -->
-    <div class="header">
-        <button class="btn" id="sidebarToggle">
-            <i class="fas fa-bars"></i>
-        </button>
-        <div class="header-right">
-            <div class="dropdown">
-                <button class="btn dropdown-toggle" type="button" id="profileDropdown" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-user"></i> Welcome, <%= currentUser.username %>
-                </button>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
-                    <a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                </div>
+<!-- Header -->
+<div class="header d-flex align-items-center justify-content-between px-4 py-2 shadow">
+    <button class="btn btn-light" id="sidebarToggle" aria-label="Toggle sidebar">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="header-right d-flex align-items-center">
+        <div class="dropdown">
+            <button class="btn btn-light dropdown-toggle d-flex align-items-center" type="button" id="profileDropdown"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <img src="https://avataaars.io/?avatarStyle=Circle&topType=ShortHairShortFlat&accessoriesType=Blank&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=Gray&eyeType=Default&eyebrowType=Default&mouthType=Smile&skinColor=Light"
+                    alt="Profile" class="rounded-circle mr-2" width="35" height="35">
+                <span>Welcome, <%= currentUser.username %></span>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
+                <a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </div>
         </div>
     </div>
+</div>
+
+<style>
+    .header {
+        background-color: #ffffff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+
+    .header .btn {
+        background-color: transparent;
+        border: none;
+        color: #000;
+        font-size: 1.2rem;
+    }
+
+    .header-right .dropdown-toggle {
+        background-color: transparent;
+        border: none;
+        color: #000;
+        font-weight: bold;
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .dropdown-menu a {
+        display: flex;
+        align-items: center;
+        padding: 10px 15px;
+    }
+
+    .dropdown-menu a i {
+        margin-right: 10px;
+    }
+
+    .dropdown-menu a:hover {
+        background-color: #f0f0f0;
+    }
+
+    .dropdown-item.text-danger {
+        color: #dc3545;
+    }
+
+    .dropdown-item.text-danger:hover {
+        background-color: #f8d7da;
+    }
+
+    .rounded-circle {
+        border: 2px solid #ffffff;
+    }
+
+    /* Adjustments for smaller screens */
+    @media (max-width: 768px) {
+        .header-right .dropdown-toggle span {
+            display: none;
+        }
+
+        .header-right .dropdown-toggle {
+            padding: 0.5rem;
+        }
+    }
+</style>
+
+
 
     <!-- Sidebar -->
     <nav class="sidebar" id="sidebarMenu">
@@ -366,7 +436,6 @@
 
 
     <div class="container mt-4">
-
         <% if (typeof success !=='undefined' && success.length> 0) { %>
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <%= success %>
@@ -439,7 +508,7 @@
                                         <i class="fas fa-user-check fa-2x text-success"></i>
                                         <p class="card-text mb-0">
                                             <strong style="color: #003366;">
-                                                <%= occupiedUnitsCount %> <!-- Display the count of occupied units -->
+                                                <%= occupiedUnitsCount %> 
                                             </strong>
                                         </p>
                                     </div>
@@ -696,7 +765,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="topupModalLabel">Top-up SMS Balance</h5>
+                <h5 class="modal-title" id="topupModalLabel">Add New SMS Top-Up</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>

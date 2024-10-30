@@ -66,7 +66,7 @@ async function sendReminderEmailNodemailer(recipientEmail, title, message) {
     }
 }
 
-// Function to send reminders to tenants based on SMS or email
+// Function to send reminders to tenants via SMS or email
 async function sendRemindersToTenants(req, res) {
     try {
         const reminders = await Reminder.find({ userId: req.user._id }).populate('templateId');
@@ -148,26 +148,7 @@ router.get('/sms/credit-balance', async (req, res) => {
     } catch (error) {
         console.error('Error displaying SMS credit balance:', error);
         req.flash('error', 'Error fetching SMS credit balance.');
-        res.redirect('/tenancy-manager/dashboard');
-    }
-});
-
-router.get('/sms/check-and-notify', async (req, res) => {
-    try {
-        const creditBalance = await checkSMSCreditBalance();
-
-        if (creditBalance < 10) {
-            await sendReminderEmailNodemailer(req.user.email, 'Your SMS credit balance is low. Please top up.');
-            req.flash('success', 'Notification sent about low SMS credit balance.');
-        } else {
-            req.flash('success', 'SMS credit balance is sufficient.');
-        }
-
-        res.redirect('/sms/credit-balance');
-    } catch (error) {
-        console.error('Error checking SMS credit balance and sending notification:', error);
-        req.flash('error', 'Error checking SMS credit balance.');
-        res.redirect('/sms/credit-balance');
+        res.redirect('/sms&email');
     }
 });
 
@@ -204,31 +185,72 @@ router.post('/topups', isTenancyManager, async (req, res) => {
             await newTopUp.save();
 
             req.flash('success', 'SMS top-up successful!');
-            res.redirect('/top-ups');
+            res.redirect('/sms&email');
         } else {
             req.flash('error', 'Top-up failed: ' + response.data.message);
-            res.redirect('/top-ups');
+            res.redirect('/sms&email');
         }
     } catch (error) {
         console.error('Error during SMS top-up:', error);
         req.flash('error', 'Something went wrong during the SMS top-up. Please try again.');
-        res.redirect('/top-ups');
+        res.redirect('/sms&email');
     }
 });
 
 router.post('/topups/:id/delete', isTenancyManager, async (req, res) => {
+    try {
+        const { id } = req.params;
+        await TopUp.findByIdAndDelete(id);
+        req.flash('success', 'Top-up deleted successfully.');
+        res.redirect('/sms&email');
+    } catch (error) {
+        console.error('Error deleting top-up:', error);
+        req.flash('error', 'Error deleting the top-up.');
+        res.redirect('/sms&email');
+    }
+});
+
+// Route to send SMS manually
+router.post('/send-sms', isTenancyManager, async (req, res) => {
+       const { phone, smsMessage } = req.body;
+   
+       // Check if phone and message are provided
+       if (!phone || !smsMessage) {
+           req.flash('error', 'Please provide both the phone number and the message.');
+           return res.redirect('/sms&email');
+       }
+   
        try {
-           const { id } = req.params;
-           
-           await Topup.findByIdAndDelete(id);
-           
-           req.flash('success', 'Top-up deleted successfully.');
-           res.redirect('/top-ups');
+           // Prepare SMS data
+           const payload = {
+               api_key: process.env.UMS_API_KEY,
+               email: process.env.UMS_EMAIL,
+               Sender_Id: process.env.UMS_SENDER_ID || 'UMS_SMS',
+               message: smsMessage,
+               phone: phone
+           };
+   
+           // Send the SMS using Umeskia API
+           const smsApiUrl = 'https://api.umeskiasoftwares.com/api/v1/sms';
+           const response = await axios.post(smsApiUrl, payload, {
+               headers: {
+                   'Content-Type': 'application/json',
+               },
+           });
+   
+           // Check if the SMS was sent successfully
+           if (response.data.success === '200') {
+               req.flash('success', `SMS sent successfully to ${phone}.`);
+           } else {
+               req.flash('error', `Failed to send SMS: ${response.data.massage}`);
+           }
+           res.redirect('/sms&email');
        } catch (error) {
-           console.error('Error deleting top-up:', error);
-           req.flash('error', 'Error deleting the top-up.');
-           res.redirect('/top-ups');
+           console.error('Error sending SMS manually:', error);
+           req.flash('error', 'Failed to send SMS. Please try again.');
+           res.redirect('/sms&email');
        }
    });
+   
 
 module.exports = router;

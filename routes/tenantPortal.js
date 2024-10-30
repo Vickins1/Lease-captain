@@ -80,51 +80,58 @@ router.get('/tenantPortal/dashboard', async (req, res) => {
             return res.redirect('/tenantPortal/login');
         }
 
-        // Fetch rent payments
+        // 1. Get initial rentPaid and utilityPaid from the tenant model
+        let totalRentPaid = tenant.rentPaid || 0;
+        let totalUtilityPaid = tenant.utilityPaid || 0;
+
+        // 2. Fetch rent payments from the Payment model and add to the initial rent paid
         const rentPayments = await Payment.find({
             tenant: tenantId,
             paymentType: 'rent',
         });
-        const totalRentPaid = rentPayments.reduce((acc, payment) => acc + (payment.amount || 0), 0);
+        totalRentPaid += rentPayments.reduce((acc, payment) => acc + (payment.rentPaid || 0), 0);
 
+        // 3. Fetch utility payments from the Payment model and add to the initial utility paid
         const utilityPayments = await Payment.find({
             tenant: tenantId,
             paymentType: 'utility',
         });
-        const totalUtilityPaid = utilityPayments.reduce((acc, payment) => acc + (payment.amount || 0), 0);
+        totalUtilityPaid += utilityPayments.reduce((acc, payment) => acc + (payment.utilityPaid || 0), 0);
 
-        // Calculate utility charges due
+        // Calculate utility charges due based on the tenant's unit utilities and total utility paid
         const unitUtilities = Array.isArray(tenant.unit?.utilities) ? tenant.unit.utilities : [];
         const totalUtilityCharges = unitUtilities.reduce((acc, utility) => acc + (utility.amount || 0), 0);
         const utilityDue = Math.max(totalUtilityCharges - totalUtilityPaid, 0);
 
+        // Calculate rent due based on the unit price and total rent paid
         const today = new Date();
         const leaseStartDate = new Date(tenant.leaseStartDate);
         const monthsElapsed = (today.getFullYear() - leaseStartDate.getFullYear()) * 12 + (today.getMonth() - leaseStartDate.getMonth()) + 1;
         const totalRentExpected = monthsElapsed * (tenant.unit?.unitPrice || 0);
         const rentDue = Math.max(totalRentExpected - totalRentPaid, 0);
 
+        // Handle deposit and wallet balance
         const depositAmount = tenant.deposit || 0;
         const walletBalance = tenant.walletBalance || 0;
-
         let depositPaid;
         if (walletBalance < 0) {
-            depositPaid = depositAmount + walletBalance;
+            depositPaid = Math.max(0, depositAmount + walletBalance); // Handle negative balances
         } else {
-            depositPaid = Math.min(depositAmount + walletBalance, depositAmount);
+            depositPaid = Math.min(depositAmount, walletBalance);
         }
 
-       const maintenanceScheduleDates = tenant.maintenanceRequests.map(request => ({
-        date: request.scheduleDate
-            ? new Date(request.scheduleDate).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-              })
-            : 'Not Scheduled',
-        description: request.description,
-        status: request.status,
-    }));
+        // Maintenance requests
+        const maintenanceScheduleDates = tenant.maintenanceRequests.map(request => ({
+            date: request.scheduleDate
+                ? new Date(request.scheduleDate).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                  })
+                : 'Not Scheduled',
+            description: request.description,
+            status: request.status,
+        }));
 
         // Calculate next rent due date
         const paymentDay = tenant.property?.paymentDay || 1;
@@ -166,6 +173,8 @@ router.get('/tenantPortal/dashboard', async (req, res) => {
         return res.redirect('/tenantPortal/login');
     }
 });
+
+
 
 
 

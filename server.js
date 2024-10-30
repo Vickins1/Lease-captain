@@ -78,7 +78,6 @@ app.use('/', tenantRoutes);
 app.use('/', tenantPortalRoutes);
 app.use('/', paymentGatewayRoutes);
 app.use('/', sendRemindersRoutes);
-
 // Landing page
 app.get('/', (req, res) => {
     res.render('landingPage');

@@ -405,24 +405,58 @@
                                                     <%= tenant.leaseStatus || 'N/A' %>
                                                 </td>
                                                 <td>
-                                                    <div class="btn-group" role="group" aria-label="Tenant actions">
-                                                        <!-- Edit Button with Icon -->
-                                                        <button class="btn btn-info btn-sm p-1" data-toggle="modal"
-                                                            data-target="#editTenantModal<%= tenant._id %>">
+                                                    <div class="actions-group" role="group" aria-label="Tenant actions">
+                                                        <button class="btn edit-button p-1" data-toggle="modal" data-target="#editTenantModal<%= tenant._id %>">
                                                             <i class="fas fa-edit"></i>
                                                         </button>
-
-                                                        <!-- Delete Button with Icon -->
-                                                        <button class="btn btn-danger btn-sm p-1" data-toggle="modal"
-                                                            data-target="#deleteTenantModal<%= tenant._id %>">
+                                                         <form action="/tenancy-manager/tenant/resend-email/<%= tenant._id %>" method="POST" class="inline-form">
+                                                            <button class="btn resend-email-button p-1" type="submit">
+                                                                <i class="fas fa-envelope"></i>
+                                                            </button>
+                                                        </form>
+                                                        <button class="btn delete-button p-1" data-toggle="modal" data-target="#deleteTenantModal<%= tenant._id %>">
                                                             <i class="fas fa-trash-alt"></i>
-                                                            <!-- Font Awesome Delete Icon -->
                                                         </button>
                                                     </div>
                                                 </td>
+                                                
+                                                <style>
+                                                    .actions-group {
+                                                        display: flex;
+                                                        align-items: center;
+                                                        gap: 10px; 
+                                                    }
+                                                
+                                                    .btn {
+                                                        border: none;
+                                                        cursor: pointer;
+                                                        font-size: 0.9rem;
+                                                    }
+                                                    .edit-button {
+                                                        background-color: #17b2ca; 
+                                                        color: white;
+                                                    }
+                                                    .delete-button {
+                                                        background-color: #ee0c22;
+                                                        color: white;
+                                                    }
+                                                    .resend-email-button {
+                                                        background-color: #0071ce; 
+                                                        color: white;
+                                                    }
+                                                    .btn:hover {
+                                                        opacity: 0.85;
+                                                    }
+                                                
+                                                    .inline-form {
+                                                        display: inline;
+                                                    }
+                                                    .btn i {
+                                                        margin: 0;
+                                                    }
+                                                </style>
 
                                             </tr>
-                                            <!-- CSS Styles -->
                                             <style>
                                                 .custom-container {
                                                     max-width: 1300px;
@@ -457,10 +491,6 @@
                                                     }
                                                 }
                                             </style>
-
-
-
-
 
                                             <!-- Edit Tenant Modal for each tenant -->
                                             <div class="modal fade" id="editTenantModal<%= tenant._id %>" tabindex="-1"
@@ -652,7 +682,7 @@
     aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header" style="background-color: #00172f; color: white;">
+            <div class="modal-header" style="color: #003366;">
                 <h5 class="modal-title" id="addTenantModalLabel">Add New Tenant</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -696,6 +726,18 @@
                                 <input type="date" class="form-control" id="leaseEndDate"
                                     name="leaseEndDate" required>
                             </div>
+                            <!-- Rent Paid -->
+                            <div class="form-group">
+                                <label for="tenantRent">Rent Paid</label>
+                                <input type="number" class="form-control" id="tenantRent" name="rentPaid"
+                                    min="0" step="0.01">
+                            </div>
+                            <!-- Utilities Paid -->
+                            <div class="form-group">
+                                <label for="utilitiesPaid">Utilities Paid</label>
+                                <input type="number" class="form-control" id="utilitiesPaid" name="utilityPaid"
+                                    min="0" step="0.01">
+                            </div>
                         </div>
 
                         <!-- Right Column -->
@@ -705,6 +747,7 @@
                                 <input type="text" class="form-control" id="tenantDoorNumber"
                                     name="doorNumber" placeholder="e.g B-20" required>
                             </div>
+                            
                             <div class="form-group">
                                 <label for="propertySelection">Property</label>
                                 <select class="form-control" id="propertySelection" name="property"

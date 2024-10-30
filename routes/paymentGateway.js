@@ -149,28 +149,44 @@ function pollPaymentStatus(req, api_key, email) {
                console.log('Verification response:', response.data);
    
                if (response.data) {
-                   const { ResultCode, TransactionStatus } = response.data;
-   
-                   if (TransactionStatus === 'Completed' && ResultCode === '200') {
-                       paymentData.status = 'completed';
-                       console.log('Payment completed.');
-   
-                   } else if (TransactionStatus === 'Pending') {
-                       paymentData.status = 'pending';
-                       console.log('Payment still pending, continuing to poll...');
-                       return; 
-                   } else {
-                       paymentData.status = 'failed';
-                       console.warn('Payment failed or canceled.');
-                   }
-   
-                   // Save payment data to the database
-                   const payment = new Payment(paymentData);
-                   await payment.save();
-   
-                   console.log(`Payment saved with status: ${paymentData.status}`);
-                   clearInterval(interval);
-               }
+                const { ResultCode, TransactionStatus } = response.data;
+            
+                // Determine payment status based on the response
+                if (TransactionStatus === 'Completed' && ResultCode === '200') {
+                    paymentData.status = 'completed';
+                    clearInterval(interval);
+                    console.log('Payment completed.');
+            
+                    // Only update rentPaid or utilityPaid for completed payments
+                    if (paymentData.paymentType === 'rent') {
+                        paymentData.rentPaid = paymentData.amount;
+                        paymentData.utilityPaid = 0;
+                    } else if (paymentData.paymentType === 'utility') {
+                        paymentData.utilityPaid = paymentData.amount;
+                        paymentData.rentPaid = 0;
+                    } else {
+                        paymentData.rentPaid = 0;
+                        paymentData.utilityPaid = 0;
+                    }
+            
+                } else if (TransactionStatus === 'Pending') {
+                    paymentData.status = 'pending';
+                    console.log('Payment still pending, continuing to poll...');
+                    return; // Don't save the payment yet if it's pending
+            
+                } else {
+                    paymentData.status = 'failed';
+                    paymentData.rentPaid = 0;
+                    paymentData.utilityPaid = 0;
+                    console.warn('Payment failed or canceled.');
+                }
+            
+                // Save payment data to the database only for completed or failed payments
+                const payment = new Payment(paymentData);
+                await payment.save();
+                console.log(`Payment saved with status: ${paymentData.status}`);
+            }
+            
            } catch (error) {
                if (error.response && error.response.status === 404) {
                    console.error('Verification endpoint not found:', error.response.status);

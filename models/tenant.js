@@ -23,6 +23,10 @@ const tenantSchema = new Schema({
         type: Number,
         default: 0
     },
+    utilityPaid: {
+        type: Number,
+        required: true
+    },
     rentDue: {
         type: Number,
         default: 0  
