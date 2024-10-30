@@ -302,7 +302,8 @@ router.post('/tenancy-manager/tenant/new', async (req, res) => {
             req.flash('error', 'Property not found');
             return res.redirect('/tenancy-manager/tenants');
         }
-        const propertyName = propertyToCheck.name; // Use a proper variable name
+
+        const propertyName = propertyToCheck.name; // Consistent variable name
 
         // Check if the user owns the property
         if (propertyToCheck.owner.toString() !== currentUser._id.toString()) {
@@ -310,10 +311,10 @@ router.post('/tenancy-manager/tenant/new', async (req, res) => {
             return res.redirect('/tenancy-manager/tenants');
         }
 
-        // Check if the tenant name is already taken
-        const existingTenant = await Tenant.findOne({ name });
+        // Check if a tenant with the same name or email already exists
+        const existingTenant = await Tenant.findOne({ $or: [{ name }, { email }] });
         if (existingTenant) {
-            req.flash('error', `Tenant with name ${name} already exists. Please try again.`);
+            req.flash('error', `Tenant with name ${name} or email ${email} already exists. Please try again.`);
             return res.redirect('/tenancy-manager/tenants');
         }
 
@@ -352,7 +353,11 @@ router.post('/tenancy-manager/tenant/new', async (req, res) => {
         res.redirect('/tenancy-manager/tenants');
 
         // Send email after tenant is successfully added
-        sendTenantEmail(newTenant, propertyName); 
+        try {
+            await sendTenantEmail(newTenant, propertyName); 
+        } catch (emailError) {
+            console.error('Error sending email:', emailError);
+        }
 
     } catch (error) {
         console.error('Error adding tenant:', error);
@@ -360,6 +365,7 @@ router.post('/tenancy-manager/tenant/new', async (req, res) => {
         return res.redirect('/tenancy-manager/tenants');
     }
 });
+
 
 // Function to send tenant email separately
 async function sendTenantEmail(newTenant, propertyName) {
@@ -433,7 +439,7 @@ async function sendTenantEmail(newTenant, propertyName) {
                         <p><strong>Username:</strong> ${newTenant.name}<br><strong>Password:</strong> 12345678</p>
                         <h3>How to Log In:</h3>
                         <p>Click the link below to access the Tenant Portal:</p>
-                        <p><a href="http://localhost:4000/tenantPortal/login" class="cta-button"><strong>Access Your Tenant Portal</strong></a></p>
+                        <p><a href="https://leasecaptain.com/tenantPortal/login" class="cta-button"><strong>Access Your Tenant Portal</strong></a></p>
                      <p>Once logged in, we recommend changing your password for security purposes.</p>
                         <h3>Next Steps:</h3>
                         <ul>
