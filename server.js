@@ -19,6 +19,7 @@ require('dotenv').config();
 const app = express();
 const http = require('http');
 const server = http.createServer(app);
+app.set('trust proxy', 1);
 
 
 // MongoDB connection
