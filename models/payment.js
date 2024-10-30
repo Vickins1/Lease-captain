@@ -1,34 +1,35 @@
 const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
-const Tenant = require('./tenant')
 
 const paymentSchema = new Schema({
     tenant: { 
         type: Schema.Types.ObjectId, 
         ref: 'Tenant', 
-        required: true },
+        required: true 
+    },
     tenantName: { 
         type: String, 
-        required: true },
+        required: true 
+    },
     property: { 
         type: Schema.Types.ObjectId, 
         ref: 'Property', 
-        required: true },
-
+        required: true 
+    },
     unit: { 
         type: Schema.Types.ObjectId, 
         ref: 'PropertyUnit', 
-        required: false },
-
+        required: false 
+    },
     doorNumber: { 
         type: String, 
-        required: [true, 'Door number is required'] },
-
+        required: [true, 'Door number is required'] 
+    },
     amount: { 
         type: Number, 
         required: true, 
-        min: [0, 'Amount must be non-negative'] },
-
+        min: [0, 'Amount must be non-negative'] 
+    },
     datePaid: { 
         type: Date, 
         default: Date.now 
@@ -37,12 +38,11 @@ const paymentSchema = new Schema({
         type: String, 
         required: [true, 'Payment method is required'] 
     },
-
     totalPaid: { 
         type: Number, 
         required: [true, 'Total amount paid is required'], 
-        min: 0 },
-
+        min: 0 
+    },
     due: { 
         type: Number, 
         required: true 
@@ -59,12 +59,12 @@ const paymentSchema = new Schema({
     },
     rentPaid: { 
         type: Number, 
-        default: 0 },
-
+        default: 0 
+    },
     utilityPaid: { 
         type: Number, 
-        default: 0 },
-
+        default: 0 
+    },
     transactionId: {
         type: String,
         required: true,
@@ -74,6 +74,7 @@ const paymentSchema = new Schema({
     timestamps: true
 });
 
+// Static method to update payment status
 paymentSchema.statics.updatePaymentStatus = async function(transactionId) {
     try {
         const payment = await this.findOne({ transactionId });
@@ -98,12 +99,15 @@ paymentSchema.statics.updatePaymentStatus = async function(transactionId) {
     }
 };
 
+// Pre-save hook to update the tenant's payment records
 paymentSchema.pre('save', async function (next) {
     if (this.status !== 'completed') {
         return next(); // Skip if the payment is not marked as 'completed'
     }
 
     try {
+        // Use dynamic model loading to avoid circular dependencies
+        const Tenant = mongoose.model('Tenant');
         const tenant = await Tenant.findById(this.tenant);
         if (!tenant) throw new Error('Tenant not found');
 
@@ -142,7 +146,7 @@ paymentSchema.pre('save', async function (next) {
         const unitUtilities = Array.isArray(tenant.unit?.utilities) ? tenant.unit.utilities : [];
         const totalUtilityCharges = unitUtilities.reduce((acc, utility) => acc + (utility.amount || 0), 0);
 
-        // Calculate the rent and utility due (ensure default values to avoid NaN)
+        // Calculate the rent and utility due
         tenant.rentDue = Math.max(totalRentExpected - (totalRentPaid || 0), 0);
         tenant.utilityDue = Math.max(totalUtilityCharges - (totalUtilityPaid || 0), 0);
 
@@ -153,6 +157,4 @@ paymentSchema.pre('save', async function (next) {
     }
 });
 
-
 module.exports = model('Payment', paymentSchema);
-
