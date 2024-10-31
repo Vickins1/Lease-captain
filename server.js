@@ -22,12 +22,10 @@ const server = http.createServer(app);
 app.set('trust proxy', 1);
 
 
-// MongoDB Atlas connection URI
-const dbUri = 'mongodb+srv://lease_capatain:vickins360@lease-captain.xxfb2.mongodb.net/lease-captain-db?retryWrites=true&w=majority';
-
-mongoose.connect(dbUri)
-.then(() => console.log('=== MongoDB connected successfully to Atlas ==='))
-.catch(err => console.error('Database connection error:', err));
+// MongoDB connection
+mongoose.connect('mongodb://localhost:27017/Rental-management')
+    .then(() => console.log('===MongoDB connected successfully!==='))
+    .catch(err => console.error('Database connection error:', err));
 
 // View engine setup
 app.set('view engine', 'ejs');
