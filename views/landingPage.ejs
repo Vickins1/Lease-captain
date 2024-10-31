@@ -7,165 +7,489 @@
     <title>Lease Captain</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.css"> <!-- Animation on scroll -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.css">
     <link rel="icon" href="/images/icon.png" type="image/png">
 
-    <style>
-        body {
-            background-color: #ffffff; /* White background */
-            color: #003366; /* Dark blue text */
-            font-family: 'Arial', sans-serif; /* Modern font */
-        }
+<style>
+body {
+    background-color: #ffffff;
+    color: #003366;
+    font-family: 'Arial', sans-serif;
+}
 
-        .hero {
-            margin-top: 90px; /* Adjust for smaller header */
-            position: relative;
-            height: 60vh; /* Full height of the viewport */
-            overflow: hidden; /* Hide any overflow */
-        }
+/* Header Styling */
+header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5e5e5;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    height: 80px;
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    padding: 0 20px; 
+}
 
-        .hero::before,
-        .hero::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            width: 50%; /* Each image takes half of the section */
-            height: 60vh;
-            background-size: cover;
-            background-position: center;
-            z-index: 0;
-            opacity: 0.7;
-        }
+/* Logo Styling */
+.logo {
+    margin-top: 10px;
+    width: 150px;
+    height: auto;
+    margin-right: 30px; 
+}
 
-        .hero::before {
-            left: 0;
-            background-image: url('/images/banner1.jpeg'); 
-        }
+/* Navbar Links */
+.navbar-nav {
+    display: flex; 
+    align-items: center; 
+    margin-left: 100px;
+}
 
-        .hero::after {
-            right: 0;
-            background-image: url('/images/banner2.jpeg');
-        }
+.navbar-nav .nav-link {
+    color: #003366;
+    font-weight: bold;
+    font-size: 0.9rem;
+    padding: 5px 15px; /* Adjust padding for spacing between links */
+    transition: color 0.3s ease;
+     margin-left: 100px;
+}
 
-        .container {
-            position: relative;
-            z-index: 1;
-            color: rgb(0, 8, 120);
-        }
+.navbar-nav .nav-link:hover {
+    color: #0056b3; /* Slightly darker blue on hover for links */
+}
+/* Custom Button Styling */
+.btn-outline-light-custom {
+    border-color: #003366;
+    color: #003366;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem; 
+    transition: background-color 0.3s ease, color 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+}
 
-        .btn-light-custom {
-            background-color: #ffffff;
-            color: #000000;
-            transition: background-color 0.3s ease;
-        }
+/* Base Dropdown Styling */
+.dropdown-menu {
+    margin-top: 10px;
+    border-radius: 5px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    padding: 10px;
+}
+/* Toggler button custom position */
+.custom-toggler {
+    position: absolute;
+    right: -150px; 
+    top: 50%;
+    transform: translateY(-50%);
+}
 
-        .btn-outline-light-custom {
-            border-color: #ffffff;
-            color: #000000;
-        }
+/* Ensure the navbar-brand is not affected */
+.navbar-brand {
+    position: relative;
+}
 
-        .btn-outline-light-custom:hover {
-            background-color: #ffffff;
-            color: #001224;
-        }
+/* Ensure collapse links are still aligned properly */
+.navbar-collapse {
+    width: 100%;
+    text-align: end;
+}
 
-        .feature-icon {
-            font-size: 40px;
-            color: #003366; /* Dark blue icon color */
-        }
+/* Change the color of navbar links */
+.navbar-nav .nav-link {
+    color: #0044cc; 
+    font-weight: bold;
+    transition: color 0.3s ease; 
+}
 
-        .footer {
-            background-color: #000000; /* Dark blue background */
-            color: #ffffff; /* White text */
-            padding: 20px 0;
-        }
+/* Change color when hovering over links */
+.navbar-nav .nav-link:hover {
+    color: #020201; 
+}
 
-        .footer a {
-            color: #ffffff; /* White link color */
-            text-decoration: underline; /* Underline for links */
-        }
 
-        /* New Styles */
-        .card {
-            border: none; /* Remove card border */
-            transition: transform 0.3s ease; /* Smooth transform effect */
-        }
 
-        .card:hover {
-            transform: translateY(-5px); /* Lift effect on hover */
-        }
+/* Responsive Adjustments for Smaller Screens */
+@media (max-width: 768px) {
+    .dropdown-menu {
+        position: static; 
+        width: 100%; 
+        box-shadow: none; 
+    }
 
-        h2 {
-            position: relative; /* Position for underline effect */
-            display: inline-block;
-            padding-bottom: 10px;
-        }
+    .dropdown-menu .dropdown-item {
+        padding: 8px 15px; 
+        font-size: 1rem;
+    }
+}
 
-        h2::after {
-            content: '';
-            width: 50px; /* Underline width */
-            height: 4px; /* Underline height */
-            background-color: #003366; /* Dark blue underline */
-            display: block;
-            margin: auto; /* Center the underline */
-        }
+/* Dropdown Toggle Styling */
+.dropdown-toggle::after {
+    margin-left: 5px;
+    transition: transform 0.3s ease;
+}
 
-        /* Logo Style */
-        .logo {
-            width: 150px; /* Adjust width as needed */
-            height: auto; /* Maintain aspect ratio */
-        }
+.dropdown-toggle[aria-expanded="true"]::after {
+    transform: rotate(180deg);
+}
 
-        /* Header Style */
-        header {
-            
-            height: 10vh;
-        }
+/* Hero Section */
+.hero {
+    margin-top: 50px;
+    position: relative;
+    height: 80vh;
+    overflow: hidden;
+}
 
-        /* Responsive Styles */
-        @media (max-width: 768px) {
-            .hero {
-                height: 30vh; /* Reduce height for smaller screens */
-            }
+.hero::before,
+.hero::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 80vh; 
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+    opacity: 0.7;
+}
 
-            .hero h1 {
-                font-size: 1.5rem; /* Adjust font size for smaller screens */
-            }
+.hero::before {
+    left: 0;
+    background-image: url('/images/banner1.jpeg');
+}
 
-            .hero p {
-                font-size: 1rem; /* Adjust font size for smaller screens */
-            }
+.hero::after {
+    right: 0;
+    background-image: url('/images/banner2.jpeg');
+}
 
-            .btn-lg {
-                font-size: 0.8rem; /* Adjust button size for smaller screens */
-                padding: 0.5rem 1rem; /* Adjust padding for buttons */
-            }
+.container {
+    position: relative;
+    z-index: 1;
+    color: rgb(0, 8, 120);
+}
 
-            .logo {
-                width: 120px; /* Further reduce logo size */
-            }
-        }
-    </style>
+.footer {
+    background-color: #000000;
+    color: #ffffff;
+    padding: 15px 0;
+    text-align: center;
+}
+
+.footer a {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+.footer a:hover {
+    color: #cccccc; 
+}
+
+/* Card Styling */
+.card {
+    border: none;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+@media (max-width: 768px) {
+    .btn-signup {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.6rem;
+    }
+
+    .logo {
+        width: 120px;
+        height: auto;
+    }
+
+    .navbar-nav {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .hero {
+        height: 40vh;
+    }
+
+    .hero::before, 
+    .hero::after {
+        width: 100%;
+        height: 40vh;
+        opacity: 0.5;
+    }
+
+    .container {
+        text-align: center;
+    }
+}
+
+/* Hover Transition for Navbar Links */
+.navbar-nav .nav-link:hover {
+    color: #001f5c; /* Slightly darker color on hover */
+}
+
+/* Navbar Enhancements */
+.navbar-toggler {
+    border-color: #003366; /* Match the navbar toggler with the theme */
+}
+
+.navbar-toggler-icon {
+    color: #003366;
+}
+
+/* Smooth dropdown transitions */
+.dropdown-item {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #003366;
+    color: #ffffff;
+}
+
+/* Hero Section */
+.hero {
+    margin-top: 60px;
+    position: relative;
+    height: 80vh;
+    overflow: hidden;
+}
+
+.hero::before,
+.hero::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 80vh; /* Match the hero section height */
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+    opacity: 0.7;
+}
+
+.hero::before {
+    left: 0;
+    background-image: url('/images/banner1.jpeg');
+}
+
+.hero::after {
+    right: 0;
+    background-image: url('/images/banner2.jpeg');
+}
+
+.container {
+    position: relative;
+    z-index: 1;
+    color: rgb(0, 8, 120);
+}
+
+/* Footer Styling */
+.footer {
+    background-color: #000000;
+    color: #ffffff;
+    padding: 15px 0;
+    text-align: center;
+}
+
+.footer a {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+.footer a:hover {
+    color: #cccccc; /* Slight hover effect for footer links */
+}
+
+/* Card Styling */
+.card {
+    border: none;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Responsive Styles for Small Screens */
+@media (max-width: 768px) {
+    /* Adjustments for Mobile View */
+    .btn-signup {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.6rem;
+    }
+
+    .logo {
+        width: 100px; /* Smaller logo for mobile */
+    }
+
+    nav a {
+        font-size: 0.8rem; /* Smaller font for mobile */
+    }
+
+    .hero {
+        height: 40vh;
+    }
+
+    .hero::before, 
+    .hero::after {
+        width: 100%;
+        height: 40vh;
+        opacity: 0.5;
+    }
+
+    .hero::before {
+        display: none;
+    }
+
+    .hero::after {
+        right: 0;
+        background-image: url('/images/banner2.jpeg');
+        background-size: cover;
+    }
+
+    .container {
+        text-align: center;
+    }
+
+    .hero h1 {
+        font-size: 1.3rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    .btn-lg {
+        font-size: 0.8rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .footer {
+        padding: 10px 0;
+    }
+}
+
+/* Hover Transition for Navbar Links */
+.navbar-nav .nav-link {
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #001f5c; /* Slightly darker color on hover */
+}
+
+/* Enhancements for the Navbar */
+.navbar {
+    padding: 5px 0;
+}
+
+.navbar-toggler {
+    border-color: #003366; /* Matching the navbar toggler with the theme */
+}
+
+.navbar-toggler-icon {
+    color: #003366;
+}
+
+/* Ensure smooth dropdown transitions */
+.dropdown-item {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #003366;
+    color: #ffffff;
+}
+
+</style>
+
 </head>
 
 <body>
+    <header class="bg-white fixed-top shadow-sm">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container">
+                <!-- Logo -->
+                <a href="/" class="navbar-brand">
+                    <img src="/images/logo2.png" alt="Lease Captain Logo" class="logo img-fluid">
+                </a>
+    
+                <!-- Collapsible Links -->
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="/login" class="nav-link btn btn-lg text-dark">
+                                <i class="fas fa-sign-in-alt"></i> <strong>Login</strong>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#help-section" class="nav-link btn-outline-secondary text-dark">
+                                <i class="fas fa-question-circle"></i> <strong>Help</strong>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/pricing" class="nav-link btn-outline-light-custom text-dark">
+                                <i class="fas fa-tags"></i> <strong>Pricing</strong>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/request-demo" class="nav-link btn-outline-light-custom text-dark">
+                                <i class="fas fa-desktop"></i> <strong>Demo</strong>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/signup" class="nav-link btn-signup text-dark">
+                                <i class="fas fa-user-plus"></i> <strong>Sign Up</strong>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+    
+                <!-- Toggler for Small Screens-->
+            <button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-    <header class="bg-white fixed-top">
-        <div class="container d-flex align-items-center justify-content-center" style="height: 10vh;">
-            <a href="/" class="mr-2"><img src="/images/logo2.png" alt="Lease Captain Logo" class="logo img-fluid"></a> 
-            <nav class="text-center">
-                <a href="/login" class="btn btn-light-custom btn-lg mr-2">
-                    <i class="fas fa-sign-in-alt"></i> Login
-                </a>
-                <a href="/signup" class="btn btn-outline-light-custom btn-lg">
-                    <i class="fas fa-user-plus"></i> Sign Up
-                </a>
-            </nav>
-        </div>
+            </div>
+        </nav>
     </header>
     
     
+    <!-- JavaScript to Collapse Navbar on Link Click -->
+    <script>
+        // Add click event listener for all nav links
+        document.querySelectorAll('.nav-link').forEach(function(navLink) {
+            navLink.addEventListener('click', function() {
+                var navbarCollapse = document.getElementById('navbarNav');
+                if (navbarCollapse.classList.contains('show')) {
+                    navbarCollapse.classList.remove('show');
+                }
+            });
+        });
+    
+        // Close the navbar when clicking outside of it
+        document.addEventListener('click', function(event) {
+            var navbarCollapse = document.getElementById('navbarNav');
+            var navbarToggler = document.querySelector('.navbar-toggler');
+            
+            // Check if the click is outside the navbar collapse and toggle button
+            if (!navbarCollapse.contains(event.target) && !navbarToggler.contains(event.target)) {
+                if (navbarCollapse.classList.contains('show')) {
+                    navbarCollapse.classList.remove('show');
+                }
+            }
+        });
+    </script>
+    
 
+
+
+    <!-- Hero Section -->
     <section class="hero d-flex align-items-center">
         <div class="container text-center">
             <h1 class="display-4 font-weight-bold"><strong>Welcome to Lease Captain!</strong></h1>
@@ -173,8 +497,7 @@
         </div>
     </section>
 
-   
-    <!-- Additional Features Section -->
+    <!-- Core Features Section -->
     <section class="py-5 bg-light">
         <div class="container">
             <h2 class="text-center" style="color: #003366;">Our Core Features</h2>
@@ -216,48 +539,295 @@
         </div>
     </section>
 
-     <!-- Core Features Section -->
-     <section class="py-5">
-        <div class="container">
-            <h2 class="text-center" style="color: #003366;">Additional Features</h2>
-            <div class="row text-center">
-                <div class="col-md-4" data-aos="fade-up" data-aos-duration="1000">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <div class="feature-icon mb-3">
-                                <i class="fas fa-leaf"></i>
+    <!-- Reviews Section -->
+<section id="reviews-section" class="py-5">
+    <div class="container">
+        <h2 class="text-center" style="color: #003366; font-weight: bold;">What Our Clients Say</h2>
+        
+        <!-- Carousel for Sliding Reviews -->
+        <div id="reviewsCarousel" class="carousel slide mt-4" data-ride="carousel">
+            <div class="carousel-inner">
+                <!-- Review 1 -->
+                <div class="carousel-item active">
+                    <div class="row">
+                        <div class="col-md-8 offset-md-2">
+                            <div class="card p-4">
+                                <p class="lead">"Lease Captain has transformed how I manage my properties. It's a life-saver!"</p>
+                                <h5 class="font-weight-bold">- Vickins, Property Manager</h5>
                             </div>
-                            <h3>Eco-Friendly Solutions</h3>
-                            <p>Innovative solutions that promote sustainable living while maintaining modern conveniences.</p>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4" data-aos="fade-up" data-aos-duration="1000">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <div class="feature-icon mb-3">
-                                <i class="fas fa-chart-line"></i>
+
+                <!-- Review 2 -->
+                <div class="carousel-item">
+                    <div class="row">
+                        <div class="col-md-8 offset-md-2">
+                            <div class="card p-4">
+                                <p class="lead">"I love the ease of use and the detailed reporting features. Highly recommend!"</p>
+                                <h5 class="font-weight-bold">- John Smith, Real Estate Investor</h5>
                             </div>
-                            <h3>Smart Management</h3>
-                            <p>Seamless property management with advanced technology for reporting and analysis.</p>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4" data-aos="fade-up" data-aos-duration="1000">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <div class="feature-icon mb-3">
-                                <i class="fas fa-users"></i>
+
+                <!-- Review 3 -->
+                <div class="carousel-item">
+                    <div class="row">
+                        <div class="col-md-8 offset-md-2">
+                            <div class="card p-4">
+                                <p class="lead">"The best property management tool I’ve used. It has everything I need in one place."</p>
+                                <h5 class="font-weight-bold">- Emily White, Landlord</h5>
                             </div>
-                            <h3>Community Focused</h3>
-                            <p>Join a community of like-minded individuals focused on sustainability and collaboration.</p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
 
+            <!-- Carousel Controls -->
+            <a class="carousel-control-prev" href="#reviewsCarousel" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#reviewsCarousel" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+
+<!-- Help Section -->
+<section id="help-section" class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center" style="color: #003366; font-weight: bold;">Need Help?</h2>
+        <p class="text-center lead" style="color: #333; max-width: 700px; margin: 0 auto;">We’re here to assist you in understanding how Lease Captain works and help you get started with managing your properties effortlessly.</p>
+        
+        <div class="row mt-5">
+            <div class="col-md-6 mb-4">
+                <h4 style="color: #003366; font-weight: bold;">How Lease Captain Works</h4>
+                <p>Lease Captain is an innovative property management platform designed to simplify and automate the tasks involved in managing residential and commercial properties. Here's a breakdown of how it works:</p>
+                <ul class="list-unstyled ml-3">
+                    <li><i class="fas fa-check-circle text-primary"></i> <strong>Create an Account:</strong> Sign up and create your Lease Captain account by providing basic information.</li>
+                    <li><i class="fas fa-check-circle text-primary"></i> <strong>Add Properties:</strong> Add your property listings to the platform, including relevant details like location, type, and features.</li>
+                    <li><i class="fas fa-check-circle text-primary"></i> <strong>Manage Leases:</strong> Manage leases, track payments, lease renewals, and tenant communications easily.</li>
+                    <li><i class="fas fa-check-circle text-primary"></i> <strong>Handle Maintenance Requests:</strong> Tenants can submit maintenance requests directly through the platform, which you can assign to service providers.</li>
+                    <li><i class="fas fa-check-circle text-primary"></i> <strong>Generate Reports:</strong> Get detailed analytics and reports on property performance, occupancy, and revenue to help you make informed decisions.</li>
+                </ul>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <h4 style="color: #003366; font-weight: bold;">Frequently Asked Questions (FAQs)</h4>
+                <p>Here are some common questions we often receive:</p>
+                <ul class="list-unstyled ml-3">
+                    <li><i class="fas fa-question-circle text-primary"></i> <strong>Q: How do I sign up?</strong> A: Click on the "Sign Up" button at the top of the page and follow the prompts to create your account.</li>
+                    <li><i class="fas fa-question-circle text-primary"></i> <strong>Q: How do I add a property?</strong> A: After signing in, go to the "Properties" section and click "Add Property." Fill in the required details and submit.</li>
+                    <li><i class="fas fa-question-circle text-primary"></i> <strong>Q: Can I communicate with tenants through Lease Captain?</strong> A: Yes, the platform allows you to send and receive messages from tenants, handle inquiries, and manage requests directly.</li>
+                    <li><i class="fas fa-question-circle text-primary"></i> <strong>Q: What happens when a lease is about to expire?</strong> A: Lease Captain will notify you of upcoming lease renewals so you can manage lease extensions or prepare for new tenants.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="text-center mt-5">
+            <h4 style="color: #003366; font-weight: bold;">Still Need Help?</h4>
+            <p>If you have any further questions or need additional assistance, feel free to contact our support team.</p>
+            
+            <!-- Headphone Icon -->
+            <i class="fas fa-headphones" style="font-size: 5rem; color: #003366;"></i>
+            
+            <!-- Contact Support Button -->
+            <div class="mt-3">
+                <!-- Button to Open Modal -->
+                <button type="button" class="btn btn-primary btn-lg" style="border-radius: 30px;" data-toggle="modal" data-target="#contactSupportModal">
+                    <i class="fas fa-headphones-alt"></i> Contact Support
+                </button>
+            </div>
+        </div>
+        
+        <!-- Contact Support Modal -->
+        <div class="modal fade" id="contactSupportModal" tabindex="-1" role="dialog" aria-labelledby="contactSupportModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="contactSupportModalLabel">Contact Support</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Contact Support Form -->
+                        <form id="supportForm">
+                            <div class="form-group">
+                                <label for="emailAddress">Your Email</label>
+                                <input type="email" class="form-control" id="emailAddress" placeholder="Enter your email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="supportMessage">Message</label>
+                                <textarea class="form-control" id="supportMessage" rows="4" placeholder="Write your message here..." required></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" form="supportForm">Send Message</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            // Trigger modal on button click
+            $(document).ready(function(){
+                $('#openModalBtn').click(function(){
+                    $('#contactSupportModal').modal('show');
+                });
+            });
+        </script>
+        
+        <style>
+            /* Lightening the backdrop */
+            .modal-backdrop {
+                background-color: rgba(0, 0, 0, 0.2) !important; /* Lightened backdrop */
+            }
+    
+            /* Modal Header */
+            .modal-header {
+                background-color: #003366;
+                color: #ffffff;
+            }
+    
+            .modal-title {
+                font-weight: bold;
+            }
+    
+            /* Contact Support Button */
+            .btn-primary {
+                background-color: #003366;
+                border-color: #003366;
+                border-radius: 30px;
+            }
+    
+            .btn-primary:hover {
+                background-color: #0056b3;
+            }
+    
+            /* Form Input Styling */
+            .form-control {
+                border-radius: 5px;
+                padding: 10px;
+            }
+    
+            .modal-footer .btn-secondary {
+                background-color: #6c757d;
+                border-radius: 30px;
+            }
+    
+            /* Modal Content - Ensuring the modal itself is bright */
+            .modal-content {
+                background-color: #ffffff; /* Bright white background */
+                color: #333; /* Dark text for better readability */
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Add shadow for better visibility */
+            }
+    
+            /* Adding padding for readability */
+            .modal-body {
+                padding: 20px;
+            }
+    
+            /* Center the modal on the screen */
+            .modal-dialog-centered {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh; /* Ensure it takes full screen height */
+            }
+        </style>
+              
+        
+    </div>
+</section>
+
+<style>
+    /* Help Section Styling */
+#help-section {
+    background-color: #f8f9fa; /* Light background for contrast */
+    padding: 60px 0;
+    color: #333;
+}
+
+#help-section h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #003366;
+    margin-bottom: 20px;
+}
+
+#help-section p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #555;
+}
+
+#help-section h4 {
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+#help-section ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+#help-section ul li {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+}
+
+#help-section ul li i {
+    margin-right: 10px;
+}
+
+#help-section .btn-primary {
+    background-color: #003366;
+    border-color: #003366;
+    padding: 10px 30px;
+    font-size: 1.1rem;
+    border-radius: 30px;
+    transition: background-color 0.3s ease;
+}
+
+#help-section .btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+/* Responsive Help Section */
+@media (max-width: 768px) {
+    #help-section {
+        padding: 40px 0;
+    }
+
+    #help-section h2 {
+        font-size: 2rem;
+    }
+
+    #help-section h4 {
+        font-size: 1.3rem;
+    }
+
+    #help-section p {
+        font-size: 1rem;
+    }
+
+    #help-section .btn-primary {
+        padding: 8px 20px;
+        font-size: 1rem;
+    }
+}
+
+</style>
+    
 
     <!-- Footer -->
     <footer class="py-0 text-center">
@@ -269,8 +839,9 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.js"></script>
+
     <script>
-        AOS.init(); 
+        AOS.init();
     </script>
 </body>
 
