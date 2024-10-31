@@ -21,8 +21,9 @@ const http = require('http');
 const server = http.createServer(app);
 app.set('trust proxy', 1);
 
+
 // MongoDB connection
-mongoose.connect('mongodb://localhost:27017/rental-management')
+mongoose.connect('mongodb://localhost:27017/Rental-management')
     .then(() => console.log('===MongoDB connected successfully!==='))
     .catch(err => console.error('Database connection error:', err));
 
@@ -180,3 +181,4 @@ process.on('unhandledRejection', (reason, promise) => {
     console.error('Unhandled Rejection at:', promise, 'reason:', reason);
     server.close(() => process.exit(1));
 });
+
