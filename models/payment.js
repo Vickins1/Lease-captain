@@ -102,11 +102,9 @@ paymentSchema.statics.updatePaymentStatus = async function(transactionId) {
 // Pre-save hook to update the tenant's payment records
 paymentSchema.pre('save', async function (next) {
     if (!this.isModified('status') || this.status !== 'completed') {
-        return next(); // Skip if the payment status is not modified or not marked as 'completed'
+        return next();
     }
-
     try {
-        // Use dynamic model loading to avoid circular dependencies
         const Tenant = mongoose.model('Tenant');
         const Payment = mongoose.model('Payment');
         

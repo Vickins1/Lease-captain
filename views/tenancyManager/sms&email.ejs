@@ -309,175 +309,191 @@
             </div>
         <% } %>
     
-        <!-- Templates Section -->
-        <div class="section-header">
-            <h5>Your Templates</h5>
-            <button class="btn create-button" onclick="showModal('templateModal')">Create New Template</button>
-        </div>
-    
-        <div class="table-wrapper">
-            <table class="custom-table">
-                <thead>
-                    <tr>
-                        <th>Type</th>
-                        <th>Subject</th>
-                        <th>Content</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% templates.forEach(template => { %>
-                        <tr>
-                            <td><%= template.type %></td>
-                            <td><%= template.subject || 'N/A' %></td>
-                            <td><%= template.content %></td>
-                            <td class="actions">
-                                <button class="btn edit-button" onclick="showModal('editTemplateModal-<%= template._id %>')">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <form action="/templates/delete/<%= template._id %>" method="POST" class="inline-form">
-                                    <a class="btn delete-button" type="submit">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </a>
-                                </form>
-                            </td>
-                            
-                        </tr>
-    
-                        <!-- Edit Template Modal -->
-                        <div id="editTemplateModal-<%= template._id %>" class="modal">
-                            <div class="modal-content">
-                                <span class="close" onclick="closeModal('editTemplateModal-<%= template._id %>')">&times;</span>
-                                <h5>Edit Template</h5>
-                                <form action="/templates/edit/<%= template._id %>" method="POST">
-                                    <div class="form-group">
-                                        <label for="type">Type</label>
-                                        <input type="text" class="form-control" name="type" value="<%= template.type %>" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="subject">Subject</label>
-                                        <input type="text" class="form-control" name="subject" value="<%= template.subject %>" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="content">Content</label>
-                                        <textarea class="form-control" name="content" required><%= template.content %></textarea>
-                                    </div>
-                                    <button type="submit" class="btn save-button">Save Changes</button>
-                                </form>
+       
+<!-- Reminder Section -->
+<div class="section-header mt-5">
+    <h5>Your Reminders</h5>
+    <button class="btn create-button" onclick="showModal('reminderModal')">Create New Reminder</button>
+</div>
+
+<div class="table-wrapper">
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>Template</th>
+                <th>Send At</th>
+                <th>Frequency</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% reminders.forEach(reminder => { %>
+                <tr>
+                    <td><%= reminder.templateId ? reminder.templateId.type + ' - ' + reminder.templateId.subject : 'N/A' %></td>
+                    <td><%= new Date(reminder.sendAt).toLocaleString() %></td>
+                    <td><%= reminder.frequency %></td>
+                    <td><%= reminder.status %></td>
+                    <td class="actions">
+                        <button class="btn edit-button" onclick="showModal('editReminderModal-<%= reminder._id %>')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <form action="/reminders/delete/<%= reminder._id %>" method="POST" class="inline-form">
+                            <button class="btn delete-button" type="submit">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+
+                <!-- Edit Reminder Modal -->
+                <div id="editReminderModal-<%= reminder._id %>" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeModal('editReminderModal-<%= reminder._id %>')">&times;</span>
+                        <h5>Edit Reminder</h5>
+                        <form action="/reminders/edit/<%= reminder._id %>" method="POST">
+                            <div class="form-group">
+                                <label for="sendAt">Send At</label>
+                                <input type="datetime-local" class="form-control" name="sendAt" value="<%= new Date(reminder.sendAt).toISOString().slice(0, 16) %>" required>
                             </div>
-                        </div>
-                    <% }); %>
-                </tbody>
-            </table>
-        </div>
-    
-        <!-- Reminder Section -->
-        <div class="section-header mt-5">
-            <h5>Your Reminders</h5>
-            <button class="btn create-button" onclick="showModal('reminderModal')">Create New Reminder</button>
-        </div>
-    
-        <div class="table-wrapper">
-            <table class="custom-table">
-                <thead>
-                    <tr>
-                        <th>Template</th>
-                        <th>Send At</th>
-                        <th>Frequency</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% reminders.forEach(reminder => { %>
-                        <tr>
-                            <td><%= reminder.templateId ? reminder.templateId.type + ' - ' + reminder.templateId.subject : 'N/A' %></td>
-                            <td><%= new Date(reminder.sendAt).toLocaleString() %></td>
-                            <td><%= reminder.frequency %></td>
-                            <td><%= reminder.status %></td>
-                            <td class="actions">
-                                <a class="btn edit-button" onclick="showModal('editReminderModal-<%= reminder._id %>')">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <form action="/reminders/delete/<%= reminder._id %>" method="POST" class="inline-form">
-                                    <a class="btn delete-button" type="submit">
-                                        <i class="fas fa-trash-alt"></i> 
-                                    </a>
-                                </form>
-                            </td>
-                            
-                        </tr>
-    
-                        <!-- Edit Reminder Modal -->
-                        <div id="editReminderModal-<%= reminder._id %>" class="modal">
-                            <div class="modal-content">
-                                <span class="close" onclick="closeModal('editReminderModal-<%= reminder._id %>')">&times;</span>
-                                <h5>Edit Reminder</h5>
-                                <form action="/reminders/edit/<%= reminder._id %>" method="POST">
-                                    <div class="form-group">
-                                        <label for="sendAt">Send At</label>
-                                        <input type="datetime-local" class="form-control" name="sendAt" value="<%= new Date(reminder.sendAt).toISOString().slice(0, 16) %>" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="frequency">Frequency</label>
-                                        <select class="form-control" name="frequency" required>
-                                            <option value="once" <%= reminder.frequency === 'once' ? 'selected' : '' %>>Once</option>
-                                            <option value="daily" <%= reminder.frequency === 'daily' ? 'selected' : '' %>>Daily</option>
-                                            <option value="weekly" <%= reminder.frequency === 'weekly' ? 'selected' : '' %>>Weekly</option>
-                                            <option value="monthly" <%= reminder.frequency === 'monthly' ? 'selected' : '' %>>Monthly</option>
-                                        </select>
-                                    </div>
-                                    <button type="submit" class="btn save-button">Save Changes</button>
-                                </form>
+                            <div class="form-group">
+                                <label for="frequency">Frequency</label>
+                                <select class="form-control" name="frequency" required>
+                                    <option value="once" <%= reminder.frequency === 'once' ? 'selected' : '' %>>Once</option>
+                                    <option value="daily" <%= reminder.frequency === 'daily' ? 'selected' : '' %>>Daily</option>
+                                    <option value="weekly" <%= reminder.frequency === 'weekly' ? 'selected' : '' %>>Weekly</option>
+                                    <option value="monthly" <%= reminder.frequency === 'monthly' ? 'selected' : '' %>>Monthly</option>
+                                </select>
                             </div>
-                        </div>
-                    <% }); %>
-                </tbody>
-            </table>
-        </div>
-    
-        <!-- Manual SMS Section -->
-        <div class="sms-section mt-5">
-            <h5>Send SMS</h5>
-            <form action="/send-sms" method="POST" class="sms-form">
-                <div class="form-group">
-                    <label for="phone">Recipient Phone Number</label>
-                    <input type="text" id="phone" name="phone" placeholder="Enter phone number" required>
+                            <button type="submit" class="btn save-button">Save Changes</button>
+                        </form>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="smsMessage">Message</label>
-                    <textarea id="smsMessage" name="smsMessage" rows="3" placeholder="Enter your message" required></textarea>
-                </div>
-                <button type="submit" class="btn send-button">Send SMS</button>
-            </form>
-        </div>
+            <% }); %>
+        </tbody>
+    </table>
+</div>
+
+<!-- Create Reminder Modal -->
+<div id="reminderModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('reminderModal')">&times;</span>
+        <h5>Create New Reminder</h5>
+        <form id="createReminderForm">
+            <div class="form-group">
+                <label for="sendAt">Send At</label>
+                <input type="datetime-local" id="sendAt" name="sendAt" required>
+            </div>
+            <div class="form-group">
+                <label for="frequency">Frequency</label>
+                <select id="frequency" name="frequency" required>
+                    <option value="once">Once</option>
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                </select>
+            </div>
+            <button type="submit" class="btn save-button">Create Reminder</button>
+        </form>
     </div>
+</div>
+
+<script>
+    function showModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'flex';
+        }
+    }
+
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    // Handle form submission
+    document.getElementById('createReminderForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+            const response = await fetch('/reminders/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                alert('Reminder created and scheduled successfully!');
+                closeModal('reminderModal');
+            } else {
+                const result = await response.json();
+                alert(`Failed to create reminder: ${result.error || 'Unknown error'}`);
+            }
+        } catch (error) {
+            console.error('Error creating reminder:', error);
+            alert('An error occurred while creating the reminder. Please try again later.');
+        }
+    });
+</script>
+
+
+
     
-    <!-- Template Creation Modal -->
-    <div id="templateModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('templateModal')">&times;</span>
-            <h5>Create New Template</h5>
-            <form action="/templates/create" method="POST">
-                <div class="form-group">
-                    <label for="type">Template Type</label>
-                    <select id="type" name="type" required>
-                        <option value="sms">SMS</option>
-                        <option value="email">Email</option>
-                    </select>
-                </div>
-                <div class="form-group" id="subjectGroup" style="display: none;">
-                    <label for="subject">Email Subject</label>
-                    <input type="text" id="subject" name="subject">
-                </div>
-                <div class="form-group">
-                    <label for="content">Template Content</label>
-                    <textarea id="content" name="content" rows="4" required></textarea>
-                </div>
-                <button type="submit" class="btn save-button">Create Template</button>
-            </form>
+<!-- Manual SMS/Email Section -->
+<div class="sms-section mt-5">
+    <h5>Send Message to All Tenants</h5>
+    <form id="manualSendAllForm" method="POST" class="sms-form">
+        <div class="form-group">
+            <label for="messageType">Message Type</label>
+            <select id="messageType" name="messageType" required>
+                <option value="sms">SMS</option>
+                <option value="email">Email</option>
+            </select>
         </div>
-    </div>
+        <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="3" placeholder="Enter your message" required></textarea>
+        </div>
+        <button type="submit" class="btn send-button">Send Message</button>
+    </form>
+</div>
+
+<script>
+    // Handle form submission
+    document.getElementById('manualSendAllForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        // Gather form data
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+            // Send POST request to the backend
+            const response = await fetch('/manual-send-all', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                alert('Message sent successfully to all tenants!');
+            } else {
+                const result = await response.json();
+                alert(`Failed to send message: ${result.error || 'An unknown error occurred'}`);
+            }
+        } catch (error) {
+            console.error('Error sending message:', error);
+            alert('An error occurred while sending the message. Please try again later.');
+        }
+    });
+</script>
+
+    
     
     <!-- Reminder Creation Modal -->
     <div id="reminderModal" class="modal">

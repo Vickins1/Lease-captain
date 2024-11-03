@@ -382,12 +382,112 @@
                                 </div>
 
 
+                                <!-- Monthly Rent Card -->
+                                <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                    <div class="card shadow-lg border-0">
+                                        <div class="card-header text-white"
+                                            style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                            <h5 class="mb-0">Monthly Rent</h5>
+                                        </div>
+                                        <div class="card-body bg-light" style="border-radius: 0 0 0.5rem 0.5rem;">
+                                            <p style="font-size: 1.1rem;">Ksh. <strong style="color: #003366;">
+                                                    <%= tenant.unit && tenant.unit.unitPrice ?
+                                                        tenant.unit.unitPrice.toFixed(2) : 'N/A' %>
+                                                </strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Rent Paid Card -->
+                                <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                    <div class="card shadow-lg border-0">
+                                        <div class="card-header text-white"
+                                            style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                            <h5 class="mb-0">Rent Paid</h5>
+                                        </div>
+                                        <div class="card-body bg-light" style="border-radius: 0 0 0.5rem 0.5rem;">
+                                            <p style="font-size: 1.1rem;">Ksh. <strong style="color: #003366;">
+                                                    <%= totalRentPaid ? totalRentPaid.toFixed(2) : '0' %>
+                                                </strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Utility Paid Card -->
+                                <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                    <div class="card shadow-lg border-0">
+                                        <div class="card-header text-white"
+                                            style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                            <h5 class="mb-0">Utility Paid</h5>
+                                        </div>
+                                        <div class="card-body bg-light" style="border-radius: 0 0 0.5rem 0.5rem;">
+                                            <p style="font-size: 1.1rem;">Ksh. <strong style="color: #003366;">
+                                                    <%= utilityPaid ? utilityPaid.toFixed(2) : '0' %>
+                                                </strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Deposit Paid Card -->
+                                <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                    <div class="card shadow-lg border-0">
+                                        <div class="card-header text-white"
+                                            style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                            <h5 class="mb-0">Deposit Paid</h5>
+                                        </div>
+                                        <div class="card-body bg-light" style="border-radius: 0 0 0.5rem 0.5rem;">
+                                            <p style="font-size: 1.1rem;">
+                                                Ksh.
+                                                <strong style="color: #003366;">
+                                                    <%= typeof depositPaid !=='undefined' && depositPaid !=null ?
+                                                        depositPaid.toFixed(2) : '0.00' %>
+                                                        of Ksh.
+                                                        <%= typeof depositAmount !=='undefined' && depositAmount !=null
+                                                            ? depositAmount.toFixed(2) : '0.00' %>
+                                                </strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Rent Due Card -->
+                                <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                    <div class="card shadow-lg border-0">
+                                        <div class="card-header text-white"
+                                            style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                            <h5 class="mb-0">Rent Due</h5>
+                                        </div>
+                                        <div class="card-body bg-light" style="border-radius: 0 0 0.5rem 0.5rem;">
+                                            <p style="font-size: 1.1rem;">Ksh. <strong style="color: #003366;">
+                                                    <%= (rentDue || 0).toFixed(2) %>
+                                                </strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Utility Due Card -->
+                                <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                    <div class="card shadow-lg border-0">
+                                        <div class="card-header text-white"
+                                            style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                            <h5 class="mb-0">Utility Due</h5>
+                                        </div>
+                                        <div class="card-body bg-light" style="border-radius: 0 0 0.5rem 0.5rem;">
+                                            <p style="font-size: 1.1rem;">Ksh. <strong style="color: #003366;">
+                                                    <%= (utilityDue || 0).toFixed(2) %>
+                                                </strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
                                 <!-- Rent Due Card -->
                                 <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
                                     <div class="card shadow-lg border-0 h-100">
                                         <div class="card-header text-white"
                                             style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                            <h5 class="mb-0">Rent Due</h5>
+                                            <h5 class="mb-0">Rent Due Date</h5>
                                         </div>
                                         <div class="card-body bg-light" style="border-radius: 0 0 0.5rem 0.5rem;">
                                             <p class="mb-0" style="font-size: 1.1rem;">
@@ -428,16 +528,24 @@
                                             <div class="card shadow-lg border-0 h-100">
                                                 <div class="card-header text-white"
                                                     style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                                    <h5 class="mb-0">Maintenance Schedule</h5>
+                                                    <h5 class="mb-0">Maintenance Schedule Date</h5>
                                                 </div>
                                                 <div class="card-body bg-light"
                                                     style="border-radius: 0 0 0.5rem 0.5rem;">
-                                                    <p class="mb-0" style="font-size: 1.1rem;">
-                                                        <i class="fas fa-wrench mr-3 text-danger"
+                                                    <div class="d-flex align-items-center mb-2">
+                                                        <i class="fas fa-wrench text-danger mr-2"
                                                             style="font-size: 1.5rem;"></i>
-                                                        <strong style="color: #003366;">
-                                                            <%= schedule.date %>
-                                                        </strong>
+                                                        <p class="mb-0" style="font-size: 1.1rem; color: #003366;">
+                                                            <strong>
+                                                                <%= schedule.scheduleDateFormatted %>
+                                                            </strong>
+                                                        </p>
+
+                                                    </div>
+                                                    <p
+                                                        class="status-background 
+                    <%= schedule.status === 'pending' ? 'status-pending' : schedule.status === 'in-progress' ? 'status-in-progress' : 'status-completed' %> mt-2">
+                                                        <%= schedule.status %>
                                                     </p>
                                                 </div>
                                             </div>
@@ -448,7 +556,7 @@
                                                     <div class="card shadow-lg border-0 h-100">
                                                         <div class="card-header text-white"
                                                             style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                                            <h5 class="mb-0">Maintenance Schedule</h5>
+                                                            <h5 class="mb-0">Maintenance Schedule Date</h5>
                                                         </div>
                                                         <div class="card-body bg-light"
                                                             style="border-radius: 0 0 0.5rem 0.5rem;">
@@ -459,135 +567,51 @@
                                                 </div>
                                                 <% } %>
 
+                                                    <style>
+                                                        .status-background {
+                                                            color: white;
+                                                            padding: 4px 8px;
+                                                            border-radius: 4px;
+                                                            display: inline-block;
+                                                            font-weight: bold;
+                                                            font-size: 0.9rem;
+                                                        }
 
-                                                    <!-- Monthly Rent Card -->
-                                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                                                        <div class="card shadow-lg border-0">
-                                                            <div class="card-header text-white"
-                                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                                                <h5 class="mb-0">Monthly Rent</h5>
-                                                            </div>
-                                                            <div class="card-body bg-light"
-                                                                style="border-radius: 0 0 0.5rem 0.5rem;">
-                                                                <p style="font-size: 1.1rem;">Ksh. <strong
-                                                                        style="color: #003366;">
-                                                                        <%= tenant.unit && tenant.unit.unitPrice ?
-                                                                            tenant.unit.unitPrice.toFixed(2) : 'N/A' %>
-                                                                    </strong></p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                        .status-pending {
+                                                            background-color: orange;
+                                                        }
 
-                                                    <!-- Rent Paid Card -->
-                                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                                                        <div class="card shadow-lg border-0">
-                                                            <div class="card-header text-white"
-                                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                                                <h5 class="mb-0">Rent Paid</h5>
-                                                            </div>
-                                                            <div class="card-body bg-light"
-                                                                style="border-radius: 0 0 0.5rem 0.5rem;">
-                                                                <p style="font-size: 1.1rem;">Ksh. <strong
-                                                                        style="color: #003366;">
-                                                                        <%= totalRentPaid ? totalRentPaid.toFixed(2)
-                                                                            : '0' %>
-                                                                    </strong></p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                        .status-in-progress {
+                                                            background-color: blue;
+                                                        }
 
-                                                    <!-- Utility Paid Card -->
-                                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                                                        <div class="card shadow-lg border-0">
-                                                            <div class="card-header text-white"
-                                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                                                <h5 class="mb-0">Utility Paid</h5>
-                                                            </div>
-                                                            <div class="card-body bg-light"
-                                                                style="border-radius: 0 0 0.5rem 0.5rem;">
-                                                                <p style="font-size: 1.1rem;">Ksh. <strong
-                                                                        style="color: #003366;">
-                                                                        <%= utilityPaid ? utilityPaid.toFixed(2) : '0'
-                                                                            %>
-                                                                    </strong></p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                        .status-completed {
+                                                            background-color: green;
+                                                        }
+                                                    </style>
 
-                                                    <!-- Deposit Paid Card -->
-                                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                                                        <div class="card shadow-lg border-0">
-                                                            <div class="card-header text-white"
-                                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                                                <h5 class="mb-0">Deposit Paid</h5>
-                                                            </div>
-                                                            <div class="card-body bg-light"
-                                                                style="border-radius: 0 0 0.5rem 0.5rem;">
-                                                                <p style="font-size: 1.1rem;">
-                                                                    Ksh.
-                                                                    <strong style="color: #003366;">
-                                                                        <%= typeof depositPaid !=='undefined' &&
-                                                                            depositPaid !=null ? depositPaid.toFixed(2)
-                                                                            : '0.00' %>
-                                                                            of Ksh.
-                                                                            <%= typeof depositAmount !=='undefined' &&
-                                                                                depositAmount !=null ?
-                                                                                depositAmount.toFixed(2) : '0.00' %>
-                                                                    </strong>
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
 
-                                                    <!-- Rent Due Card -->
-                                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                                                        <div class="card shadow-lg border-0">
-                                                            <div class="card-header text-white"
-                                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                                                <h5 class="mb-0">Rent Due</h5>
-                                                            </div>
-                                                            <div class="card-body bg-light"
-                                                                style="border-radius: 0 0 0.5rem 0.5rem;">
-                                                                <p style="font-size: 1.1rem;">Ksh. <strong
-                                                                        style="color: #003366;">
-                                                                        <%= (rentDue || 0).toFixed(2) %>
-                                                                    </strong></p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
 
-                                                    <!-- Utility Due Card -->
-                                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                                                        <div class="card shadow-lg border-0">
-                                                            <div class="card-header text-white"
-                                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                                                <h5 class="mb-0">Utility Due</h5>
-                                                            </div>
-                                                            <div class="card-body bg-light"
-                                                                style="border-radius: 0 0 0.5rem 0.5rem;">
-                                                                <p style="font-size: 1.1rem;">Ksh. <strong
-                                                                        style="color: #003366;">
-                                                                        <%= (utilityDue || 0).toFixed(2) %>
-                                                                    </strong></p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+
+
+
+                                                    <style>
+                                                        .card-header {
+                                                            font-size: 1.25rem;
+                                                        }
+
+                                                        .card-body {
+                                                            padding: 1.5rem;
+                                                        }
+
+                                                        .card-body p,
+                                                        .card-body span {
+                                                            line-height: 1.5;
+                                                        }
+                                                    </style>
+
                             </div>
 
-                            <style>
-                                .card-header {
-                                    font-size: 1.25rem;
-                                }
-
-                                .card-body {
-                                    padding: 1.5rem;
-                                }
-
-                                .card-body p,
-                                .card-body span {
-                                    line-height: 1.5;
-                                }
-                            </style>
 
                             <!-- Quick Actions Section -->
                             <div class="card mt-4 border-0 shadow">
@@ -617,7 +641,115 @@
                                     </div>
                                 </div>
                             </div>
+
+
+                            <div class="dashboard-container">
+                                <!-- Rent Payment Chart -->
+                                <div class="chart-card">
+                                    <h3 class="chart-title">Rent Payment Report</h3>
+                                    <canvas id="rentChart"></canvas>
+                                </div>
+                            
+                                <!-- Utility Payment Chart -->
+                                <div class="chart-card">
+                                    <h3 class="chart-title">Utility Payment Report</h3>
+                                    <canvas id="utilityChart"></canvas>
+                                </div>
+                            </div>
+                            
+                            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                            <script>
+                                // Parse graph data from server-rendered JSON
+                                const rentData = JSON.parse('<%= rentGraphData %>');
+                                const utilityData = JSON.parse('<%= utilityGraphData %>');
+                            
+                                // Rent Payment Chart
+                                const rentCtx = document.getElementById('rentChart').getContext('2d');
+                                new Chart(rentCtx, {
+                                    type: 'doughnut',
+                                    data: {
+                                        labels: rentData.labels,
+                                        datasets: [{
+                                            label: 'Rent Payment',
+                                            data: rentData.data,
+                                            backgroundColor: ['#4caf50', '#ff5722'],
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        plugins: {
+                                            legend: {
+                                                position: 'top',
+                                            },
+                                        }
+                                    }
+                                });
+                            
+                                // Utility Payment Chart
+                                const utilityCtx = document.getElementById('utilityChart').getContext('2d');
+                                new Chart(utilityCtx, {
+                                    type: 'doughnut',
+                                    data: {
+                                        labels: utilityData.labels,
+                                        datasets: [{
+                                            label: 'Utility Payment',
+                                            data: utilityData.data,
+                                            backgroundColor: ['#2196f3', '#ff9800'],
+                                        }]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        plugins: {
+                                            legend: {
+                                                position: 'top',
+                                            },
+                                        }
+                                    }
+                                });
+                            </script>
+                            
+
+
+
                             <style>
+                                .dashboard-container {
+                                    display: flex;
+                                    flex-wrap: wrap;
+                                    gap: 20px;
+                                    padding: 20px;
+                                }
+
+                                /* Chart card styling */
+                                .chart-card {
+                                    flex: 1 1 calc(50% - 20px);
+                                    /* Flex item takes 50% of the row minus the gap */
+                                    background-color: #f4f4f9;
+                                    padding: 20px;
+                                    border-radius: 8px;
+                                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                                }
+
+                                /* Chart title styling */
+                                .chart-title {
+                                    color: #003366;
+                                    font-size: 1.2rem;
+                                    margin-bottom: 10px;
+                                }
+
+                                /* Chart canvas styling */
+                                canvas {
+                                    width: 100%;
+                                    height: 300px;
+                                }
+
+                                /* Responsive adjustments */
+                                @media (max-width: 768px) {
+                                    .chart-card {
+                                        flex: 1 1 100%;
+                                        /* Stack cards on smaller screens */
+                                    }
+                                }
+
                                 @media (max-width: 768px) {
 
                                     .card-header h5,

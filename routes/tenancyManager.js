@@ -16,68 +16,46 @@ const MaintenanceRequest = require('../models/maintenanceRequest');
 const Account = require('../models/account');
 const Topups = require('../models/topups');
 const Reminder = require('../models/reminder');
-const Template = require('../models/template');
 const crypto = require('crypto');
 const Permission = require('../models/permissions');
-const Topup = require('../models/topups'); 
 
 router.get('/tenancy-manager/dashboard', async (req, res) => {
     try {
-        // Fetch all properties owned by the user
+        // Ensure the user is authenticated
+        if (!req.user) {
+            req.flash('error', 'User not authenticated.');
+            return res.redirect('/login');
+        }
+
+        // Fetch the user's properties
         const properties = await Property.find({ owner: req.user._id }).populate('tenants');
 
-        // Fetch all units for the properties
-        const units = await PropertyUnit.find({ propertyId: { $in: properties.map(prop => prop._id) } }).populate('tenants');
+        // Fetch tenants directly associated with the user's properties
+        const tenants = await Tenant.find({ owner: req.user._id });
 
-        const numberOfUnits = units.length;
-        const users = await User.countDocuments();
-        const maintenanceRequests = await MaintenanceRequest.find();
-        const totalRequests = maintenanceRequests.length;
+        // Count the number of tenants
+        const numberOfTenants = tenants.length;
 
-        let totalRentCollected = 0;
-        let totalRentDue = 0;
-        let utilityCollected = 0;
-        let utilityDue = 0;
-        let numberOfTenants = 0;  
-        let occupiedUnitsCount = 0; 
+        // Other dashboard calculations
+        const totalRentCollected = tenants.reduce((sum, tenant) => sum + (tenant.rentPaid || 0), 0);
+        const totalRentDue = tenants.reduce((sum, tenant) => sum + (tenant.rentDue || 0), 0);
+        const utilityCollected = tenants.reduce((sum, tenant) => sum + (tenant.utilityPaid || 0), 0);
+        const utilityDue = tenants.reduce((sum, tenant) => sum + (tenant.utilityDue || 0), 0);
 
-        const rentCollectionData = {}; 
+        const numberOfUnits = await PropertyUnit.countDocuments({ propertyId: { $in: properties.map(prop => prop._id) } });
+        const occupiedUnitsCount = tenants.reduce((count, tenant) => count + (tenant.unit ? 1 : 0), 0);
 
-        units.forEach(unit => {
-            numberOfTenants += unit.tenants.length;  
-
-            if (unit.tenants.length > 0) {
-                occupiedUnitsCount += 1;
-            }
-
-            // Aggregate rent and utility details from tenants
-            unit.tenants.forEach(tenant => {
-                totalRentCollected += tenant.rentPaid || 0;
-                totalRentDue += tenant.rentDue || 0;
-                utilityCollected += tenant.utilityPaid || 0;
-                utilityDue += tenant.utilityDue || 0;
-
-                const month = new Date(tenant.leaseEndDate).toLocaleString('default', { month: 'short' });
-
-                if (!rentCollectionData[month]) rentCollectionData[month] = { collected: 0, due: 0 };
-                rentCollectionData[month].collected += tenant.rentPaid || 0;
-                rentCollectionData[month].due += tenant.rentDue || 0;
-            });
+        const rentCollectionData = {};
+        tenants.forEach(tenant => {
+            const month = new Date(tenant.leaseEndDate).toLocaleString('default', { month: 'short' });
+            if (!rentCollectionData[month]) rentCollectionData[month] = { collected: 0, due: 0 };
+            rentCollectionData[month].collected += tenant.rentPaid || 0;
+            rentCollectionData[month].due += tenant.rentDue || 0;
         });
 
-        const totalProperties = properties.length;
-        const totalRent = properties.reduce((sum, property) => sum + (property.rent * property.tenants.length || 0), 0);
-        const averageRent = totalProperties > 0 ? totalRent / totalProperties : 0;
-
-        const upcomingLeaseExpirations = properties.reduce((count, property) => {
-            property.tenants.forEach(tenant => {
-                const leaseEndDate = tenant.leaseEndDate;
-                if (leaseEndDate && new Date(leaseEndDate) > new Date()) {
-                    count += 1;
-                }
-            });
-            return count;
-        }, 0);
+        const totalRequests = await MaintenanceRequest.countDocuments({
+            tenantId: { $in: tenants.map(tenant => tenant._id) }
+        });
 
         const rentDataArray = Object.keys(rentCollectionData).map(month => ({
             month,
@@ -89,23 +67,19 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
         try {
             smsBalance = await checkSMSCreditBalance();
         } catch (error) {
-            // Silently catch the error and default to 0
-            smsBalance = 0;
+            smsBalance = 0; // Default to 0 if error occurs
         }
-        
-        // Pass the data to the template
+
+        // Render the dashboard with user-specific data
         res.render('tenancyManager/dashboard', {
             properties,
             totalRentCollected,
             totalRentDue,
             utilityCollected,
             utilityDue,
-            averageRent,
-            upcomingLeaseExpirations,
-            numberOfTenants, 
+            numberOfTenants,
             numberOfUnits,
             occupiedUnitsCount,
-            users,
             totalRequests,
             rentDataArray,
             smsBalance,
@@ -117,8 +91,6 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
         res.redirect('/login');
     }
 });
-
-
 
 // Serve User Profile Page
 router.get('/tenancy-manager/profile',   isTenancyManager, async (req, res) => {
@@ -171,8 +143,6 @@ router.get('/tenancy-manager/security', isTenancyManager, async (req, res) => {
         res.status(500).send('Error fetching user security settings');
     }
 });
-
-
 
 // Change Password Route
 router.post('/tenancy-manager/security', isTenancyManager, async (req, res) => {
@@ -247,7 +217,6 @@ const transporter = nodemailer.createTransport({
         pass: 'vnueayfgjstaazxh'
     }
 });
-
 
 // Route to handle form submission for new tenant
 router.post('/tenancy-manager/tenant/new', async (req, res) => {
@@ -366,7 +335,6 @@ router.post('/tenancy-manager/tenant/new', async (req, res) => {
     }
 });
 
-
 // Function to send tenant email separately
 async function sendTenantEmail(newTenant, propertyName) {
     try {
@@ -446,7 +414,6 @@ async function sendTenantEmail(newTenant, propertyName) {
                             <li>View your property details</li>
                             <li>Make rent payments</li>
                             <li>Submit maintenance requests</li>
-                            <li>Communicate with management</li>
                         </ul>
                         <p>Contact support in case of any queries</p>
                     </div>
@@ -465,7 +432,6 @@ async function sendTenantEmail(newTenant, propertyName) {
         console.error('Error sending email:', emailError);
     }
 }
-
 // Route to resend the welcome email to a tenant
 router.post('/tenancy-manager/tenant/resend-email/:tenantId', async (req, res) => {
     try {
@@ -492,7 +458,6 @@ router.post('/tenancy-manager/tenant/resend-email/:tenantId', async (req, res) =
         res.redirect('/tenancy-manager/tenants');
     }
 });
-
 
 router.get('/tenancy-manager/payments', isTenancyManager, async (req, res) => {
     try {
@@ -550,10 +515,6 @@ router.get('/tenancy-manager/payments', isTenancyManager, async (req, res) => {
         res.redirect('/tenancy-manager/payments');
     }
 });
-
-
-
-
 
 router.get('/reports-invoices', async (req, res) => {
     try {
@@ -613,37 +574,38 @@ router.get('/reports-invoices', async (req, res) => {
 
 router.get('/expenses', async (req, res) => {
     try {
-        const pageSize = 10; 
-        const currentPage = Number(req.query.page) || 1; 
-        const searchQuery = req.query.search || ''; 
+        const pageSize = 10;
+        const currentPage = Number(req.query.page) || 1;
+        const searchQuery = req.query.search || '';
+
+        // Ensure the user is authenticated
         if (!req.user) {
             req.flash('error', 'User not authenticated.');
             return res.redirect('/login');
         }
-        
+
+        // Fetch expenses for the logged-in user only and apply search, pagination
         const expenses = await Expense.find({
-            name: { $regex: searchQuery, $options: 'i' }
+            owner: req.user._id, // Filter by the logged-in user's ID
+            name: { $regex: searchQuery, $options: 'i' } // Apply search query
         })
         .skip((currentPage - 1) * pageSize)
         .limit(pageSize);
 
-        
+        // Count total expenses for pagination (filtered by user and search query)
         const totalExpenses = await Expense.countDocuments({
+            owner: req.user._id, // Filter by the logged-in user's ID
             name: { $regex: searchQuery, $options: 'i' }
         });
 
-        const totalPages = Math.ceil(totalExpenses / pageSize); 
+        const totalPages = Math.ceil(totalExpenses / pageSize);
 
-       
-        const currentUser = req.user; 
-
-        
         res.render('tenancyManager/expense', {
             expenses,
             currentPage,
             totalPages,
             pageSize,
-            currentUser
+            currentUser: req.user
         });
     } catch (error) {
         console.error('Error fetching expenses:', error);
@@ -651,28 +613,28 @@ router.get('/expenses', async (req, res) => {
     }
 });
 
-// Create New Expense Route
 router.post('/expenses', async (req, res) => {
     try {
-        const { name, category, amount, date, status } = req.body;
+        if (!req.user) {
+            req.flash('error', 'User not authenticated.');
+            return res.redirect('/login');
+        }
 
-        
         const newExpense = new Expense({
-            name,
-            category,
-            amount,
-            date,
-            status
+            owner: req.user._id,
+            name: req.body.name,
+            category: req.body.category,
+            amount: req.body.amount,
+            date: req.body.date,
+            status: req.body.status
         });
 
-       
         await newExpense.save();
-
-        req.flash('success', 'Expense created successfully!');
+        req.flash('success', 'Expense created successfully.');
         res.redirect('/expenses');
     } catch (error) {
-        console.error(error);
-        req.flash('error', 'An error occurred while creating the expense. Please try again.');
+        console.error('Error creating expense:', error);
+        req.flash('error', 'Error creating expense.');
         res.redirect('/expenses');
     }
 });
@@ -733,10 +695,6 @@ router.get('/users', isTenancyManager, async (req, res) => {
         });
     }
 });
-
-
-
-
 
 
 // Route to create a new user with multiple roles using passport-local-mongoose
@@ -834,32 +792,39 @@ router.post('/users/:id/delete', async (req, res) => {
 // GET maintenance requests
 router.get('/maintenance-requests', isTenancyManager, async (req, res) => {
     try {
+        // Check if the user is authenticated
         if (!req.user) {
             req.flash('error', 'User not authenticated.');
             return res.redirect('/login');
         }
 
+        // Find all tenants where the owner is the logged-in user
         const tenants = await Tenant.find({ owner: req.user._id }).select('_id');
 
+        // Fetch maintenance requests only for the tenants of the logged-in user
         const requests = await MaintenanceRequest.find({ tenantId: { $in: tenants } })
-            .populate('tenantId propertyId');
+            .populate('tenantId propertyId'); 
 
+        // Fetch success or error messages, if any
         const messages = {
             success: req.flash('success'), 
             error: req.flash('error')
         };
 
+        // Render the maintenance request page with the fetched data
         res.render('tenancyManager/maintenanceRequest', {
             requests,
             currentUser: req.user,
             messages 
         });
     } catch (err) {
+        // Log the error and redirect if an issue occurs
         console.error('Error fetching maintenance requests:', err);
         req.flash('error', 'Error fetching maintenance requests.');
         res.redirect('/tenancy-manager/dashboard');
     }
 });
+
 
 //POST Maintenance Request
 router.post('/maintenance-requests/:id', isTenancyManager, async (req, res) => {
@@ -981,9 +946,6 @@ router.post('/connect', async (req, res) => {
     }
 });
 
-
-
-
 router.post('/edit/:id', async (req, res) => {
     const accountId = req.params.id;
     const { accountEmail, apiKey, accountId: newAccountId, status, webhookUrl } = req.body;
@@ -1046,12 +1008,11 @@ router.get('/top-ups', isTenancyManager, async (req, res) => {
 //GET sms&email
 router.get('/sms&email', isTenancyManager, async (req, res) => {
     try {
-        const templates = await Template.find({ createdBy: req.user._id });
 
-        const reminders = await Reminder.find({ userId: req.user._id }).populate('templateId'); 
+        const reminders = await Reminder.find({ userId: req.user._id }); 
 
         res.render('tenancyManager/sms&email', {
-            templates,
+            
             reminders,
             currentUser: req.user,
             success: req.flash('success'),
@@ -1060,7 +1021,7 @@ router.get('/sms&email', isTenancyManager, async (req, res) => {
     } catch (err) {
         console.error(err);
         res.render('tenancyManager/sms&email', {
-            templates: [],
+            
             reminders: [],
             currentUser: req.user,
             error: 'Error fetching templates and reminders.'

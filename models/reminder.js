@@ -6,21 +6,12 @@ const reminderSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    message: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    userId: {
+    owner: { 
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    templateId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Template',
-        required: true
-    },
+
     sendAt: {
         type: Date,
         required: true
@@ -35,15 +26,10 @@ const reminderSchema = new mongoose.Schema({
         type: String,
         enum: ['pending', 'sent', 'failed'],
         default: 'pending'
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
     }
 }, {
     timestamps: true
 });
 
-// Export the Reminder model
 const Reminder = mongoose.model('Reminder', reminderSchema);
 module.exports = Reminder;

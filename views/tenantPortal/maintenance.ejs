@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="icon" href="/images/icon.png" type="image/png">
 
-
     <style>
         body {
             background-color: #f8f9fa;
@@ -372,17 +371,11 @@
                                                                             request.status.slice(1).toLowerCase() %>
                                                                     </span>
                                                                 </td>
-                                                                <td>
-                                                                    <%= new Date(request.date).toLocaleDateString('en-US', {
-                                                                        year: 'numeric',
-                                                                        month: '2-digit',
-                                                                        day: '2-digit'
-                                                                    }) %>
-                                                                </td>
-                                                                
+                                                                <td><%= request.createdAt ? new Date(request.createdAt).toLocaleDateString() : 'N/A' %></td>
+
                                                                 <td>
                                                                     <!-- Edit Button -->
-                                                                    <button class="btn btn-primary"
+                                                                    <button class="btn btn-dark"
                                                                         style="background-color: #003366;"
                                                                         data-toggle="modal"
                                                                         data-target="#editRequestModal<%= request._id %>">Edit</button>
@@ -448,7 +441,7 @@
                                                                         <div class="modal-dialog" role="document">
                                                                             <div class="modal-content">
                                                                                 <div class="modal-header">
-                                                                                    <h5 class="modal-title">Confirm
+                                                                                    <h5 class="modal-title" style="color: #ffffff;">Confirm
                                                                                         Delete</h5>
                                                                                     <button type="button" class="close"
                                                                                         data-dismiss="modal"

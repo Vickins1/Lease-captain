@@ -60,7 +60,7 @@ router.get('/tenantPortal/dashboard', async (req, res) => {
     try {
         const tenantId = req.session.tenantId;
 
-        // Fetch tenant and related data
+        // Fetch tenant and related data, including maintenance requests
         const tenant = await Tenant.findById(tenantId)
             .populate({
                 path: 'property',
@@ -73,7 +73,7 @@ router.get('/tenantPortal/dashboard', async (req, res) => {
             .populate({
                 path: 'maintenanceRequests',
                 select: 'scheduleDate description status',
-            });
+            }); // Explicitly populate maintenance requests
 
         if (!tenant) {
             req.flash('error', 'Tenant not found');
@@ -115,23 +115,23 @@ router.get('/tenantPortal/dashboard', async (req, res) => {
         const walletBalance = tenant.walletBalance || 0;
         let depositPaid;
         if (walletBalance < 0) {
-            depositPaid = Math.max(0, depositAmount + walletBalance); // Handle negative balances
+            depositPaid = Math.max(0, depositAmount + walletBalance); 
         } else {
             depositPaid = Math.min(depositAmount, walletBalance);
         }
 
-        // Maintenance requests
-        const maintenanceScheduleDates = tenant.maintenanceRequests.map(request => ({
-            date: request.scheduleDate
-                ? new Date(request.scheduleDate).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                  })
-                : 'Not Scheduled',
-            description: request.description,
+           // Fetch maintenance requests associated with this tenant separately
+        const maintenanceRequests = await MaintenanceRequest.find({ tenantId });
+
+        // Format maintenance requests
+        const formattedRequests = maintenanceRequests.map(request => ({
+            ...request._doc,
+            scheduleDateFormatted: request.scheduleDate
+                ? moment(request.scheduleDate).format('MM/DD/YYYY')
+                : 'No Date',
             status: request.status,
         }));
+
 
         // Calculate next rent due date
         const paymentDay = tenant.property?.paymentDay || 1;
@@ -148,9 +148,23 @@ router.get('/tenantPortal/dashboard', async (req, res) => {
 
         const announcements = [{ type: 'info', message: 'This is your daily announcement!' }];
 
+        // Prepare graph data
+        const rentGraphData = {
+            labels: ['Paid', 'Due'],
+            data: [totalRentPaid, Math.max(rentDue, 0)],
+        };
+        
+        const utilityGraphData = {
+            labels: ['Paid', 'Due'],
+            data: [totalUtilityPaid, Math.max(utilityDue, 0)],
+        };
+
+
         // Render the dashboard view with the calculated data
         res.render('tenantPortal/dashboard', {
             tenant,
+            rentGraphData: JSON.stringify(rentGraphData),
+            utilityGraphData: JSON.stringify(utilityGraphData),
             walletBalance,
             nextRentDue: formattedNextRentDue,
             totalRentPaid,
@@ -162,7 +176,7 @@ router.get('/tenantPortal/dashboard', async (req, res) => {
             announcements,
             rentDueInDays,
             leaseEndDate: tenant.leaseEndDate,
-            maintenanceScheduleDates,
+            maintenanceScheduleDates: formattedRequests,
             unitName: tenant.unit?.unitName || 'N/A',
             roomNumber: tenant.doorNumber || 'N/A',
             monthlyRent: tenant.unit?.unitPrice ? tenant.unit.unitPrice.toFixed(2) : 'N/A',
@@ -173,10 +187,6 @@ router.get('/tenantPortal/dashboard', async (req, res) => {
         return res.redirect('/tenantPortal/login');
     }
 });
-
-
-
-
 
 router.get('/payments', async (req, res) => {
     try {
@@ -288,18 +298,22 @@ router.get('/tenant/profile', async (req, res) => {
             paymentType: 'rent',
         });
 
-        const totalRentPaid = rentPayments.reduce((acc, payment) => acc + (payment.amount || 0), 0);
+        const totalRentPaid = tenant.rentPaid || 0;
         const monthlyRent = tenant.unit?.unitPrice || 0;
         const depositAmount = tenant.deposit || 0;
         const leaseStartDate = tenant.leaseStartDate || new Date();
         const currentDate = new Date();
+        const overpayment = tenant.overpayment || 0;
 
-        let walletBalance = calculateWalletBalance(leaseStartDate, totalRentPaid, monthlyRent, depositAmount, currentDate);
+        // Calculate wallet balance, factoring in overpayment and rent paid
+        let walletBalance = calculateWalletBalance(leaseStartDate, totalRentPaid + overpayment, monthlyRent, depositAmount, currentDate);
 
+        // Calculate deposit paid using wallet balance and deposit amount
         let depositPaid = depositAmount + walletBalance;
 
         depositPaid = Math.min(depositPaid, depositAmount);
 
+        // Update wallet balance in tenant record
         tenant.walletBalance = walletBalance;
         await tenant.save();
 
@@ -321,7 +335,7 @@ router.get('/tenant/profile', async (req, res) => {
 // Route to render the agreement page
 router.get('/tenant/agreement', async (req, res) => {
     try {
-        const tenantId = req.session.tenantId; 
+        const tenantId = req.session.tenantId;
         if (!tenantId) {
             req.flash('error', 'Please log in to view the agreement.');
             return res.redirect('/tenantPortal/login');
@@ -449,8 +463,8 @@ router.post('/tenant/profile/update', async (req, res) => {
     }
 });
 
+const moment = require('moment');
 
-// GET: Fetch maintenance requests and tenant information
 router.get('/requestMaintenance', async (req, res) => {
     try {
         const tenantId = req.session.tenantId;
@@ -461,18 +475,24 @@ router.get('/requestMaintenance', async (req, res) => {
         const maintenanceRequests = await MaintenanceRequest.find({ tenantId });
         const tenant = await Tenant.findById(tenantId);
 
+        const formattedRequests = maintenanceRequests.map(request => ({
+            ...request._doc,
+            scheduleDateFormatted: request.scheduleDate
+                ? moment(request.scheduleDate).format('MM/DD/YYYY')
+                : 'No Date'
+        }));
 
         const success_msg = req.flash('success_msg');
         const error_msg = req.flash('error_msg');
 
         res.render('tenantPortal/maintenance', {
-            maintenanceRequests,
+            maintenanceRequests: formattedRequests,
             tenant,
             error_msg,
             success_msg
         });
     } catch (err) {
-        console.error(err);
+        console.error('Error fetching maintenance requests:', err);
         res.render('tenantPortal/maintenance', {
             maintenanceRequests: [],
             tenant: null,
