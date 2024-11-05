@@ -290,8 +290,8 @@
             <div class="dropdown">
                 <button class="btn btn-light dropdown-toggle d-flex align-items-center" type="button"
                     id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <img src="https://avataaars.io/?avatarStyle=Circle&topType=ShortHairShortFlat&accessoriesType=Blank&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=Gray&eyeType=Default&eyebrowType=Default&mouthType=Smile&skinColor=Light"
-                        alt="Profile" class="rounded-circle mr-2" width="35" height="35">
+                    <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Profile"
+                        class="rounded-circle mr-2" width="35" height="35">
                     <span>Welcome, <%= currentUser.username %></span>
                 </button>
 
@@ -365,8 +365,6 @@
             }
         }
     </style>
-
-
 
     <!-- Sidebar -->
     <nav class="sidebar" id="sidebarMenu">
@@ -478,7 +476,7 @@
 
 
                         <div class="row mt-4">
-                        
+
 
                             <!-- Total Rent Collected Card -->
                             <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
@@ -536,7 +534,7 @@
                                 </div>
                             </div>
 
-                          
+
 
 
                             <!-- Utility Due Card -->
@@ -596,9 +594,9 @@
                                 </div>
                             </div>
 
-                                                       
 
-                                                         <!-- Occupied Units Card -->
+
+                            <!-- Occupied Units Card -->
                             <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
                                 <div class="card shadow-lg border-0 h-100">
                                     <div class="card-header text-white"
@@ -637,8 +635,8 @@
                                 </div>
                             </div>
 
-                             <!-- Maintenance Requests Card -->
-                             <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                            <!-- Maintenance Requests Card -->
+                            <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
                                 <div class="card shadow-lg border-0 h-100">
                                     <div class="card-header text-white"
                                         style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
@@ -713,224 +711,373 @@
                                     }
                                 }
                             </style>
-
-                            <div class="card mt-4 border-0 shadow w-100">
-                                <div class="card-header text-center" style="background-color: #003366; color:#ffffff;">
-                                    <h5 class="mb-0">Quick Actions</h5>
-                                </div>
-                                <div class="card-body" style="background-color: #ffffff;">
-                                    <div class="row text-center">
-                                        <!-- Manage Properties Button -->
-                                        <div class="col-md-4 mb-3">
-                                            <a href="/tenancy-manager/properties" class="btn btn-action">
-                                                <i class="fas fa-home mr-2"></i> Manage Properties
-                                            </a>
-                                        </div>
-
-                                        <!-- Manage Property Units Button -->
-                                        <div class="col-md-4 mb-3">
-                                            <a href="/tenancy-manager/property/units" class="btn btn-action">
-                                                <i class="fas fa-door-open mr-2"></i> Manage Property Units
-                                            </a>
-                                        </div>
-
-                                        <!-- Manage Tenants Button -->
-                                        <div class="col-md-4 mb-3">
-                                            <a href="/tenancy-manager/tenants" class="btn btn-action">
-                                                <i class="fas fa-users mr-2"></i> Manage Tenants
-                                            </a>
-                                        </div>
-                                    </div>
-
-                                    <div class="row text-center">
-                                        <!-- SMS Balance Section -->
-                                        <div class="col-md-4 mb-3">
-                                            <div class="sms-balance-card">
-                                                <h6 class="mb-0">
-                                                    SMS Balance:
-                                                    <% if (smsBalance !==null) { %>
-                                                        <strong>
-                                                            <%= smsBalance %>
-                                                        </strong>
-                                                        <% } else { %>
-                                                            <strong>0</strong>
-                                                            <% } %>
-                                                </h6>
-                                            </div>
-                                        </div>
-
-                                        <!-- SMS Top-Up Button -->
-                                        <div class="col-md-4 mb-3">
-                                            <button class="btn btn-action" data-toggle="modal"
-                                                data-target="#topupModal">
-                                                <i class="fas fa-sms mr-2"></i> Top-Up SMS
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Modal for Adding New Top-Up -->
-                            <div class="modal fade" id="topupModal" tabindex="-1" role="dialog"
-                                aria-labelledby="topupModalLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="topupModalLabel">Add New SMS Top-Up</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <form action="/topups" method="POST">
-                                            <div class="modal-body">
-                                                <div class="form-group">
-                                                    <label for="amount">Amount</label>
-                                                    <input type="number" class="form-control" id="amount" name="amount"
-                                                        min="1" placeholder=" eg., 100">
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="phone">Phone Number</label>
-                                                    <input type="tel" class="form-control" id="phone" name="phone"
-                                                        placeholder="e.g., 0701234567" pattern="07[0-9]{8}" required>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-dismiss="modal">Close</button>
-                                                <button type="submit" class="btn btn-dark"
-                                                    style="background-color: #003366;">Top-Up SMS</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Styles -->
-                            <style>
-                                .card {
-                                    border-radius: 8px;
-                                    margin-bottom: 20px;
-                                }
-
-                                .card-header {
-                                    color: #000;
-                                    font-size: 18px;
-                                    font-weight: bold;
-                                }
-
-                                .card-body {
-                                    padding: 20px;
-                                }
-
-                                .btn-action {
-                                    color: #000;
-                                    background-color: #ffffff;
-                                    border-radius: 8px;
-                                    padding: 12px 20px;
-                                    font-size: 16px;
-                                    font-weight: 500;
-                                    width: 100%;
-                                    height: 80px;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    transition: background-color 0.3s ease, transform 0.2s;
-                                }
-
-                                .btn-action:hover {
-                                    background-color: #ffffff;
-                                    transform: scale(1.02);
-                                }
-
-                                .sms-balance-card {
-                                    background-color: #ffffff;
-                                    border-radius: 8px;
-                                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                                    padding: 15px;
-                                    width: 100%;
-                                    height: 80px;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    font-size: 16px;
-                                    font-weight: 500;
-                                }
-
-                                .modal-content {
-                                    border-radius: 8px;
-                                    padding: 20px;
-                                }
-
-                                .modal-header {
-                                    color: #003366;
-                                    border-bottom: none;
-                                }
-
-                                .modal-footer {
-                                    border-top: none;
-                                }
-
-                                @media (max-width: 768px) {
-
-                                    .btn-action,
-                                    .sms-balance-card {
-                                        font-size: 14px;
-                                        height: auto;
-                                        padding: 10px;
-                                    }
-                                }
-                            </style>
-
                         </div>
 
-                        <footer class="text-center py-0">
-                            &copy; 2024 Lease Captain. All Rights Reserved || powered by
-                            <a href="https://vickinstechnologies.com" target="_blank">Vickins Technologies</a>
-                        </footer>
+                        <div class="card mt-4 border-0 shadow w-100">
+                            <div class="card-header text-center" style="background-color: #003366; color: #ffffff;">
+                                <h5 class="mb-0">Quick Actions</h5>
+                            </div>
+                            <div class="card-body" style="background-color: #ffffff;">
+                                <div class="row text-center justify-content-between">
+                                    <!-- Add Properties Button -->
+                                    <div class="col-lg-3 col-md-6 mb-3">
+                                        <a href="/tenancy-manager/properties" class="btn btn-action animate-pop">
+                                            <i class="fas fa-home mr-2"></i> Add Properties
+                                        </a>
+                                    </div>
 
+                                    <!-- Add Property Units Button -->
+                                    <div class="col-lg-3 col-md-6 mb-3">
+                                        <a href="/tenancy-manager/property/units" class="btn btn-action animate-pop">
+                                            <i class="fas fa-door-open mr-2"></i> Add Property Units
+                                        </a>
+                                    </div>
+
+                                    <!-- Add Tenants Button -->
+                                    <div class="col-lg-3 col-md-6 mb-3">
+                                        <a href="/tenancy-manager/tenants" class="btn btn-action animate-pop">
+                                            <i class="fas fa-users mr-2"></i> Add Tenants
+                                        </a>
+                                    </div>
+
+                                    <!-- Transactions Button -->
+                                    <div class="col-lg-3 col-md-6 mb-3">
+                                        <a href="/tenancy-manager/payments" class="btn btn-action animate-pop">
+                                            <i class="fas fa-money-bill-wave mr-2"></i> Transactions
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Styles -->
                         <style>
-                            footer {
-                                font-size: 0.7rem;
+                            .card {
+                                border-radius: 8px;
+                                margin-bottom: 20px;
                             }
 
-                            @media (max-width: 768px) {
-                                footer {
-                                    font-size: 0.6rem;
-                                    padding: 5px;
+                            .card-header {
+                                font-size: 18px;
+                                font-weight: bold;
+                            }
+
+                            .btn-action {
+                                color: #003366;
+                                background-color: #ffffff;
+                                border-radius: 8px;
+                                padding: 20px;
+                                font-size: 16px;
+                                font-weight: 500;
+                                width: 100%;
+                                height: 80px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                transition: transform 0.2s;
+                                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                                animation: popUpDown 1.5s ease-in-out infinite alternate;
+                            }
+
+                            .btn-action:hover {
+                                background-color: #003366;
+                                color: #ffffff;
+                                transform: scale(1.05);
+                            }
+
+                            .animate-pop {
+                                animation: popUpDown 1.5s ease-in-out infinite alternate;
+                            }
+
+                            @keyframes popUpDown {
+                                0% {
+                                    transform: translateY(0px);
+                                }
+
+                                100% {
+                                    transform: translateY(-5px);
                                 }
                             }
 
-                            @media (max-width: 576px) {
-                                footer {
-                                    font-size: 0.5rem;
-                                    padding: 2px;
+                            /* Responsive adjustments */
+                            @media (max-width: 768px) {
+                                .btn-action {
+                                    font-size: 14px;
+                                    height: auto;
+                                    padding: 15px;
                                 }
                             }
                         </style>
+    </div>
 
-                        <!-- Bootstrap JS -->
-                        <script
-                            src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-                        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Report Graph Section -->
+    <section id="report-graph-section" style="background-color: #f4f7fa; padding: 40px 20px;">
+        <div class="report-container">
+            <h2 style="text-align: center; color: #003366; margin-bottom: 20px;"><strong>Report Overview</strong></h2>
+            <div class="canvas-wrapper">
+                <canvas id="reportGraph" aria-label="Report Graph" role="img"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chart.js Library (include this in your HTML head or before closing body tag) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- JavaScript for Chart Initialization -->
+    <script>
+        // Data for the chart
+        const chartData = {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+            datasets: [{
+                label: 'Properties Managed',
+                data: [5, 10, 8, 12, 15, 18, 22, 25, 30, 35, 40, 45],
+                backgroundColor: 'rgba(0, 51, 102, 0.5)',
+                borderColor: '#003366',
+                borderWidth: 1
+            }, {
+                label: 'Tenants',
+                data: [10, 15, 13, 18, 20, 24, 30, 32, 35, 38, 42, 48],
+                backgroundColor: 'rgba(0, 166, 90, 0.5)',
+                borderColor: '#00a65a',
+                borderWidth: 1
+            }]
+        };
+
+        // Configurations for the chart
+        const chartConfig = {
+            type: 'bar',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#ddd'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            color: '#333',
+                            font: {
+                                size: 14
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#003366',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: '#fff',
+                        borderWidth: 1
+                    }
+                }
+            }
+        };
+
+        // Render the chart
+        window.onload = () => {
+            const ctx = document.getElementById('reportGraph').getContext('2d');
+            new Chart(ctx, chartConfig);
+        };
+    </script>
+
+    <!-- Custom CSS for Report Graph Section -->
+    <style>
+        #report-graph-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .report-container {
+            width: 100%;
+            max-width: 1300px;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .canvas-wrapper {
+            width: 100%;
+            height: 400px;
+            /* Fixed height to prevent dropping */
+            position: relative;
+        }
+
+        #reportGraph {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .report-container {
+                padding: 15px;
+            }
+
+            .canvas-wrapper {
+                height: 300px;
+                /* Adjust height for smaller screens */
+            }
+        }
+    </style>
+<!-- Floating Support Button -->
+<div class="floating-support">
+    <button type="button" class="btn btn-dark d-flex align-items-center" data-toggle="modal" data-target="#supportModal">
+        <i class="fas fa-headset fa-2x mr-2"></i> Support
+    </button>
+</div>
+
+<!-- Support Modal -->
+<div class="modal fade" id="supportModal" tabindex="-1" role="dialog" aria-labelledby="supportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #003366; color: #ffffff;">
+                <h5 class="modal-title" id="supportModalLabel">Contact Support</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="supportForm" action="/submit" method="POST">
+                    <div class="form-group">
+                        <label for="emailAddress">Your Email</label>
+                        <input type="email" class="form-control" name="emailAddress" id="emailAddress" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="supportMessage">Message</label>
+                        <textarea class="form-control" name="supportMessage" id="supportMessage" rows="4" placeholder="Write your message here..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-dark">Send Message</button>
+                </form>
+                
+            </div>
+           
+        </div>
+    </div>
+</div>
+
+<!-- Styles for Floating Button -->
+<style>
+    /* Floating Support Button Style */
+    .floating-support {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+
+    .floating-support .btn {
+        background-color: #003366;
+        color: #ffffff;
+        font-size: 1.2rem;
+        padding: 15px 20px;
+        border-radius: 50px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .floating-support .btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        background-color: #0056b3;
+    }
+
+    .floating-support .fas.fa-headset {
+        color: #ffffff;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .floating-support .btn {
+            font-size: 1rem;
+            padding: 12px 18px;
+        }
+        .floating-support .fas.fa-headset {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .floating-support {
+            bottom: 15px;
+            right: 15px;
+        }
+        .floating-support .btn {
+            font-size: 0.9rem;
+            padding: 10px 15px;
+        }
+        .floating-support .fas.fa-headset {
+            font-size: 1.2rem;
+            margin-right: 0.5rem;
+        }
+    }
+</style>
 
 
-                        <script>
-                            $(document).ready(function () {
-                                $('#sidebarToggle').click(function () {
-                                    $('#sidebarMenu').toggleClass('active');
-                                });
 
-                                $(document).click(function (event) {
-                                    if (!$(event.target).closest('#sidebarMenu, #sidebarToggle').length) {
-                                        $('#sidebarMenu').removeClass('active');
-                                    }
-                                });
 
-                                $('.collapse').on('show.bs.collapse', function () {
-                                    $('.collapse').not(this).collapse('hide');
-                                });
-                            });
-                        </script>
+    <footer class="text-center py-0">
+        &copy; 2024 Lease Captain. All Rights Reserved || powered by
+        <a href="https://vickinstechnologies.com" target="_blank">Vickins Technologies</a>
+    </footer>
+
+    <style>
+        footer {
+            font-size: 0.7rem;
+        }
+
+        @media (max-width: 768px) {
+            footer {
+                font-size: 0.6rem;
+                padding: 5px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            footer {
+                font-size: 0.5rem;
+                padding: 2px;
+            }
+        }
+    </style>
+
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+    <script>
+        $(document).ready(function () {
+            $('#sidebarToggle').click(function () {
+                $('#sidebarMenu').toggleClass('active');
+            });
+
+            $(document).click(function (event) {
+                if (!$(event.target).closest('#sidebarMenu, #sidebarToggle').length) {
+                    $('#sidebarMenu').removeClass('active');
+                }
+            });
+
+            $('.collapse').on('show.bs.collapse', function () {
+                $('.collapse').not(this).collapse('hide');
+            });
+        });
+    </script>
 
 </body>
 

@@ -142,31 +142,94 @@
         }
       </style>
 
-      <form id="signupForm" action="/signup" method="POST">
-        <div class="form-group">
-          <label for="email"><i class="fas fa-envelope"></i> Email</label>
-          <input type="email" name="email" id="email" class="form-control" placeholder="Enter your email" required>
-        </div>
-        <div class="form-group">
-          <label for="username"><i class="fas fa-user"></i> Username</label>
-          <input type="text" name="username" id="username" class="form-control" placeholder="Enter your username"
-            required>
-        </div>
-        <div class="form-group">
-          <label for="password"><i class="fas fa-lock"></i> Password</label>
-          <input type="password" name="password" id="password" class="form-control" placeholder="Enter password"
-            required>
-          <input type="checkbox" id="showPassword"> <label for="showPassword">Show Password</label>
-        </div>
-        <div class="form-group">
-          <label for="confirm-password"><i class="fas fa-lock"></i> Confirm Password</label>
-          <input type="password" name="confirm-password" id="confirm-password" class="form-control"
-            placeholder="Confirm password" required>
-        </div>
-        <div class="form-group">
-          <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-user-plus"></i> Sign Up</button>
-        </div>
-      </form>
+<form id="signupForm" action="/signup" method="POST">
+  <div class="form-group">
+    <label for="email"><i class="fas fa-envelope"></i> Email</label>
+    <input type="email" name="email" id="email" class="form-control" placeholder="Enter your email" required>
+  </div>
+  
+  <div class="form-group">
+    <label for="username"><i class="fas fa-user"></i> Username</label>
+    <input type="text" name="username" id="username" class="form-control" placeholder="Enter your username" required>
+  </div>
+  
+  <div class="form-group">
+    <label for="phone"><i class="fas fa-phone"></i> Phone Number</label>
+    <input type="tel" name="phone" id="phone" class="form-control" placeholder="Enter your phone number" required>
+  </div>
+  
+  <div class="form-group">
+    <label for="password"><i class="fas fa-lock"></i> Password</label>
+    <div class="password-container">
+      <input type="password" name="password" id="password" class="form-control" placeholder="Enter password" required>
+      <small class="form-check-inline">
+        <input type="checkbox" id="showPassword" class="form-check-input">
+        <label for="showPassword" class="form-check-label">Show Password</label>
+      </small>
+    </div>
+  </div>
+  
+  <div class="form-group">
+    <label for="confirm-password"><i class="fas fa-lock"></i> Confirm Password</label>
+    <input type="password" name="confirm-password" id="confirm-password" class="form-control" placeholder="Confirm password" required>
+  </div>
+  <div class="form-group">
+    <label for="plan"><i class="fas fa-layer-group"></i> Plan</label>
+    <select name="plan" id="plan" class="form-control" required>
+        <option value="Basic">Basic</option>
+        <option value="Standard">Standard</option>
+        <option value="Pro">Pro</option>
+        <option value="Advanced">Advanced</option>
+        <option value="Premium">Premium</option>
+    </select>
+</div>
+<script>
+  // Set the plan in the form based on the query parameter (if provided)
+  const urlParams = new URLSearchParams(window.location.search);
+  const selectedPlan = urlParams.get('plan');
+  if (selectedPlan) {
+      document.getElementById('plan').value = selectedPlan;
+  }
+  </script>
+  
+  <div class="form-group">
+    <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-user-plus"></i> Sign Up</button>
+  </div>
+</form>
+
+<style>
+  /* Responsive styles for password toggle */
+  .password-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .form-check-inline {
+    display: flex;
+    align-items: center;
+    margin-left: 0.5rem;
+  }
+
+  .form-check-label {
+    font-size: 0.875rem; /* Smaller font size for smaller screens */
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 576px) {
+    .form-check-label {
+      font-size: 0.75rem; /* Reduce font size further for very small screens */
+    }
+    .form-group label {
+      font-size: 0.9rem; /* Adjust label size */
+    }
+    .form-control {
+      font-size: 0.875rem; /* Smaller input text size */
+      padding: 0.5rem 0.75rem; /* Adjust padding for smaller screens */
+    }
+  }
+</style>
+
 
       <p class="text-center">Already have an account? <a href="/login"><i class="fas fa-sign-in-alt"></i> Login</a></p>
     </div>

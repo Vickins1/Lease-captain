@@ -601,7 +601,7 @@
                                                         }
 
                                                         .card-body {
-                                                            padding: 1.5rem;
+                                                            padding: 1.0rem;
                                                         }
 
                                                         .card-body p,
@@ -613,224 +613,179 @@
                             </div>
 
 
-                            <!-- Quick Actions Section -->
-                            <div class="card mt-4 border-0 shadow">
-                                <div class="card-header" style="background-color: #003366; color: #ffffff;">
-                                    <h5 class="mb-0">Quick Actions</h5>
-                                </div>
-                                <div class="card-body" style="background-color: #f5f5f5;">
-                                    <div class="row">
-                                        <div class="col-md-4 mb-4">
-                                            <a href="/payments" class="btn btn-dark btn-block"
-                                                style="background-color: #000000; color: #ffffff;">
-                                                <i class="fas fa-money-bill-alt"></i> Make a Payment
-                                            </a>
-                                        </div>
-                                        <div class="col-md-4 mb-4">
-                                            <a href="/requestMaintenance" class="btn btn-dark btn-block"
-                                                style="background-color: #000000; color: #ffffff;">
-                                                <i class="fas fa-wrench"></i> Request Maintenance
-                                            </a>
-                                        </div>
-                                        <div class="col-md-4 mb-4">
-                                            <a href="/lease" class="btn btn-dark btn-block"
-                                                style="background-color: #000000; color: #ffffff;">
-                                                <i class="fas fa-file-contract"></i> View Lease
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Quick Actions Section -->
+<div class="card mt-4 border-0 shadow">
+    <div class="card-header" style="background-color: #003366; color: #ffffff;">
+        <h5 class="mb-0">Quick Actions</h5>
+    </div>
+    <div class="card-body" style="background-color: #f5f5f5;">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <a href="/payments" class="btn btn-dark btn-block" style="background-color: #000000; color: #ffffff;">
+                    <i class="fas fa-money-bill-alt"></i> Make a Payment
+                </a>
+            </div>
+            <div class="col-md-4 mb-4">
+                <a href="/requestMaintenance" class="btn btn-dark btn-block" style="background-color: #000000; color: #ffffff;">
+                    <i class="fas fa-wrench"></i> Request Maintenance
+                </a>
+            </div>
+            <div class="col-md-4 mb-4">
+                <a href="/lease" class="btn btn-dark btn-block" style="background-color: #000000; color: #ffffff;">
+                    <i class="fas fa-file-contract"></i> View Lease
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart Section -->
+<div class="chart-section">
+    <!-- Tenant Overview Line Chart -->
+    <div class="chart-item">
+        <canvas id="tenantChart"></canvas>
+    </div>
+
+    <!-- Doughnut Charts for Rent and Utility Payments -->
+    <div class="doughnut-charts">
+        <div class="chart-item">
+            <canvas id="rentChart"></canvas>
+        </div>
+        <div class="chart-item">
+            <canvas id="utilityChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Styles for Chart Section -->
+<style>
+    /* Chart Section Layout */
+    .chart-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .chart-item {
+        width: 80%;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .doughnut-charts {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        width: 100%;
+    }
+
+    .doughnut-charts .chart-item {
+        max-width: 300px;
+    }
+
+    /* Responsive Design for Smaller Screens */
+    @media (max-width: 768px) {
+        .chart-item {
+            width: 90%;
+        }
+        .doughnut-charts {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+</style>
+
+<!-- JavaScript to Initialize Charts -->
+<script>
+    // Tenant Overview Line Chart
+    const tenantChartData = {
+        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+        datasets: [{
+            label: 'Rent Paid (in thousands)',
+            data: [8, 15, 20, 18, 25, 28, 30, 35, 38, 40, 42, 45],
+            backgroundColor: 'rgba(0, 102, 204, 0.5)',
+            borderColor: '#0066cc',
+            borderWidth: 1,
+            fill: true,
+            tension: 0.3
+        }, {
+            label: 'Maintenance Requests',
+            data: [3, 5, 7, 6, 8, 10, 9, 11, 12, 10, 13, 15],
+            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            borderColor: '#ff6384',
+            borderWidth: 1,
+            fill: true,
+            tension: 0.3
+        }]
+    };
+
+    const tenantCtx = document.getElementById('tenantChart').getContext('2d');
+    new Chart(tenantCtx, {
+        type: 'line',
+        data: tenantChartData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // Rent Payment Doughnut Chart
+    const rentData = {
+        labels: ['Paid', 'Pending'],
+        datasets: [{
+            label: 'Rent Payment',
+            data: [70, 30],
+            backgroundColor: ['#4caf50', '#ff5722']
+        }]
+    };
+
+    const rentCtx = document.getElementById('rentChart').getContext('2d');
+    new Chart(rentCtx, {
+        type: 'doughnut',
+        data: rentData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' }
+            }
+        }
+    });
+
+    // Utility Payment Doughnut Chart
+    const utilityData = {
+        labels: ['Paid', 'Pending'],
+        datasets: [{
+            label: 'Utility Payment',
+            data: [60, 40],
+            backgroundColor: ['#2196f3', '#ff9800']
+        }]
+    };
+
+    const utilityCtx = document.getElementById('utilityChart').getContext('2d');
+    new Chart(utilityCtx, {
+        type: 'doughnut',
+        data: utilityData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' }
+            }
+        }
+    });
+</script>
 
 
-                            <div class="dashboard-container">
-                                <!-- Rent Payment Chart -->
-                                <div class="chart-card">
-                                    <h3 class="chart-title">Rent Payment Report</h3>
-                                    <canvas id="rentChart"></canvas>
-                                </div>
-                            
-                                <!-- Utility Payment Chart -->
-                                <div class="chart-card">
-                                    <h3 class="chart-title">Utility Payment Report</h3>
-                                    <canvas id="utilityChart"></canvas>
-                                </div>
-                            </div>
-                            
-                            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                            <script>
-                                // Parse graph data from server-rendered JSON
-                                const rentData = JSON.parse('<%= rentGraphData %>');
-                                const utilityData = JSON.parse('<%= utilityGraphData %>');
-                            
-                                // Rent Payment Chart
-                                const rentCtx = document.getElementById('rentChart').getContext('2d');
-                                new Chart(rentCtx, {
-                                    type: 'doughnut',
-                                    data: {
-                                        labels: rentData.labels,
-                                        datasets: [{
-                                            label: 'Rent Payment',
-                                            data: rentData.data,
-                                            backgroundColor: ['#4caf50', '#ff5722'],
-                                        }]
-                                    },
-                                    options: {
-                                        responsive: true,
-                                        plugins: {
-                                            legend: {
-                                                position: 'top',
-                                            },
-                                        }
-                                    }
-                                });
-                            
-                                // Utility Payment Chart
-                                const utilityCtx = document.getElementById('utilityChart').getContext('2d');
-                                new Chart(utilityCtx, {
-                                    type: 'doughnut',
-                                    data: {
-                                        labels: utilityData.labels,
-                                        datasets: [{
-                                            label: 'Utility Payment',
-                                            data: utilityData.data,
-                                            backgroundColor: ['#2196f3', '#ff9800'],
-                                        }]
-                                    },
-                                    options: {
-                                        responsive: true,
-                                        plugins: {
-                                            legend: {
-                                                position: 'top',
-                                            },
-                                        }
-                                    }
-                                });
-                            </script>
-                            
 
 
-
-                            <style>
-                                .dashboard-container {
-                                    display: flex;
-                                    flex-wrap: wrap;
-                                    gap: 20px;
-                                    padding: 20px;
-                                }
-
-                                /* Chart card styling */
-                                .chart-card {
-                                    flex: 1 1 calc(50% - 20px);
-                                    /* Flex item takes 50% of the row minus the gap */
-                                    background-color: #f4f4f9;
-                                    padding: 20px;
-                                    border-radius: 8px;
-                                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                                }
-
-                                /* Chart title styling */
-                                .chart-title {
-                                    color: #003366;
-                                    font-size: 1.2rem;
-                                    margin-bottom: 10px;
-                                }
-
-                                /* Chart canvas styling */
-                                canvas {
-                                    width: 100%;
-                                    height: 300px;
-                                }
-
-                                /* Responsive adjustments */
-                                @media (max-width: 768px) {
-                                    .chart-card {
-                                        flex: 1 1 100%;
-                                        /* Stack cards on smaller screens */
-                                    }
-                                }
-
-                                @media (max-width: 768px) {
-
-                                    .card-header h5,
-                                    .card-body p,
-                                    .card-body span,
-                                    .card-body ul li span {
-                                        font-size: 10px;
-                                    }
-
-                                    .p {
-                                        font-size: 10px;
-                                    }
-
-                                    .card {
-                                        margin-bottom: 1.5rem;
-                                        font-size: 0.9rem;
-                                    }
-
-                                    .btn-block {
-                                        font-size: 10px;
-                                        padding: 0.4rem 0.55rem;
-                                    }
-
-                                    .carousel-inner .carousel-item h5 {
-                                        font-size: 10px;
-                                    }
-
-
-                                    .card-body {
-                                        padding: 1rem;
-                                    }
-
-                                    .card-header {
-                                        padding: 0.65rem 1rem;
-                                    }
-
-                                    .alert {
-                                        font-size: 10px;
-                                    }
-
-                                    .btn {
-                                        font-size: 10px;
-                                    }
-
-                                    .dropdown-menu {
-                                        font-size: 0.575rem;
-                                    }
-                                }
-
-                                @media (max-width: 576px) {
-
-                                    .card-header h5,
-                                    .card-body p,
-                                    .card-body span,
-                                    .card-body ul li span {
-                                        font-size: 10px;
-                                    }
-
-                                    .btn-block {
-                                        font-size: 10px;
-                                    }
-
-
-                                    .btn-group .btn {
-                                        margin-bottom: 0.5rem;
-                                        width: 100%;
-                                    }
-
-                                    .carousel-inner .carousel-item h5 {
-                                        font-size: 12px;
-                                    }
-
-                                    .card-body {
-                                        padding: 0.65rem;
-                                    }
-
-                                    .card-header {
-                                        padding: 0.5rem 0.75rem;
-                                    }
-                                }
-                            </style>
 
                             <footer class="text-center py-0">
                                 &copy; 2024 Lease Captain. All Rights Reserved || powered by

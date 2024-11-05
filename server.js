@@ -13,6 +13,8 @@ const tenantPortalRoutes = require('./routes/tenantPortal');
 const authRoutes = require('./routes/auth');
 const paymentGatewayRoutes = require('./routes/paymentGateway');
 const sendRemindersRoutes = require('./routes/sendReminders');
+const SupportMessage = require('./models/supportMessage'); 
+const nodemailer = require('nodemailer');
 const fs = require('fs');
 const os = require('os');
 require('dotenv').config();
@@ -83,6 +85,79 @@ app.use('/', sendRemindersRoutes);
 app.get('/', (req, res) => {
     res.render('landingPage');
 });
+
+// Route to render support page
+app.get('/support', (req, res) => {
+    const successMessage = req.flash('success');
+    const errorMessage = req.flash('error');
+    res.render('support', { successMessage, errorMessage });
+});
+
+// Configure Nodemailer
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'vickinstechnologies@gmail.com',
+        pass: 'vnueayfgjstaazxh'
+    }
+});
+
+// POST endpoint to handle support form submission
+app.post('/support/submit', async (req, res) => {
+    const { emailAddress, supportMessage } = req.body;
+
+    // Basic validation
+    if (!emailAddress || !supportMessage) {
+        req.flash('error', 'Please fill in all required fields.');
+        return res.redirect('/support');
+    }
+
+    // Email format validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(emailAddress)) {
+        req.flash('error', 'Please enter a valid email address.');
+        return res.redirect('/support');
+    }
+
+    try {
+        // Save the support message to the database
+        const newMessage = new SupportMessage({
+            email: emailAddress,
+            message: supportMessage,
+            submittedAt: new Date()
+        });
+
+        await newMessage.save().catch((error) => {
+            console.error('Database Error:', error.message);
+            req.flash('error', 'Failed to save your message. Please try again later.');
+            return res.redirect('/support');
+        });
+
+        // Set up email options
+        const mailOptions = {
+            from: 'vickinstechnologies@gmail.com',
+            to: 'vickievokes360@gmail.com',
+            subject: 'New Support Message',
+            text: `You have received a new support message from ${emailAddress}:\n\n${supportMessage}`
+        };
+
+        // Send email
+        await transporter.sendMail(mailOptions).catch((error) => {
+            console.error('Email Sending Error:', error.message);
+            req.flash('error', 'Failed to send your message via email. Please try again later.');
+            return res.redirect('/support');
+        });
+
+        req.flash('success', 'Your support message has been sent successfully.');
+        res.redirect('/support');
+    } catch (error) {
+        console.error('Error processing support request:', error);
+        req.flash('error', 'An unexpected error occurred. Please try again later.');
+        res.redirect('/support');
+    }
+});
+
+
 
 // 404 Error handling
 app.use((req, res) => {

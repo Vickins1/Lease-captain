@@ -4,11 +4,11 @@ const nodemailer = require('nodemailer');
 require('dotenv').config();
 const Property = require('../models/property');
 const Tenant = require('../models/tenant');
-const {  checkRole,isTenancyManager } = require('../middleware');
+const { checkRole, isTenancyManager } = require('../middleware');
 const bcrypt = require('bcryptjs');
 const Payment = require('../models/payment');
 const User = require('../models/user');
-const PropertyUnit = require('../models/unit'); 
+const PropertyUnit = require('../models/unit');
 const Invoice = require('../models/invoice')
 const Expense = require('../models/expense');
 const Role = require('../models/role');
@@ -18,6 +18,16 @@ const Topups = require('../models/topups');
 const Reminder = require('../models/reminder');
 const crypto = require('crypto');
 const Permission = require('../models/permissions');
+const Unit = require('../models/unit');
+const SupportMessage = require('../models/supportMessage');
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'vickinstechnologies@gmail.com',
+        pass: 'vnueayfgjstaazxh'
+    }
+});
 
 router.get('/tenancy-manager/dashboard', async (req, res) => {
     try {
@@ -36,6 +46,8 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
         // Count the number of tenants
         const numberOfTenants = tenants.length;
 
+        const units = await Unit.find();
+
         // Other dashboard calculations
         const totalRentCollected = tenants.reduce((sum, tenant) => sum + (tenant.rentPaid || 0), 0);
         const totalRentDue = tenants.reduce((sum, tenant) => sum + (tenant.rentDue || 0), 0);
@@ -43,7 +55,9 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
         const utilityDue = tenants.reduce((sum, tenant) => sum + (tenant.utilityDue || 0), 0);
 
         const numberOfUnits = await PropertyUnit.countDocuments({ propertyId: { $in: properties.map(prop => prop._id) } });
-        const occupiedUnitsCount = tenants.reduce((count, tenant) => count + (tenant.unit ? 1 : 0), 0);
+
+        const occupiedUnitsCount = units.reduce((count, unit) => count + (unit.status === 'occupied' ? 1 : 0), 0);
+
 
         const rentCollectionData = {};
         tenants.forEach(tenant => {
@@ -92,19 +106,58 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
     }
 });
 
+// POST endpoint to handle support form submission
+router.post('/submit', async (req, res) => {
+    const { emailAddress, supportMessage } = req.body;
+
+    if (!emailAddress || !supportMessage) {
+        req.flash('error', 'Please fill in all required fields.');
+        return res.redirect('//tenancy-manager/dashboard');
+    }
+
+    try {
+        // Save the support message to the database
+        const newMessage = new SupportMessage({
+            email: emailAddress,
+            message: supportMessage,
+            submittedAt: new Date()
+        });
+        await newMessage.save();
+
+        // Set up email options
+        const mailOptions = {
+            from: 'vickinstechnologies@gmail.com',
+            to: 'vickievokes360@gmail.com',
+            subject: 'New Support Message',
+            text: `You have received a new support message from ${emailAddress}:\n\n${supportMessage}`
+        };
+
+        // Send email using the transporter
+        await transporter.sendMail(mailOptions);
+
+        req.flash('success', 'Your support message has been sent successfully.');
+        res.redirect('/tenancy-manager/dashboard');
+    } catch (error) {
+        console.error('Error sending support message:', error);
+        req.flash('error', 'An error occurred while sending your message.');
+        res.redirect('/tenancy-manager/dashboard');
+    }
+});
+
+
 // Serve User Profile Page
-router.get('/tenancy-manager/profile',   isTenancyManager, async (req, res) => {
+router.get('/tenancy-manager/profile', isTenancyManager, async (req, res) => {
     console.log('Session data:', req.session);
 
     try {
-        
+
         if (!req.session.passport || !req.session.passport.user) {
             console.log('No user information in session.');
             req.flash('error', 'You need to log in to view this page.');
-            return res.redirect('/login'); 
+            return res.redirect('/login');
         }
 
-        const userId = req.session.passport.user; 
+        const userId = req.session.passport.user;
         const user = await User.findById(userId);
 
         if (!user) {
@@ -112,12 +165,12 @@ router.get('/tenancy-manager/profile',   isTenancyManager, async (req, res) => {
             return res.status(404).redirect('/tenancy-manager/profile');
         }
 
-        
+
         res.render('tenancyManager/profile', { user, currentUser: user });
     } catch (error) {
         console.error('Error fetching user profile:', error);
         req.flash('error', 'An error occurred while fetching your profile. Please try again later.');
-        res.status(500).redirect('/tenancy-manager/profile'); 
+        res.status(500).redirect('/tenancy-manager/profile');
     }
 });
 
@@ -125,17 +178,17 @@ router.get('/tenancy-manager/profile',   isTenancyManager, async (req, res) => {
 router.get('/tenancy-manager/security', isTenancyManager, async (req, res) => {
     try {
         const userId = req.session.passport.user;
-        const user = await User.findById(userId).lean(); 
+        const user = await User.findById(userId).lean();
 
         if (!user) {
             return res.status(404).send('User not found');
         }
 
-        const recentLoginActivity = (user.loginActivity || []).slice(-5).reverse(); 
+        const recentLoginActivity = (user.loginActivity || []).slice(-5).reverse();
 
         res.render('tenancyManager/security', {
-            user, 
-            currentUser: user, 
+            user,
+            currentUser: user,
             loginActivity: recentLoginActivity
         });
     } catch (error) {
@@ -147,7 +200,7 @@ router.get('/tenancy-manager/security', isTenancyManager, async (req, res) => {
 // Change Password Route
 router.post('/tenancy-manager/security', isTenancyManager, async (req, res) => {
     try {
-        const userId = req.session.passport.user; 
+        const userId = req.session.passport.user;
         const user = await User.findById(userId);
 
         if (!user) {
@@ -195,7 +248,7 @@ router.post('/tenancy-manager/profile', isTenancyManager, async (req, res) => {
         const { username, email } = req.body;
 
         const updates = { username, email };
-        
+
 
         const updatedUser = await User.findByIdAndUpdate(userId, updates, { new: true });
         if (!updatedUser) return res.status(404).send('User not found');
@@ -210,58 +263,45 @@ router.post('/tenancy-manager/profile', isTenancyManager, async (req, res) => {
 });
 
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'vickinstechnologies@gmail.com',
-        pass: 'vnueayfgjstaazxh'
+// Helper function to determine the maximum allowed tenants based on the plan
+function getMaxTenants(plan) {
+    switch (plan) {
+        case 'Basic': return 10;
+        case 'Standard': return 20;
+        case 'Pro': return 50;
+        case 'Advanced': return 100;
+        case 'Premium': return 100;
+        default: return 10;
     }
-});
+}
 
-// Route to handle form submission for new tenant
+// Route to handle form submission for a new tenant
 router.post('/tenancy-manager/tenant/new', async (req, res) => {
-    const { 
-        name, email, address, phone, leaseStartDate, leaseEndDate, property, deposit, utilities, unitId, doorNumber, 
-        rentPaid, utilityPaid 
+    const {
+        name, email, address, phone, leaseStartDate, leaseEndDate, property, deposit, utilities, unitId, doorNumber,
+        rentPaid, utilityPaid
     } = req.body;
 
-    // Validate presence of required fields
-    if (!leaseStartDate) {
-        req.flash('error', 'Lease start date is required');
-        return res.redirect('/tenancy-manager/tenants');
+    // Validate required fields
+    const requiredFields = [
+        { field: leaseStartDate, message: 'Lease start date is required' },
+        { field: leaseEndDate, message: 'Lease end date is required' },
+        { field: property, message: 'Property is required' },
+        { field: name, message: 'Name is required' },
+        { field: email, message: 'Email is required' },
+        { field: deposit, message: 'Deposit is required' },
+        { field: utilities, message: 'Utilities are required' },
+        { field: unitId, message: 'Unit ID is required' },
+        { field: doorNumber, message: 'Door number is required' }
+    ];
+
+    for (const { field, message } of requiredFields) {
+        if (!field) {
+            req.flash('error', message);
+            return res.redirect('/tenancy-manager/tenants');
+        }
     }
-    if (!leaseEndDate) {
-        req.flash('error', 'Lease end date is required');
-        return res.redirect('/tenancy-manager/tenants');
-    }
-    if (!property) {
-        req.flash('error', 'Property is required');
-        return res.redirect('/tenancy-manager/tenants');
-    }
-    if (!name) {
-        req.flash('error', 'Name is required');
-        return res.redirect('/tenancy-manager/tenants');
-    }
-    if (!email) {
-        req.flash('error', 'Email is required');
-        return res.redirect('/tenancy-manager/tenants');
-    }
-    if (!deposit) {
-        req.flash('error', 'Deposit is required');
-        return res.redirect('/tenancy-manager/tenants');
-    }
-    if (!utilities) {
-        req.flash('error', 'Utilities are required');
-        return res.redirect('/tenancy-manager/tenants');
-    }
-    if (!unitId) {
-        req.flash('error', 'Unit ID is required');
-        return res.redirect('/tenancy-manager/tenants');
-    }
-    if (!doorNumber) {
-        req.flash('error', 'Door number is required');
-        return res.redirect('/tenancy-manager/tenants');
-    }
+
     const currentUser = req.user;
 
     try {
@@ -272,11 +312,20 @@ router.post('/tenancy-manager/tenant/new', async (req, res) => {
             return res.redirect('/tenancy-manager/tenants');
         }
 
-        const propertyName = propertyToCheck.name; // Consistent variable name
+        const propertyName = propertyToCheck.name;
 
         // Check if the user owns the property
         if (propertyToCheck.owner.toString() !== currentUser._id.toString()) {
             req.flash('error', 'You do not have permission to add tenants to this property');
+            return res.redirect('/tenancy-manager/tenants');
+        }
+
+        // Check tenant limit based on user's plan
+        const maxTenants = getMaxTenants(currentUser.plan);
+        const tenantCount = await Tenant.countDocuments({ owner: currentUser._id });
+
+        if (tenantCount >= maxTenants) {
+            req.flash('error', `You have reached the maximum number of tenants for your ${currentUser.plan} plan. Upgrade your plan to add more tenants.`);
             return res.redirect('/tenancy-manager/tenants');
         }
 
@@ -313,20 +362,13 @@ router.post('/tenancy-manager/tenant/new', async (req, res) => {
             doorNumber,
             walletBalance,
             rentPaid: rentPaid || 0,
-            utilityPaid: utilityPaid || 0 
+            utilityPaid: utilityPaid || 0
         });
 
         await newTenant.save();
 
         req.flash('success', 'Tenant added successfully.');
         res.redirect('/tenancy-manager/tenants');
-
-        // Send email after tenant is successfully added
-        try {
-            await sendTenantEmail(newTenant, propertyName); 
-        } catch (emailError) {
-            console.error('Error sending email:', emailError);
-        }
 
     } catch (error) {
         console.error('Error adding tenant:', error);
@@ -589,8 +631,8 @@ router.get('/expenses', async (req, res) => {
             owner: req.user._id, // Filter by the logged-in user's ID
             name: { $regex: searchQuery, $options: 'i' } // Apply search query
         })
-        .skip((currentPage - 1) * pageSize)
-        .limit(pageSize);
+            .skip((currentPage - 1) * pageSize)
+            .limit(pageSize);
 
         // Count total expenses for pagination (filtered by user and search query)
         const totalExpenses = await Expense.countDocuments({
@@ -643,21 +685,21 @@ router.post('/expenses', async (req, res) => {
 router.get('/roles', isTenancyManager, async (req, res) => {
     try {
         const roles = await Role.find();
-        const permissions = await Permission.find(); 
-        
-        res.render('tenancyManager/roles', { 
-            roles, 
-            currentUser: req.user, 
+        const permissions = await Permission.find();
+
+        res.render('tenancyManager/roles', {
+            roles,
+            currentUser: req.user,
             permissions,
-            error: null, 
-            success: null 
+            error: null,
+            success: null
         });
     } catch (err) {
-        res.render('tenancyManager/roles', { 
-            roles: [], 
-            permissions: [], 
-            error: 'Error fetching roles or permissions.', 
-            success: null 
+        res.render('tenancyManager/roles', {
+            roles: [],
+            permissions: [],
+            error: 'Error fetching roles or permissions.',
+            success: null
         });
     }
 });
@@ -675,23 +717,23 @@ router.get('/users', isTenancyManager, async (req, res) => {
 
         const roles = await Role.find();
 
-        res.render('tenancyManager/users', { 
-            users, 
-            roles, 
-            currentUser: req.user, 
-            error: req.flash('error') || null, 
-            success: req.flash('success') || null 
+        res.render('tenancyManager/users', {
+            users,
+            roles,
+            currentUser: req.user,
+            error: req.flash('error') || null,
+            success: req.flash('success') || null
         });
     } catch (err) {
         console.error('Error fetching users or roles:', err);
 
         // Handle error and render the page with the error message
-        res.render('tenancyManager/users', { 
-            users: [], 
-            roles: [], 
-            currentUser: req.user, 
+        res.render('tenancyManager/users', {
+            users: [],
+            roles: [],
+            currentUser: req.user,
             error: 'Error fetching users or roles. Please try again later.',
-            success: null 
+            success: null
         });
     }
 });
@@ -803,11 +845,11 @@ router.get('/maintenance-requests', isTenancyManager, async (req, res) => {
 
         // Fetch maintenance requests only for the tenants of the logged-in user
         const requests = await MaintenanceRequest.find({ tenantId: { $in: tenants } })
-            .populate('tenantId propertyId'); 
+            .populate('tenantId propertyId');
 
         // Fetch success or error messages, if any
         const messages = {
-            success: req.flash('success'), 
+            success: req.flash('success'),
             error: req.flash('error')
         };
 
@@ -815,7 +857,7 @@ router.get('/maintenance-requests', isTenancyManager, async (req, res) => {
         res.render('tenancyManager/maintenanceRequest', {
             requests,
             currentUser: req.user,
-            messages 
+            messages
         });
     } catch (err) {
         // Log the error and redirect if an issue occurs
@@ -845,7 +887,7 @@ router.post('/maintenance-requests/:id', isTenancyManager, async (req, res) => {
         console.error('Error updating maintenance request:', err);
 
         req.flash('error', 'Error updating maintenance request.');
-        
+
         res.redirect('/maintenance-requests');
     }
 });
@@ -887,17 +929,17 @@ router.get('/connect', async (req, res) => {
     }
 
     try {
-       
-        const connectedAccounts = await Account.find({ userId: req.user._id }).lean(); 
 
-      
+        const connectedAccounts = await Account.find({ userId: req.user._id }).lean();
+
+
         res.render('tenancyManager/connectAccount', {
             currentUser: req.user,
             messages: {
                 success: req.flash('success'),
                 error: req.flash('error'),
             },
-            connectedAccounts: connectedAccounts 
+            connectedAccounts: connectedAccounts
         });
     } catch (error) {
         console.error('Error fetching connected accounts:', error);
@@ -922,10 +964,10 @@ router.post('/connect', async (req, res) => {
         return res.redirect('/connect');
     }
 
-    const userId = req.user._id; 
+    const userId = req.user._id;
     try {
         const newAccount = new Account({
-            userId, 
+            userId,
             accountEmail,
             apiKey,
             accountId,
@@ -962,7 +1004,7 @@ router.post('/edit/:id', async (req, res) => {
         res.redirect('/connect');
     } catch (error) {
         console.error('Error updating account:', error);
-        res.status(500).send('Internal Server Error'); 
+        res.status(500).send('Internal Server Error');
     }
 });
 
@@ -974,8 +1016,8 @@ router.post('/delete/:id', async (req, res) => {
         // Find the account by ID and delete it
         await Account.findByIdAndDelete(accountId);
 
-        
-        res.redirect('/connect'); 
+
+        res.redirect('/connect');
     } catch (error) {
         console.error('Error deleting account:', error);
         res.status(500).send('Internal Server Error');
@@ -987,19 +1029,19 @@ router.post('/delete/:id', async (req, res) => {
 // Get top-up page
 router.get('/top-ups', isTenancyManager, async (req, res) => {
     try {
-        const topups = await Topups.find({ createdBy: req.user._id }); 
-        res.render('tenancyManager/topups', { 
-            topups, 
-            currentUser: req.user, 
-            error: null, 
-            success: null 
+        const topups = await Topups.find({ createdBy: req.user._id });
+        res.render('tenancyManager/topups', {
+            topups,
+            currentUser: req.user,
+            error: null,
+            success: null
         });
     } catch (err) {
-        res.render('tenancyManager/topups', { 
-            topups: [], 
-            currentUser: req.user, 
-            error: 'Error fetching top-ups.', 
-            success: null 
+        res.render('tenancyManager/topups', {
+            topups: [],
+            currentUser: req.user,
+            error: 'Error fetching top-ups.',
+            success: null
         });
     }
 });
@@ -1009,10 +1051,10 @@ router.get('/top-ups', isTenancyManager, async (req, res) => {
 router.get('/sms&email', isTenancyManager, async (req, res) => {
     try {
 
-        const reminders = await Reminder.find({ userId: req.user._id }); 
+        const reminders = await Reminder.find({ userId: req.user._id });
 
         res.render('tenancyManager/sms&email', {
-            
+
             reminders,
             currentUser: req.user,
             success: req.flash('success'),
@@ -1021,7 +1063,7 @@ router.get('/sms&email', isTenancyManager, async (req, res) => {
     } catch (err) {
         console.error(err);
         res.render('tenancyManager/sms&email', {
-            
+
             reminders: [],
             currentUser: req.user,
             error: 'Error fetching templates and reminders.'
@@ -1038,7 +1080,7 @@ router.post('/templates/create', isTenancyManager, async (req, res) => {
             type,
             subject,
             content,
-            createdBy: req.user._id 
+            createdBy: req.user._id
         });
         await newTemplate.save();
         req.flash('success', 'Template created successfully.');
