@@ -112,7 +112,7 @@ router.post('/submit', async (req, res) => {
 
     if (!emailAddress || !supportMessage) {
         req.flash('error', 'Please fill in all required fields.');
-        return res.redirect('//tenancy-manager/dashboard');
+        return res.redirect('/tenancy-manager/dashboard');
     }
 
     try {
