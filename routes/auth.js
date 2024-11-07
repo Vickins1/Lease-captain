@@ -4,7 +4,6 @@ const passport = require('passport');
 const User = require('../models/user');
 const { isAuthenticated } = require('../middleware');
 const useragent = require('useragent');
-const bcrypt = require('bcrypt');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
