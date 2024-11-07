@@ -17,34 +17,52 @@
             color: #003366;
             font-family: 'Arial', sans-serif;
         }
-    
+
         /* Container */
         .container {
             position: relative;
             z-index: 1;
             color: #003366;
         }
-    
+
         /* Header Styling */
         header {
-            background-color: #ffffff;
+            background-color:#ffffffda;
             border-bottom: 1px solid #e5e5e5;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            height: 80px;
+            height: 70px;
             display: flex;
-            justify-content: space-between;
+            justify-content: space-around;
             align-items: center;
             padding: 10 30px;
         }
-    
+
         /* Logo Styling */
         .logo {
             margin-top: 10px;
-            width: 150px;
+            width: 130px;
             height: auto;
-            margin-right: 30px;
+            margin-right: 300px;
         }
-    
+
+        @media (max-width: 768px) {
+            .logo {
+                width: 100px;
+                /* Reduce the logo width for tablets */
+                margin-right: 20px;
+                /* Decrease right margin */
+            }
+        }
+
+        @media (max-width: 576px) {
+            .logo {
+                width: 120px;
+                /* Further reduce the logo width for mobile devices */
+                margin-right: 10px;
+                /* Even smaller right margin */
+            }
+        }
+
         /* Hero Section Styling */
         .hero {
             margin-top: 60px;
@@ -58,20 +76,20 @@
             align-items: center;
             justify-content: center;
         }
-    
+
         .hero h1 {
             color: #003366;
             font-size: 3rem;
             font-weight: bold;
             text-align: center;
         }
-    
+
         .hero p {
-            color: #004f90;
+            color: #001b36;
             font-size: 1.25rem;
             text-align: center;
         }
-    
+
         /* Hero Background Images */
         .hero::before,
         .hero::after {
@@ -85,17 +103,17 @@
             z-index: 0;
             opacity: 0.7;
         }
-    
+
         .hero::before {
             left: 0;
             background-image: url('/images/banner1.jpeg');
         }
-    
+
         .hero::after {
             right: 0;
             background-image: url('/images/banner2.jpeg');
         }
-    
+
         /* Button Styling */
         .hero .btn {
             padding: 15px 30px;
@@ -106,57 +124,60 @@
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
             margin: 5px;
         }
-    
+
         .btn-primary {
             background-color: #003366;
             border: none;
             color: white;
         }
-    
+
         .btn-primary:hover {
             background-color: #0056b3;
             box-shadow: 0px 8px 20px rgba(0, 86, 179, 0.3);
             transform: translateY(-3px);
         }
-    
+
         .btn-outline-primary {
             color: #003366;
             border: 2px solid #003366;
             background-color: transparent;
         }
-    
+
         .btn-outline-primary:hover {
             color: white;
             background-color: #003366;
             box-shadow: 0px 8px 20px rgba(0, 51, 102, 0.3);
             transform: translateY(-3px);
         }
-    
+
         /* Button Animation */
         @keyframes pulse {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: scale(1);
             }
+
             50% {
                 transform: scale(1.05);
             }
         }
-    
+
         .hero .btn-primary,
         .hero .btn-outline-primary {
             animation: pulse 2s infinite;
         }
-    
+
         /* Card Styling */
         .card {
             border: none;
             transition: transform 0.3s ease;
         }
-    
+
         .card:hover {
             transform: translateY(-5px);
         }
-    
+
         /* Footer Styling */
         .footer {
             background-color: #000000;
@@ -164,59 +185,62 @@
             padding: 15px 0;
             text-align: center;
         }
-    
+
         .footer a {
             color: #ffffff;
             text-decoration: underline;
         }
-    
+
         .footer a:hover {
             color: #cccccc;
         }
-    
+
         /* Responsive Adjustments */
         @media (max-width: 768px) {
             .hero h1 {
-                font-size: 2.5rem;
+                font-size: 1.5rem;
             }
-    
+
             .hero p {
-                font-size: 1.1rem;
+                font-size: 0.8rem;
             }
-    
+
             .hero .btn {
-                font-size: 1rem;
-                padding: 12px 24px;
+                font-size: 0.8rem;
+                padding: 6px 16px;
             }
         }
-    
+
         @media (max-width: 576px) {
             .hero h1 {
-                font-size: 2rem;
+                font-size: 1.6rem;
             }
-    
+
             .hero p {
-                font-size: 1rem;
+                font-size: 0.8rem;
             }
-    
-            .btn-primary, .btn-outline-primary {
+
+            .btn-primary,
+            .btn-outline-primary {
                 padding: 12px 20px;
                 font-size: 0.9rem;
             }
-    
+
             .footer {
                 padding: 10px 0;
             }
         }
-        /* Dropdown Styling */
+
+       /* Dropdown Styling */
 .dropdown-menu {
-    background-color: #ffffff; /* White background */
+    background-color: #ffffff;
     border-radius: 8px;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    transition: opacity 0.4s ease, transform 0.4s ease;
     opacity: 0;
     transform: translateY(10px);
     visibility: hidden;
+    margin-top: 10px; /* Add margin top to create space for logo and toggler */
 }
 
 /* Show Dropdown */
@@ -235,45 +259,31 @@
     border-radius: 4px;
 }
 
+/* Hover Effect */
 .dropdown-item:hover {
-    background-color: #003366; /* Darker background on hover */
-    color: #ffffff;
-}
-
-
-/* Dropdown Items */
-.dropdown-item {
-    color: #003366;
-    font-weight: bold;
-    padding: 10px 15px;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.dropdown-item:hover {
-    background-color: #003366; /* Darker background on hover */
+    background-color: #003366;
     color: #ffffff;
 }
 
 /* Responsive Adjustments for Smaller Screens */
 @media (max-width: 768px) {
     .navbar-collapse {
-        background-color: #ffffff; /* White background for mobile dropdown */
-        padding: 20px; /* Add padding for spacing */
+        margin-top: 50px;
+        background-color: #ffffff96;
+        padding: 20px;
         border-radius: 8px;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Add shadow for dropdown */
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     }
 
     /* Center dropdown menu on small screens */
     .dropdown-menu {
-        margin-top: 10px;
+        margin-top: 10px; /* Maintain top margin */
         position: static;
         width: 100%;
     }
 }
 
-
     </style>
-    
 
 </head>
 
@@ -285,13 +295,26 @@
                 <a href="/" class="navbar-brand mx-auto">
                     <img src="/images/logo2.png" alt="Lease Captain Logo" class="logo img-fluid">
                 </a>
-    
+
                 <!-- Toggler for Small Screens -->
-                <button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse"
+                    data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                    aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-    
+                <style>
+                    @media (max-width: 968px) {
+                        .navbar-toggler {
+                            margin-left: 140px;
+                            font-size: 0.9rem;
+                        }
+
+                        .navbar-brand {
+                            margin-right: auto;
+                        }
+                    }
+                </style>
+
                 <!-- Collapsible Links -->
                 <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
                     <ul class="navbar-nav">
@@ -301,7 +324,8 @@
                             </a>
                         </li>
                         <li class="nav-item dropdown mx-2">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarHelp" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarHelp" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-question-circle mr-1"></i> <strong>Help</strong>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarHelp">
@@ -329,9 +353,7 @@
             </div>
         </nav>
     </header>
-    
-    
-    
+
     <script>
         // Dropdown hover effect
         document.querySelectorAll('.nav-item.dropdown').forEach(function (dropdown) {
@@ -342,12 +364,12 @@
                 this.querySelector('.dropdown-menu').classList.remove('show');
             });
         });
-    
+
         // Close navbar on outside click for mobile view
         document.addEventListener('click', function (event) {
             const navbarCollapse = document.getElementById('navbarNav');
             const navbarToggler = document.querySelector('.navbar-toggler');
-    
+
             if (!navbarCollapse.contains(event.target) && !navbarToggler.contains(event.target)) {
                 if (navbarCollapse.classList.contains('show')) {
                     navbarCollapse.classList.remove('show');
@@ -355,10 +377,6 @@
             }
         });
     </script>
-    
-    
-
-
 
 
     <!-- Hero Section -->
@@ -371,7 +389,7 @@
                     <i class="fas fa-user-plus mr-2"></i> Get Started Now!
                 </a>
                 <!-- Request Demo Button -->
-                <a href="/support" class="btn btn-outline-primary btn-lg mx-2" data-toggle="modal">
+                <a href="/support" class="btn btn-outline-primary btn-lg mx-2">
                     <i class="fas fa-play-circle mr-2"></i> Request Demo
                 </a>
 
@@ -385,7 +403,7 @@
     <section class="py-5 bg-light">
         <div class="container">
 
-            <h2 class="text-center mb-5" style="color: #003366;">
+            <h2 class="text-center mb-5" style="color: #001b36;">
                 <i class="fas fa-star mr-2"></i> Our Core Features
             </h2>
 
@@ -480,7 +498,54 @@
                         </div>
                     </div>
                 </div>
+                <style>
+                    .feature-icon {
+                        font-size: 2rem;
+                        color: #003366;
+                        margin-bottom: 15px;
+                    }
 
+                    @media (max-width: 768px) {
+                        .feature-icon {
+                            font-size: 1.5rem;
+                        }
+
+                        .card-body h3 {
+                            font-size: 1.0rem;
+                        }
+
+                        .card-body p {
+                            font-size: 0.3rem;
+                        }
+
+                        .card {
+                            margin-bottom: 20px;
+                        }
+
+                        .row.text-center>div {
+                            margin-bottom: 20px;
+                        }
+                    }
+
+                    @media (max-width: 576px) {
+                        .container {
+                            padding-left: 15px;
+                            padding-right: 15px;
+                        }
+
+                        .card-body {
+                            padding: 10px;
+                        }
+
+                        h2 {
+                            font-size: 0.9rem;
+                        }
+
+                        .card-body p {
+                            font-size: 0.5rem;
+                        }
+                    }
+                </style>
             </div>
         </div>
     </section>
@@ -488,11 +553,29 @@
     <section id="dashboard-preview" class="dashboard-preview-section text-center py-5">
         <div class="container">
             <h2 class="font-weight-bold mb-4">Dashboard Preview</h2>
-            <h4 class="intro-paragraph mb-5"><strong>
-                    Experience efficient, modern property management with Lease Captain. Our platform provides intuitive
-                    dashboards for both property managers and tenants, streamlining operations and enhancing
-                    communication. Explore the power of seamless management with Lease Captain.
-            </h4></strong>
+            <ul class="intro-list mb-5">
+                <li><strong>Efficient Management:</strong> Experience efficient, modern property management with Lease Captain.</li>
+                <li><strong>Intuitive Dashboards:</strong> Our platform provides intuitive dashboards for both property managers and tenants.</li>
+                <li><strong>Streamlined Operations:</strong> Streamline operations and enhance communication.</li>
+                <li><strong>Seamless Management:</strong> Explore the power of seamless management with Lease Captain.</li>
+            </ul>
+<style>
+    .intro-list {
+    list-style-type: none; /* Remove default bullet points */
+    padding: 0; /* Remove padding */
+}
+
+.intro-list li {
+    margin-bottom: 10px; /* Space between list items */
+    font-size: 1rem; /* Adjust font size as needed */
+    color: #003366; /* Use your theme color */
+}
+
+.intro-list li strong {
+    color: #00509e; /* Differentiate the strong text */
+}
+
+</style>            
             <div class="row-container">
                 <!-- Laptop Dashboard Preview -->
                 <div class="laptop-frame">
@@ -513,93 +596,6 @@
         </div>
     </section>
 
-
-    <style>
-        /* Main Section Styling */
-        .dashboard-preview-section {
-            background-color: #f8f9fa;
-            padding: 60px 0;
-        }
-
-        .dashboard-preview-section h2 {
-            color: #003366;
-            font-size: 2.5rem;
-            margin-bottom: 30px;
-        }
-
-        .intro-paragraph {
-            color: #555;
-            font-size: 1.1rem;
-            max-width: 800px;
-            margin: 0 auto 40px;
-            line-height: 1.6;
-        }
-
-        /* Row Container Styling */
-        .row-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-            justify-content: center;
-        }
-
-        /* Laptop Frame Styling */
-        .laptop-frame,
-        .tenant-portal {
-            position: relative;
-            width: 400px;
-            max-width: 90%;
-            text-align: center;
-            padding: 10px;
-            border-radius: 15px;
-            box-shadow: 0px 15px 35px rgba(0, 0, 0, 0.3);
-            background: #2c2c2c;
-        }
-
-        .laptop-border {
-            border-radius: 8px;
-            overflow: hidden;
-            background-color: #1a1a1a;
-            padding: 10px;
-            position: relative;
-        }
-
-        .dashboard-screenshot {
-            width: 100%;
-            height: auto;
-            border-radius: 4px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease-in-out;
-        }
-
-        .laptop-frame:hover .dashboard-screenshot,
-        .tenant-portal:hover .dashboard-screenshot {
-            transform: scale(1.05);
-        }
-
-        .preview-label {
-            color: #003366;
-            font-weight: bold;
-            margin-top: 10px;
-            font-size: 1.1rem;
-        }
-
-        /* Responsive Adjustments */
-        @media (max-width: 768px) {
-            .dashboard-preview-section h2 {
-                font-size: 2rem;
-            }
-
-            .intro-paragraph {
-                font-size: 1rem;
-            }
-
-            .laptop-frame,
-            .tenant-portal {
-                width: 95%;
-            }
-        }
-    </style>
     <style>
         /* Main section styling */
         .dashboard-preview-section {
@@ -608,7 +604,7 @@
         }
 
         #dashboard-preview h2 {
-            color: #003366;
+            color: #001b36;
             font-size: 2.5rem;
             margin-bottom: 30px;
         }
@@ -690,9 +686,13 @@
         }
 
         /* Responsive adjustments for smaller screens */
-        @media (max-width: 768px) {
+        @media (max-width: 568px) {
             #dashboard-preview h2 {
-                font-size: 2rem;
+                font-size: 1.2rem;
+            }
+
+            #intro-paragraph h4 {
+                font-size: 0.7rem;
             }
 
             .row-container {
@@ -701,7 +701,7 @@
 
             .laptop-frame,
             .tenant-portal {
-                width: 90%;
+                width: 100%;
             }
         }
     </style>
@@ -709,9 +709,10 @@
 
 
     <!-- Reviews Section -->
-    <section id="reviews-section" class="py-5">
+    <section id="reviews-section" class="py-4">
         <div class="container">
-            <h2 class="text-center" style="color: #003366; font-weight: bold;">What Our Clients Say</h2>
+            <h2 class="text-center" style="color: #001b36; font-weight: bold; font-size: 1.2rem;">What Our Clients Say
+            </h2>
 
             <!-- Carousel for Sliding Reviews -->
             <div id="reviewsCarousel" class="carousel slide mt-4" data-ride="carousel">
@@ -719,11 +720,12 @@
                     <!-- Review 1 -->
                     <div class="carousel-item active">
                         <div class="row">
-                            <div class="col-md-8 offset-md-2">
+                            <div class="col-12 col-md-8 offset-md-2">
                                 <div class="card p-4">
-                                    <p class="lead">"Lease Captain has transformed how I manage my properties. It's a
-                                        life-saver!"</p>
-                                    <h5 class="font-weight-bold">- Vickins, Property Manager</h5>
+                                    <p class="lead" style="font-size: 0.8rem;">"Lease Captain has transformed how I
+                                        manage my properties. It's a life-saver!"</p>
+                                    <h5 class="font-weight-bold" style="font-size: 0.8rem;">- Moses Grey, Property
+                                        Manager</h5>
                                 </div>
                             </div>
                         </div>
@@ -732,11 +734,12 @@
                     <!-- Review 2 -->
                     <div class="carousel-item">
                         <div class="row">
-                            <div class="col-md-8 offset-md-2">
+                            <div class="col-12 col-md-8 offset-md-2">
                                 <div class="card p-4">
-                                    <p class="lead">"I love the ease of use and the detailed reporting features. Highly
-                                        recommend!"</p>
-                                    <h5 class="font-weight-bold">- John Smith, Real Estate Investor</h5>
+                                    <p class="lead" style="font-size: 1rem;">"I love the ease of use and the detailed
+                                        reporting features. Highly recommend!"</p>
+                                    <h5 class="font-weight-bold" style="font-size: 1rem;">- Joseph Waithima, Real Estate
+                                        Investor</h5>
                                 </div>
                             </div>
                         </div>
@@ -745,11 +748,80 @@
                     <!-- Review 3 -->
                     <div class="carousel-item">
                         <div class="row">
-                            <div class="col-md-8 offset-md-2">
+                            <div class="col-12 col-md-8 offset-md-2">
                                 <div class="card p-4">
-                                    <p class="lead">"The best property management tool I’ve used. It has everything I
-                                        need in one place."</p>
-                                    <h5 class="font-weight-bold">- Emily White, Landlord</h5>
+                                    <p class="lead" style="font-size: 1rem;">"The best property management tool I’ve
+                                        used. It has everything I need in one place."</p>
+                                    <h5 class="font-weight-bold" style="font-size: 1rem;">- Emily White, Landlord</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review 4 -->
+                    <div class="carousel-item">
+                        <div class="row">
+                            <div class="col-12 col-md-8 offset-md-2">
+                                <div class="card p-4">
+                                    <p class="lead" style="font-size: 1rem;">"Lease Captain has helped me streamline my
+                                        property management and save so much time!"</p>
+                                    <h5 class="font-weight-bold" style="font-size: 1rem;">- Tawanda Nyoni, Property
+                                        Manager</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review 5 -->
+                    <div class="carousel-item">
+                        <div class="row">
+                            <div class="col-12 col-md-8 offset-md-2">
+                                <div class="card p-4">
+                                    <p class="lead" style="font-size: 1rem;">"It's an all-in-one tool that makes
+                                        managing my rental properties much easier."</p>
+                                    <h5 class="font-weight-bold" style="font-size: 1rem;">- Ayodele Adebayo, Real Estate
+                                        Investor</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review 6 -->
+                    <div class="carousel-item">
+                        <div class="row">
+                            <div class="col-12 col-md-8 offset-md-2">
+                                <div class="card p-4">
+                                    <p class="lead" style="font-size: 1rem;">"I appreciate the detailed tenant records
+                                        and easy-to-use dashboard. It's made my life easier!"</p>
+                                    <h5 class="font-weight-bold" style="font-size: 1rem;">- Kofi Mensah, Landlord</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review 7 -->
+                    <div class="carousel-item">
+                        <div class="row">
+                            <div class="col-12 col-md-8 offset-md-2">
+                                <div class="card p-4">
+                                    <p class="lead" style="font-size: 1rem;">"This platform has really improved how I
+                                        track payments and stay organized. Highly recommend it!"</p>
+                                    <h5 class="font-weight-bold" style="font-size: 1rem;">- Zanele Moyo, Property
+                                        Manager</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review 8 -->
+                    <div class="carousel-item">
+                        <div class="row">
+                            <div class="col-12 col-md-8 offset-md-2">
+                                <div class="card p-4">
+                                    <p class="lead" style="font-size: 1rem;">"I can easily manage multiple properties
+                                        and stay on top of everything with Lease Captain!"</p>
+                                    <h5 class="font-weight-bold" style="font-size: 1rem;">- Kwame Owusu, Real Estate
+                                        Investor</h5>
                                 </div>
                             </div>
                         </div>
@@ -769,145 +841,129 @@
         </div>
     </section>
 
-    <!-- Pricing Section -->
-    <section id="pricing-section" class="py-5 bg-light">
-        <div class="container">
-            <h3 class="text-center mb-5" style="color: #003366;">
-                <i class="fas fa-tags mr-2"></i> <strong>Our Pricing Plans</strong>
-            </h3>
 
-            <!-- Row for Pricing Cards with Responsive Layout -->
-            <div class="row flex-nowrap overflow-auto text-center">
+<!-- Pricing Section -->
+<section id="pricing-section" class="py-5 bg-light">
+    <div class="container">
+        <h3 class="text-center mb-5" style="color: #001b36;">
+            <i class="fas fa-tags mr-2"></i> <strong>Our Pricing Plans</strong>
+        </h3>
 
-                <!-- Basic Plan -->
-                <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <h3 class="card-title" style="color: #003366;">Basic</h3>
-                            <p class="lead">1-10 Tenants</p>
-                            <p class="font-weight-bold" style="font-size: 1.75rem;">Free</p>
-                            <p>Manage up to 10 tenants at no cost. Ideal for small property managers.</p>
-                            <a href="/signup?plan=Basic" class="btn btn-primary animated-button mt-3">Get Started
-                                Today!</a>
+        <!-- Row for Pricing Cards with Responsive Layout -->
+        <div class="row flex-nowrap overflow-auto text-center">
+
+            <!-- Standard Plan -->
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
+                <div class="card h-100 shadow border-0">
+                    <div class="card-body text-center">
+                        <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
+                            <i class="fas fa-user"></i>
                         </div>
+                        <h3 class="card-title" style="color: #003366;">Standard</h3>
+                        <p class="lead">Up to 20 Units</p>
+                        <p class="font-weight-bold" style="font-size: 1.75rem;">
+                            Ksh.1,499 <span class="text-muted" style="font-size: 0.8rem; vertical-align: super;">/ month</span>
+                        </p>
+                        <p>Designed for small property managers looking to streamline unit management.</p>
+                        <a href="/signup?plan=Standard" class="btn btn-primary animated-button mt-3">Get Started Today!</a>
                     </div>
                 </div>
+            </div>
 
-                <!-- Standard Plan -->
-                <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
-                                <i class="fas fa-building"></i>
-                            </div>
-                            <h3 class="card-title" style="color: #003366;">Standard</h3>
-                            <p class="lead">11-20 Tenants</p>
-                            <p class="font-weight-bold" style="font-size: 1.75rem;">
-                                Ksh.1,499 <span class="text-muted" style="font-size: 0.8rem; vertical-align: super;">/
-                                    month</span>
-                            </p>
-                            <p>Affordable plan for managing up to 20 tenants with premium features.</p>
-                            <a href="/signup?plan=Standard" class="btn btn-primary animated-button mt-3">Get Started
-                                Today!</a>
+            <!-- Pro Plan -->
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
+                            <i class="fas fa-building"></i>
                         </div>
+                        <h3 class="card-title" style="color: #003366;">Pro</h3>
+                        <p class="lead">21-50 Units</p>
+                        <p class="font-weight-bold" style="font-size: 1.5rem;">
+                            Ksh.2,999 <span class="text-muted" style="font-size: 0.8rem; vertical-align: super;">/ month</span>
+                        </p>
+                        <p>Ideal for medium-sized portfolios seeking comprehensive management tools.</p>
+                        <a href="/signup?plan=Pro" class="btn btn-primary animated-button mt-3">Get Started Today!</a>
                     </div>
                 </div>
+            </div>
 
-                <!-- Pro Plan -->
-                <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <h3 class="card-title" style="color: #003366;">Pro</h3>
-                            <p class="lead">21-50 Tenants</p>
-                            <p class="font-weight-bold" style="font-size: 1.75rem;">
-                                Ksh.2,999 <span class="text-muted" style="font-size: 0.8rem; vertical-align: super;">/
-                                    month</span>
-                            </p>
-                            <p>Perfect for larger portfolios, allowing you to manage up to 50 tenants.</p>
-                            <a href="/signup?plan=Pro" class="btn btn-primary animated-button mt-3">Get Started
-                                Today!</a>
+            <!-- Advanced Plan -->
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
+                            <i class="fas fa-users"></i>
                         </div>
+                        <h3 class="card-title" style="color: #003366;">Advanced</h3>
+                        <p class="lead">51-100 Units</p>
+                        <p class="font-weight-bold" style="font-size: 1.75rem;">
+                            Ksh.4,499 <span class="text-muted" style="font-size: 0.8rem; vertical-align: super;">/ month</span>
+                        </p>
+                        <p>Perfect for larger portfolios, equipped with all essential features.</p>
+                        <a href="/signup?plan=Advanced" class="btn btn-primary animated-button mt-3">Get Started Today!</a>
                     </div>
                 </div>
+            </div>
 
-                <!-- Advanced Plan -->
-                <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
-                                <i class="fas fa-city"></i>
-                            </div>
-                            <h3 class="card-title" style="color: #003366;">Advanced</h3>
-                            <p class="lead">51-100 Tenants</p>
-                            <p class="font-weight-bold" style="font-size: 1.75rem;">
-                                Ksh.4,499 <span class="text-muted" style="font-size: 0.8rem; vertical-align: super;">/
-                                    month</span>
-                            </p>
-                            <p>Designed for substantial portfolios, managing up to 100 tenants with ease.</p>
-                            <a href="/signup?plan=Advanced" class="btn btn-primary animated-button mt-3">Get Started
-                                Today!</a>
+            <!-- Enterprise Plan -->
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
+                            <i class="fas fa-city"></i>
                         </div>
+                        <h3 class="card-title" style="color: #003366;">Enterprise</h3>
+                        <p class="lead">100-150 Units</p>
+                        <p class="font-weight-bold" style="font-size: 1.75rem;">
+                            Ksh.6,999 <span class="text-muted" style="font-size: 0.8rem; vertical-align: super;">/ month</span>
+                        </p>
+                        <p>Designed for substantial portfolios, offering complete management flexibility.</p>
+                        <a href="/signup?plan=Enterprise" class="btn btn-primary animated-button mt-3">Get Started Today!</a>
                     </div>
                 </div>
+            </div>
 
-                <!-- Premium Plan -->
-                <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
-                                <i class="fas fa-briefcase"></i>
-                            </div>
-                            <h3 class="card-title" style="color: #003366;">Premium</h3>
-                            <p class="lead">100+ Tenants</p>
-                            <p class="font-weight-bold" style="font-size: 1.75rem;">Custom Pricing</p>
-                            <p>Contact us for a customized plan tailored to your portfolio’s needs and scale.</p>
-                            <a href="/signup?plan=Premium" class="btn btn-primary animated-button mt-3">Get Started
-                                Today!</a>
+            <!-- Custom Plan -->
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
+                            <i class="fas fa-briefcase"></i>
                         </div>
+                        <h3 class="card-title" style="color: #003366;">Premium</h3>
+                        <p class="lead">Unlimited Units</p>
+                        <p class="font-weight-bold" style="font-size: 1.75rem;">Custom</p>
+                        <p>Contact us for a personalized plan tailored to your portfolio’s specific needs.</p>
+                        <a href="/signup?plan=Custom" class="btn btn-primary animated-button mt-3">Get Started Today!</a>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
+
 
 
     <style>
         /* Pricing Section Styles */
-        .pricing-section {
+        #pricing-section {
             background-color: #f8f9fa;
-            padding: 2rem 0;
+            padding: 3rem 1rem;
         }
 
-        .pricing-section h2 {
+        #pricing-section h3 {
             color: #003366;
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: bold;
         }
 
-        .pricing-row {
+        #pricing-section .row {
             display: flex;
             flex-wrap: wrap;
+            justify-content: space-around;
+            /* Distribute cards evenly */
             gap: 1rem;
-            justify-content: center;
-        }
-
-        /* Remove nowrap and overflow on smaller screens */
-        @media (max-width: 768px) {
-            .pricing-row {
-                flex-wrap: wrap;
-                overflow: visible;
-            }
-        }
-
-        .pricing-card {
-            flex: 1 1 280px;
-            max-width: 320px;
         }
 
         .card {
@@ -915,11 +971,18 @@
             border-radius: 10px;
             padding: 1rem;
             transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            /* Align content properly */
+            height: 100%;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 51, 102, 0.1);
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
         }
 
         .feature-icon {
@@ -931,83 +994,40 @@
         .card-title {
             color: #003366;
             font-weight: bold;
-            font-size: 1.3rem;
-        }
-
-        .price {
-            font-size: 1.5rem;
-            color: #333;
-        }
-
-        .description {
-            font-size: 0.7rem;
-            color: #666;
+            font-size: 1.25rem;
             margin-bottom: 1rem;
         }
 
-        .animated-button {
-            position: relative;
-            overflow: hidden;
+        .lead {
+            font-size: 1rem;
+        }
+
+        .font-weight-bold {
+            font-size: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .btn-primary {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
             border-radius: 25px;
-            padding: 0.55rem 1.5rem;
             font-weight: bold;
             transition: all 0.3s ease;
         }
 
-        .animated-button:hover {
+        .btn-primary:hover {
             background-color: #002a5c;
-            transform: translateY(-3px);
-            box-shadow: 0px 8px 15px rgba(0, 51, 102, 0.3);
             color: #ffffff;
         }
 
-        /* Sliding effect on button hover */
-        .animated-button::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 300%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.2);
-            transition: all 0.4s ease;
-        }
-
-        .animated-button:hover::before {
-            left: 100%;
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 51, 102, 0.1);
         }
 
         /* Responsive Design for Smaller Screens */
-        @media (max-width: 768px) {
-            .pricing-section h2 {
-                font-size: 2rem;
-            }
-
-            .pricing-card {
-                flex: 1 1 100%;
-                max-width: 100%;
-                margin-bottom: 1rem;
-            }
-
-            .feature-icon {
-                font-size: 1.8rem;
-            }
-
-            .card-title {
-                font-size: 1.4rem;
-            }
-
-            .price {
-                font-size: 1.5rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .pricing-section h2 {
-                font-size: 1.8rem;
-            }
-
-            .feature-icon {
+        @media (max-width: 992px) {
+            #pricing-section h3 {
                 font-size: 1.5rem;
             }
 
@@ -1015,27 +1035,95 @@
                 font-size: 1.25rem;
             }
 
-            .price {
-                font-size: 1.3rem;
+            .feature-icon {
+                font-size: 1.5rem;
             }
 
-            .description {
-                font-size: 0.85rem;
+            .font-weight-bold {
+                font-size: 1.5rem;
             }
 
             .btn-primary {
-                font-size: 0.85rem;
+                font-size: 0.8rem;
+            }
+
+            .row {
+                justify-content: center;
+            }
+
+            .col-md-6 {
+                flex: 0 0 50%;
+            }
+
+            .col-lg-3 {
+                flex: 0 0 100%;
+                /* Full width on small screens */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .row {
+                justify-content: center;
+            }
+
+            .col-md-6,
+            .col-lg-3 {
+                flex: 0 0 100%;
+                /* Cards take full width */
+            }
+
+            #pricing-section h3 {
+                font-size: 1.0rem;
+            }
+
+            .feature-icon {
+                font-size: 1.5rem;
+            }
+
+            .card-title {
+                font-size: 1rem;
+            }
+
+            .font-weight-bold {
+                font-size: 1.25rem;
+            }
+
+            .btn-primary {
+                font-size: 0.9rem;
+                padding: 0.5rem 1.2rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            #pricing-section h3 {
+                font-size: 1.0rem;
+            }
+
+            .feature-icon {
+                font-size: 1.2rem;
+            }
+
+            .card-title {
+                font-size: 1rem;
+            }
+
+            .font-weight-bold {
+                font-size: 1.25rem;
+            }
+
+            .btn-primary {
+                font-size: 0.9rem;
                 padding: 0.5rem 1.2rem;
             }
         }
     </style>
 
     <!-- Help Section -->
-    <section id="help-section" class="py-5 bg-light">
+    <section id="help-section" class="py-5">
         <div class="container text-center">
-            <h2 class="help-title">Need Help?</h2>
-            <p class="help-intro">We’re here to assist you in understanding how Lease Captain works and help you get
-                started with managing your properties effortlessly.</p>
+            <h2 class="help-title">Need Assistance?</h2>
+            <p class="help-intro">We're dedicated to helping you understand how Lease Captain works and support you in
+                managing your properties effortlessly.</p>
 
             <!-- Support Contact Button -->
             <div class="mt-4">
@@ -1048,55 +1136,87 @@
     <style>
         /* Help Section Styles */
         #help-section {
-            background-color: #f0f4f8;
-            padding: 60px 0;
-            border-top: 4px solid #003366;
+            background-color: #e9f5ff;
+            /* Light blue background */
+            padding: 80px 0;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            /* Box shadow for depth */
+            border-radius: 10px;
+            /* Rounded corners for a softer look */
+            position: relative;
+            overflow: hidden;
         }
 
+        /* Add a subtle wave effect at the bottom */
+        #help-section::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: url('wave.svg') no-repeat center bottom;
+            /* Use an SVG for a wave effect */
+            background-size: cover;
+        }
+
+        /* Title Styles */
         .help-title {
-            color: #003366;
+            color: #0056b3;
+            /* Dark blue for the title */
             font-size: 2.5rem;
             font-weight: bold;
             margin-bottom: 15px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
         }
 
+        /* Intro Text Styles */
         .help-intro {
-            color: #333;
-            font-size: 1.1rem;
-            max-width: 700px;
-            margin: 0 auto 20px;
-            line-height: 1.6;
+            color: #555;
+            /* Darker gray for better readability */
+            font-size: 1.2rem;
+            max-width: 800px;
+            /* Increased max-width for more spacious feel */
+            margin: 0 auto 25px;
+            line-height: 1.8;
+            /* Increased line height for readability */
             padding: 0 15px;
         }
 
         /* Support Button Styling */
         .btn-support {
-            background-color: #0056b3;
+            background-color: #007bff;
+            /* Bright blue for the button */
             color: #ffffff;
-            padding: 12px 25px;
-            font-size: 1rem;
+            padding: 15px 30px;
+            /* Increased padding for a larger button */
+            font-size: 1.1rem;
+            /* Slightly larger font size */
             font-weight: bold;
-            border-radius: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 50px;
+            /* More rounded button */
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            /* Increased shadow for depth */
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
         }
 
         .btn-support:hover {
-            background-color: #003366;
-            color: #ffffff;
+            background-color: #0056b3;
+            /* Darker blue on hover */
             transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 51, 102, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            /* Increased shadow on hover */
         }
 
-        /* Animation for Button */
+        /* Animation for Button Icon */
         .btn-support i {
             animation: bounce 1.5s infinite;
         }
 
+        /* Bounce Keyframes */
         @keyframes bounce {
 
             0%,
@@ -1121,11 +1241,10 @@
 
             .btn-support {
                 font-size: 0.9rem;
-                padding: 10px 20px;
+                padding: 12px 25px;
             }
         }
     </style>
-
 
 
     <!-- Floating Support Icon -->
@@ -1151,7 +1270,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
+            font-size: 1.4rem;
             cursor: pointer;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
             transition: background-color 0.3s, transform 0.3s;
@@ -1243,7 +1362,7 @@
         }
 
         #help-section h2 {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: bold;
             color: #003366;
             margin-bottom: 20px;
@@ -1263,14 +1382,14 @@
         }
 
         #help-section h4 {
-            font-size: 1.4rem;
+            font-size: 0.9rem;
             font-weight: bold;
             margin-bottom: 15px;
             color: #003366;
         }
 
         #help-section ul li {
-            font-size: 1.1rem;
+            font-size: 0.8rem;
             margin-bottom: 10px;
         }
 
@@ -1283,7 +1402,7 @@
             background-color: #003366;
             border-color: #003366;
             padding: 10px 30px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             border-radius: 30px;
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
         }
@@ -1319,10 +1438,10 @@
 
     <footer class="text-center py-0">
         &copy; 2024 Lease Captain. All Rights Reserved || powered by
-        <a href="https://vickinstechnologies.com" target="_blank">Vickins Technologies</a>
+        <a href="/" target="_blank">Vickins Technologies</a>
         <p class="contact-info mb-0">
             <i class="fas fa-phone-alt"></i><a href="tel:+254794501005"> Call us</a> |
-            <i class="fas fa-envelope"></i> <a href="mailto:info@leasecaptain.com"> info@leasecaptain.com</a>
+            <i class="fas fa-envelope"></i> <a href="mailto:vickinstechnologies@gmail.com"> info@leasecaptain.com</a>
         </p>
     </footer>
 

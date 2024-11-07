@@ -1,13 +1,14 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const User = require('../models/user'); // Adjust the path as necessary
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const bcrypt = require('bcrypt');
+const User = require('../models/user'); // Adjust path to your User model
 
-// Configure the local strategy for username/password authentication
+// Local Strategy for username/password authentication
 passport.use('user-local', new LocalStrategy(
   {
-    usernameField: 'username', // Use the username field from the login form
-    passwordField: 'password' // Use the password field from the login form
+    usernameField: 'username',
+    passwordField: 'password'
   },
   async (username, password, done) => {
     try {
@@ -31,6 +32,30 @@ passport.use('user-local', new LocalStrategy(
   }
 ));
 
+// Google OAuth Strategy
+passport.use(new GoogleStrategy({
+    clientID: '293701662889-4sb5fc2ld4ljdpvpgu7f2ep9v6kalakg.apps.googleusercontent.com',
+    clientSecret: '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',  
+    callbackURL: "https://leasecaptain.com/tenancy-manager/dashboard" 
+  },
+  async (accessToken, refreshToken, profile, done) => {
+    try {
+      let user = await User.findOne({ googleId: profile.id });
+      if (!user) {
+        user = new User({
+          googleId: profile.id,
+          username: profile.displayName,
+          email: profile.emails[0].value, 
+        });
+        await user.save();
+      }
+      done(null, user);
+    } catch (error) {
+      done(error, null);
+    }
+  }
+));
+
 // Serialize user to save in session
 passport.serializeUser((user, done) => {
   done(null, user.id);
@@ -40,11 +65,10 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await User.findById(id);
-    done(null, user); // Attach the user object to the session
+    done(null, user);
   } catch (error) {
     done(error);
   }
 });
 
-// Export the passport configuration
 module.exports = passport;

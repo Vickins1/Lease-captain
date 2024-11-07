@@ -5,57 +5,42 @@
        <meta charset="UTF-8">
        <meta name="viewport" content="width=device-width, initial-scale=1.0">
        <title>Contact Support</title>
-       <link rel="stylesheet" href="/path/to/your/styles.css">
 </head>
 
 <body>
        <div class="container mt-5">
-              <h1 class="text-center text-primary">Contact Support</h1>
-              <p class="text-center">If you need assistance, please fill out the form below. Our support team will get
-                     back to you as soon as possible.</p>
-
-              <!-- Display flash messages -->
-              <% if (successMessage && successMessage.length> 0) { %>
-                     <div class="alert alert-success">
-                            <%= successMessage %>
-                     </div>
-                     <% } %>
-
-                            <% if (errorMessage && errorMessage.length> 0) { %>
-                                   <div class="alert alert-danger">
-                                          <%= errorMessage %>
-                                   </div>
-                                   <% } %>
-
-                                          <!-- Support Form -->
-                                          <form id="supportForm" action="/support/submit" method="POST"
-                                                 class="support-form">
-                                                 <div class="form-group">
-                                                        <label for="emailAddress">Your Email</label>
-                                                        <input type="email" name="emailAddress" class="form-control"
-                                                               id="emailAddress" placeholder="Enter your email"
-                                                               required>
-                                                 </div>
-                                                 <div class="form-group">
-                                                        <label for="supportMessage">Message</label>
-                                                        <textarea name="supportMessage" class="form-control"
-                                                               id="supportMessage" rows="4"
-                                                               placeholder="Describe your issue... or Request Demo" required></textarea>
-                                                 </div>
-                                                 <div class="d-flex justify-content-between">
-                                                        <button type="button" onclick="window.history.back()"
-                                                               class="btn btn-secondary">Go Back</button>
-                                                        <button type="submit" class="btn btn-primary">Send
-                                                               Message</button>
-                                                 </div>
-                                          </form>
-       </div>
-
+              <h1 class="text-center text-primary">Contact Lease Captain Support</h1>
+              <p class="text-center">If you need assistance, please fill out the form below. Our support team will get back to you as soon as possible.</p>
+          
+              <!-- Flash Messages -->
+              <% if (success && success.length > 0) { %>
+                  <div class="alert alert-success"><%= success %></div>
+              <% } %>
+              
+              <% if (error && error.length > 0) { %>
+                  <div class="alert alert-danger"><%= error %></div>
+              <% } %>
+          
+              <!-- Support Form -->
+              <form id="supportForm" action="/support/submit" method="POST" class="support-form mt-4">
+                  <div class="form-group">
+                      <label for="emailAddress">Your Email</label>
+                      <input type="email" name="emailAddress" class="form-control" id="emailAddress" placeholder="Enter your email" required>
+                  </div>
+                  <div class="form-group mt-3">
+                      <label for="supportMessage">Message</label>
+                      <textarea name="supportMessage" class="form-control" id="supportMessage" rows="4" placeholder="Describe your message... || Request Demo || leave your contacts  for easier reach out." required></textarea>
+                  </div>
+                  <div class="d-flex justify-content-between mt-4">
+                      <button type="submit" class="btn btn-primary">Send Message</button>
+                  </div>
+              </form>
+          </div>
+          
        <!-- Floating Home Button -->
        <div class="floating-home-button" onclick="window.location.href='/'">
               <i class="fas fa-home"><strong><<</strong></i>
        </div>
-
 
        <!-- Styles -->
        <style>
@@ -72,7 +57,7 @@
               /* Title styling */
               h1.text-primary {
                      color: #003366;
-                     font-size: 2rem;
+                     font-size: 1.5rem;
                      font-weight: bold;
                      margin-bottom: 10px;
               }
@@ -158,7 +143,7 @@
                      display: flex;
                      align-items: center;
                      justify-content: center;
-                     font-size: 1.5rem;
+                     font-size: 1.2rem;
                      cursor: pointer;
                      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
                      transition: background-color 0.3s, transform 0.3s;
@@ -170,12 +155,10 @@
                      transform: scale(1.1);
               }
 
-              /* Adjustments for the icon */
               .floating-home-button i {
-                     font-size: 1.5rem;
+                     font-size: 1.4rem;
               }
 
-              /* Responsive adjustments */
               @media (max-width: 576px) {
                      .floating-home-button {
                             width: 50px;
@@ -189,41 +172,41 @@
               }
 
 
-              /* Responsive adjustments */
               @media (max-width: 768px) {
                      h1.text-primary {
-                            font-size: 1.8rem;
+                            font-size: 1.2rem;
                      }
 
                      .form-control {
-                            font-size: 0.9rem;
+                            font-size: 0.6rem;
                      }
 
                      .btn-primary,
                      .btn-secondary {
-                            font-size: 0.9rem;
+                            font-size: 0.6rem;
                             padding: 8px 16px;
                      }
 
                      .container {
                             padding: 15px;
+                            font-size: 10px;
                      }
               }
 
               @media (max-width: 576px) {
                      h1.text-primary {
-                            font-size: 1.5rem;
+                            font-size: 1.0rem;
                      }
 
                      .form-control {
-                            font-size: 0.85rem;
-                            padding: 8px;
+                            font-size: 0.55rem;
+                            padding: 5px;
                      }
 
                      .btn-primary,
                      .btn-secondary {
-                            font-size: 0.85rem;
-                            padding: 6px 12px;
+                            font-size: 0.45rem;
+                            padding: 5px 10px;
                      }
 
                      .container {

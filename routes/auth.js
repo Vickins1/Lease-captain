@@ -7,6 +7,19 @@ const useragent = require('useragent');
 const bcrypt = require('bcrypt');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
+const crypto = require('crypto');
+
+// Google OAuth Routes
+router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+
+router.get('/tenancyManager/dashboard', 
+  passport.authenticate('google', {
+    failureRedirect: '/login', 
+  }),
+  (req, res) => {
+    res.redirect('/verification');
+});
 
 // Signup route
 router.get('/signup', (req, res) => {
@@ -14,60 +27,66 @@ router.get('/signup', (req, res) => {
   res.render('tenancyManager/signup', { errors: { error: error.length > 0 ? error[0] : null } });
 });
 
-// Handle signup form submission
 router.post('/signup', async (req, res) => {
   const { username, email, password, phone, plan } = req.body;
 
   // Input validation
   if (!username || !email || !password || !phone || !plan) {
-    req.flash('error', 'All fields are required. Please fill in all fields.');
-    return res.redirect('/signup');
+      req.flash('error', 'All fields are required. Please fill in all fields.');
+      return res.redirect('/signup');
   }
 
   try {
-    // Check if the user already exists
-    const existingUser = await User.findOne({ $or: [{ email }, { phone }] });
-    if (existingUser) {
-      req.flash('error', 'Email or phone number already exists. Please choose another.');
-      return res.redirect('/signup');
-    }
+      // Check if the user already exists
+      const existingUser = await User.findOne({ $or: [{ email }, { phone }] });
+      if (existingUser) {
+          req.flash('error', 'Email or phone number already exists. Please choose another.');
+          return res.redirect('/signup');
+      }
 
-    // Set tenant limit based on the plan
-    const tenantsLimit = getTenantsCount(plan);
+      const tenantsLimit = getTenantsCount(plan);
 
-    // Create a new user with the provided details
-    const user = new User({
-      username,
-      email,
-      phone,
-      plan,
-      tenantsLimit,
-    });
+      // Create a new user object with necessary fields except password
+      const user = new User({
+          username,
+          email,
+          phone,
+          password,
+          plan,
+          tenantsLimit,
+          isVerified: false,
+          verificationToken: crypto.randomBytes(32).toString('hex'), // Generate the verification token
+      });
 
-    // Register user with passport-local-mongoose to handle password hashing
-    await User.register(user, password);
+      // Register user with passport-local-mongoose to handle password hashing
+      await User.register(user, password) // Pass the password here
+          .then(async () => {
+              // Send welcome email with verification link
+              await sendWelcomeEmail(email, username, user.verificationToken); // Pass token to the email function
 
-    // Send welcome email and SMS
-    await sendWelcomeEmail(email, username);
-    await sendWelcomeSMS(phone, username);
-
-    req.flash('success', 'Successfully signed up! Please log in.');
-    res.redirect('/login');
+              req.flash('success', 'Successfully signed up! Please check your email to verify your account and log in.');
+              res.redirect('/login');
+          })
+          .catch(err => {
+              // Handle error during registration
+              req.flash('error', 'Sign up failed: ' + err.message);
+              res.redirect('/signup');
+          });
   } catch (err) {
-    let errorMessage;
+      let errorMessage;
 
-    if (err.code === 11000) {
-      errorMessage = 'Username, email, or phone number already exists. Please choose another.';
-    } else {
-      errorMessage = 'Sign up failed: ' + err.message;
-    }
+      // Handle duplicate key error
+      if (err.code === 11000) {
+          errorMessage = 'Username, email, or phone number already exists. Please choose another.';
+      } else {
+          errorMessage = 'Sign up failed: ' + err.message;
+      }
 
-    console.log('Error during signup:', err.message);
-    req.flash('error', errorMessage);
-    res.redirect('/signup');
+      console.log('Error during signup:', err.message);
+      req.flash('error', errorMessage);
+      res.redirect('/signup');
   }
 });
-
 
 // Function to get tenants limit based on the selected plan
 function getTenantsCount(plan) {
@@ -95,98 +114,106 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// Send welcome email
-const sendWelcomeEmail = async (email, username) => {
+const sendWelcomeEmail = async (email, username, verificationToken) => {
   const mailOptions = {
-    from: process.env.EMAIL_USERNAME,
-    to: email,
-    subject: 'Welcome to Lease Captain!',
-    html: `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Welcome to Lease Captain!</title>
-          <style>
-              body {
-                  font-family: Arial, sans-serif;
-                  background-color: #ffffff;
-                  color: #333;
-                  margin: 0;
-                  padding: 0;
-              }
-              .email-container {
-                  max-width: 600px;
-                  margin: 0 auto;
-                  background-color: #ffffff;
-                  border: 1px solid #e0e0e0;
-                  border-radius: 5px;
-                  overflow: hidden;
-              }
-              .email-header {
-                  background-color: #003366;
-                  color: #ffffff;
-                  padding: 20px;
-                  text-align: center;
-                  font-size: 24px;
-                  font-weight: bold;
-              }
-              .email-body {
-                  padding: 20px;
-              }
-              .email-body h1 {
-                  color: #003366;
-                  font-size: 22px;
-                  margin-top: 0;
-              }
-              .email-body p {
-                  line-height: 1.6;
-                  color: #333;
-                  margin: 15px 0;
-              }
-              .email-footer {
-                  background-color: #f4f4f4;
-                  padding: 10px;
-                  text-align: center;
-                  color: #777;
-                  font-size: 12px;
-              }
-          </style>
-      </head>
-      <body>
-          <div class="email-container">
-              <!-- Email Header -->
-              <div class="email-header">
-                  Welcome to Lease Captain!
-              </div>
-              
-              <!-- Email Body -->
-              <div class="email-body">
-                  <h1>Greetings, ${username}!</h1>
-                  <p>Welcome to <strong>Lease Captain</strong>! We’re thrilled to have you on board.</p>
-                  <p>Thank you for choosing Lease Captain as your property management partner. We’re here to help you manage your properties effortlessly.</p>
-                  <p>If you have any questions, feel free to reach out to our support team.</p>
-                  <p>Best regards,<br>Lease Captain Team</p>
-              </div>
-              
-              <!-- Email Footer -->
-              <div class="email-footer">
-                  &copy; 2024 Lease Captain. All rights reserved.
-              </div>
-          </div>
-      </body>
-      </html>
+      // Customize the from field with a name
+      from: `"Lease Captain" <${process.env.EMAIL_USERNAME}>`, 
+      to: email,
+      subject: 'Welcome to Lease Captain! Please Verify Your Email',
+      html: `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Lease Captain!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            background-color: #003366;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            border-radius: 8px 8px 0 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .content {
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .content p {
+            margin: 10px 0;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: #003366;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+        .cta-button:hover {
+            background-color: #00509E;
+        }
+        .footer {
+            text-align: center;
+            color: #777;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Welcome to Lease Captain!</h1>
+        </div>
+        <div class="content">
+            <p>Greetings <strong>${username}</strong>,</p>
+            <p>Thank you for signing up! We are thrilled to have you on board.</p>
+            <p>To complete your registration, please verify your email address by clicking the link below:</p>
+            <p><a href="https://leasecaptain.com/verify/${verificationToken}" class="cta-button">Verify Email</a></p>
+            <p>If you did not sign up for this account, you can ignore this email.</p>
+            <p>Best regards,<br>Lease Captain Team</p>
+        </div>
+        <div class="footer">
+            &copy; 2024 Lease Captain. All rights reserved.
+        </div>
+    </div>
+</body>
+</html>
     `
   };
 
   try {
-    await transporter.sendMail(mailOptions);
-    console.log('Welcome email sent successfully.');
+      await transporter.sendMail(mailOptions);
+      console.log('Welcome email sent successfully.');
   } catch (error) {
-    console.error('Error sending welcome email:', error);
+      console.error('Error sending welcome email:', error);
   }
 };
+
 
 // Send welcome SMS using UMS API
 const sendWelcomeSMS = async (phone, username) => {

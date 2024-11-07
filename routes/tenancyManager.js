@@ -4,7 +4,7 @@ const nodemailer = require('nodemailer');
 require('dotenv').config();
 const Property = require('../models/property');
 const Tenant = require('../models/tenant');
-const { checkRole, isTenancyManager } = require('../middleware');
+const { isVerified, isTenancyManager } = require('../middleware');
 const bcrypt = require('bcryptjs');
 const Payment = require('../models/payment');
 const User = require('../models/user');
@@ -21,6 +21,7 @@ const Permission = require('../models/permissions');
 const Unit = require('../models/unit');
 const SupportMessage = require('../models/supportMessage');
 
+
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -29,12 +30,169 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+
+// Route to render the verification page
+router.get('/verification', (req, res) => {
+    // Check if the user is logged in
+    if (!req.user) {
+        req.flash('error', 'You need to be logged in to access this page.');
+        return res.redirect('/login'); // Redirect to login if not authenticated
+    }
+
+    // Check if the user is already verified
+    if (req.user.isVerified) {
+        return res.redirect('/tenancy-manager/dashboard'); 
+    }
+
+    // Render the verification page if the user is not verified
+    res.render('verification', { user: req.user });
+});
+
+
+router.get('/verify/:token', async (req, res) => {
+    try {
+        const user = await User.findOne({ verificationToken: req.params.token });
+        if (!user) {
+            req.flash('error', 'Invalid or expired verification token.');
+            return res.redirect('/login');
+        }
+
+        // Verify the user
+        user.isVerified = true;
+        user.verificationToken = undefined; // Clear the verification token
+        await user.save();
+
+        req.flash('success', 'Your email has been verified! You can now log in.');
+        res.redirect('/login');
+    } catch (error) {
+        console.error('Error during email verification:', error);
+        req.flash('error', 'An error occurred during verification. Please try again.');
+        res.redirect('/login');
+    }
+});
+
+// Route to resend verification email
+router.get('/resend-verification', async (req, res) => {
+    // Check if the user is logged in
+    if (!req.user) {
+        req.flash('error', 'You need to be logged in to resend the verification email.');
+        return res.redirect('/login');
+    }
+
+    try {
+        // Generate a new verification token
+        const token = crypto.randomBytes(32).toString('hex');
+        req.user.verificationToken = token;
+        req.user.verificationExpires = Date.now() + 3600000;
+        await req.user.save();
+
+        // Send welcome email with the verification link
+        await sendWelcomeEmail(req.user.email, req.user.username, token);
+
+        req.flash('success', 'Verification email sent successfully! Please check your inbox.');
+        res.redirect('/verification');
+    } catch (error) {
+        console.error('Error resending verification email:', error);
+        req.flash('error', 'An error occurred while resending the verification email. Please try again later.');
+        res.redirect('/tenancy-manager/dashboard');
+    }
+});
+
+
+const sendWelcomeEmail = async (email, username, verificationToken) => {
+    const mailOptions = {
+        from: process.env.EMAIL_USERNAME,
+        to: email,
+        subject: 'Welcome to Lease Captain! Please Verify Your Email',
+        html: `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Welcome to Lease Captain!</title>
+<style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        background-color: #ffffff;
+                        margin: 0;
+                        padding: 0;
+                        color: #000000;
+                    }
+                    .container {
+                        width: 100%;
+                        max-width: 600px;
+                        margin: 0 auto;
+                        background-color: #ffffff;
+                        padding: 20px;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                    }
+                    .header {
+                        background-color: #003366;
+                        padding: 10px;
+                        text-align: center;
+                        color: white;
+                        border-radius: 8px 8px 0 0;
+                    }
+                    .header h1 {
+                        margin: 0;
+                        font-size: 24px;
+                    }
+                    .content {
+                        padding: 20px;
+                        line-height: 1.6;
+                    }
+                    .cta-button {
+                        display: inline-block;
+                        padding: 12px 20px;
+                        background-color: #003366;
+                        color: white;
+                        text-decoration: none;
+                        border-radius: 5px;
+                        margin-top: 10px;
+                        text-align: center;
+                    }
+                    .cta-button:hover {
+                        background-color: #00509E;
+                    }
+                </style>
+        </head>
+        <body>
+           <div class="email-container">
+    <h1>Welcome to Lease Captain!</h1>
+    <p>Hi ${username},</p>
+    <p>Thank you for signing up! Please verify your email address by clicking the link below:</p>
+    <p><a href="https://leasecaptain.com/verify/${verificationToken}">Verify Email</a></p>
+    <p>If you did not sign up for this account, you can ignore this email.</p>
+    <p>Best regards,<br>Lease Captain Team</p>
+</div>
+
+        </body>
+        </html>
+      `
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log('Welcome email sent successfully.');
+    } catch (error) {
+        console.error('Error sending welcome email:', error);
+    }
+};
+
+
 router.get('/tenancy-manager/dashboard', async (req, res) => {
     try {
         // Ensure the user is authenticated
         if (!req.user) {
             req.flash('error', 'User not authenticated.');
             return res.redirect('/login');
+        }
+
+        // Check if the user's email is verified
+        if (!req.user.isVerified) {
+            return res.redirect('/verification'); // Redirect to verification page
         }
 
         // Fetch the user's properties
@@ -57,7 +215,6 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
         const numberOfUnits = await PropertyUnit.countDocuments({ propertyId: { $in: properties.map(prop => prop._id) } });
 
         const occupiedUnitsCount = units.reduce((count, unit) => count + (unit.status === 'occupied' ? 1 : 0), 0);
-
 
         const rentCollectionData = {};
         tenants.forEach(tenant => {
@@ -97,7 +254,8 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
             totalRequests,
             rentDataArray,
             smsBalance,
-            currentUser: req.user
+            currentUser: req.user,
+            transactionRequestId: 'your-transaction-id'
         });
     } catch (err) {
         console.error('Error fetching dashboard data:', err);
@@ -105,6 +263,22 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
         res.redirect('/login');
     }
 });
+
+// Example route to get the payment status for the logged-in user
+router.get('/api/payment/status', async (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+
+    try {
+        const paymentStatus = await req.user.getPaymentStatus();
+        res.json({ success: true, paymentStatus });
+    } catch (error) {
+        console.error('Error fetching payment status:', error);
+        res.status(500).json({ success: false, message: 'Error fetching payment status.' });
+    }
+});
+
 
 // POST endpoint to handle support form submission
 router.post('/submit', async (req, res) => {
@@ -381,7 +555,7 @@ router.post('/tenancy-manager/tenant/new', async (req, res) => {
 async function sendTenantEmail(newTenant, propertyName) {
     try {
         const mailOptions = {
-            from: process.env.EMAIL_USER,
+            from: `"Lease Captain" <${process.env.EMAIL_USERNAME}>`,
             to: newTenant.email,
             subject: 'Lease Captain Tenant Portal Logins!',
             html: `
@@ -443,7 +617,7 @@ async function sendTenantEmail(newTenant, propertyName) {
                         <h1>Welcome to Lease Captain Tenant Portal</h1>
                     </div>
                     <div class="content">
-                        <h2>Dear ${newTenant.name},</h2>
+                        <h2>Greetings ${newTenant.name},</h2>
                         <p>Welcome to your new home at <strong>${propertyName}</strong>! Your account has been successfully created. You can now access your tenant portal to manage your account.</p>
                         <h3>Your Account Details:</h3>
                         <p><strong>Username:</strong> ${newTenant.name}<br><strong>Password:</strong> 12345678</p>
@@ -467,7 +641,7 @@ async function sendTenantEmail(newTenant, propertyName) {
             </html>
             `,
         };
-
+        
         await transporter.sendMail(mailOptions);
         console.log(`Email sent to ${newTenant.email}`);
     } catch (emailError) {
@@ -612,7 +786,6 @@ router.get('/reports-invoices', async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
-
 
 router.get('/expenses', async (req, res) => {
     try {
@@ -781,7 +954,6 @@ router.post('/users/create', async (req, res) => {
         res.redirect('/users/create');
     }
 });
-
 
 
 // Route to assign a role to a user
@@ -1023,7 +1195,6 @@ router.post('/delete/:id', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
-
 
 
 // Get top-up page

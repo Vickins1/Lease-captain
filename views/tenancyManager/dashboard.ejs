@@ -366,73 +366,74 @@
         }
     </style>
 
-    <!-- Sidebar -->
-    <nav class="sidebar" id="sidebarMenu">
-        <h2 class="sidebar-title"><strong>Lease Captain</strong></h2>
-        <ul class="nav flex-column">
-            <li>
-                <a class="nav-link" href="/tenancy-manager/dashboard">
-                    <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
-                </a>
-            </li>
-            <li>
-                <a class="nav-link dropdown-toggle" href="#propertiesSubmenu" data-toggle="collapse">
-                    <i class="fas fa-home"></i> <span>Manage Properties</span>
-                </a>
-                <ul class="collapse" id="propertiesSubmenu">
-                    <li><a class="nav-link" href="/tenancy-manager/properties">Properties</a></li>
-                    <li><a class="nav-link" href="/tenancy-manager/property/units">Property Units</a></li>
-                </ul>
-            </li>
-            <li>
-                <a class="nav-link dropdown-toggle" href="#tenantsSubmenu" data-toggle="collapse">
-                    <i class="fas fa-users"></i> <span>Manage Tenants</span>
-                </a>
-                <ul class="collapse" id="tenantsSubmenu">
-                    <li><a class="nav-link" href="/tenancy-manager/tenants">Tenants</a></li>
-                    <li><a class="nav-link" href="/maintenance-requests">Maintenance Requests</a></li>
-                </ul>
-            </li>
-            <li>
-                <a class="nav-link dropdown-toggle" href="#billingSubmenu" data-toggle="collapse">
-                    <i class="fas fa-money-bill-wave"></i> <span>Finance Management</span>
-                </a>
-                <ul class="collapse" id="billingSubmenu">
-                    <li><a class="nav-link" href="/tenancy-manager/payments">Transactions</a></li>
-                    <li><a class="nav-link" href="/reports-invoices">Reports & Invoices</a></li>
-                    <li><a class="nav-link" href="/expenses">Expenses</a></li>
-                </ul>
-            </li>
-            <li>
-                <a class="nav-link dropdown-toggle" href="#smsSubmenu" data-toggle="collapse">
-                    <i class="fas fa-sms"></i> <span>Manage Notifications</span>
-                </a>
-                <ul class="collapse" id="smsSubmenu">
-                    <li><a class="nav-link" href="/top-ups">Top up</a></li>
-                    <li><a class="nav-link" href="/sms&email">SMS & Emails</a></li>
-                </ul>
-            </li>
-            <li>
-                <a class="nav-link dropdown-toggle" href="#userSubmenu" data-toggle="collapse">
-                    <i class="fas fa-users-cog"></i> <span>User Management</span>
-                </a>
-                <ul class="collapse" id="userSubmenu">
-                    <li><a class="nav-link" href="/users">Users</a></li>
-                    <li><a class="nav-link" href="/roles">Roles</a></li>
-                </ul>
-            </li>
-            <li>
-                <a class="nav-link dropdown-toggle" href="#settingsSubmenu" data-toggle="collapse">
-                    <i class="fas fa-cog"></i> <span>Settings</span>
-                </a>
-                <ul class="collapse" id="settingsSubmenu">
-                    <li><a class="nav-link" href="/tenancy-manager/profile">Profile Settings</a></li>
-                    <li><a class="nav-link" href="/tenancy-manager/security">Security Settings</a></li>
-                    <li><a class="nav-link" href="/connect">Payment Gateway</a></li>
-                </ul>
-            </li>
-        </ul>
-    </nav>
+   <!-- Sidebar -->
+<nav class="sidebar" id="sidebarMenu">
+    <h2 class="sidebar-title"><strong>Lease Captain</strong></h2>
+    <ul class="nav flex-column">
+        <li>
+            <a class="nav-link" href="/tenancy-manager/dashboard">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+        </li>
+        <li>
+            <a class="nav-link dropdown-toggle" href="#propertiesSubmenu" data-toggle="collapse">
+                <i class="fas fa-home"></i> Property Management
+            </a>
+            <ul class="collapse" id="propertiesSubmenu">
+                <li><a class="nav-link" href="/tenancy-manager/properties">Properties</a></li>
+                <li><a class="nav-link" href="/tenancy-manager/property/units">Property Units</a></li>
+            </ul>
+        </li>
+        <li>
+            <a class="nav-link dropdown-toggle" href="#tenantsSubmenu" data-toggle="collapse">
+                <i class="fas fa-users"></i> Tenant Management
+            </a>
+            <ul class="collapse" id="tenantsSubmenu">
+                <li><a class="nav-link" href="/tenancy-manager/tenants">Tenants</a></li>
+                <li><a class="nav-link" href="/maintenance-requests">Maintenance Requests</a></li>
+            </ul>
+        </li>
+        <li>
+            <a class="nav-link dropdown-toggle" href="#billingSubmenu" data-toggle="collapse">
+                <i class="fas fa-money-bill-wave"></i> Financial Overview
+            </a>
+            <ul class="collapse" id="billingSubmenu">
+                <li><a class="nav-link" href="/tenancy-manager/payments">Payment Transactions</a></li>
+                <li><a class="nav-link" href="/reports-invoices">Reports & Invoices</a></li>
+                <li><a class="nav-link" href="/expenses">Expense Tracking</a></li>
+            </ul>
+        </li>
+        <li>
+            <a class="nav-link dropdown-toggle" href="#smsSubmenu" data-toggle="collapse">
+                <i class="fas fa-sms"></i> Notification Management
+            </a>
+            <ul class="collapse" id="smsSubmenu">
+                <li><a class="nav-link" href="/top-ups">Credit Top-Up</a></li>
+                <li><a class="nav-link" href="/sms&email">SMS & Email Notifications</a></li>
+            </ul>
+        </li>
+        <li>
+            <a class="nav-link dropdown-toggle" href="#userSubmenu" data-toggle="collapse">
+                <i class="fas fa-users-cog"></i> User Administration
+            </a>
+            <ul class="collapse" id="userSubmenu">
+                <li><a class="nav-link" href="/users">User Accounts</a></li>
+                <li><a class="nav-link" href="/roles">User Roles</a></li>
+            </ul>
+        </li>
+        <li>
+            <a class="nav-link dropdown-toggle" href="#settingsSubmenu" data-toggle="collapse">
+                <i class="fas fa-cog"></i> Account Settings
+            </a>
+            <ul class="collapse" id="settingsSubmenu">
+                <li><a class="nav-link" href="/tenancy-manager/profile">Profile Settings</a></li>
+                <li><a class="nav-link" href="/tenancy-manager/security">Security Settings</a></li>
+                <li><a class="nav-link" href="/connect">Payment Gateway Integration</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+
 
     <div class="container mt-4">
         <% if (typeof success !=='undefined' && success.length> 0) { %>
@@ -580,7 +581,7 @@
                                 <div class="card shadow-lg border-0 h-100">
                                     <div class="card-header text-white"
                                         style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                        <h5 class="mb-0">Number of Units</h5>
+                                        <h5 class="mb-0">Number of Property Units</h5>
                                     </div>
                                     <div class="card-body bg-light d-flex align-items-center justify-content-between"
                                         style="border-radius: 0 0 0.5rem 0.5rem;">
@@ -594,14 +595,12 @@
                                 </div>
                             </div>
 
-
-
                             <!-- Occupied Units Card -->
                             <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
                                 <div class="card shadow-lg border-0 h-100">
                                     <div class="card-header text-white"
                                         style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                        <h5 class="mb-0">Occupied Units</h5>
+                                        <h5 class="mb-0">Occupied Property Units</h5>
                                     </div>
                                     <div class="card-body bg-light d-flex align-items-center justify-content-between"
                                         style="border-radius: 0 0 0.5rem 0.5rem;">
@@ -614,7 +613,6 @@
                                     </div>
                                 </div>
                             </div>
-
 
                             <!-- Number of Tenants Card -->
                             <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
@@ -813,14 +811,59 @@
     <!-- Report Graph Section -->
     <section id="report-graph-section" style="background-color: #f4f7fa; padding: 40px 20px;">
         <div class="report-container">
-            <h2 style="text-align: center; color: #003366; margin-bottom: 20px;"><strong>Report Overview</strong></h2>
+            <h2 style="text-align: center; color: #003366; margin-bottom: 20px; font-size: 1.5rem;">
+                <strong>Report Overview</strong>
+            </h2>
+
             <div class="canvas-wrapper">
                 <canvas id="reportGraph" aria-label="Report Graph" role="img"></canvas>
             </div>
+
+            <div class="container">
+                <div class="row">
+                    <!-- First Donut Graph -->
+                    <div class="col-12 col-md-6 mb-4"> <!-- Full width on small screens -->
+                        <div class="canvas-wrapper">
+                            <h3 class="text-center text-dark" style="font-size: 1.2rem; margin-bottom: 20px;">
+
+                            </h3>
+                            <canvas id="paymentStatusDonut" aria-label="Payment Status Donut Graph" role="img"></canvas>
+                        </div>
+                    </div>
+                    <div class="gap"></div>
+
+                    <!-- Second Donut Graph -->
+                    <div class="col-12 col-md-6 mb-4"> <!-- Full width on small screens -->
+                        <div class="canvas-wrapper">
+                            <h3 class="text-center text-dark" style="font-size: 1.2rem; margin-bottom: 20px;">
+
+                            </h3>
+                            <canvas id="paymentMethodDonut" aria-label="Payment Method Donut Graph" role="img"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                .canvas-wrapper {
+                    height: 250px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                }
+
+                canvas {
+                    width: 100% !important;
+                    /* Ensure canvas takes full width */
+                    height: auto !important;
+                    /* Maintain aspect ratio */
+                }
+            </style>
         </div>
     </section>
 
-    <!-- Chart.js Library (include this in your HTML head or before closing body tag) -->
+
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- JavaScript for Chart Initialization -->
@@ -883,6 +926,74 @@
                 }
             }
         };
+        // Sample data for the payment status donut graph
+        const paymentStatusData = {
+            labels: ['Completed Payments', 'Pending Payments', 'Failed Payments'],
+            datasets: [{
+                data: [300, 50, 100], // Replace with actual payment status data
+                backgroundColor: ['#4CAF50', '#FFC107', '#F44336'], // Colors for each section
+                hoverBackgroundColor: ['#45a049', '#e0a800', '#c62828']
+            }]
+        };
+
+        // Configuration options for the payment status donut graph
+        const paymentStatusConfig = {
+            type: 'doughnut',
+            data: paymentStatusData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Payment Status Overview'
+                    }
+                }
+            }
+        };
+
+        // Render the payment status donut graph
+        const paymentStatusDonut = new Chart(
+            document.getElementById('paymentStatusDonut'),
+            paymentStatusConfig
+        );
+
+        // Sample data for the payment method distribution donut graph
+        const paymentMethodData = {
+            labels: ['Credit Card', 'Mobile Money', 'Bank Transfer'],
+            datasets: [{
+                data: [250, 150, 100], // Replace with actual payment method data
+                backgroundColor: ['#2196F3', '#FF5722', '#FFEB3B'], // Different colors for the second donut
+                hoverBackgroundColor: ['#1976D2', '#E64A19', '#FBC02D']
+            }]
+        };
+
+        // Configuration options for the payment method distribution donut graph
+        const paymentMethodConfig = {
+            type: 'doughnut',
+            data: paymentMethodData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Payment Method Distribution'
+                    }
+                }
+            }
+        };
+
+        // Render the payment method distribution donut graph
+        const paymentMethodDonut = new Chart(
+            document.getElementById('paymentMethodDonut'),
+            paymentMethodConfig
+        );
+
 
         // Render the chart
         window.onload = () => {
@@ -935,105 +1046,218 @@
             }
         }
     </style>
-<!-- Floating Support Button -->
-<div class="floating-support">
-    <button type="button" class="btn btn-dark d-flex align-items-center" data-toggle="modal" data-target="#supportModal">
-        <i class="fas fa-headset fa-2x mr-2"></i> Support
-    </button>
-</div>
+    <!-- Floating Support Button -->
+    <div class="floating-support">
+        <button type="button" class="btn btn-dark d-flex align-items-center" data-toggle="modal"
+            data-target="#supportModal">
+            <i class="fas fa-headset fa-2x mr-2"></i> Support
+        </button>
+    </div>
 
-<!-- Support Modal -->
-<div class="modal fade" id="supportModal" tabindex="-1" role="dialog" aria-labelledby="supportModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header" style="background-color: #003366; color: #ffffff;">
-                <h5 class="modal-title" id="supportModalLabel">Contact Support</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+    <!-- Support Modal -->
+    <div class="modal fade" id="supportModal" tabindex="-1" role="dialog" aria-labelledby="supportModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #003366; color: #ffffff;">
+                    <h5 class="modal-title" id="supportModalLabel">Contact Support</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="supportForm" action="/submit" method="POST">
+                        <div class="form-group">
+                            <label for="emailAddress">Your Email</label>
+                            <input type="email" class="form-control" name="emailAddress" id="emailAddress"
+                                placeholder="Enter your email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="supportMessage">Message</label>
+                            <textarea class="form-control" name="supportMessage" id="supportMessage" rows="4"
+                                placeholder="Write your message here..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-dark">Send Message</button>
+                    </form>
+
+                </div>
+
             </div>
-            <div class="modal-body">
-                <form id="supportForm" action="/submit" method="POST">
-                    <div class="form-group">
-                        <label for="emailAddress">Your Email</label>
-                        <input type="email" class="form-control" name="emailAddress" id="emailAddress" placeholder="Enter your email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="supportMessage">Message</label>
-                        <textarea class="form-control" name="supportMessage" id="supportMessage" rows="4" placeholder="Write your message here..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-dark">Send Message</button>
-                </form>
-                
-            </div>
-           
         </div>
     </div>
-</div>
 
-<!-- Styles for Floating Button -->
-<style>
-    /* Floating Support Button Style */
-    .floating-support {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 1000;
-    }
-
-    .floating-support .btn {
-        background-color: #003366;
-        color: #ffffff;
-        font-size: 1.2rem;
-        padding: 15px 20px;
-        border-radius: 50px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .floating-support .btn:hover {
-        transform: scale(1.05);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-        background-color: #0056b3;
-    }
-
-    .floating-support .fas.fa-headset {
-        color: #ffffff;
-    }
-
-    /* Responsive Adjustments */
-    @media (max-width: 768px) {
-        .floating-support .btn {
-            font-size: 1rem;
-            padding: 12px 18px;
-        }
-        .floating-support .fas.fa-headset {
-            font-size: 1.5rem;
-        }
-    }
-
-    @media (max-width: 576px) {
+    <!-- Styles for Floating Button -->
+    <style>
+        /* Floating Support Button Style */
         .floating-support {
-            bottom: 15px;
-            right: 15px;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
         }
-        .floating-support .btn {
-            font-size: 0.9rem;
-            padding: 10px 15px;
-        }
-        .floating-support .fas.fa-headset {
-            font-size: 1.2rem;
-            margin-right: 0.5rem;
-        }
-    }
-</style>
 
+        .floating-support .btn {
+            background-color: #003366;
+            color: #ffffff;
+            font-size: 0.9rem;
+            padding: 8px 14px;
+            border-radius: 50px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .floating-support .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            background-color: #0056b3;
+        }
+
+        .floating-support .fas.fa-headset {
+            color: #ffffff;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .floating-support .btn {
+                font-size: 0.5rem;
+                padding: 12px 18px;
+            }
+
+            .floating-support .fas.fa-headset {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .floating-support {
+                bottom: 15px;
+                right: 15px;
+            }
+
+            .floating-support .btn {
+                font-size: 0.5rem;
+                padding: 10px 15px;
+            }
+
+            .floating-support .fas.fa-headset {
+                font-size: 0.9rem;
+                margin-right: 0.3rem;
+            }
+        }
+    </style>
+
+
+
+    <!-- Payment Status Modal -->
+    <div class="modal fade" id="paymentStatusModal" tabindex="-1" role="dialog" aria-labelledby="paymentStatusLabel"
+        aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paymentStatusLabel">Payment Status</h5>
+                </div>
+                <div class="modal-body">
+                    <p id="paymentMessage">Checking your payment status...</p>
+                    <div id="paymentDetails" class="d-none">
+                        <h6>Payment Details:</h6>
+                        <ul>
+                            <li><strong>Amount:</strong> <span id="paymentAmount"></span></li>
+                            <li><strong>Transaction ID:</strong> <span id="transactionId"></span></li>
+                            <li><strong>Status:</strong> <span id="paymentStatus"></span></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="completePaymentButton">Complete Payment</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function checkPaymentStatus() {
+            try {
+                const response = await fetch('/api/payment/status');
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update payment details in the modal
+                    document.getElementById('paymentAmount').innerText = data.paymentStatus.amount || 'N/A';
+                    document.getElementById('transactionId').innerText = data.paymentStatus.transactionId || 'N/A';
+                    document.getElementById('paymentStatus').innerText = data.paymentStatus.status;
+                    document.getElementById('paymentMessage').innerText = 'Payment Status Checked!';
+                    document.getElementById('paymentDetails').classList.remove('d-none');
+
+                    // Check if the payment is completed
+                    if (data.paymentStatus.status === 'completed') {
+                        document.getElementById('completePaymentButton').disabled = false;
+                        document.getElementById('paymentMessage').innerText = 'Payment completed successfully!';
+                        clearInterval(window.paymentStatusCheckInterval); // Stop checking
+                        $('#paymentStatusModal').modal('hide'); // Optionally hide the modal
+                    } else {
+                        // If payment is not completed, show the complete payment modal
+                        document.getElementById('planAmount').innerText = `Ksh. ${data.paymentStatus.amount}`;
+                        $('#completePaymentModal').modal('show'); // Show the complete payment modal
+                    }
+                } else {
+                    document.getElementById('paymentMessage').innerText = 'Payment status check failed. Please try again.';
+                }
+            } catch (error) {
+                console.error('Error checking payment status:', error);
+                document.getElementById('paymentMessage').innerText = 'An error occurred while checking payment status.';
+            }
+        }
+
+        // Confirm payment button logic
+        document.getElementById('confirmPaymentButton').addEventListener('click', async function () {
+            const phoneNumber = document.getElementById('paymentPhoneNumber').value;
+            const amount = document.getElementById('planAmount').innerText.replace('Ksh. ', '').trim(); // Get the plan amount
+
+            try {
+                const paymentResponse = await fetch('/api/payment/complete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ phoneNumber, amount }),
+                });
+
+                const paymentData = await paymentResponse.json();
+
+                if (paymentData.success) {
+                    // Close the complete payment modal
+                    $('#completePaymentModal').modal('hide');
+                    // Optionally show a success message
+                    alert('Payment successful! Thank you for your payment.');
+                } else {
+                    document.getElementById('paymentError').innerText = paymentData.message || 'Payment failed. Please try again.';
+                }
+            } catch (error) {
+                console.error('Error completing payment:', error);
+                alert('An error occurred while processing the payment. Please try again.');
+            }
+        });
+
+        function showPaymentModal() {
+            $('#paymentStatusModal').modal('show'); // Show the modal
+            checkPaymentStatus(); // Initial check
+
+            // Check payment status every 5 seconds
+            window.paymentStatusCheckInterval = setInterval(() => {
+                checkPaymentStatus();
+            }, 5000); // Check every 5 seconds
+        }
+
+        $(document).ready(function () {
+            showPaymentModal();
+        });
+    </script>
 
 
 
     <footer class="text-center py-0">
         &copy; 2024 Lease Captain. All Rights Reserved || powered by
-        <a href="https://vickinstechnologies.com" target="_blank">Vickins Technologies</a>
+        <a href="/" target="_blank">Vickins Technologies</a>
     </footer>
 
     <style>

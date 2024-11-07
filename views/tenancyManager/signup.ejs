@@ -26,25 +26,21 @@
       justify-content: center;
       align-items: center;
     }
-    h1 {
-      font-weight: bold; 
-      color: #003366;
-      font-size: 30px;
-    }
 
     .right-section {
-      padding: 30px;
+      padding: 20px;
       background-color: white;
       border-radius: 10px;
       box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
       width: 100%;
-      max-width: 450px;
+      max-width: 550px;
       margin: auto;
     }
 
     .right-section h1 {
       font-weight: bold;
       font-size: 2rem;
+      color: #003366;
     }
 
     .btn-primary {
@@ -66,49 +62,106 @@
       margin-right: 5px;
     }
 
+    /* Responsive styles */
     @media (max-width: 768px) {
       .right-section {
-        padding: 10px;
-      }
-
-      .right-section h1 {
-        font-size: 1.5rem;
-      }
-
-      .btn-primary {
-        font-size: 0.9rem;
-      }
-    }
-
-    @media (max-width: 376px) {
-      .container {
-        margin-top: 20%;
-        padding: 20px;
+        padding: 15px;
         width: 90%;
       }
 
-      h1 {
-        font-size: 1.2rem;
-      }
-
-      .form-group label {
-        font-size: 0.7rem;
+      .right-section h1 {
+        font-size: 1.8rem;
       }
 
       .btn-primary {
-        font-size: 0.7rem;
-      }
-
-      .form-control {
         font-size: 0.6rem;
-      }
-
-      .btn {
-        font-size: 0.7rem;
       }
 
       .p {
+        font-size: 0.5rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .container-fluid {
+        padding: 15px;
+      }
+
+      .right-section {
+        padding: 10px;
+        width: 100%;
+      }
+
+      .right-section h1 {
+        font-size: 1.0rem;
+      }
+
+      .form-group label {
         font-size: 0.6rem;
+      }
+
+      .btn-primary {
+        font-size: 0.5rem;
+      }
+
+      .form-control {
+        font-size: 0.5rem;
+      }
+
+      .text-center {
+        font-size: 0.7rem;
+      }
+
+      .form-check-label {
+        font-size: 0.rem;
+      }
+
+      .form-check-input {
+        margin-right: 0.3rem;
+      }
+
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-check {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .form-check-input {
+      margin-right: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+
+      /* For smaller screens, reduce padding and font sizes */
+      .form-control {
+        font-size: 0.9rem;
+        padding: 0.5rem;
+      }
+
+      .form-check-label {
+        font-size: 0.9rem;
+      }
+
+      .form-check-input {
+        margin-right: 0.3rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+
+      /* Further reduce font sizes for very small screens */
+      .form-control {
+        font-size: 0.8rem;
+      }
+
+      .form-check-label {
+        font-size: 0.8rem;
       }
     }
   </style>
@@ -116,122 +169,152 @@
 
 <body>
   <div class="container-fluid">
-    <!-- Right Section for Signup Form -->
     <div class="right-section">
       <h1 class="text-center"><i class="fas fa-user-plus"></i> Sign Up</h1>
 
       <!-- Error Message -->
-      <% if (error && error.length > 0) { %>
-      <div class="alert alert-danger text-center" role="alert" style="font-size: 0.9rem;">
-        <%= error %>
-      </div>
-      <% } %>
+      <% if (error && error.length> 0) { %>
+        <div class="alert alert-danger text-center" role="alert" style="font-size: 0.9rem;">
+          <%= error %>
+        </div>
+        <% } %>
 
-      <!-- Success Message -->
-      <% if (success && success.length > 0) { %>
-      <div class="alert alert-success text-center" role="alert" style="font-size: 0.9rem;">
-        <%= success %>
-      </div>
-      <% } %>
+          <!-- Success Message -->
+          <% if (success && success.length> 0) { %>
+            <div class="alert alert-success text-center" role="alert" style="font-size: 0.9rem;">
+              <%= success %>
+            </div>
+            <% } %>
 
-      <style>
-        @media (max-width: 576px) {
-          .alert {
-            font-size: 0.8rem;
-          }
-        }
-      </style>
+              <form id="signupForm" action="/signup" method="POST">
+                <div class="form-group">
+                  <label for="email"><i class="fas fa-envelope"></i> Email</label>
+                  <input type="email" name="email" id="email" class="form-control" placeholder="Enter your email"
+                    required>
+                </div>
 
-<form id="signupForm" action="/signup" method="POST">
-  <div class="form-group">
-    <label for="email"><i class="fas fa-envelope"></i> Email</label>
-    <input type="email" name="email" id="email" class="form-control" placeholder="Enter your email" required>
-  </div>
-  
-  <div class="form-group">
-    <label for="username"><i class="fas fa-user"></i> Username</label>
-    <input type="text" name="username" id="username" class="form-control" placeholder="Enter your username" required>
-  </div>
-  
-  <div class="form-group">
-    <label for="phone"><i class="fas fa-phone"></i> Phone Number</label>
-    <input type="tel" name="phone" id="phone" class="form-control" placeholder="Enter your phone number" required>
-  </div>
-  
-  <div class="form-group">
-    <label for="password"><i class="fas fa-lock"></i> Password</label>
-    <div class="password-container">
-      <input type="password" name="password" id="password" class="form-control" placeholder="Enter password" required>
-      <small class="form-check-inline">
-        <input type="checkbox" id="showPassword" class="form-check-input">
-        <label for="showPassword" class="form-check-label">Show Password</label>
-      </small>
-    </div>
-  </div>
-  
-  <div class="form-group">
-    <label for="confirm-password"><i class="fas fa-lock"></i> Confirm Password</label>
-    <input type="password" name="confirm-password" id="confirm-password" class="form-control" placeholder="Confirm password" required>
-  </div>
-  <div class="form-group">
-    <label for="plan"><i class="fas fa-layer-group"></i> Plan</label>
-    <select name="plan" id="plan" class="form-control" required>
-        <option value="Basic">Basic</option>
-        <option value="Standard">Standard</option>
-        <option value="Pro">Pro</option>
-        <option value="Advanced">Advanced</option>
-        <option value="Premium">Premium</option>
-    </select>
+                <div class="form-group">
+                  <label for="username"><i class="fas fa-user"></i> Username</label>
+                  <input type="text" name="username" id="username" class="form-control"
+                    placeholder="Enter your username" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="phone"><i class="fas fa-phone"></i> Phone Number</label>
+                  <input type="tel" name="phone" id="phone" class="form-control" placeholder="Enter your phone number"
+                    required>
+                </div>
+
+                <div class="form-group">
+                  <label for="password"><i class="fas fa-lock"></i> Password</label>
+                  <div class="password-container">
+                    <input type="password" name="password" id="password" class="form-control"
+                      placeholder="Enter password" required>
+                    <div class="form-check mt-2">
+                      <input type="checkbox" id="showPassword" class="form-check-input">
+                      <label for="showPassword" class="form-check-label">Show Password</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="confirm-password"><i class="fas fa-lock"></i> Confirm Password</label>
+                  <input type="password" name="confirm-password" id="confirm-password" class="form-control"
+                    placeholder="Confirm password" required>
+                  <small class="form-text text-muted" id="passwordHelp" style="display:none;">Passwords do not
+                    match.</small>
+                </div>
+
+                <script>
+                  // Show/Hide Password Functionality
+                  document.getElementById('showPassword').addEventListener('change', function () {
+                    const passwordField = document.getElementById('password');
+                    const confirmPasswordField = document.getElementById('confirm-password');
+                    if (this.checked) {
+                      passwordField.type = 'text';
+                      confirmPasswordField.type = 'text';
+                    } else {
+                      passwordField.type = 'password';
+                      confirmPasswordField.type = 'password';
+                    }
+                  });
+
+                  // Password Match Validation
+                  const form = document.querySelector('form'); // Make sure this matches your form selector
+                  form.addEventListener('submit', function (event) {
+                    const password = document.getElementById('password').value;
+                    const confirmPassword = document.getElementById('confirm-password').value;
+                    const passwordHelp = document.getElementById('passwordHelp');
+
+                    if (password !== confirmPassword) {
+                      event.preventDefault(); // Prevent form submission
+                      passwordHelp.style.display = 'block'; // Show error message
+                    } else {
+                      passwordHelp.style.display = 'none'; // Hide error message
+                    }
+                  });
+                </script>
+
+
+<div class="form-group">
+  <label for="plan"><i class="fas fa-layer-group"></i> Select Your Plan</label>
+  <select name="plan" id="plan" class="form-control" required>
+      <option value="Standard">Standard (Up to 20 Units) - Ksh. 1,499/month</option>
+      <option value="Pro">Pro (21-50 Units) - Ksh. 2,999/month</option>
+      <option value="Advanced">Advanced (51-100 Units) - Ksh. 4,499/month</option>
+      <option value="Enterprise">Enterprise (100-150 Units) - Ksh. 6,999/month</option>
+      <option value="Custom">Custom (Unlimited Units) - Contact Us</option>
+  </select>
 </div>
-<script>
-  // Set the plan in the form based on the query parameter (if provided)
-  const urlParams = new URLSearchParams(window.location.search);
-  const selectedPlan = urlParams.get('plan');
-  if (selectedPlan) {
-      document.getElementById('plan').value = selectedPlan;
-  }
-  </script>
-  
+
+
+                <script>
+                  const urlParams = new URLSearchParams(window.location.search);
+                  const selectedPlan = urlParams.get('plan');
+                  if (selectedPlan) {
+                    document.getElementById('plan').value = selectedPlan;
+                  }
+                </script>
+
+<form id="signupForm" action="/signup" method="POST" onsubmit="changeButtonText()">
   <div class="form-group">
-    <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-user-plus"></i> Sign Up</button>
+      <button type="submit" class="btn btn-primary btn-block" id="signupButton">
+          <i class="fas fa-user-plus"></i> Sign Up
+      </button>
   </div>
 </form>
 
 <style>
-  /* Responsive styles for password toggle */
-  .password-container {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+  /* Spinner Styles */
+  .spinner {
+      border: 2px solid #f3f3f3; /* Light grey */
+      border-top: 2px solid #3498db; /* Blue */
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-right: 5px; /* Space between spinner and text */
   }
 
-  .form-check-inline {
-    display: flex;
-    align-items: center;
-    margin-left: 0.5rem;
-  }
-
-  .form-check-label {
-    font-size: 0.875rem; /* Smaller font size for smaller screens */
-  }
-
-  /* Responsive adjustments */
-  @media (max-width: 576px) {
-    .form-check-label {
-      font-size: 0.75rem; /* Reduce font size further for very small screens */
-    }
-    .form-group label {
-      font-size: 0.9rem; /* Adjust label size */
-    }
-    .form-control {
-      font-size: 0.875rem; /* Smaller input text size */
-      padding: 0.5rem 0.75rem; /* Adjust padding for smaller screens */
-    }
+  @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
   }
 </style>
 
+<script>
+  function changeButtonText() {
+      const button = document.getElementById('signupButton');
+      button.innerHTML = '<div class="spinner"></div> Signing Up...';
+      button.disabled = true; // Disable button to prevent multiple clicks
+  }
+</script>
 
-      <p class="text-center">Already have an account? <a href="/login"><i class="fas fa-sign-in-alt"></i> Login</a></p>
+              </form>
+
+              <p class="text-center">Already have an account? <a href="/login"><i class="fas fa-sign-in-alt"></i>
+                  Login</a></p>
     </div>
   </div>
 
@@ -240,7 +323,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <script>
-    // Show/Hide Password functionality
     document.getElementById('showPassword').addEventListener('change', function () {
       const passwordInput = document.getElementById('password');
       const confirmPasswordInput = document.getElementById('confirm-password');
