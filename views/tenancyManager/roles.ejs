@@ -223,73 +223,73 @@
         </div>
     </div>
 
-    <!-- Sidebar -->
-    <nav class="sidebar" id="sidebarMenu">
-        <h2 class="sidebar-title"><strong>Lease Captain</strong></h2>
-        <ul class="nav flex-column">
-            <li>
-                <a class="nav-link" href="/tenancy-manager/dashboard">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
-                </a>
-            </li>
-            <li>
-                <a class="nav-link dropdown-toggle" href="#propertiesSubmenu" data-toggle="collapse">
-                    <i class="fas fa-home"></i> Manage Properties
-                </a>
-                <ul class="collapse" id="propertiesSubmenu">
-                    <li><a class="nav-link" href="/tenancy-manager/properties">Properties</a></li>
-                    <li><a class="nav-link" href="/tenancy-manager/property/units">Property Units</a></li>
-                </ul>
-            </li>
-            <li>
-                <a class="nav-link dropdown-toggle" href="#tenantsSubmenu" data-toggle="collapse">
-                    <i class="fas fa-users"></i> Manage Tenants
-                </a>
-                <ul class="collapse" id="tenantsSubmenu">
-                    <li><a class="nav-link" href="/tenancy-manager/tenants">Tenants</a></li>
-                    <li><a class="nav-link" href="/maintenance-requests">Maintenance Requests</a></li>
-                </ul>
-            </li>
-            <li>
-                <a class="nav-link dropdown-toggle" href="#billingSubmenu" data-toggle="collapse">
-                    <i class="fas fa-money-bill-wave"></i> Finance Management
-                </a>
-                <ul class="collapse" id="billingSubmenu">
-                    <li><a class="nav-link" href="/tenancy-manager/payments">Transactions</a></li>
-                    <li><a class="nav-link" href="/reports-invoices">Reports & Invoices</a></li>
-                    <li><a class="nav-link" href="/expenses">Expenses</a></li>
-                </ul>
-            </li>
-            <li>
-                <a class="nav-link dropdown-toggle" href="#smsSubmenu" data-toggle="collapse">
-                    <i class="fas fa-sms"></i> Manage Notifications
-                </a>
-                <ul class="collapse" id="smsSubmenu">
-                    <li><a class="nav-link" href="/top-ups">Top up</a></li>
-                    <li><a class="nav-link" href="/sms&email">SMS & Emails</a></li>
-                </ul>
-            </li>
-            <li>
-                <a class="nav-link dropdown-toggle" href="#userSubmenu" data-toggle="collapse">
-                    <i class="fas fa-users-cog"></i> User Management
-                </a>
-                <ul class="collapse" id="userSubmenu">
-                    <li><a class="nav-link" href="/users">Users</a></li>
-                    <li><a class="nav-link" href="/roles">Roles</a></li>
-                </ul>
-            </li>
-            <li>
-                <a class="nav-link dropdown-toggle" href="#settingsSubmenu" data-toggle="collapse">
-                    <i class="fas fa-cog"></i> Settings
-                </a>
-                <ul class="collapse" id="settingsSubmenu">
-                    <li><a class="nav-link" href="/tenancy-manager/profile">Profile Settings</a></li>
-                    <li><a class="nav-link" href="/tenancy-manager/security">Security Settings</a></li>
-                    <li><a class="nav-link" href="/connect">Payment Gateway</a></li>
-                </ul>
-            </li>
-        </ul>
-    </nav>
+   <!-- Sidebar -->
+<nav class="sidebar" id="sidebarMenu">
+    <h2 class="sidebar-title"><strong>Lease Captain</strong></h2>
+    <ul class="nav flex-column">
+        <li>
+            <a class="nav-link" href="/tenancy-manager/dashboard">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+        </li>
+        <li>
+            <a class="nav-link dropdown-toggle" href="#propertiesSubmenu" data-toggle="collapse">
+                <i class="fas fa-home"></i> Property Management
+            </a>
+            <ul class="collapse" id="propertiesSubmenu">
+                <li><a class="nav-link" href="/tenancy-manager/properties">Properties</a></li>
+                <li><a class="nav-link" href="/tenancy-manager/property/units">Property Units</a></li>
+            </ul>
+        </li>
+        <li>
+            <a class="nav-link dropdown-toggle" href="#tenantsSubmenu" data-toggle="collapse">
+                <i class="fas fa-users"></i> Tenant Management
+            </a>
+            <ul class="collapse" id="tenantsSubmenu">
+                <li><a class="nav-link" href="/tenancy-manager/tenants">Tenants</a></li>
+                <li><a class="nav-link" href="/maintenance-requests">Maintenance Requests</a></li>
+            </ul>
+        </li>
+        <li>
+            <a class="nav-link dropdown-toggle" href="#billingSubmenu" data-toggle="collapse">
+                <i class="fas fa-money-bill-wave"></i> Financial Overview
+            </a>
+            <ul class="collapse" id="billingSubmenu">
+                <li><a class="nav-link" href="/tenancy-manager/payments">Payment Transactions</a></li>
+                <li><a class="nav-link" href="/reports-invoices">Reports & Invoices</a></li>
+                <li><a class="nav-link" href="/expenses">Expense Tracking</a></li>
+            </ul>
+        </li>
+        <li>
+            <a class="nav-link dropdown-toggle" href="#smsSubmenu" data-toggle="collapse">
+                <i class="fas fa-sms"></i> Notification Management
+            </a>
+            <ul class="collapse" id="smsSubmenu">
+                <li><a class="nav-link" href="/top-ups">Credit Top-Up</a></li>
+                <li><a class="nav-link" href="/sms&email">SMS & Email Notifications</a></li>
+            </ul>
+        </li>
+        <li>
+            <a class="nav-link dropdown-toggle" href="#userSubmenu" data-toggle="collapse">
+                <i class="fas fa-users-cog"></i> User Administration
+            </a>
+            <ul class="collapse" id="userSubmenu">
+                <li><a class="nav-link" href="/users">User Accounts</a></li>
+                <li><a class="nav-link" href="/roles">User Roles</a></li>
+            </ul>
+        </li>
+        <li>
+            <a class="nav-link dropdown-toggle" href="#settingsSubmenu" data-toggle="collapse">
+                <i class="fas fa-cog"></i> Account Settings
+            </a>
+            <ul class="collapse" id="settingsSubmenu">
+                <li><a class="nav-link" href="/tenancy-manager/profile">Profile Settings</a></li>
+                <li><a class="nav-link" href="/tenancy-manager/security">Security Settings</a></li>
+                <li><a class="nav-link" href="/connect">Payment Gateway Integration</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>
 
 
        <style>

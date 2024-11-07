@@ -88,10 +88,12 @@ app.get('/', (req, res) => {
 
 // Route to render support page
 app.get('/support', (req, res) => {
-    const successMessage = req.flash('success');
-    const errorMessage = req.flash('error');
+    const successMessage = req.flash('success') || null;
+    const errorMessage = req.flash('error') || null;
+    
     res.render('support', { successMessage, errorMessage });
 });
+
 
 // Configure Nodemailer
 const transporter = nodemailer.createTransport({
@@ -127,11 +129,8 @@ app.post('/support/submit', async (req, res) => {
             submittedAt: new Date()
         });
 
-        await newMessage.save().catch((error) => {
-            console.error('Database Error:', error.message);
-            req.flash('error', 'Failed to save your message. Please try again later.');
-            return res.redirect('/support');
-        });
+        // Attempt to save the new support message
+        await newMessage.save();
 
         // Set up email options
         const mailOptions = {
@@ -142,20 +141,56 @@ app.post('/support/submit', async (req, res) => {
         };
 
         // Send email
-        await transporter.sendMail(mailOptions).catch((error) => {
-            console.error('Email Sending Error:', error.message);
-            req.flash('error', 'Failed to send your message via email. Please try again later.');
-            return res.redirect('/support');
-        });
+        await transporter.sendMail(mailOptions);
 
-        req.flash('success', 'Your support message has been sent successfully.');
-        res.redirect('/support');
+        // Set success message after successful email sending
+        req.flash('success', 'Your message has been sent successfully, Our support team will back to you ASAP!');
+        return res.redirect('/support'); // Redirect to support page
     } catch (error) {
         console.error('Error processing support request:', error);
-        req.flash('error', 'An unexpected error occurred. Please try again later.');
-        res.redirect('/support');
+
+        // Set error message based on specific error type
+        if (error instanceof mongoose.Error.ValidationError) {
+            req.flash('error', 'Validation failed: ' + error.message);
+        } else if (error.name === 'MongoError') {
+            req.flash('error', 'Failed to save your message due to a database error. Please try again later.');
+        } else if (error.responseCode) {
+            req.flash('error', 'Failed to send your message via email. Please try again later.');
+        } else {
+            req.flash('error', 'An unexpected error occurred. Please try again later.');
+        }
+
+        return res.redirect('/support');
     }
 });
+
+app.get('/verify/:token', async (req, res) => {
+    const { token } = req.params;
+
+    try {
+        // Find user with the given token
+        const user = await User.findOne({ verificationToken: token });
+
+        if (!user) {
+            req.flash('error', 'Invalid or expired verification token.');
+            return res.redirect('/login');
+        }
+
+        // Update user verification status
+        user.isVerified = true;
+        user.verificationToken = undefined;
+        await user.save();
+
+        req.flash('success', 'Email verified successfully! You can now log in.');
+        res.redirect('/login');
+    } catch (error) {
+        console.error('Error during email verification:', error);
+        req.flash('error', 'Error verifying your email. Please try again.');
+        res.redirect('/login');
+    }
+});
+
+
 
 
 

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const passportLocalMongoose = require('passport-local-mongoose');
 
-// Define the login activity schema
+// Define the login activity schema (if needed)
 const loginActivitySchema = new mongoose.Schema({
   loginTime: {
     type: Date,
@@ -18,48 +18,86 @@ const loginActivitySchema = new mongoose.Schema({
   }
 });
 
-// Define the user schema
+// Define the User schema
 const userSchema = new mongoose.Schema({
-  username: {
+  googleId: {
     type: String,
     unique: true,
-    required: true
+    sparse: true
+  },
+  paymentStatus: {
+    status: { 
+      type: String, 
+      enum: ['pending', 'completed', 'failed'],
+      default: 'pending'
+    },
+    transactionId: { type: String },
+    amount: { type: Number },
+  },
+  username: {
+    type: String,
+    required: true,
+    unique: true,
   },
   email: {
     type: String,
+    required: true,
     unique: true,
-    required: true
   },
   phone: {
     type: String,
     required: true,
-    match: /^[0-9]{10}$/
   },
+  password: {
+    type: String,
+    required: true,
+  },
+  paymentStatus: {
+    status: { 
+        type: String, 
+        enum: ['pending', 'completed', 'failed'],
+        default: 'pending'
+    },
+    transactionId: { type: String },
+    amount: { type: Number },
+},
   plan: {
     type: String,
+    required: true,
     enum: ['Basic', 'Standard', 'Pro', 'Advanced', 'Premium'],
-    default: 'Basic'
   },
-  tenantsCount: {
+  tenantsLimit: {
     type: Number,
-    default: 10
+    default: 0,
   },
-  roles: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Role'
-  }],
-  permissions: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Permission'
-  }],
-  loginActivity: [loginActivitySchema]
-}, {
-  timestamps: true
-});
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+  verificationToken: {
+    type: String,
+    required: false,
+  },
+  verificationExpires: {
+    type: Date,
+    required: false,
+  },
+}, { timestamps: true });
 
-// Passport-Local Mongoose plugin for password hashing
+
+// Method to get payment status
+userSchema.methods.getPaymentStatus = async function() {
+  return {
+      status: this.paymentStatus.status,
+      transactionId: this.paymentStatus.transactionId,
+      amount: this.paymentStatus.amount
+  };
+};
+
+
+// Attach the passport-local-mongoose plugin
 userSchema.plugin(passportLocalMongoose, {
-  usernameField: 'username' // Configures 'username' as the username field
+  usernameField: 'username' // Set the username field
 });
 
 // Export the user model

@@ -13,6 +13,16 @@ function isAuthenticated(req, res, next) {
     return res.redirect(LOGIN_REDIRECT);
 }
 
+
+function isVerified(req, res, next) {
+    if (req.user && req.user.isVerified) {
+        return next();
+    }
+    req.flash('error', 'Please verify your email before accessing this page.');
+    res.redirect('/login');
+}
+
+
 // Middleware to check if the authenticated user is a tenant
 function isTenant(req, res, next) {
     if (!req.isAuthenticated()) {
@@ -76,5 +86,6 @@ module.exports = {
     isAuthenticated,
     isTenant,
     isTenancyManager,
-    checkRole, 
+    checkRole,
+    isVerified, 
 };

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TenancyManager Login</title>
+  <title>Lease Captain Login</title>
   <!-- Bootstrap CSS CDN -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
@@ -17,7 +17,7 @@
     .container {
       margin-top: 10%;
       margin-bottom: 10%;
-      max-width: 400px;
+      max-width: 500px;
       padding: 30px;
       background-color: #ffffff; 
       border-radius: 10px;
@@ -53,25 +53,28 @@
     }
 
     /* Responsive adjustments */
-    @media (max-width: 376px) {
+    @media (max-width: 576px) {
       .container {
         margin-top: 20%; 
         padding: 20px;
         width: 90%;
       }
       h1 {
-        font-size: 1.2rem; 
+        font-size: 0.9rem; 
       }
       .form-group label {
         font-size: 0.7rem;
       }
       .btn-primary {
-        font-size: 0.7rem; 
+        font-size: 0.5rem; 
       }
       .form-control {
         font-size: 0.6rem; 
     }
       .btn {
+        font-size: 0.5rem;
+      }
+      .text-center{
         font-size: 0.7rem;
       }
       
@@ -83,8 +86,8 @@
 
 @media (max-width: 576px) {
     .error-message {
-        font-size: 10px; 
-        padding: 9px; 
+        font-size: 7px; 
+        padding: 5px; 
     }
 }
 
@@ -128,6 +131,11 @@
       <button type="submit" class="btn btn-dark btn-block" style="background-color: #003366;">Login</button>
     </form>
     <p class="text-right"> <a href="#" data-toggle="modal" data-target="#forgotPasswordModal">Forget Password?</a></p>
+    <div class="text-center mt-4">
+      <a href="/auth/google" class="btn btn-outline-danger btn-lg d-flex align-items-center justify-content-center px-4 py-2 rounded-pill w-100" style="max-width: 300px; margin: auto;">
+        <i class="fab fa-google mr-2"></i> Sign in with Google
+      </a>
+    </div>
     <p class="text-center">Don't have an account? <a href="/signup">Sign Up</a></p>
   </div>
    <!-- Forget Password Modal -->
