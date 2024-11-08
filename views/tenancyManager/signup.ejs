@@ -240,32 +240,33 @@
                   });
 
                   // Password Match Validation
-                  const form = document.querySelector('form'); // Make sure this matches your form selector
+                  const form = document.querySelector('form');
                   form.addEventListener('submit', function (event) {
                     const password = document.getElementById('password').value;
                     const confirmPassword = document.getElementById('confirm-password').value;
                     const passwordHelp = document.getElementById('passwordHelp');
 
                     if (password !== confirmPassword) {
-                      event.preventDefault(); // Prevent form submission
-                      passwordHelp.style.display = 'block'; // Show error message
+                      event.preventDefault();
+                      passwordHelp.style.display = 'block';
                     } else {
-                      passwordHelp.style.display = 'none'; // Hide error message
+                      passwordHelp.style.display = 'none';
                     }
                   });
+
                 </script>
 
-
-<div class="form-group">
-  <label for="plan"><i class="fas fa-layer-group"></i> Select Your Plan</label>
-  <select name="plan" id="plan" class="form-control" required>
-      <option value="Standard">Standard (Up to 20 Units) - Ksh. 1,499/month</option>
-      <option value="Pro">Pro (21-50 Units) - Ksh. 2,999/month</option>
-      <option value="Advanced">Advanced (51-100 Units) - Ksh. 4,499/month</option>
-      <option value="Enterprise">Enterprise (100-150 Units) - Ksh. 6,999/month</option>
-      <option value="Custom">Custom (Unlimited Units) - Contact Us</option>
-  </select>
-</div>
+                <div class="form-group">
+                  <label for="plan"><i class="fas fa-layer-group"></i> Select Your Plan</label>
+                  <select name="plan" id="plan" class="form-control" required>
+                    <option value="Basic">Demo</option>
+                    <option value="Standard">Standard (Up to 20 Units) - Ksh. 1,499/month</option>
+                    <option value="Pro">Pro (21-50 Units) - Ksh. 2,999/month</option>
+                    <option value="Advanced">Advanced (51-100 Units) - Ksh. 4,499/month</option>
+                    <option value="Enterprise">Enterprise (100-150 Units) - Ksh. 6,999/month</option>
+                    <option value="Premium">Custom (Unlimited Units) - Contact Us</option>
+                  </select>
+                </div>
 
 
                 <script>
@@ -276,47 +277,89 @@
                   }
                 </script>
 
-<form id="signupForm" action="/signup" method="POST" onsubmit="changeButtonText()">
-  <div class="form-group">
-      <button type="submit" class="btn btn-primary btn-block" id="signupButton">
-          <i class="fas fa-user-plus"></i> Sign Up
-      </button>
+                <!-- Signup Form -->
+                <form id="signupForm" action="/signup" method="POST" onsubmit="showLoaderModal(event)">
+                  <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-block" id="signupButton">
+                      <i class="fas fa-user-plus"></i> Sign Up
+                    </button>
+                  </div>
+                </form>
+
+<!-- Loader Modal -->
+<div class="modal fade" id="loaderModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <div class="spinner"></div>
+        <p>Please wait, signing you up...</p>
+      </div>
+    </div>
   </div>
-</form>
+</div>
 
 <style>
   /* Spinner Styles */
   .spinner {
-      border: 2px solid #f3f3f3; /* Light grey */
-      border-top: 2px solid #3498db; /* Blue */
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
-      animation: spin 1s linear infinite;
-      display: inline-block;
-      margin-right: 5px; /* Space between spinner and text */
+    border: 2px solid #f3f3f3; /* Light grey */
+    border-top: 2px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 10px;
   }
 
   @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Modal Styles */
+  .modal {
+    display: none;
+    /* Hidden by default */
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Semi-transparent background */
+  }
+
+  .modal.show {
+    display: flex;
   }
 </style>
 
 <script>
-  function changeButtonText() {
-      const button = document.getElementById('signupButton');
-      button.innerHTML = '<div class="spinner"></div> Signing Up...';
-      button.disabled = true; // Disable button to prevent multiple clicks
+  function showLoaderModal(event) {
+    event.preventDefault(); // Prevent immediate form submission
+    const modal = document.getElementById('loaderModal');
+    const button = document.getElementById('signupButton');
+    button.disabled = true; // Disable the submit button to prevent multiple clicks
+
+    // Show the modal
+    modal.classList.add('show');
+
+    // Submit the form after displaying the modal
+    setTimeout(() => {
+      document.getElementById('signupForm').submit();
+    }, 500); // Small delay for UX
   }
 </script>
 
-              </form>
 
-              <p class="text-center">Already have an account? <a href="/login"><i class="fas fa-sign-in-alt"></i>
-                  Login</a></p>
+
+                <p class="text-center">Already have an account? <a href="/login"><i class="fas fa-sign-in-alt"></i>
+                    Login</a></p>
     </div>
   </div>
+<!-- jQuery and Bootstrap JS (include only if not already added) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
   <!-- Bootstrap JS and dependencies -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

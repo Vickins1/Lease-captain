@@ -90,20 +90,23 @@ router.post('/signup', async (req, res) => {
 // Function to get tenants limit based on the selected plan
 function getTenantsCount(plan) {
   switch (plan) {
-    case 'Basic':
-      return 10;
-    case 'Standard':
-      return 20;
-    case 'Pro':
-      return 50;
-    case 'Advanced':
-      return 100;
-    case 'Premium':
-      return 100; 
-    default:
-      return 10;
+      case 'Basic': 
+          return 5;
+      case 'Standard':
+          return 20;
+      case 'Pro':      
+          return 50;
+      case 'Advanced':
+          return 100;
+      case 'Enterprise': 
+          return 150;
+      case 'Premium':   
+          return Infinity; 
+      default:
+          return 5;
   }
 }
+
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',

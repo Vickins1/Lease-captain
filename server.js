@@ -113,7 +113,6 @@ app.post('/support/submit', async (req, res) => {
         req.flash('error', 'Please fill in all required fields.');
         return res.redirect('/support');
     }
-
     // Email format validation
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(emailAddress)) {
@@ -139,12 +138,10 @@ app.post('/support/submit', async (req, res) => {
             subject: 'New Support Message',
             text: `You have received a new support message from ${emailAddress}:\n\n${supportMessage}`
         };
-
         // Send email
         await transporter.sendMail(mailOptions);
-
         // Set success message after successful email sending
-        req.flash('success', 'Your message has been sent successfully, Our support team will back to you ASAP!');
+        req.flash('success', 'Your message has been sent successfully, Our support team will be back to you ASAP!');
         return res.redirect('/support'); // Redirect to support page
     } catch (error) {
         console.error('Error processing support request:', error);

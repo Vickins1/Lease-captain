@@ -64,7 +64,7 @@ const userSchema = new mongoose.Schema({
   plan: {
     type: String,
     required: true,
-    enum: ['Basic', 'Standard', 'Pro', 'Advanced', 'Premium'],
+    enum: ['Basic', 'Standard', 'Pro', 'Advanced', 'Premium', 'Enterprise'],
   },
   tenantsLimit: {
     type: Number,
