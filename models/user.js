@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const passportLocalMongoose = require('passport-local-mongoose');
 
-// Define the login activity schema (if needed)
+// Define the login activity schema
 const loginActivitySchema = new mongoose.Schema({
   loginTime: {
     type: Date,
@@ -52,15 +52,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  paymentStatus: {
-    status: { 
-        type: String, 
-        enum: ['pending', 'completed', 'failed'],
-        default: 'pending'
-    },
-    transactionId: { type: String },
-    amount: { type: Number },
-},
   plan: {
     type: String,
     required: true,
@@ -76,28 +67,25 @@ const userSchema = new mongoose.Schema({
   },
   verificationToken: {
     type: String,
-    required: false,
   },
   verificationExpires: {
     type: Date,
-    required: false,
   },
+  loginActivity: [loginActivitySchema],
 }, { timestamps: true });
 
 
-// Method to get payment status
 userSchema.methods.getPaymentStatus = async function() {
   return {
-      status: this.paymentStatus.status,
-      transactionId: this.paymentStatus.transactionId,
-      amount: this.paymentStatus.amount
+    status: this.paymentStatus.status,
+    transactionId: this.paymentStatus.transactionId,
+    amount: this.paymentStatus.amount
   };
 };
 
-
 // Attach the passport-local-mongoose plugin
 userSchema.plugin(passportLocalMongoose, {
-  usernameField: 'username' // Set the username field
+  usernameField: 'username' 
 });
 
 // Export the user model

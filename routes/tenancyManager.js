@@ -4,7 +4,7 @@ const nodemailer = require('nodemailer');
 require('dotenv').config();
 const Property = require('../models/property');
 const Tenant = require('../models/tenant');
-const { isVerified, isTenancyManager } = require('../middleware');
+const { isTenancyManager } = require('../middleware');
 const bcrypt = require('bcryptjs');
 const Payment = require('../models/payment');
 const User = require('../models/user');
@@ -18,7 +18,7 @@ const Topups = require('../models/topups');
 const Reminder = require('../models/reminder');
 const crypto = require('crypto');
 const Permission = require('../models/permissions');
-const Unit = require('../models/unit');
+const axios = require('axios')
 const SupportMessage = require('../models/supportMessage');
 
 
@@ -41,7 +41,7 @@ router.get('/verification', (req, res) => {
 
     // Check if the user is already verified
     if (req.user.isVerified) {
-        return res.redirect('/tenancy-manager/dashboard'); 
+        return res.redirect('/tenancy-manager/dashboard');
     }
 
     // Render the verification page if the user is not verified
@@ -101,7 +101,7 @@ router.get('/resend-verification', async (req, res) => {
 
 const sendWelcomeEmail = async (email, username, verificationToken) => {
     const mailOptions = {
-        from: process.env.EMAIL_USERNAME,
+        from: `"Lease Captain" <${process.env.EMAIL_USERNAME}>`,
         to: email,
         subject: 'Welcome to Lease Captain! Please Verify Your Email',
         html: `
@@ -181,41 +181,64 @@ const sendWelcomeEmail = async (email, username, verificationToken) => {
     }
 };
 
+const planAmounts = {
+    Basic: 0,
+    Standard: 1499,
+    Pro: 2999,
+    Advanced: 4499,
+    Enterprise: 6999,
+    Premium: null
+};
 
 router.get('/tenancy-manager/dashboard', async (req, res) => {
     try {
-        // Ensure the user is authenticated
+        // Check if user is authenticated
         if (!req.user) {
             req.flash('error', 'User not authenticated.');
             return res.redirect('/login');
         }
 
-        // Check if the user's email is verified
+        // Check if user is verified
         if (!req.user.isVerified) {
-            return res.redirect('/verification'); // Redirect to verification page
+            req.flash('error', 'Please verify your account to access the dashboard.');
+            return res.redirect('/verification');
         }
 
-        // Fetch the user's properties
-        const properties = await Property.find({ owner: req.user._id }).populate('tenants');
+        const expectedAmount = planAmounts[req.user.plan];
 
-        // Fetch tenants directly associated with the user's properties
+        // Check if user has paid or if they are on the Basic plan
+        const hasPaid = (req.user.plan === 'Basic') ||
+            (req.user.paymentStatus &&
+                req.user.paymentStatus.status === 'completed' &&
+                req.user.paymentStatus.amount === expectedAmount);
+
+        if (!hasPaid) {
+            if (req.user.plan === 'Basic') {
+                // Redirect to a limited access page for Basic plan users
+                req.flash('info', 'As a Basic plan user, you have limited access.');
+                return res.redirect('/tenancy-manager/dashboard');
+            } else {
+                // Redirect to subscription page for users with unpaid or incomplete payment status
+                req.flash('error', 'Please complete your subscription payment to access our services.');
+                return res.redirect('/subscription');
+            }
+        }
+
+        // Fetch properties, tenants, and dashboard data
+        const properties = await Property.find({ owner: req.user._id }).populate('tenants');
         const tenants = await Tenant.find({ owner: req.user._id });
 
-        // Count the number of tenants
-        const numberOfTenants = tenants.length;
-
-        const units = await Unit.find();
-
-        // Other dashboard calculations
         const totalRentCollected = tenants.reduce((sum, tenant) => sum + (tenant.rentPaid || 0), 0);
         const totalRentDue = tenants.reduce((sum, tenant) => sum + (tenant.rentDue || 0), 0);
         const utilityCollected = tenants.reduce((sum, tenant) => sum + (tenant.utilityPaid || 0), 0);
         const utilityDue = tenants.reduce((sum, tenant) => sum + (tenant.utilityDue || 0), 0);
 
-        const numberOfUnits = await PropertyUnit.countDocuments({ propertyId: { $in: properties.map(prop => prop._id) } });
+        const numberOfUnits = await PropertyUnit.countDocuments({
+            propertyId: { $in: properties.map(prop => prop._id) }
+        });
+        const occupiedUnitsCount = tenants.reduce((count, tenant) => count + (tenant.status === 'occupied' ? 1 : 0), 0);
 
-        const occupiedUnitsCount = units.reduce((count, unit) => count + (unit.status === 'occupied' ? 1 : 0), 0);
-
+        // Prepare rent collection data by month
         const rentCollectionData = {};
         tenants.forEach(tenant => {
             const month = new Date(tenant.leaseEndDate).toLocaleString('default', { month: 'short' });
@@ -224,38 +247,33 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
             rentCollectionData[month].due += tenant.rentDue || 0;
         });
 
-        const totalRequests = await MaintenanceRequest.countDocuments({
-            tenantId: { $in: tenants.map(tenant => tenant._id) }
-        });
-
+        // Convert rent data into an array for easier rendering
         const rentDataArray = Object.keys(rentCollectionData).map(month => ({
             month,
             collected: rentCollectionData[month].collected,
             due: rentCollectionData[month].due
         }));
 
-        let smsBalance = 0;
-        try {
-            smsBalance = await checkSMSCreditBalance();
-        } catch (error) {
-            smsBalance = 0; // Default to 0 if error occurs
-        }
+        // Count maintenance requests associated with the user's tenants
+        const totalRequests = await MaintenanceRequest.countDocuments({
+            tenantId: { $in: tenants.map(tenant => tenant._id) }
+        });
 
-        // Render the dashboard with user-specific data
+        // Render the dashboard
         res.render('tenancyManager/dashboard', {
             properties,
             totalRentCollected,
             totalRentDue,
             utilityCollected,
             utilityDue,
-            numberOfTenants,
+            numberOfTenants: tenants.length,
             numberOfUnits,
             occupiedUnitsCount,
             totalRequests,
             rentDataArray,
-            smsBalance,
             currentUser: req.user,
-            transactionRequestId: 'your-transaction-id'
+            transactionRequestId: 'your-transaction-id',
+            userPlan: req.user.plan,
         });
     } catch (err) {
         console.error('Error fetching dashboard data:', err);
@@ -264,21 +282,176 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
     }
 });
 
-// Example route to get the payment status for the logged-in user
-router.get('/api/payment/status', async (req, res) => {
-    if (!req.user) {
-        return res.status(401).json({ success: false, message: 'Unauthorized' });
-    }
 
+router.get('/subscription', async (req, res) => {
     try {
-        const paymentStatus = await req.user.getPaymentStatus();
-        res.json({ success: true, paymentStatus });
-    } catch (error) {
-        console.error('Error fetching payment status:', error);
-        res.status(500).json({ success: false, message: 'Error fetching payment status.' });
+        if (!req.user) {
+            req.flash('error', 'Please log in to view subscription details.');
+            return res.redirect('/login');
+        }
+
+        const planAmounts = {
+            Basic: 0,
+            Standard: 1499,
+            Pro: 2999,
+            Advanced: 4499,
+            Enterprise: 6999,
+            Premium: null
+        };
+
+        const planDetails = {
+            Basic: { amount: 0, units: 5 },
+            Standard: { amount: 1499, units: 20 },
+            Pro: { amount: 2999, units: 50 },
+            Advanced: { amount: 4499, units: 10 },
+            Enterprise: { amount: 6999, units: 150 },
+            Premium: { amount: null, units: "Contact Support for Pricing" }
+        };
+
+      
+        const expectedAmount = planAmounts[req.user.plan];
+        const hasPaid = req.user.paymentStatus && req.user.paymentStatus.status === 'completed';
+
+          // If the user has already paid, redirect them to the dashboard
+          if (hasPaid) {
+            req.flash('success', 'You have already paid for this subscription.');
+            return res.redirect('/tenancy-manager/dashboard');
+        }
+
+        res.render('subscription', {
+            plan: req.user.plan,
+            expectedAmount,
+            hasPaid,
+            currentUser: req.user,
+            planDetails
+        });
+    } catch (err) {
+        console.error('Error loading subscription page:', err);
+        req.flash('error', 'An error occurred while loading the subscription page. Please try again later.');
+        return res.redirect('/dashboard');
     }
 });
 
+// POST /subscription (Initiate STK Push)
+router.post('/subscription', async (req, res) => {
+    try {
+        if (!req.user) {
+            req.flash('error', 'Please log in to make a payment.');
+            return res.redirect('/login');
+        }
+
+        const { msisdn, amount, plan } = req.body;
+        const reference = `REF-${Date.now()}`;
+
+        // Define available plans
+        const availablePlans = ['Basic', 'Standard', 'Pro', 'Advanced', 'Premium', 'Enterprise'];
+
+        // Check if the selected plan is valid
+        if (!availablePlans.includes(plan)) {
+            req.flash('error', 'Invalid plan selected.');
+            return res.redirect('/subscription');
+        }
+
+        // Update the user's plan if it's different from the current one
+        if (req.user.plan !== plan) {
+            req.user.plan = plan;
+            await req.user.save();
+        }
+
+        // Initiate STK Push with UMS Pay
+        const response = await axios.post('https://api.umeskiasoftwares.com/api/v1/intiatestk', {
+            api_key: 'VE5MTlkzRk06MTlwNjlkZWM=',
+            email: 'vickinstechnologies@gmail.com',
+            account_id: 'UMPAY772831690',
+            amount,
+            msisdn,
+            reference
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            timeout: 15000
+        });
+
+        const data = response.data;
+
+        // Check if the request was successful
+        if (data.success === '200') {
+            req.user.paymentStatus = {
+                status: 'pending',
+                transactionId: data.tranasaction_request_id,
+                amount
+            };
+            await req.user.save();
+
+            req.flash('success', 'Payment request sent successfully. Please complete the STK push on your phone.');
+
+            // Check the payment status after a delay to allow processing
+            setTimeout(async () => {
+                try {
+                    const paymentStatus = await checkTransactionStatus(data.tranasaction_request_id);
+
+                    if (paymentStatus === 'completed') {
+                        req.user.paymentStatus.status = 'completed';
+                        await req.user.save();
+                        req.flash('success', 'Payment completed successfully.');
+                    } else {
+                        req.flash('info', 'Payment is still pending. Please check your dashboard later.');
+                    }
+                } catch (statusError) {
+                    console.error('Error checking payment status:', statusError);
+                    req.flash('error', 'Could not verify payment status. Please check back later.');
+                }
+                res.redirect('/tenancy-manager/dashboard');
+            }, 10000);
+        } else {
+            req.flash('error', 'Failed to initiate payment request. Please try again.');
+            return res.redirect('/subscription');
+        }
+    } catch (err) {
+        if (err.code === 'ECONNABORTED') {
+            // Handle timeout errors
+            console.error('Request timed out:', err);
+            req.flash('error', 'The payment request timed out. Please try again later.');
+        } else if (err.response) {
+            // Handle HTTP errors from the server
+            console.error('Error response from UMS Pay:', err.response.data);
+            req.flash('error', 'Payment service responded with an error. Please try again later.');
+        } else {
+            // Handle general errors
+            console.error('Error initiating payment:', err);
+            req.flash('error', 'An error occurred while processing your payment. Please try again.');
+        }
+        return res.redirect('/subscription');
+    }
+});
+
+// Function to check the transaction status from UMS Pay
+async function checkTransactionStatus(transactionId) {
+    try {
+        const statusPayload = {
+            api_key: 'VE5MTlkzRk06MTlwNjlkZWM=',
+            email: 'vickinstechnologies@gmail.com',
+            tranasaction_request_id: transactionId
+        };
+
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+
+        const response = await axios.post('https://api.umeskiasoftwares.com/api/v1/transactionstatus', statusPayload, { headers });
+        const data = response.data;
+
+        // Check if the transaction status is completed
+        if (data.ResultCode === '200' && data.TransactionStatus === 'Completed') {
+            return 'completed';
+        }
+        return 'pending';
+    } catch (err) {
+        console.error('Error checking transaction status:', err);
+        return 'error';
+    }
+}
 
 // POST endpoint to handle support form submission
 router.post('/submit', async (req, res) => {
@@ -317,7 +490,6 @@ router.post('/submit', async (req, res) => {
         res.redirect('/tenancy-manager/dashboard');
     }
 });
-
 
 // Serve User Profile Page
 router.get('/tenancy-manager/profile', isTenancyManager, async (req, res) => {
@@ -435,7 +607,6 @@ router.post('/tenancy-manager/profile', isTenancyManager, async (req, res) => {
         res.redirect('/tenancy-manager/profile');
     }
 });
-
 
 // Helper function to determine the maximum allowed tenants based on the plan
 function getMaxTenants(plan) {
@@ -641,7 +812,7 @@ async function sendTenantEmail(newTenant, propertyName) {
             </html>
             `,
         };
-        
+
         await transporter.sendMail(mailOptions);
         console.log(`Email sent to ${newTenant.email}`);
     } catch (emailError) {
@@ -911,7 +1082,6 @@ router.get('/users', isTenancyManager, async (req, res) => {
     }
 });
 
-
 // Route to create a new user with multiple roles using passport-local-mongoose
 router.post('/users/create', async (req, res) => {
     try {
@@ -954,7 +1124,6 @@ router.post('/users/create', async (req, res) => {
         res.redirect('/users/create');
     }
 });
-
 
 // Route to assign a role to a user
 router.post('/users/:id/assign-role', async (req, res) => {
@@ -1373,40 +1542,70 @@ router.post('/forgot-password', async (req, res) => {
     try {
         const { email } = req.body;
         const user = await User.findOne({ email });
+
         if (!user) {
             req.flash('errorMessage', 'No user found with that email address.');
             return res.redirect('/login');
         }
+
+        // Generate a reset token and set expiration time
         const resetToken = crypto.randomBytes(20).toString('hex');
-
         user.resetPasswordToken = resetToken;
-        user.resetPasswordExpires = Date.now() + 3600000;
-
+        user.resetPasswordExpires = Date.now() + 3600000; // 1-hour expiration
         await user.save();
 
+        // HTML email template
         const mailOptions = {
             to: user.email,
-            from: 'vickinstechnologies.com',
+            from: `"Lease Captain" <${process.env.EMAIL_USERNAME}>`,
             subject: 'Lease Captain Password Reset',
-            text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
-            Please click on the following link, or paste this into your browser to complete the process:\n\n
-            http://${req.headers.host}/reset-password/${resetToken}\n\n
-            If you did not request this, please ignore this email and your password will remain unchanged.\n`,
+            html: `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Password Reset</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 0; }
+                        .container { max-width: 600px; margin: 0 auto; background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+                        .header { background-color: #003366; color: #ffffff; padding: 20px; text-align: center; font-size: 24px; font-weight: bold; }
+                        .content { padding: 20px; line-height: 1.6; }
+                        .button { display: inline-block; padding: 10px 20px; margin-top: 20px; background-color: #003366; color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold; }
+                        .footer { margin-top: 20px; font-size: 0.8em; color: #777; text-align: center; }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="header">Lease Captain Password Reset</div>
+                        <div class="content">
+                            <p>Hello,</p>
+                            <p>You are receiving this email because a password reset request was made for your account on Lease Captain.</p>
+                            <p>To reset your password, please click the button below:</p>
+                            <a href="https://leasecaptain.com/reset-password/${resetToken}" class="button">Reset Your Password</a>
+                            <p>If you didn’t request a password reset, you can safely ignore this email, and your password will remain unchanged.</p>
+                        </div>
+                        <div class="footer">&copy; ${new Date().getFullYear()} Lease Captain. All rights reserved.</div>
+                    </div>
+                </body>
+                </html>
+            `,
         };
 
+        // Send email
         await transporter.sendMail(mailOptions);
 
         req.flash('successMessage', 'A password reset link has been sent to your email.');
         res.redirect('/login');
     } catch (error) {
         console.error('Error in forgot-password route:', error);
-        req.flash('errorMessage', 'Error sending password reset email.');
+        req.flash('errorMessage', 'There was an error sending the password reset email. Please try again.');
         res.redirect('/login');
     }
 });
 
 
-// GET route to show reset password form
+// GET /reset-password/:token
 router.get('/reset-password/:token', async (req, res) => {
     try {
         const user = await User.findOne({
@@ -1415,44 +1614,62 @@ router.get('/reset-password/:token', async (req, res) => {
         });
 
         if (!user) {
-            return res.status(400).send('Password reset token is invalid or has expired.');
+            req.flash('error', 'Password reset token is invalid or has expired.');
+            return res.redirect('/login');
         }
 
-        res.render('reset-password', { token: req.params.token });
-    } catch (error) {
-        res.status(500).send('Error retrieving user.');
+        res.render('reset-password', { token: req.params.token }); // Render a reset password form
+    } catch (err) {
+        console.error(err);
+        req.flash('error', 'An error occurred. Please try again.');
+        res.redirect('/login');
     }
 });
 
 
-// POST route to reset the password
+
+// POST /reset-password/:token
 router.post('/reset-password/:token', async (req, res) => {
     try {
+        const { password, confirmPassword } = req.body;
+
+        if (password !== confirmPassword) {
+            req.flash('error', 'Passwords do not match.');
+            return res.redirect(`/reset-password/${req.params.token}`);
+        }
+
+        // Check password strength
+        if (password.length < 8) {
+            req.flash('error', 'Password must be at least 8 characters long.');
+            return res.redirect(`/reset-password/${req.params.token}`);
+        }
+
         const user = await User.findOne({
             resetPasswordToken: req.params.token,
             resetPasswordExpires: { $gt: Date.now() },
         });
 
         if (!user) {
-            return res.status(400).send('Password reset token is invalid or has expired.');
+            req.flash('error', 'Password reset token is invalid or has expired.');
+            return res.redirect('/login');
         }
 
-        const { password, confirmPassword } = req.body;
-        if (password !== confirmPassword) {
-            return res.status(400).send('Passwords do not match.');
-        }
-
-        user.password = await user.hashPassword(password);
+        // Hash the new password and update the user
+        user.password = await bcrypt.hash(password, 10);
         user.resetPasswordToken = undefined;
         user.resetPasswordExpires = undefined;
 
         await user.save();
 
-        res.status(200).send('Password has been successfully reset.');
-    } catch (error) {
-        res.status(500).send('Error resetting password.');
+        req.flash('success', 'Password successfully updated. Please log in.');
+        res.redirect('/login');
+    } catch (err) {
+        console.error('Error resetting password:', err);
+        req.flash('error', 'Error resetting password. Please try again.');
+        res.redirect('/reset-password');
     }
 });
+
 
 
 module.exports = router;

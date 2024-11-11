@@ -44,8 +44,7 @@ router.post('/signup', async (req, res) => {
       }
 
       const tenantsLimit = getTenantsCount(plan);
-
-      // Create a new user object with necessary fields except password
+      const planAmount = planRates[plan];
       const user = new User({
           username,
           email,
@@ -54,20 +53,21 @@ router.post('/signup', async (req, res) => {
           plan,
           tenantsLimit,
           isVerified: false,
-          verificationToken: crypto.randomBytes(32).toString('hex'), // Generate the verification token
+          verificationToken: crypto.randomBytes(32).toString('hex'), 
+          paymentStatus: {
+            transactionId: null,
+            amount: planAmount,
+        }
       });
 
-      // Register user with passport-local-mongoose to handle password hashing
-      await User.register(user, password) // Pass the password here
+      await User.register(user, password)
           .then(async () => {
-              // Send welcome email with verification link
               await sendWelcomeEmail(email, username, user.verificationToken); // Pass token to the email function
 
               req.flash('success', 'Successfully signed up! Please check your email to verify your account and log in.');
               res.redirect('/login');
           })
           .catch(err => {
-              // Handle error during registration
               req.flash('error', 'Sign up failed: ' + err.message);
               res.redirect('/signup');
           });
@@ -87,26 +87,27 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-// Function to get tenants limit based on the selected plan
 function getTenantsCount(plan) {
-  switch (plan) {
-      case 'Basic': 
-          return 5;
-      case 'Standard':
-          return 20;
-      case 'Pro':      
-          return 50;
-      case 'Advanced':
-          return 100;
-      case 'Enterprise': 
-          return 150;
-      case 'Premium':   
-          return Infinity; 
-      default:
-          return 5;
-  }
+  const tenantsLimit = {
+      Basic: 5,
+      Standard: 20,
+      Pro: 50,
+      Advanced: 100,
+      Enterprise: 150,
+      Premium: Infinity
+  };
+  
+  return tenantsLimit[plan] || 5;
 }
 
+const planRates = {
+  Basic: 0,     
+  Standard: 1499,
+  Pro: 2999,
+  Advanced: 4499,
+  Enterprise: 6999,
+  Premium: null  
+};
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
