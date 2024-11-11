@@ -475,7 +475,6 @@
                             }
                         </style>
 
-
                         <div class="row mt-4">
 
 
@@ -862,8 +861,6 @@
         </div>
     </section>
 
-
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- JavaScript for Chart Initialization -->
@@ -1145,115 +1142,6 @@
             }
         }
     </style>
-
-
-
-    <!-- Payment Status Modal -->
-    <div class="modal fade" id="paymentStatusModal" tabindex="-1" role="dialog" aria-labelledby="paymentStatusLabel"
-        aria-hidden="true" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="paymentStatusLabel">Payment Status</h5>
-                </div>
-                <div class="modal-body">
-                    <p id="paymentMessage">Checking your payment status...</p>
-                    <div id="paymentDetails" class="d-none">
-                        <h6>Payment Details:</h6>
-                        <ul>
-                            <li><strong>Amount:</strong> <span id="paymentAmount"></span></li>
-                            <li><strong>Transaction ID:</strong> <span id="transactionId"></span></li>
-                            <li><strong>Status:</strong> <span id="paymentStatus"></span></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="completePaymentButton">Complete Payment</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        async function checkPaymentStatus() {
-            try {
-                const response = await fetch('/api/payment/status');
-                const data = await response.json();
-
-                if (data.success) {
-                    // Update payment details in the modal
-                    document.getElementById('paymentAmount').innerText = data.paymentStatus.amount || 'N/A';
-                    document.getElementById('transactionId').innerText = data.paymentStatus.transactionId || 'N/A';
-                    document.getElementById('paymentStatus').innerText = data.paymentStatus.status;
-                    document.getElementById('paymentMessage').innerText = 'Payment Status Checked!';
-                    document.getElementById('paymentDetails').classList.remove('d-none');
-
-                    // Check if the payment is completed
-                    if (data.paymentStatus.status === 'completed') {
-                        document.getElementById('completePaymentButton').disabled = false;
-                        document.getElementById('paymentMessage').innerText = 'Payment completed successfully!';
-                        clearInterval(window.paymentStatusCheckInterval); // Stop checking
-                        $('#paymentStatusModal').modal('hide'); // Optionally hide the modal
-                    } else {
-                        // If payment is not completed, show the complete payment modal
-                        document.getElementById('planAmount').innerText = `Ksh. ${data.paymentStatus.amount}`;
-                        $('#completePaymentModal').modal('show'); // Show the complete payment modal
-                    }
-                } else {
-                    document.getElementById('paymentMessage').innerText = 'Payment status check failed. Please try again.';
-                }
-            } catch (error) {
-                console.error('Error checking payment status:', error);
-                document.getElementById('paymentMessage').innerText = 'An error occurred while checking payment status.';
-            }
-        }
-
-        // Confirm payment button logic
-        document.getElementById('confirmPaymentButton').addEventListener('click', async function () {
-            const phoneNumber = document.getElementById('paymentPhoneNumber').value;
-            const amount = document.getElementById('planAmount').innerText.replace('Ksh. ', '').trim(); // Get the plan amount
-
-            try {
-                const paymentResponse = await fetch('/api/payment/complete', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ phoneNumber, amount }),
-                });
-
-                const paymentData = await paymentResponse.json();
-
-                if (paymentData.success) {
-                    // Close the complete payment modal
-                    $('#completePaymentModal').modal('hide');
-                    // Optionally show a success message
-                    alert('Payment successful! Thank you for your payment.');
-                } else {
-                    document.getElementById('paymentError').innerText = paymentData.message || 'Payment failed. Please try again.';
-                }
-            } catch (error) {
-                console.error('Error completing payment:', error);
-                alert('An error occurred while processing the payment. Please try again.');
-            }
-        });
-
-        function showPaymentModal() {
-            $('#paymentStatusModal').modal('show'); // Show the modal
-            checkPaymentStatus(); // Initial check
-
-            // Check payment status every 5 seconds
-            window.paymentStatusCheckInterval = setInterval(() => {
-                checkPaymentStatus();
-            }, 5000); // Check every 5 seconds
-        }
-
-        $(document).ready(function () {
-            showPaymentModal();
-        });
-    </script>
-
-
 
     <footer class="text-center py-0">
         &copy; 2024 Lease Captain. All Rights Reserved || powered by

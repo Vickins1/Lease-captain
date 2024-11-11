@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+       <meta charset="UTF-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <title>Subscription Payment</title>
+       <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+       <link rel="icon" href="/images/icon.png" type="image/png">
+       <style>
+              * {
+                     margin: 0;
+                     padding: 0;
+                     box-sizing: border-box;
+                     font-family: 'Roboto', sans-serif;
+              }
+
+              body {
+                     background-color: #f1f4f8;
+                     color: #333;
+                     display: flex;
+                     align-items: center;
+                     justify-content: center;
+                     height: 100vh;
+                     margin: 0;
+                     padding: 10px;
+              }
+
+              .container {
+                     background-color: #fff;
+                     width: 100%;
+                     max-width: 600px;
+                     padding: 2rem;
+                     border-radius: 10px;
+                     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+                     text-align: center;
+                     border-top: 6px solid #004080;
+              }
+
+              h1 {
+                     color: #004080;
+                     font-size: 28px;
+                     margin-bottom: 1rem;
+                     font-weight: 700;
+              }
+
+              p {
+                     font-size: 18px;
+                     color: #555;
+                     margin-bottom: 1.5rem;
+              }
+
+              form label {
+                     display: block;
+                     font-weight: 500;
+                     color: #333;
+                     margin-bottom: 0.5rem;
+                     text-align: left;
+              }
+
+              form select,
+              form input[type="tel"],
+              form button {
+                     width: 100%;
+                     padding: 12px;
+                     margin-bottom: 1rem;
+                     border: 1px solid #ddd;
+                     border-radius: 5px;
+                     font-size: 16px;
+                     transition: border-color 0.3s;
+              }
+
+              form select:focus,
+              form input[type="tel"]:focus {
+                     border-color: #004080;
+                     outline: none;
+              }
+
+              form button {
+                     background: linear-gradient(90deg, #004080, #0072cc);
+                     color: white;
+                     font-weight: 600;
+                     cursor: pointer;
+                     border: none;
+                     transition: background 0.3s;
+                     border-radius: 5px;
+                     display: flex;
+                     align-items: center;
+                     justify-content: center;
+              }
+
+              form button:hover {
+                     background: linear-gradient(90deg, #003366, #0059b3);
+              }
+
+              .flash-message {
+                     padding: 1rem;
+                     margin-bottom: 1.5rem;
+                     border-radius: 6px;
+                     font-weight: bold;
+                     text-align: center;
+              }
+
+              .flash-message.error {
+                     background-color: #f8d7da;
+                     color: #721c24;
+              }
+
+              .flash-message.success {
+                     background-color: #d4edda;
+                     color: #155724;
+              }
+
+              .flash-message.info {
+                     background-color: #cce5ff;
+                     color: #004085;
+              }
+
+              .paid-message {
+                     background-color: #dff0d8;
+                     color: #3c763d;
+                     padding: 12px;
+                     border-radius: 6px;
+                     margin-top: 1rem;
+                     font-weight: 600;
+              }
+
+              #amount-display,
+              #units-display {
+                     transition: color 0.3s;
+              }
+
+              /* Responsive styles for smaller screens */
+              @media (max-width: 768px) {
+                     .container {
+                            padding: 1.5rem;
+                     }
+
+                     h1 {
+                            font-size: 24px;
+                     }
+
+                     p {
+                            font-size: 16px;
+                     }
+
+                     form label {
+                            font-size: 14px;
+                     }
+
+                     form select,
+                     form input[type="tel"],
+                     form button {
+                            padding: 10px;
+                            font-size: 14px;
+                     }
+              }
+
+              @media (max-width: 480px) {
+                     .container {
+                            padding: 1rem;
+                     }
+
+                     h1 {
+                            font-size: 20px;
+                     }
+
+                     p {
+                            font-size: 14px;
+                     }
+
+                     form label {
+                            font-size: 13px;
+                     }
+
+                     form select,
+                     form input[type="tel"],
+                     form button {
+                            padding: 8px;
+                            font-size: 13px;
+                     }
+
+                     .flash-message {
+                            font-size: 14px;
+                     }
+
+                     .paid-message {
+                            font-size: 14px;
+                     }
+              }
+       </style>
+
+       <script>
+              const planDetails = {
+                     Basic: { amount: 0, units: 5 },
+                     Standard: { amount: 1499, units: 20 },
+                     Pro: { amount: 2999, units: 50 },
+                     Advanced: { amount: 4499, units: 100 },
+                     Enterprise: { amount: 6999, units: 150 },
+                     Premium: { amount: null, units: "Unlimited" }
+              };
+
+              function updatePlanDetails() {
+                     const planSelect = document.getElementById("plan-select");
+                     const amountField = document.getElementById("amount-field");
+                     const selectedPlan = planSelect.value;
+
+                     const { amount, units } = planDetails[selectedPlan];
+                     amountField.value = amount;
+                     document.getElementById("amount-display").textContent = amount ? `KES ${amount}` : "Contact Support for Pricing";
+                     document.getElementById("units-display").textContent = `Units included: ${units}`;
+                     document.getElementById("amount-display").style.color = amount ? "#004080" : "#b30000";
+
+                     document.getElementById("selected-plan").textContent = selectedPlan;
+              }
+
+              window.onload = () => {
+                     updatePlanDetails();
+              };
+       </script>
+</head>
+
+<body>
+
+       <div class="container">
+              <!-- Subscription Title with Icon -->
+              <h1><i class="fas fa-clipboard-list"></i> Subscribe to <span id="selected-plan">
+                            <%= plan %>
+                     </span></h1>
+
+              <!-- Success and Error Messages with Icons -->
+              <% if (success && success.length> 0) { %>
+                     <div class="flash-message success"><i class="fas fa-check-circle"></i>
+                            <%= success %>
+                     </div>
+                     <% } %>
+
+                            <% if (error && error.length> 0) { %>
+                                   <div class="flash-message error"><i class="fas fa-exclamation-circle"></i>
+                                          <%= error %>
+                                   </div>
+                                   <% } %>
+
+                                          <!-- Amount and Units Display with Icon -->
+                                          <p><i class="fas fa-money-bill-wave"></i> Amount due: <span
+                                                        id="amount-display"><strong>KES <%= expectedAmount %>
+                                                        </strong></span></p>
+                                          <p><i class="fas fa-boxes"></i> <span id="units-display">Units included: <%=
+                                                               planDetails[plan].units %></span></p>
+
+                                          <% if (!hasPaid) { %>
+                                                 <form action="/subscription" method="POST" id="payment-form">
+                                                        <!-- Plan Selection with Icon -->
+                                                        <label for="plan-select"><i class="fas fa-list-alt"></i> Change
+                                                               Plan:</label>
+                                                        <select id="plan-select" name="plan"
+                                                               onchange="updatePlanDetails()">
+                                                               <option value="Standard" <%=plan==='Standard'
+                                                                      ? 'selected' : '' %>>Standard</option>
+                                                               <option value="Pro" <%=plan==='Pro' ? 'selected' : '' %>
+                                                                      >Pro</option>
+                                                               <option value="Advanced" <%=plan==='Advanced'
+                                                                      ? 'selected' : '' %>>Advanced</option>
+                                                               <option value="Enterprise" <%=plan==='Enterprise'
+                                                                      ? 'selected' : '' %>>Enterprise</option>
+                                                               <option value="Premium" <%=plan==='Premium' ? 'selected'
+                                                                      : '' %>>Premium</option>
+                                                        </select>
+
+                                                        <!-- Phone Input with Icon -->
+                                                        <label for="msisdn"><i class="fas fa-phone-alt"></i> Enter Phone
+                                                               Number:</label>
+                                                        <input type="tel" name="msisdn" required
+                                                               placeholder="254712345678">
+
+                                                        <input type="hidden" name="amount" id="amount-field"
+                                                               value="<%= expectedAmount %>">
+
+                                                        <!-- Submit Button with M-PESA Icon -->
+                                                        <button type="submit" id="payButton"
+                                                               onclick="handlePaymentClick()">
+                                                               <i class="fas fa-paper-plane"></i> Pay Now via M-PESA
+                                                        </button>
+
+                                                        <script>
+                                                               function handlePaymentClick() {
+                                                                      const payButton = document.getElementById("payButton");
+
+                                                                      // Disable the button to prevent multiple submissions
+                                                                      payButton.disabled = true;
+
+                                                                      // Change the button text to "Processing..."
+                                                                      payButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+                                                                      // Submit the form
+                                                                      document.getElementById("payment-form").submit();
+                                                               }
+                                                        </script>
+
+                                                 </form>
+                                                 <% } else { %>
+                                                        <!-- Payment Confirmation with Icon -->
+                                                        <p class="paid-message"><i class="fas fa-check-circle"></i> You
+                                                               have already paid for this subscription.</p>
+                                                        <% } %>
+       </div>
+
+       <!-- Floating Support Button -->
+       <div class="floating-support">
+              <button type="button" class="btn btn-dark d-flex align-items-center" data-toggle="modal"
+                     data-target="#supportModal">
+                     <i class="fas fa-headset mr-2"></i> Support
+              </button>
+       </div>
+
+       <!-- Support Modal -->
+       <div class="modal fade" id="supportModal" tabindex="-1" role="dialog" aria-labelledby="supportModalLabel"
+              aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                     <div class="modal-content">
+                            <div class="modal-header text-black">
+                                   <h5 class="modal-title" id="supportModalLabel">Contact Support</h5>
+                                   <button type="button" class="close text-black" data-dismiss="modal"
+                                          aria-label="Close">
+                                          <span aria-hidden="true">&times;</span>
+                                   </button>
+                            </div>
+                            <div class="modal-body">
+                                   <form id="supportForm" action="/submit" method="POST">
+                                          <div class="form-group">
+                                                 <label for="emailAddress">Your Email</label>
+                                                 <input type="email" class="form-control" name="emailAddress"
+                                                        id="emailAddress" placeholder="Enter your email" required>
+                                          </div>
+                                          <div class="form-group">
+                                                 <label for="supportMessage">Message</label>
+                                                 <textarea class="form-control" name="supportMessage"
+                                                        id="supportMessage" rows="4"
+                                                        placeholder="Write your message here..." required></textarea>
+                                          </div>
+                                          <!-- Send Message Button -->
+                                          <!-- Send Message Button -->
+                                          <button type="submit" class="btn btn-dark" id="sendMessageButton"
+                                                 onclick="handleSendMessageClick(event)">
+                                                 Send Message
+                                          </button>
+
+                                          <script>
+                                                 function handleSendMessageClick(event) {
+                                                        event.preventDefault();  // Prevent the default form submission
+
+                                                        const sendMessageButton = document.getElementById("sendMessageButton");
+                                                        const form = document.getElementById("supportForm");  // Ensure your form has an ID 'supportForm'
+
+                                                        // Disable the button to prevent multiple submissions
+                                                        sendMessageButton.disabled = true;
+
+                                                        // Change the button text to "Processing..."
+                                                        sendMessageButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+                                                        // Submit the form
+                                                        form.submit();
+                                                 }
+                                          </script>
+
+
+                                   </form>
+                            </div>
+                     </div>
+              </div>
+       </div>
+       <style>
+              /* Adjust modal padding and form element spacing for smaller screens */
+              @media (max-width: 576px) {
+                     .modal-dialog {
+                            max-width: 95%;
+                            margin: 1.75rem auto;
+                     }
+
+                     .modal-header,
+                     .modal-body {
+                            padding: 1rem;
+                     }
+
+                     .modal-body .form-group {
+                            margin-bottom: 1rem;
+                     }
+
+                     .modal-body .form-control {
+                            padding: 0.5rem;
+                            font-size: 14px;
+                     }
+
+                     .modal-body button {
+                            font-size: 14px;
+                            padding: 0.5rem;
+                     }
+              }
+       </style>
+
+       <!-- Styles for Floating Button -->
+       <style>
+              /* Floating Support Button Style */
+              .floating-support {
+                     position: fixed;
+                     bottom: 20px;
+                     right: 20px;
+                     z-index: 1000;
+              }
+
+              .floating-support .btn {
+                     background-color: #003366;
+                     color: #ffffff;
+                     font-size: 0.9rem;
+                     padding: 10px 16px;
+                     border-radius: 50px;
+                     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+                     transition: transform 0.2s ease, box-shadow 0.2s ease;
+              }
+
+              .floating-support .btn:hover {
+                     transform: scale(1.05);
+                     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+                     background-color: #0056b3;
+              }
+
+              .floating-support .fas.fa-headset {
+                     color: #ffffff;
+              }
+
+              /* Responsive Adjustments */
+              @media (max-width: 768px) {
+                     .floating-support .btn {
+                            font-size: 0.8rem;
+                            padding: 10px 16px;
+                     }
+
+                     .floating-support .fas.fa-headset {
+                            font-size: 1.2rem;
+                            margin-right: 6px;
+                     }
+              }
+
+              @media (max-width: 576px) {
+                     .floating-support {
+                            bottom: 15px;
+                            right: 15px;
+                     }
+
+                     .floating-support .btn {
+                            font-size: 0.8rem;
+                            padding: 10px 14px;
+                     }
+
+                     .floating-support .fas.fa-headset {
+                            font-size: 1rem;
+                            margin-right: 4px;
+                     }
+              }
+       </style>
+
+       <!-- Include Bootstrap and FontAwesome -->
+       <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+       <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+</body>
+
+</html>
