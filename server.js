@@ -22,12 +22,37 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app);
 app.set('trust proxy', 1);
+const { MongoClient, ServerApiVersion } = require("mongodb");
 
+const mongoURI = 'mongodb+srv://lease_captain:iLW6Z54zAQGy6r0u@lease-captain.xxfb2.mongodb.net/?retryWrites=true&w=majority&connectTimeoutMS=30000';
 
-// MongoDB connection
-mongoose.connect('mongodb://localhost:27017/rental-management')
-    .then(() => console.log('===MongoDB connected successfully!==='))
+mongoose.connect(mongoURI)
+    .then(() => console.log('=== MongoDB connected successfully! ==='))
     .catch(err => console.error('Database connection error:', err));
+
+// Create a MongoClient with MongoClientOptions to set the Stable API version
+const client = new MongoClient(mongoURI, {
+    serverApi: {
+        version: ServerApiVersion.v1,
+        strict: true,
+        deprecationErrors: true,
+    },
+    connectTimeoutMS: 30000
+});
+
+async function run() {
+    try {
+        await client.connect();
+        await client.db("lease_capatain").command({ ping: 1 });
+        console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    } catch (error) {
+        console.error("Database connection error:", error);
+    } finally {
+        await client.close();
+    }
+}
+
+run().catch(console.dir);
 
 // View engine setup
 app.set('view engine', 'ejs');
