@@ -308,12 +308,12 @@ router.get('/subscription', async (req, res) => {
             Premium: { amount: null, units: "Contact Support for Pricing" }
         };
 
-      
+
         const expectedAmount = planAmounts[req.user.plan];
         const hasPaid = req.user.paymentStatus && req.user.paymentStatus.status === 'completed';
 
-          // If the user has already paid, redirect them to the dashboard
-          if (hasPaid) {
+        // If the user has already paid, redirect them to the dashboard
+        if (hasPaid) {
             req.flash('success', 'You have already paid for this subscription.');
             return res.redirect('/tenancy-manager/dashboard');
         }
@@ -1537,7 +1537,8 @@ router.post('/reminders/delete/:id', isTenancyManager, async (req, res) => {
     }
 });
 
-// POST route for "Forgot Password"
+
+
 router.post('/forgot-password', async (req, res) => {
     try {
         const { email } = req.body;

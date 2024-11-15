@@ -13,7 +13,7 @@ const tenantPortalRoutes = require('./routes/tenantPortal');
 const authRoutes = require('./routes/auth');
 const paymentGatewayRoutes = require('./routes/paymentGateway');
 const sendRemindersRoutes = require('./routes/sendReminders');
-const SupportMessage = require('./models/supportMessage'); 
+const SupportMessage = require('./models/supportMessage');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
 const os = require('os');
@@ -22,43 +22,34 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app);
 app.set('trust proxy', 1);
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion } = require('mongodb');
 
-const mongoURI = 'mongodb+srv://lease_captain:iLW6Z54zAQGy6r0u@lease-captain.xxfb2.mongodb.net/?retryWrites=true&w=majority&connectTimeoutMS=30000';
+const uri = "mongodb+srv://kefini:IVUZrBxlRdPxsD2O@lease-captain.ryokh.mongodb.net/?retryWrites=true&w=majority&appName=Lease-Captain";
 
-mongoose.connect(mongoURI)
-    .then(() => console.log('=== MongoDB connected successfully! ==='))
-    .catch(err => console.error('Database connection error:', err));
-
-// Create a MongoClient with MongoClientOptions to set the Stable API version
-const client = new MongoClient(mongoURI, {
-    serverApi: {
-        version: ServerApiVersion.v1,
-        strict: true,
-        deprecationErrors: true,
-    },
-    connectTimeoutMS: 30000
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
 });
-
 async function run() {
-    try {
-        await client.connect();
-        await client.db("lease_capatain").command({ ping: 1 });
-        console.log("Pinged your deployment. You successfully connected to MongoDB!");
-    } catch (error) {
-        console.error("Database connection error:", error);
-    } finally {
-        await client.close();
-    }
+  try {
+    await client.connect();
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  } finally {
+    await client.close();
+  }
 }
-
 run().catch(console.dir);
+
 
 // View engine setup
 app.set('view engine', 'ejs');
 
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json()); 
+app.use(express.json());
 app.use(methodOverride('_method'));
 app.use(express.static('public'));
 
@@ -66,8 +57,8 @@ app.use(session({
     secret: process.env.SESSION_SECRET || 'secret',
     resave: false,
     saveUninitialized: false,
-    cookie: { 
-        secure: process.env.NODE_ENV === 'production'  
+    cookie: {
+        secure: process.env.NODE_ENV === 'production'
     }
 }));
 
@@ -77,10 +68,9 @@ app.use(flash());
 app.use((req, res, next) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
-    res.locals.tenantId = req.session.tenantId;  
+    res.locals.tenantId = req.session.tenantId;
     next();
 });
-
 
 // Passport.js setup
 app.use(passport.initialize());
@@ -115,7 +105,7 @@ app.get('/', (req, res) => {
 app.get('/support', (req, res) => {
     const successMessage = req.flash('success') || null;
     const errorMessage = req.flash('error') || null;
-    
+
     res.render('support', { successMessage, errorMessage });
 });
 
@@ -213,9 +203,6 @@ app.get('/verify/:token', async (req, res) => {
 });
 
 
-
-
-
 // 404 Error handling
 app.use((req, res) => {
     res.status(404).render('404');
@@ -228,56 +215,56 @@ app.use((err, req, res, next) => {
 });
 
 app.post('/callback', async (req, res) => {
-  const stkCallbackResponse = req.body;
-  const logFile = 'UmsPayMpesastkresponse.json';
+    const stkCallbackResponse = req.body;
+    const logFile = 'UmsPayMpesastkresponse.json';
 
-  // Log the callback response to a file
-  fs.appendFile(logFile, JSON.stringify(stkCallbackResponse, null, 2), (err) => {
-      if (err) {
-          console.error('Error writing to log file:', err.message);
-          return res.status(500).json({ status: 'error', message: 'Could not write to log file' });
-      }
-      console.log('Callback data received and logged:', stkCallbackResponse);
-  });
+    // Log the callback response to a file
+    fs.appendFile(logFile, JSON.stringify(stkCallbackResponse, null, 2), (err) => {
+        if (err) {
+            console.error('Error writing to log file:', err.message);
+            return res.status(500).json({ status: 'error', message: 'Could not write to log file' });
+        }
+        console.log('Callback data received and logged:', stkCallbackResponse);
+    });
 
-  // Extract the transactionId and ResultCode 
-  const { transactionId, ResultCode, status } = stkCallbackResponse;
+    // Extract the transactionId and ResultCode 
+    const { transactionId, ResultCode, status } = stkCallbackResponse;
 
-  try {
-      // Update the payment based on the transaction ID and callback response
-      if (transactionId && (ResultCode !== undefined || status)) {
-          let updatedStatus;
+    try {
+        // Update the payment based on the transaction ID and callback response
+        if (transactionId && (ResultCode !== undefined || status)) {
+            let updatedStatus;
 
-          // Map ResultCode or status to payment status
-          if (ResultCode === '0' || status === 'Success') {
-              updatedStatus = 'completed';
-          } else if (ResultCode !== '0' || status === 'Failed') {
-              updatedStatus = 'failed';
-          } else {
-              updatedStatus = 'pending';
-          }
+            // Map ResultCode or status to payment status
+            if (ResultCode === '0' || status === 'Success') {
+                updatedStatus = 'completed';
+            } else if (ResultCode !== '0' || status === 'Failed') {
+                updatedStatus = 'failed';
+            } else {
+                updatedStatus = 'pending';
+            }
 
-          // Find and update the payment record
-          const payment = await Payment.findOneAndUpdate(
-              { transactionId },
-              { status: updatedStatus },
-              { new: true }
-          );
+            // Find and update the payment record
+            const payment = await Payment.findOneAndUpdate(
+                { transactionId },
+                { status: updatedStatus },
+                { new: true }
+            );
 
-          if (payment) {
-              console.log(`Payment status updated for transaction ID ${transactionId}:`, updatedStatus);
-              res.status(200).json({ status: 'success', message: 'Payment status updated' });
-          } else {
-              console.log(`Payment not found for transaction ID: ${transactionId}`);
-              res.status(404).json({ status: 'error', message: 'Payment not found' });
-          }
-      } else {
-          res.status(400).json({ status: 'error', message: 'Invalid callback data' });
-      }
-  } catch (error) {
-      console.error('Error processing callback data:', error.message);
-      res.status(500).json({ status: 'error', message: 'Error processing callback data' });
-  }
+            if (payment) {
+                console.log(`Payment status updated for transaction ID ${transactionId}:`, updatedStatus);
+                res.status(200).json({ status: 'success', message: 'Payment status updated' });
+            } else {
+                console.log(`Payment not found for transaction ID: ${transactionId}`);
+                res.status(404).json({ status: 'error', message: 'Payment not found' });
+            }
+        } else {
+            res.status(400).json({ status: 'error', message: 'Invalid callback data' });
+        }
+    } catch (error) {
+        console.error('Error processing callback data:', error.message);
+        res.status(500).json({ status: 'error', message: 'Error processing callback data' });
+    }
 });
 
 

@@ -11,7 +11,6 @@ const crypto = require('crypto');
 // Google OAuth Routes
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
-
 router.get('/tenancyManager/dashboard', 
   passport.authenticate('google', {
     failureRedirect: '/login', 
@@ -28,21 +27,17 @@ router.get('/signup', (req, res) => {
 
 router.post('/signup', async (req, res) => {
   const { username, email, password, phone, plan } = req.body;
-
   // Input validation
   if (!username || !email || !password || !phone || !plan) {
       req.flash('error', 'All fields are required. Please fill in all fields.');
       return res.redirect('/signup');
   }
-
   try {
-      // Check if the user already exists
       const existingUser = await User.findOne({ $or: [{ email }, { phone }] });
       if (existingUser) {
           req.flash('error', 'Email or phone number already exists. Please choose another.');
           return res.redirect('/signup');
       }
-
       const tenantsLimit = getTenantsCount(plan);
       const planAmount = planRates[plan];
       const user = new User({
@@ -59,10 +54,9 @@ router.post('/signup', async (req, res) => {
             amount: planAmount,
         }
       });
-
       await User.register(user, password)
           .then(async () => {
-              await sendWelcomeEmail(email, username, user.verificationToken); // Pass token to the email function
+              await sendWelcomeEmail(email, username, user.verificationToken);
 
               req.flash('success', 'Successfully signed up! Please check your email to verify your account and log in.');
               res.redirect('/login');
@@ -74,13 +68,11 @@ router.post('/signup', async (req, res) => {
   } catch (err) {
       let errorMessage;
 
-      // Handle duplicate key error
       if (err.code === 11000) {
           errorMessage = 'Username, email, or phone number already exists. Please choose another.';
       } else {
           errorMessage = 'Sign up failed: ' + err.message;
       }
-
       console.log('Error during signup:', err.message);
       req.flash('error', errorMessage);
       res.redirect('/signup');
@@ -96,7 +88,6 @@ function getTenantsCount(plan) {
       Enterprise: 150,
       Premium: Infinity
   };
-  
   return tenantsLimit[plan] || 5;
 }
 
@@ -119,7 +110,6 @@ const transporter = nodemailer.createTransport({
 
 const sendWelcomeEmail = async (email, username, verificationToken) => {
   const mailOptions = {
-      // Customize the from field with a name
       from: `"Lease Captain" <${process.env.EMAIL_USERNAME}>`, 
       to: email,
       subject: 'Welcome to Lease Captain! Please Verify Your Email',
@@ -217,7 +207,6 @@ const sendWelcomeEmail = async (email, username, verificationToken) => {
   }
 };
 
-
 // Send welcome SMS using UMS API
 const sendWelcomeSMS = async (phone, username) => {
   const message = `Greetings ${username}, welcome to Lease Captain! We're excited to support your property management journey. Enjoy a seamless and efficient experience with us!`;
@@ -246,7 +235,6 @@ const sendWelcomeSMS = async (phone, username) => {
   }
 };
 
-
 // Login route
 router.get('/login', (req, res) => {
   const error = req.flash('error');
@@ -257,21 +245,19 @@ router.get('/login', (req, res) => {
 router.post('/login', (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) {
-      console.error("Authentication error:", err); // Log detailed error
-      return next(err); // Handle server errors
+      console.error("Authentication error:", err);
+      return next(err);
     }
     if (!user) {
       console.warn("Authentication failed: Invalid username or password");
       req.flash('error', 'Invalid username or password');
       return res.redirect('/login'); // Handle incorrect credentials
     }
-    
     req.logIn(user, async (loginErr) => {
       if (loginErr) {
         console.error("Error during login session:", loginErr);
         return next(loginErr);
       }
-
       // Capture the login activity
       const agent = useragent.parse(req.headers['user-agent']);
       const loginActivity = {
@@ -279,7 +265,6 @@ router.post('/login', (req, res, next) => {
         ipAddress: req.ip,
         device: agent.toString()
       };
-
       try {
         // Push the latest login activity and keep the last 5 entries
         await User.findByIdAndUpdate(user._id, {
