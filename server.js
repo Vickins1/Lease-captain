@@ -22,10 +22,12 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app);
 app.set('trust proxy', 1);
+
+
 const { MongoClient, ServerApiVersion } = require('mongodb');
+const uri = "mongodb://Admin:Kefini360@lease-captain-shard-00-00.ryokh.mongodb.net:27017,lease-captain-shard-00-01.ryokh.mongodb.net:27017,lease-captain-shard-00-02.ryokh.mongodb.net:27017/?ssl=true&replicaSet=atlas-67tjyi-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Lease-Captain";
 
-const uri = "mongodb+srv://kefini:IVUZrBxlRdPxsD2O@lease-captain.ryokh.mongodb.net/?retryWrites=true&w=majority&appName=Lease-Captain";
-
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -33,16 +35,21 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   }
 });
+
 async function run() {
   try {
+    // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+    // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
+    // Ensures that the client will close when you finish/error
     await client.close();
   }
 }
 run().catch(console.dir);
+
 
 
 // View engine setup
@@ -63,7 +70,6 @@ app.use(session({
 }));
 
 app.use(flash());
-
 // Flash messages and user session handling
 app.use((req, res, next) => {
     res.locals.success = req.flash('success');
@@ -96,6 +102,7 @@ app.use('/', tenantRoutes);
 app.use('/', tenantPortalRoutes);
 app.use('/', paymentGatewayRoutes);
 app.use('/', sendRemindersRoutes);
+
 // Landing page
 app.get('/', (req, res) => {
     res.render('landingPage');
@@ -202,7 +209,6 @@ app.get('/verify/:token', async (req, res) => {
     }
 });
 
-
 // 404 Error handling
 app.use((req, res) => {
     res.status(404).render('404');
@@ -283,9 +289,8 @@ function getLocalIP() {
 
 // Start the server
 const PORT = process.env.PORT || 5000;
-const HOST = '0.0.0.0';
 
-server.listen(PORT, HOST, () => {
+server.listen(PORT, () => {
     const localIP = getLocalIP();
     console.log(`Server is running on http://${localIP}:${PORT}`);
 });
