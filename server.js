@@ -24,28 +24,12 @@ const server = http.createServer(app);
 app.set('trust proxy', 1);
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb://Admin:Kefini360@lease-captain-shard-00-00.ryokh.mongodb.net:27017,lease-captain-shard-00-01.ryokh.mongodb.net:27017,lease-captain-shard-00-02.ryokh.mongodb.net:27017/?ssl=true&replicaSet=atlas-67tjyi-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Lease-Captain";
+const dbUri = process.env.MONGO_URI || "mongodb://Admin:Kefini360@lease-captain-shard-00-00.ryokh.mongodb.net:27017,lease-captain-shard-00-01.ryokh.mongodb.net:27017,lease-captain-shard-00-02.ryokh.mongodb.net:27017/?ssl=true&replicaSet=atlas-67tjyi-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Lease-Captain";
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});
-
-async function run() {
-  try {
-    await client.connect();
-    await client.db("admin").command({ ping: 1 });
-    console.log("successfully connected to MongoDB Atlas!");
-  } finally {
-    await client.close();
-  }
-}
-run().catch(console.dir);
+mongoose
+  .connect(dbUri)
+  .then(() => console.log("Successfully Connected to MongoDB Atlas!"))
+  .catch((err) => console.error("Database connection error:", err));
 
 
 
