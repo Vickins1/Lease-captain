@@ -24,12 +24,39 @@ const server = http.createServer(app);
 app.set('trust proxy', 1);
 
 
-const dbUri = process.env.MONGO_URI || "mongodb://Admin:Kefini360@lease-captain-shard-00-00.ryokh.mongodb.net:27017,lease-captain-shard-00-01.ryokh.mongodb.net:27017,lease-captain-shard-00-02.ryokh.mongodb.net:27017/?ssl=true&replicaSet=atlas-67tjyi-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Lease-Captain";
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const uri = "mongodb://Admin:Kefini360@lease-captain-shard-00-00.ryokh.mongodb.net:27017,lease-captain-shard-00-01.ryokh.mongodb.net:27017,lease-captain-shard-00-02.ryokh.mongodb.net:27017/?ssl=true&replicaSet=atlas-67tjyi-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Lease-Captain";
 
-mongoose
-  .connect(dbUri)
-  .then(() => console.log("Successfully Connected to MongoDB Atlas!"))
-  .catch((err) => console.error("Database connection error:", err));
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
+
+async function run() {
+  try {
+    await client.connect();
+    console.log("Connected to MongoDB Atlas!");
+
+    const dbName = "LCdb";
+    const collectionName = "test";
+
+    const db = client.db(dbName);
+    const collection = db.collection(collectionName);
+    const result = await collection.insertOne({ message: "This is a test document" });
+    console.log("Document inserted with ID:", result.insertedId);
+
+    console.log(`Database '${dbName}' and collection '${collectionName}' created successfully!`);
+  } catch (error) {
+    console.error("Error creating database:", error);
+  } finally {
+    await client.close();
+  }
+}
+
+run().catch(console.dir);
 
 
 
