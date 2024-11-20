@@ -27,7 +27,7 @@ const uri = "mongodb://Admin:Kefini360@lease-captain-shard-00-00.ryokh.mongodb.n
 
 async function createDatabaseAndCollections() {
     try {
-      await mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+      await mongoose.connect(uri);
       console.log("Connected to MongoDB Atlas!");
   
       const modelNames = mongoose.modelNames();
