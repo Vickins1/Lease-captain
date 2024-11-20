@@ -722,30 +722,38 @@
                                             <i class="fas fa-home mr-2"></i> Add Properties
                                         </a>
                                     </div>
-
+                        
                                     <!-- Add Property Units Button -->
                                     <div class="col-lg-3 col-md-6 mb-3">
                                         <a href="/tenancy-manager/property/units" class="btn btn-action animate-pop">
                                             <i class="fas fa-door-open mr-2"></i> Add Property Units
                                         </a>
                                     </div>
-
+                        
                                     <!-- Add Tenants Button -->
                                     <div class="col-lg-3 col-md-6 mb-3">
                                         <a href="/tenancy-manager/tenants" class="btn btn-action animate-pop">
                                             <i class="fas fa-users mr-2"></i> Add Tenants
                                         </a>
                                     </div>
-
+                        
                                     <!-- Transactions Button -->
                                     <div class="col-lg-3 col-md-6 mb-3">
                                         <a href="/tenancy-manager/payments" class="btn btn-action animate-pop">
                                             <i class="fas fa-money-bill-wave mr-2"></i> Transactions
                                         </a>
                                     </div>
+                        
+                                    <!-- Payment Gateway Integration Button -->
+                                    <div class="col-lg-3 col-md-6 mb-3">
+                                        <a href="/connect" class="btn btn-action animate-pop">
+                                            <i class="fas fa-plug mr-2"></i> Payment Gateway Integration
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        
 
                         <!-- Styles -->
                         <style>
@@ -1043,105 +1051,201 @@
             }
         }
     </style>
-    <!-- Floating Support Button -->
-    <div class="floating-support">
-        <button type="button" class="btn btn-dark d-flex align-items-center" data-toggle="modal"
-            data-target="#supportModal">
-            <i class="fas fa-headset fa-2x mr-2"></i> Support
-        </button>
+   <!-- Floating Messenger Button -->
+<div class="floating-support">
+    <button class="support-btn" onclick="toggleChat()">
+        <i class="fas fa-comment-dots"></i> Chat
+    </button>
+</div>
+
+<!-- Messenger Chat Window -->
+<div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+        <h5>Live Chat</h5>
+        <button class="close-btn" onclick="toggleChat()">×</button>
     </div>
-
-    <!-- Support Modal -->
-    <div class="modal fade" id="supportModal" tabindex="-1" role="dialog" aria-labelledby="supportModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header" style="background-color: #003366; color: #ffffff;">
-                    <h5 class="modal-title" id="supportModalLabel">Contact Support</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="supportForm" action="/submit" method="POST">
-                        <div class="form-group">
-                            <label for="emailAddress">Your Email</label>
-                            <input type="email" class="form-control" name="emailAddress" id="emailAddress"
-                                placeholder="Enter your email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="supportMessage">Message</label>
-                            <textarea class="form-control" name="supportMessage" id="supportMessage" rows="4"
-                                placeholder="Write your message here..." required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-dark">Send Message</button>
-                    </form>
-
-                </div>
-
-            </div>
-        </div>
+    <div class="chat-body" id="chatBody">
+        <!-- Chat messages will appear here -->
     </div>
+    <div class="chat-footer">
+        <input type="text" id="chatInput" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
+        <button class="send-btn" onclick="sendMessage()">Send</button>
+    </div>
+</div>
 
-    <!-- Styles for Floating Button -->
-    <style>
-        /* Floating Support Button Style */
-        .floating-support {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
+<!-- Styles -->
+<style>
+    /* Floating Messenger Button */
+    .floating-support {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+
+    .support-btn {
+        background-color: #003366;
+        color: #ffffff;
+        font-size: 1rem;
+        padding: 10px 16px;
+        border-radius: 50px;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .support-btn i {
+        margin-right: 8px;
+    }
+
+    .support-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        background-color: #0056b3;
+    }
+
+    /* Chat Window */
+    .chat-window {
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        width: 300px;
+        height: 400px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
+        display: none;
+        flex-direction: column;
+    }
+
+    .chat-header {
+        background-color: #003366;
+        color: #ffffff;
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+
+    .chat-header h5 {
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        color: #ffffff;
+        font-size: 1.2rem;
+        cursor: pointer;
+    }
+
+    .chat-body {
+        flex: 1;
+        padding: 10px;
+        overflow-y: auto;
+        background-color: #f9f9f9;
+    }
+
+    .chat-message {
+        margin-bottom: 10px;
+        padding: 8px 12px;
+        border-radius: 15px;
+        max-width: 80%;
+        word-wrap: break-word;
+    }
+
+    .chat-message.user {
+        background-color: #e0f7fa;
+        align-self: flex-end;
+    }
+
+    .chat-message.bot {
+        background-color: #f1f1f1;
+        align-self: flex-start;
+    }
+
+    .chat-footer {
+        padding: 10px;
+        display: flex;
+        gap: 10px;
+    }
+
+    .chat-footer input {
+        flex: 1;
+        padding: 8px;
+        border-radius: 20px;
+        border: 1px solid #ccc;
+        outline: none;
+    }
+
+    .chat-footer input:focus {
+        border-color: #003366;
+    }
+
+    .send-btn {
+        background-color: #003366;
+        color: #ffffff;
+        border: none;
+        border-radius: 20px;
+        padding: 8px 16px;
+        cursor: pointer;
+    }
+
+    .send-btn:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<!-- JavaScript -->
+<script>
+    const chatWindow = document.getElementById('chatWindow');
+    const chatBody = document.getElementById('chatBody');
+    const chatInput = document.getElementById('chatInput');
+
+    // Toggle the chat window
+    function toggleChat() {
+        chatWindow.style.display = chatWindow.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    // Send message
+    function sendMessage() {
+        const message = chatInput.value.trim();
+        if (message) {
+            // Append user's message
+            appendMessage(message, 'user');
+            chatInput.value = '';
+
+            // Simulate bot response
+            setTimeout(() => {
+                appendMessage('Thank you for reaching out! How can I assist you?', 'bot');
+            }, 1000);
         }
+    }
 
-        .floating-support .btn {
-            background-color: #003366;
-            color: #ffffff;
-            font-size: 0.9rem;
-            padding: 8px 14px;
-            border-radius: 50px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+    // Handle Enter key press
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            sendMessage();
         }
+    }
 
-        .floating-support .btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-            background-color: #0056b3;
-        }
+    // Append a message to the chat body
+    function appendMessage(message, type) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('chat-message', type);
+        messageElement.textContent = message;
+        chatBody.appendChild(messageElement);
+        chatBody.scrollTop = chatBody.scrollHeight; // Scroll to the latest message
+    }
+</script>
 
-        .floating-support .fas.fa-headset {
-            color: #ffffff;
-        }
-
-        /* Responsive Adjustments */
-        @media (max-width: 768px) {
-            .floating-support .btn {
-                font-size: 0.5rem;
-                padding: 12px 18px;
-            }
-
-            .floating-support .fas.fa-headset {
-                font-size: 0.9rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .floating-support {
-                bottom: 15px;
-                right: 15px;
-            }
-
-            .floating-support .btn {
-                font-size: 0.5rem;
-                padding: 10px 15px;
-            }
-
-            .floating-support .fas.fa-headset {
-                font-size: 0.9rem;
-                margin-right: 0.3rem;
-            }
-        }
-    </style>
 
     <footer class="text-center py-0">
         &copy; 2024 Lease Captain. All Rights Reserved || powered by

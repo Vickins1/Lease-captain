@@ -398,8 +398,14 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="webhookUrl">Webhook URL</label>
-                                                    <input type="url" class="form-control" id="webhookUrl" name="webhookUrl" value="<%= account.webhookUrl || '' %>">
+                                                    <input type="url" 
+                                                           class="form-control" 
+                                                           id="webhookUrl" 
+                                                           name="webhookUrl" 
+                                                           value="https://leasecaptain.com/callbackurl" 
+                                                           readonly>
                                                 </div>
+                                                
                                                 <button type="submit" class="btn btn-dark">Update Account</button>
                                             </form>
                                         </div>

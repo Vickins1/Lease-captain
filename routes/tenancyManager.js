@@ -215,7 +215,7 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
         if (!hasPaid) {
             if (req.user.plan === 'Basic') {
                 // Redirect to a limited access page for Basic plan users
-                req.flash('info', 'As a Basic plan user, you have limited access.');
+                req.flash('error', 'As a Basic plan user, you have limited access.');
                 return res.redirect('/tenancy-manager/dashboard');
             } else {
                 // Redirect to subscription page for users with unpaid or incomplete payment status
@@ -229,9 +229,18 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
         const tenants = await Tenant.find({ owner: req.user._id });
 
         const totalRentCollected = tenants.reduce((sum, tenant) => sum + (tenant.rentPaid || 0), 0);
-        const totalRentDue = tenants.reduce((sum, tenant) => sum + (tenant.rentDue || 0), 0);
+        const totalRentDue = tenants.reduce((sum, tenant) => {
+            const totalRent = tenant.totalRent || 0; 
+            const rentPaid = tenant.rentPaid || 0;  
+            return sum + (totalRent - rentPaid);    
+        }, 0);
+
         const utilityCollected = tenants.reduce((sum, tenant) => sum + (tenant.utilityPaid || 0), 0);
-        const utilityDue = tenants.reduce((sum, tenant) => sum + (tenant.utilityDue || 0), 0);
+        const utilityDue = tenants.reduce((sum, tenant) => {
+            const totalUtility = tenant.totalUtility || 0; 
+            const utilityPaid = tenant.utilityPaid || 0;   
+            return sum + (totalUtility - utilityPaid);     
+        }, 0);
 
         const numberOfUnits = await PropertyUnit.countDocuments({
             propertyId: { $in: properties.map(prop => prop._id) }
@@ -352,7 +361,6 @@ router.post('/subscription', async (req, res) => {
             return res.redirect('/subscription');
         }
 
-        // Update the user's plan if it's different from the current one
         if (req.user.plan !== plan) {
             req.user.plan = plan;
             await req.user.save();
@@ -374,7 +382,6 @@ router.post('/subscription', async (req, res) => {
         });
 
         const data = response.data;
-
         // Check if the request was successful
         if (data.success === '200') {
             req.user.paymentStatus = {
@@ -386,45 +393,45 @@ router.post('/subscription', async (req, res) => {
 
             req.flash('success', 'Payment request sent successfully. Please complete the STK push on your phone.');
 
-            // Check the payment status after a delay to allow processing
-            setTimeout(async () => {
+            // Periodically check the payment status
+            const interval = setInterval(async () => {
                 try {
                     const paymentStatus = await checkTransactionStatus(data.tranasaction_request_id);
 
                     if (paymentStatus === 'completed') {
+                        clearInterval(interval); // Stop checking
                         req.user.paymentStatus.status = 'completed';
                         await req.user.save();
-                        req.flash('success', 'Payment completed successfully.');
-                    } else {
-                        req.flash('info', 'Payment is still pending. Please check your dashboard later.');
+
+                        req.flash('success', 'Payment completed successfully! Welcome to the ${req.user.plan} plan. Enjoy our premium features tailored for you! .');
+                        return res.redirect('/tenancy-manager/dashboard');
                     }
                 } catch (statusError) {
                     console.error('Error checking payment status:', statusError);
+                    clearInterval(interval); 
                     req.flash('error', 'Could not verify payment status. Please check back later.');
+                    return res.redirect('/subscription');
                 }
-                res.redirect('/tenancy-manager/dashboard');
-            }, 10000);
+            }, 5000); 
         } else {
             req.flash('error', 'Failed to initiate payment request. Please try again.');
             return res.redirect('/subscription');
         }
     } catch (err) {
         if (err.code === 'ECONNABORTED') {
-            // Handle timeout errors
             console.error('Request timed out:', err);
             req.flash('error', 'The payment request timed out. Please try again later.');
         } else if (err.response) {
-            // Handle HTTP errors from the server
             console.error('Error response from UMS Pay:', err.response.data);
             req.flash('error', 'Payment service responded with an error. Please try again later.');
         } else {
-            // Handle general errors
             console.error('Error initiating payment:', err);
             req.flash('error', 'An error occurred while processing your payment. Please try again.');
         }
         return res.redirect('/subscription');
     }
 });
+
 
 // Function to check the transaction status from UMS Pay
 async function checkTransactionStatus(transactionId) {
@@ -740,7 +747,7 @@ router.post('/tenancy-manager/tenant/new', async (req, res) => {
             propertyName: propertyName
         });
 
-        await sendTenantEmail(newTenant);
+        await sendTenantEmail(newTenant, propertyToCheck.name);
 
         req.flash('success', 'Tenant added successfully and email sent.');
         res.redirect('/tenancy-manager/tenants');
@@ -854,7 +861,7 @@ async function sendTenantEmail(newTenant, propertyName) {
 
 const sendWelcomeSMS = async (tenant) => {
     const { phone, name, propertyName } = tenant;
-    const message = `Dear ${name}, welcome to your new home at ${propertyName}! Log in to your tenant portal using the credentials sent to your email: https://leasecaptain.com/tenantPortal/login.`;
+    const message = `Dear ${name}, welcome to your new home at ${propertyName}! Use the credentials sent to your email to log in to your portal. Access it here: leasecaptain.com/tenantPortal/login.`;
 
     try {
         const response = await axios.post(
