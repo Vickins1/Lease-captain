@@ -60,10 +60,6 @@ async function createDatabaseAndCollections() {
   
   createDatabaseAndCollections().catch(console.dir);
   
-  
-
-
-
 
 // View engine setup
 app.set('view engine', 'ejs');

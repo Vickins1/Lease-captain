@@ -608,17 +608,18 @@ router.post('/tenancy-manager/profile', isTenancyManager, async (req, res) => {
     }
 });
 
-// Helper function to determine the maximum allowed tenants based on the plan
-function getMaxTenants(plan) {
-    switch (plan) {
-        case 'Basic': return 10;
-        case 'Standard': return 20;
-        case 'Pro': return 50;
-        case 'Advanced': return 100;
-        case 'Premium': return 100;
-        default: return 10;
-    }
-}
+const getMaxTenants = (plan) => {
+    const tenantsLimit = {
+        Basic: 5,
+        Standard: 20,
+        Pro: 50,
+        Advanced: 100,
+        Enterprise: 150,
+        Premium: Infinity,
+    };
+
+    return tenantsLimit[plan] || 0;
+};
 
 router.post('/tenancy-manager/tenant/new', async (req, res) => {
     const {
@@ -731,7 +732,14 @@ router.post('/tenancy-manager/tenant/new', async (req, res) => {
         });
 
         await newTenant.save();
-        await sendWelcomeSMS(phone, name);
+
+        // Send SMS and Email with propertyName included
+        await sendWelcomeSMS({
+            phone: phone,
+            name: name,
+            propertyName: propertyName
+        });
+
         await sendTenantEmail(newTenant);
 
         req.flash('success', 'Tenant added successfully and email sent.');
@@ -743,6 +751,7 @@ router.post('/tenancy-manager/tenant/new', async (req, res) => {
         return res.redirect('/tenancy-manager/tenants');
     }
 });
+
 
 // Function to send tenant email separately
 async function sendTenantEmail(newTenant, propertyName) {
