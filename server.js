@@ -24,39 +24,46 @@ const server = http.createServer(app);
 app.set('trust proxy', 1);
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb://Admin:Kefini360@lease-captain-shard-00-00.ryokh.mongodb.net:27017,lease-captain-shard-00-01.ryokh.mongodb.net:27017,lease-captain-shard-00-02.ryokh.mongodb.net:27017/?ssl=true&replicaSet=atlas-67tjyi-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Lease-Captain";
+const uri = "mongodb://Admin:Kefini360@lease-captain-shard-00-00.ryokh.mongodb.net:27017,lease-captain-shard-00-01.ryokh.mongodb.net:27017,lease-captain-shard-00-02.ryokh.mongodb.net:27017/LC-db?ssl=true&replicaSet=atlas-67tjyi-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Lease-Captain";
 
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
+
+async function createDatabaseAndCollections() {
+    try {
+      await mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+      console.log("Connected to MongoDB Atlas!");
+  
+      const modelNames = mongoose.modelNames();
+  
+      if (modelNames.length === 0) {
+        console.log("No models found! Ensure you have registered Mongoose models.");
+        return;
+      }
+  
+      const db = mongoose.connection.db;
+  
+      for (const modelName of modelNames) {
+        const model = mongoose.model(modelName);
+  
+        const collectionName = model.collection.collectionName;
+        const existingCollections = await db.listCollections({ name: collectionName }).toArray();
+  
+        if (existingCollections.length > 0) {
+        } else {
+          await model.init();
+          console.log(`Collection for model '${modelName}' created.`);
+        }
+      }
+  
+      console.log("Database and collections checked successfully!");
+    } catch (error) {
+      console.error("Error creating database and collections:", error);
+    }
   }
-});
+  
+  createDatabaseAndCollections().catch(console.dir);
+  
+  
 
-async function run() {
-  try {
-    await client.connect();
-    console.log("Connected to MongoDB Atlas!");
-
-    const dbName = "LCdb";
-    const collectionName = "test";
-
-    const db = client.db(dbName);
-    const collection = db.collection(collectionName);
-    const result = await collection.insertOne({ message: "This is a test document" });
-    console.log("Document inserted with ID:", result.insertedId);
-
-    console.log(`Database '${dbName}' and collection '${collectionName}' created successfully!`);
-  } catch (error) {
-    console.error("Error creating database:", error);
-  } finally {
-    await client.close();
-  }
-}
-
-run().catch(console.dir);
 
 
 
