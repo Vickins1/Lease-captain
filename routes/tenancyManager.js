@@ -620,110 +620,132 @@ function getMaxTenants(plan) {
     }
 }
 
-// Route to handle form submission for a new tenant
 router.post('/tenancy-manager/tenant/new', async (req, res) => {
     const {
-        name, email, address, phone, leaseStartDate, leaseEndDate, property, deposit, utilities, unitId, doorNumber,
-        rentPaid, utilityPaid
+      name, email, address, phone, leaseStartDate, leaseEndDate, property, deposit, utilities, unitId, doorNumber,
+      rentPaid, utilityPaid
     } = req.body;
-
+  
     // Validate required fields
     const requiredFields = [
-        { field: leaseStartDate, message: 'Lease start date is required' },
-        { field: leaseEndDate, message: 'Lease end date is required' },
-        { field: property, message: 'Property is required' },
-        { field: name, message: 'Name is required' },
-        { field: email, message: 'Email is required' },
-        { field: deposit, message: 'Deposit is required' },
-        { field: utilities, message: 'Utilities are required' },
-        { field: unitId, message: 'Unit ID is required' },
-        { field: doorNumber, message: 'Door number is required' }
+      { field: leaseStartDate, message: 'Lease start date is required' },
+      { field: leaseEndDate, message: 'Lease end date is required' },
+      { field: property, message: 'Property is required' },
+      { field: name, message: 'Name is required' },
+      { field: email, message: 'Email is required' },
+      { field: deposit, message: 'Deposit is required' },
+      { field: utilities, message: 'Utilities are required' },
+      { field: unitId, message: 'Unit ID is required' },
+      { field: doorNumber, message: 'Door number is required' }
     ];
-
+  
     for (const { field, message } of requiredFields) {
-        if (!field) {
-            req.flash('error', message);
-            return res.redirect('/tenancy-manager/tenants');
-        }
-    }
-
-    const currentUser = req.user;
-
-    try {
-        // Check if the property exists
-        const propertyToCheck = await Property.findById(property);
-        if (!propertyToCheck) {
-            req.flash('error', 'Property not found');
-            return res.redirect('/tenancy-manager/tenants');
-        }
-
-        const propertyName = propertyToCheck.name;
-
-        // Check if the user owns the property
-        if (propertyToCheck.owner.toString() !== currentUser._id.toString()) {
-            req.flash('error', 'You do not have permission to add tenants to this property');
-            return res.redirect('/tenancy-manager/tenants');
-        }
-
-        // Check tenant limit based on user's plan
-        const maxTenants = getMaxTenants(currentUser.plan);
-        const tenantCount = await Tenant.countDocuments({ owner: currentUser._id });
-
-        if (tenantCount >= maxTenants) {
-            req.flash('error', `You have reached the maximum number of tenants for your ${currentUser.plan} plan. Upgrade your plan to add more tenants.`);
-            return res.redirect('/tenancy-manager/tenants');
-        }
-
-        // Check if a tenant with the same name or email already exists
-        const existingTenant = await Tenant.findOne({ $or: [{ name }, { email }] });
-        if (existingTenant) {
-            req.flash('error', `Tenant with name ${name} or email ${email} already exists. Please try again.`);
-            return res.redirect('/tenancy-manager/tenants');
-        }
-
-        // Set default password and hash it
-        const defaultPassword = '12345678';
-        const hashedPassword = await bcrypt.hash(defaultPassword, 10);
-
-        // Initialize wallet balance as the negative of the deposit amount
-        const walletBalance = -deposit;
-
-        // Create new tenant
-        const newTenant = new Tenant({
-            name,
-            email,
-            address,
-            phone,
-            deposit,
-            utilities,
-            username: name.toLowerCase().replace(/\s+/g, ''),
-            password: hashedPassword,
-            leaseStartDate,
-            leaseEndDate,
-            property: propertyToCheck._id,
-            owner: currentUser._id,
-            userId: currentUser._id,
-            unit: unitId,
-            doorNumber,
-            walletBalance,
-            rentPaid: rentPaid || 0,
-            utilityPaid: utilityPaid || 0
-        });
-
-        await newTenant.save();
-
-        req.flash('success', 'Tenant added successfully.');
-        res.redirect('/tenancy-manager/tenants');
-
-    } catch (error) {
-        console.error('Error adding tenant:', error);
-        req.flash('error', 'Error adding tenant.');
+      if (!field) {
+        req.flash('error', message);
         return res.redirect('/tenancy-manager/tenants');
+      }
     }
-});
+  
+    // Additional date validation
+    if (!Date.parse(leaseStartDate)) {
+      req.flash('error', 'Invalid Lease start date. Please provide a valid date.');
+      return res.redirect('/tenancy-manager/tenants');
+    }
+  
+    if (!Date.parse(leaseEndDate)) {
+      req.flash('error', 'Invalid Lease end date. Please provide a valid date.');
+      return res.redirect('/tenancy-manager/tenants');
+    }
+  
+    const startDate = new Date(leaseStartDate);
+    const endDate = new Date(leaseEndDate);
+  
+    // Ensure lease end date is not before lease start date
+    if (endDate < startDate) {
+      req.flash('error', 'Lease end date cannot be earlier than Lease start date.');
+      return res.redirect('/tenancy-manager/tenants');
+    }
+  
+    const currentUser = req.user;
+  
+    try {
+      // Check if the property exists
+      const propertyToCheck = await Property.findById(property);
+      if (!propertyToCheck) {
+        req.flash('error', 'Property not found');
+        return res.redirect('/tenancy-manager/tenants');
+      }
+  
+      const propertyName = propertyToCheck.name;
+  
+      // Check if the user owns the property
+      if (propertyToCheck.owner.toString() !== currentUser._id.toString()) {
+        req.flash('error', 'You do not have permission to add tenants to this property');
+        return res.redirect('/tenancy-manager/tenants');
+      }
+  
+      // Check tenant limit based on user's plan
+      const maxTenants = getMaxTenants(currentUser.plan);
+      const tenantCount = await Tenant.countDocuments({ owner: currentUser._id });
+  
+      if (tenantCount >= maxTenants) {
+        req.flash('error', `You have reached the maximum number of tenants for your ${currentUser.plan} plan. Upgrade your plan to add more tenants.`);
+        return res.redirect('/tenancy-manager/tenants');
+      }
+  
+      // Check if a tenant with the same name or email already exists
+      const existingTenant = await Tenant.findOne({ $or: [{ name }, { email }] });
+      if (existingTenant) {
+        req.flash('error', `Tenant with name ${name} or email ${email} already exists. Please try again.`);
+        return res.redirect('/tenancy-manager/tenants');
+      }
+  
+      // Set default password and hash it
+      const defaultPassword = '12345678';
+      const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+  
+      // Initialize wallet balance as the negative of the deposit amount
+      const walletBalance = -deposit;
+  
+      // Create new tenant
+      const newTenant = new Tenant({
+        name,
+        email,
+        address,
+        phone,
+        deposit,
+        utilities,
+        username: name.toLowerCase().replace(/\s+/g, ''),
+        password: hashedPassword,
+        leaseStartDate,
+        leaseEndDate,
+        property: propertyToCheck._id,
+        owner: currentUser._id,
+        userId: currentUser._id,
+        unit: unitId,
+        doorNumber,
+        walletBalance,
+        rentPaid: rentPaid || 0,
+        utilityPaid: utilityPaid || 0
+      });
+  
+      await newTenant.save();
+      await sendWelcomeSMS(phone, name);
+      await sendTenantEmail(tenant);
 
+      req.flash('success', 'Tenant added successfully and email sent.');
+      res.redirect('/tenancy-manager/tenants');
+  
+    } catch (error) {
+      console.error('Error adding tenant:', error);
+      req.flash('error', 'Error adding tenant.');
+      return res.redirect('/tenancy-manager/tenants');
+    }
+  });
+  
 // Function to send tenant email separately
 async function sendTenantEmail(newTenant, propertyName) {
+
     try {
         const mailOptions = {
             from: `"Lease Captain" <${process.env.EMAIL_USERNAME}>`,
@@ -819,6 +841,34 @@ async function sendTenantEmail(newTenant, propertyName) {
         console.error('Error sending email:', emailError);
     }
 }
+
+const sendWelcomeSMS = async (tenant) => {
+    const { phone, name, propertyName } = tenant;
+    const message = `Dear ${name}, welcome to your new home at ${propertyName}! Log in to your tenant portal using the credentials sent to your email: https://leasecaptain.com/tenantPortal/login.`;
+  
+    try {
+      const response = await axios.post(
+        'https://api.umeskiasoftwares.com/api/v1/sms',
+        {
+          api_key: "VEpGOTVNTlY6dnUxaG5odHA=",
+          email: "vickinstechnologies@gmail.com",
+          Sender_Id: "UMS_SMS",
+          message: message,
+          phone: phone
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      
+      console.log('Welcome SMS sent successfully via UMS API:', response.data);
+    } catch (error) {
+      console.error('Error sending SMS via UMS API:', error.response ? error.response.data : error.message);
+    }
+  };
+  
 // Route to resend the welcome email to a tenant
 router.post('/tenancy-manager/tenant/resend-email/:tenantId', async (req, res) => {
     try {
