@@ -23,14 +23,43 @@ const http = require('http');
 const server = http.createServer(app);
 app.set('trust proxy', 1);
 
-// Database Connection
-mongoose.connect('const uri = "mongodb://Admin:Kefini360@lease-captain-shard-00-00.ryokh.mongodb.net:27017,lease-captain-shard-00-01.ryokh.mongodb.net:27017,lease-captain-shard-00-02.ryokh.mongodb.net:27017/?ssl=true&replicaSet=atlas-67tjyi-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Lease-Captain";', {
-}).then(() => {
-  console.log('Connected to Mongodb Atlas');
-}).catch(err => {
-  console.error('Database connection error:', err);
-});
+const uri = "mongodb://Admin:Kefini360@lease-captain-shard-00-00.ryokh.mongodb.net:27017,lease-captain-shard-00-01.ryokh.mongodb.net:27017,lease-captain-shard-00-02.ryokh.mongodb.net:27017/?ssl=true&replicaSet=atlas-67tjyi-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Lease-Captain";
 
+async function createDatabaseAndCollections() {
+  try {
+    await mongoose.connect(uri);
+    console.log("Connected to MongoDB Atlas!");
+
+    const modelNames = mongoose.modelNames();
+
+    if (modelNames.length === 0) {
+      console.log("No models found! Ensure you have registered Mongoose models.");
+      return;
+    }
+
+    const db = mongoose.connection.db;
+
+    for (const modelName of modelNames) {
+      const model = mongoose.model(modelName);
+
+      const collectionName = model.collection.collectionName;
+      const existingCollections = await db.listCollections({ name: collectionName }).toArray();
+
+      if (existingCollections.length > 0) {
+        console.log(`Collection for model '${modelName}' already exists.`);
+      } else {
+        await model.init();
+        console.log(`Collection for model '${modelName}' created.`);
+      }
+    }
+
+    console.log("Database and collections checked successfully!");
+  } catch (error) {
+    console.error("Error creating database and collections:", error);
+  }
+}
+
+createDatabaseAndCollections().catch(console.dir);
 
 // View engine setup
 app.set('view engine', 'ejs');
