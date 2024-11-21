@@ -24,9 +24,9 @@ const server = http.createServer(app);
 app.set('trust proxy', 1);
 
 // Database Connection
-mongoose.connect('mongodb://localhost:27017/Rental-management', {
+mongoose.connect('const uri = "mongodb://Admin:Kefini360@lease-captain-shard-00-00.ryokh.mongodb.net:27017,lease-captain-shard-00-01.ryokh.mongodb.net:27017,lease-captain-shard-00-02.ryokh.mongodb.net:27017/?ssl=true&replicaSet=atlas-67tjyi-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Lease-Captain";', {
 }).then(() => {
-  console.log('Connected to the database');
+  console.log('Connected to Mongodb Atlas');
 }).catch(err => {
   console.error('Database connection error:', err);
 });
