@@ -230,16 +230,18 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
 
         const totalRentCollected = tenants.reduce((sum, tenant) => sum + (tenant.rentPaid || 0), 0);
         const totalRentDue = tenants.reduce((sum, tenant) => {
-            const totalRent = tenant.totalRent || 0; 
-            const rentPaid = tenant.rentPaid || 0;  
-            return sum + (totalRent - rentPaid);    
+            const totalRent = tenant.totalRent || 0;
+            const rentPaid = tenant.rentPaid || 0;
+            const rentDue = Math.max(0, totalRent - rentPaid); // Ensure that dues cannot be negative
+            return sum + rentDue;
         }, 0);
 
         const utilityCollected = tenants.reduce((sum, tenant) => sum + (tenant.utilityPaid || 0), 0);
         const utilityDue = tenants.reduce((sum, tenant) => {
-            const totalUtility = tenant.totalUtility || 0; 
-            const utilityPaid = tenant.utilityPaid || 0;   
-            return sum + (totalUtility - utilityPaid);     
+            const totalUtility = tenant.totalUtility || 0;
+            const utilityPaid = tenant.utilityPaid || 0;
+            const utilityDue = Math.max(0, totalUtility - utilityPaid); // Ensure that dues cannot be negative
+            return sum + utilityDue;
         }, 0);
 
         const numberOfUnits = await PropertyUnit.countDocuments({
@@ -408,11 +410,11 @@ router.post('/subscription', async (req, res) => {
                     }
                 } catch (statusError) {
                     console.error('Error checking payment status:', statusError);
-                    clearInterval(interval); 
+                    clearInterval(interval);
                     req.flash('error', 'Could not verify payment status. Please check back later.');
                     return res.redirect('/subscription');
                 }
-            }, 5000); 
+            }, 5000);
         } else {
             req.flash('error', 'Failed to initiate payment request. Please try again.');
             return res.redirect('/subscription');

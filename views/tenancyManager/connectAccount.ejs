@@ -470,26 +470,91 @@
                                     <label for="accountId">Account ID *</label>
                                     <input type="text" class="form-control" id="accountId" name="accountId" placeholder="Enter your Account ID" required>
                                 </div>
-            
+                               
                                 <div class="form-group">
                                     <label>Status</label><br>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="status" id="active" value="active" required>
-                                        <label class="form-check-label" for="active">
-                                            <i class="fas fa-check-circle" style="color: green;"></i> Active
-                                        </label>
+                                    <div id="statusToggleContainer" class="status-toggle">
+                                        <input type="checkbox" id="statusToggle" class="status-toggle-input" name="status" value="active" required>
+                                        <label for="statusToggle" class="status-toggle-label"></label>
                                     </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="status" id="inactive" value="inactive" required>
-                                        <label class="form-check-label" for="inactive">
-                                            <i class="fas fa-times-circle" style="color: red;"></i> Inactive
-                                        </label>
-                                    </div>
+                                    <span id="statusText" class="status-text">Inactive</span> <!-- Initial status text -->
                                 </div>
-            
+                                
+                                <style>
+                                    /* Toggle Container */
+                                    .status-toggle {
+                                        position: relative;
+                                        width: 60px;
+                                        height: 34px;
+                                        border-radius: 50px;
+                                        background-color: #dc3545; /* Default: Red for inactive */
+                                        transition: background-color 0.3s ease;
+                                    }
+                                
+                                    /* Hidden Checkbox */
+                                    .status-toggle-input {
+                                        opacity: 0;
+                                        width: 0;
+                                        height: 0;
+                                    }
+                                
+                                    /* White Circle (Toggle Knob) */
+                                    .status-toggle-label {
+                                        position: absolute;
+                                        top: 4px;
+                                        left: 4px;
+                                        width: 26px;
+                                        height: 26px;
+                                        background-color: white;
+                                        border-radius: 50%;
+                                        transition: transform 0.3s ease;
+                                        cursor: pointer;
+                                    }
+                                
+                                    /* Active State */
+                                    .status-toggle-input:checked + .status-toggle-label {
+                                        transform: translateX(26px); /* Move circle to the right */
+                                    }
+                                
+                                    /* Status Text Styling */
+                                    .status-text {
+                                        margin-left: 10px;
+                                        font-size: 1rem;
+                                        font-weight: bold;
+                                    }
+                                </style>
+                                
+                                <script>
+                                    const statusToggle = document.getElementById('statusToggle');
+                                    const statusText = document.getElementById('statusText');
+                                    const statusToggleContainer = document.getElementById('statusToggleContainer');
+                                
+                                    // Set initial status
+                                    function updateStatus() {
+                                        if (statusToggle.checked) {
+                                            statusText.textContent = 'Active';
+                                            statusToggleContainer.style.backgroundColor = '#28a745'; // Green for active
+                                        } else {
+                                            statusText.textContent = 'Inactive';
+                                            statusToggleContainer.style.backgroundColor = '#dc3545'; // Red for inactive
+                                        }
+                                    }
+                                
+                                    // Initial update
+                                    updateStatus();
+                                
+                                    // Add event listener to update status dynamically
+                                    statusToggle.addEventListener('change', updateStatus);
+                                </script>
+                                
                                 <div class="form-group">
                                     <label for="webhookUrl">Webhook URL</label>
-                                    <input type="url" class="form-control" id="webhookUrl" name="webhookUrl" placeholder="Enter your Webhook URL">
+                                    <input type="url" 
+                                           class="form-control" 
+                                           id="webhookUrl" 
+                                           name="webhookUrl" 
+                                           value="https://leasecaptain.com/callbackurl" 
+                                           readonly>
                                 </div>
             
                                 <button type="submit" class="btn btn-dark">Connect Account</button>

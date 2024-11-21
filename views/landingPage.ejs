@@ -419,9 +419,7 @@
                                 <i class="fas fa-credit-card" style="color: #003366; font-size: 2rem;"></i>
                             </div>
                             <h3>Seamless Payment Processing</h3>
-                            <p>With Lease Captain’s integration with leading payment providers like Mpesa and major
-                                banks, each payment is recorded instantly, providing transparency by notifying you
-                                whenever a tenant pays.</p>
+                            <p>Lease Captain integrates with Mpesa and major banks, allowing tenants to pay via Mpesa STK Push through the tenant portal. Payments are instantly recorded and you’re notified when a payment is made to your bank.</p>
                         </div>
                     </div>
                 </div>
@@ -1118,325 +1116,554 @@
         }
     </style>
 
-    <!-- Help Section -->
-    <section id="help-section" class="py-5">
-        <div class="container text-center">
-            <h2 class="help-title">Need Assistance?</h2>
-            <p class="help-intro">We're dedicated to helping you understand how Lease Captain works and support you in
-                managing your properties effortlessly.</p>
-
-            <!-- Support Contact Button -->
-            <div class="mt-4">
-                <a href="/support" class="btn btn-support">
-                    <i class="fas fa-headset mr-2"></i> Contact Support
-                </a>
-            </div>
+<!-- Help Section -->
+<section id="help-section">
+    <div class="container">
+        <h2 class="help-title">Need Assistance?</h2>
+        <p class="help-intro">Let’s simplify property management—reach out, and we’ll make it easier for you!</p>
+        <div class="contact-btn-container">
+            <a href="/support" class="btn btn-support">
+                <i class="fas fa-headset"></i> Contact Support
+            </a>
         </div>
-    </section>
-    <style>
-        /* Help Section Styles */
-        #help-section {
-            background-color: #e9f5ff;
-            /* Light blue background */
-            padding: 80px 0;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-            /* Box shadow for depth */
-            border-radius: 10px;
-            /* Rounded corners for a softer look */
-            position: relative;
-            overflow: hidden;
-        }
+    </div>
+</section>
 
-        /* Add a subtle wave effect at the bottom */
-        #help-section::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 60px;
-            background: url('wave.svg') no-repeat center bottom;
-            /* Use an SVG for a wave effect */
-            background-size: cover;
-        }
+<style>
+    /* Help Section Styles */
+    #help-section {
+        background-color: #ffffff; /* Clean white background */
+        padding: 60px 30px; /* Balanced padding */
+        border-radius: 10px; /* Slightly rounded corners */
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1); /* Larger, softer shadow */
+        margin: 0 auto;
+        max-width: 900px; /* Max width for centered content */
+        text-align: center;
+        position: relative;
+    }
 
-        /* Title Styles */
+    /* Title Styles */
+    .help-title {
+        color: #2d2d2d; /* Dark gray for modern feel */
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        letter-spacing: 2px;
+    }
+
+    /* Intro Text Styles */
+    .help-intro {
+        color: #777; /* Medium gray */
+        font-size: 1.2rem;
+        line-height: 1.6;
+        margin-bottom: 25px;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Button container */
+    .contact-btn-container {
+        margin-top: 30px;
+    }
+
+    /* Support Button Styling */
+    .btn-support {
+        display: inline-flex;
+        align-items: center;
+        background-color: #0056b3; /* Sleek blue */
+        color: #ffffff;
+        padding: 15px 30px;
+        font-size: 1.1rem;
+        font-weight: 500;
+        border-radius: 30px; /* More rounded edges for a soft look */
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-support i {
+        margin-right: 12px;
+        font-size: 1.3rem;
+    }
+
+    /* Button Hover Effect */
+    .btn-support:hover {
+        background-color: #004494;
+        transform: translateY(-3px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Smooth Icon Animation */
+    .btn-support i {
+        animation: smooth-bounce 1.5s ease-in-out infinite;
+    }
+
+    @keyframes smooth-bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-6px);
+        }
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
         .help-title {
-            color: #0056b3;
-            /* Dark blue for the title */
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        /* Intro Text Styles */
-        .help-intro {
-            color: #555;
-            /* Darker gray for better readability */
-            font-size: 1.2rem;
-            max-width: 800px;
-            /* Increased max-width for more spacious feel */
-            margin: 0 auto 25px;
-            line-height: 1.8;
-            /* Increased line height for readability */
-            padding: 0 15px;
-        }
-
-        /* Support Button Styling */
-        .btn-support {
-            background-color: #007bff;
-            /* Bright blue for the button */
-            color: #ffffff;
-            padding: 15px 30px;
-            /* Increased padding for a larger button */
-            font-size: 1.1rem;
-            /* Slightly larger font size */
-            font-weight: bold;
-            border-radius: 50px;
-            /* More rounded button */
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-            /* Increased shadow for depth */
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-        }
-
-        .btn-support:hover {
-            background-color: #0056b3;
-            /* Darker blue on hover */
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            /* Increased shadow on hover */
-        }
-
-        /* Animation for Button Icon */
-        .btn-support i {
-            animation: bounce 1.5s infinite;
-        }
-
-        /* Bounce Keyframes */
-        @keyframes bounce {
-
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-5px);
-            }
-        }
-
-        /* Responsive Adjustments */
-        @media (max-width: 768px) {
-            .help-title {
-                font-size: 2rem;
-            }
-
-            .help-intro {
-                font-size: 1rem;
-            }
-
-            .btn-support {
-                font-size: 0.9rem;
-                padding: 12px 25px;
-            }
-        }
-    </style>
-
-
-    <!-- Floating Support Icon -->
-    <div class="support-icon" onclick="redirectToSupport()">
-        <i class="fas fa-headset"></i>
-    </div>
-
-    <div class="support-tag">
-        Contact Support
-        <div class="arrow-down"></div>
-    </div>
-    <!-- Styles for Floating Support Icon -->
-    <style>
-        .support-icon {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            background-color: #003366;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.4rem;
-            cursor: pointer;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.3s, transform 0.3s;
-            z-index: 1000;
-        }
-
-        .support-icon:hover {
-            background-color: #0056b3;
-            transform: scale(1.05);
-        }
-
-        /* Animated Tag styling */
-        .support-tag {
-            position: fixed;
-            bottom: 90px;
-            right: 30px;
-            background-color: #003366;
-            color: #ffffff;
-            padding: 4px 9px;
-            border-radius: 20px;
-            font-size: 0.5rem;
-            font-weight: bold;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-            opacity: 0.9;
-            transform: translateY(10px);
-            animation: bounceTag 1.5s ease-in-out infinite;
-            z-index: 999;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* Arrow styling to point down */
-        .arrow-down {
-            width: 0;
-            height: 0;
-            border-left: 8px solid transparent;
-            border-right: 8px solid transparent;
-            border-top: 8px solid #0056b3;
-            margin-top: -2px;
-            /* Adjust to align with the tag */
-        }
-
-        /* Bounce animation */
-        @keyframes bounceTag {
-
-            0%,
-            100% {
-                transform: translateY(10px);
-            }
-
-            50% {
-                transform: translateY(0px);
-            }
-        }
-
-        /* Responsive adjustments for smaller screens */
-        @media (max-width: 576px) {
-            .support-tag {
-                font-size: 0.5rem;
-                padding: 4px 9px;
-                bottom: 80px;
-                right: 20px;
-            }
-
-            .arrow-down {
-                border-left: 6px solid transparent;
-                border-right: 6px solid transparent;
-                border-top: 6px solid #0056b3;
-            }
-        }
-    </style>
-
-    <!-- JavaScript to Redirect to Support Page -->
-    <script>
-        function redirectToSupport() {
-            window.location.href = '/support';
-        }
-    </script>
-
-
-
-    <style>
-        /* Help Section Styling */
-        #help-section {
-            background-color: #f8f9fa;
-            padding: 60px 0;
-            color: #333;
-        }
-
-        #help-section h2 {
             font-size: 2rem;
-            font-weight: bold;
-            color: #003366;
-            margin-bottom: 20px;
         }
 
-        #help-section .help-box {
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        .help-intro {
+            font-size: 1.1rem;
         }
 
-        #help-section .help-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        #help-section h4 {
-            font-size: 0.9rem;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #003366;
-        }
-
-        #help-section ul li {
-            font-size: 0.8rem;
-            margin-bottom: 10px;
-        }
-
-        #help-section ul li i {
-            margin-right: 10px;
-            color: #003e81;
-        }
-
-        #help-section .btn-primary {
-            background-color: #003366;
-            border-color: #003366;
-            padding: 10px 30px;
+        .btn-support {
             font-size: 1rem;
-            border-radius: 30px;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            padding: 14px 28px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .btn-support {
+            font-size: 0.9rem;
+            padding: 12px 25px;
+        }
+    }
+</style>
+
+
+<!-- Floating Messenger Button -->
+<div class="floating-support">
+    <button class="support-btn" onclick="toggleChat()">
+        <i class="fas fa-comment-dots"></i>
+    </button>
+</div>
+
+<!-- Messenger Chat Window -->
+<div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+        <h5>Support bot</h5>
+        <button class="close-btn" onclick="toggleChat()">×</button>
+    </div>
+    <div class="chat-body" id="chatBody">
+        <div class="welcome-message">
+            <p>Greetings! 🤖 I'm your Lease Captain assistant, ready to help. Ask me anything or type your query, and I'll take care of the rest!</p>
+            <button class="close-welcome" onclick="closeWelcomeMessage()">X</button>
+        </div>
+        <div class="typing-indicator" id="typingIndicator" style="display: none;">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+    </div>
+    <div class="chat-footer">
+        <input type="text" id="chatInput" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
+        <button class="send-btn" onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+
+<!-- Styles -->
+<style>
+/* Close button styling */
+.close-welcome {
+    background: none;
+    border: none;
+    color: #003366;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-welcome:hover {
+    color: #ff0000; /* Red on hover */
+}
+
+    /* General Styles */
+    body {
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f9f9f9;
+    }
+    .welcome-message {
+        background-color: #f1f9ff;
+        padding: 12px;
+        border-radius: 12px;
+        text-align: center;
+        font-size: 0.9rem;
+        color: #003366;
+        margin-bottom: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        animation: slideDown 0.3s ease-in-out;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .floating-support {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+
+    .support-btn {
+        background-color: #003366;
+        color: #ffffff;
+        font-size: 1.1rem;
+        padding: 10px 18px;
+        border-radius: 50px;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+
+    .support-btn:hover {
+        transform: scale(1.1);
+        background-color: #004080;
+    }
+
+    /* Chat Window */
+.chat-window {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 350px;
+    height: 500px;
+    background-color: linear-gradient(135deg, #b64949, #e0f7fa);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    display: none;
+    flex-direction: column;
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 9999; /* Ensures chat window is on top */
+}
+
+.chat-window.show {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+
+    .chat-header {
+        background-color: #003366;
+        color: #ffffff;
+        padding: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+    }
+
+    .chat-header h5 {
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        color: #ffffff;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+    }
+
+    .close-btn:hover {
+        transform: rotate(90deg);
+    }
+
+    /* Chat Body */
+    .chat-body {
+        flex: 1;
+        padding: 10px;
+        overflow-y: auto;
+        background-color: #f9f9f9;
+    }
+
+
+
+.chat-message {
+        word-wrap: break-word;
+        white-space: pre-wrap;
+        padding: 8px 12px;
+        margin-bottom: 12px;
+        border-radius: 15px;
+        position: relative;
+    }
+
+    .chat-message.user {
+        background-color: #e0f7fa;
+        align-self: flex-end;
+        margin-left: auto;
+        border-top-right-radius: 0;
+        text-align: right;
+        font-size: 0.8rem;
+    }
+
+    .chat-message.bot {
+        background-color: #f1f1f1;
+        align-self: flex-start;
+        margin-right: auto;
+        border-top-left-radius: 0;
+        text-align: left;
+        font-size: 0.8rem;
+    }
+
+    .chat-message .timestamp {
+    font-size: 0.75rem;
+    color: #777;
+    margin-top: 5px; /* Space between text and timestamp */
+    display: block; /* Ensures timestamp aligns naturally with content */
+}
+
+    /* Typing Indicator */
+    .typing-indicator {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+    }
+
+    .dot {
+        width: 8px;
+        height: 8px;
+        background-color: #bbb;
+        border-radius: 50%;
+        animation: typing 1s infinite;
+    }
+
+    .dot:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .dot:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+        0%, 100% {
+            opacity: 0.3;
+            transform: scale(0.8);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+    }
+
+    /* Chat Footer */
+    .chat-footer {
+        padding: 10px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        border-top: 1px solid #ddd;
+    }
+
+    .chat-footer input {
+        flex: 1;
+        padding: 10px;
+        border-radius: 25px;
+        border: 1px solid #ccc;
+        outline: none;
+        transition: box-shadow 0.3s ease;
+    }
+
+    .chat-footer input:focus {
+        box-shadow: 0 0 5px rgba(0, 102, 204, 0.8);
+    }
+
+    .send-btn {
+        background-color: #003366;
+        color: #ffffff;
+        border: none;
+        border-radius: 25px;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+    }
+
+    .send-btn:hover {
+        transform: scale(1.1);
+        background-color: #0066cc;
+    }
+</style>
+
+
+
+<!-- JavaScript -->
+<script>
+function closeWelcomeMessage() {
+    const welcomeMessage = document.querySelector('.welcome-message');
+    welcomeMessage.style.display = 'none';
+}
+
+
+    const chatWindow = document.getElementById('chatWindow');
+    const chatBody = document.getElementById('chatBody');
+    const chatInput = document.getElementById('chatInput');
+    const typingIndicator = document.getElementById('typingIndicator');
+
+    function toggleChat() {
+        chatWindow.classList.toggle('show');
+    }
+
+    function sendMessage() {
+        const message = chatInput.value.trim();
+        if (message) {
+            appendMessage(message, 'user');
+            chatInput.value = '';
+            showTypingIndicator();
+
+            // Call bot function to analyze the user's message
+            setTimeout(() => {
+                botResponse(message);
+            }, 1000);
+        }
+    }
+
+    function showTypingIndicator() {
+        typingIndicator.style.display = 'flex';
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function hideTypingIndicator() {
+        typingIndicator.style.display = 'none';
+    }
+
+    function appendMessage(message, type) {
+        const messageElement = document.createElement('div');
+        messageElement.className = `chat-message ${type}`;
+        messageElement.innerHTML = message;
+
+        const timestamp = document.createElement('span');
+        timestamp.className = 'timestamp';
+        timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        messageElement.appendChild(timestamp);
+
+        chatBody.appendChild(messageElement);
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            sendMessage();
+        }
+    }
+
+    function botResponse(userMessage) {
+        // Convert user input to lowercase for easy comparison
+        const lowerMessage = userMessage.toLowerCase();
+
+        // Responses for greetings
+        if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
+            appendMessage('Hello! How can I assist you today? 😊', 'bot');
+            hideTypingIndicator();
+        } else if (lowerMessage.includes('good morning')) {
+            appendMessage('Good morning! I hope you have a great day. How can I help you? ☀️', 'bot');
+            hideTypingIndicator();
+        } else if (lowerMessage.includes('good afternoon')) {
+            appendMessage('Good afternoon! What can I do for you today? 🌤️', 'bot');
+            hideTypingIndicator();
+        } else if (lowerMessage.includes('good evening')) {
+            appendMessage('Good evening! How can I assist you tonight? 🌙', 'bot');
+            hideTypingIndicator();
+        } else if (lowerMessage.includes('how are you')) {
+            appendMessage('I’m just a bot, but I’m doing great! How about you? 🤖', 'bot');
+            hideTypingIndicator();
         }
 
-        #help-section .btn-primary:hover {
-            background-color: #0056b3;
-            box-shadow: 0px 8px 15px rgba(0, 51, 102, 0.3);
+        // Responses for Lease Captain or related terms
+        else if (lowerMessage.includes('lease captain')) {
+            appendMessage('The Lease Captain is a platform designed to manage lease agreements, track payments, and provide seamless communication between landlords and tenants. It ensures transparency and efficient management of rental properties.', 'bot');
+            hideTypingIndicator();
+        } else if (lowerMessage.includes('how does lease captain work')) {
+            appendMessage('Lease Captain works by automating lease management tasks, including contract creation, payment tracking, and document storage. It simplifies the entire leasing process and allows landlords and tenants to communicate directly through the platform.', 'bot');
+            hideTypingIndicator();
+        } else if (lowerMessage.includes('features of lease captain')) {
+            appendMessage('Some of the key features of Lease Captain include:\n1. **Lease Agreement Management**: Easily create and manage lease contracts.\n2. **Payment Tracking**: Automatically track rent payments and reminders.\n3. **Document Storage**: Store and share lease-related documents securely.\n4. **Maintenance Requests**: Tenants can submit maintenance issues directly.\n5. **Online Communication**: Landlords and tenants can communicate through the platform for efficient issue resolution.\n6. **Renewal & Termination**: Automate lease renewal and termination processes.', 'bot');
+            hideTypingIndicator();
         }
 
-        /* Responsive Help Section */
-        @media (max-width: 768px) {
-            #help-section h2 {
-                font-size: 1.5rem;
-            }
-
-            #help-section h4 {
-                font-size: 0.9rem;
-            }
-
-            #help-section p,
-            #help-section ul li {
-                font-size: 0.7rem;
-            }
-
-            #help-section .btn-primary {
-                padding: 8px 20px;
-                font-size: 1rem;
-            }
+        // Lease payment related queries
+        else if (lowerMessage.includes('lease payment') || lowerMessage.includes('pay rent') || lowerMessage.includes('how to pay rent')) {
+            appendMessage('Lease payments are typically made monthly, and you can pay through the online portal or by bank transfer. Need help with payments? Let me know!', 'bot');
+            hideTypingIndicator();
         }
-    </style>
+        
+        // Lease duration inquiries
+        else if (lowerMessage.includes('lease duration') || lowerMessage.includes('how long is the lease')) {
+            appendMessage('The lease duration can vary depending on the agreement but typically ranges from 6 months to 1 year. Please check your lease for specific details.', 'bot');
+            hideTypingIndicator();
+        }
+
+        // Maintenance request
+        else if (lowerMessage.includes('maintenance') || lowerMessage.includes('repair') || lowerMessage.includes('broken')) {
+            appendMessage('If you need a repair or maintenance request, please contact our support team directly. They will help you with any issues! 🛠️', 'bot');
+            hideTypingIndicator();
+        }
+
+        // Lease renewal queries
+        else if (lowerMessage.includes('renew lease') || lowerMessage.includes('lease renewal') || lowerMessage.includes('how to renew lease')) {
+            appendMessage('You can initiate your lease renewal by contacting our support team or through the portal. Would you like more assistance with this?', 'bot');
+            hideTypingIndicator();
+        }
+
+        // Lease termination queries
+        else if (lowerMessage.includes('terminate lease') || lowerMessage.includes('end lease') || lowerMessage.includes('break lease')) {
+            appendMessage('If you wish to terminate your lease, please check your lease agreement for specific terms or contact support for assistance with the process.', 'bot');
+            hideTypingIndicator();
+        }
+
+        // 24/7 Support response
+        else if (lowerMessage.includes('24/7 support') || lowerMessage.includes('support 24/7') || lowerMessage.includes('always available')) {
+            appendMessage('Yes, we offer 24/7 support. You can reach out at any time, and we’ll be happy to assist you!', 'bot');
+            hideTypingIndicator();
+        }
+
+        // Business days response
+        else if (lowerMessage.includes('business days') || lowerMessage.includes('working days')) {
+            appendMessage('Our support team is available 24/7, but our business hours are from 9 AM to 6 PM, Monday through Friday. Feel free to ask any questions during this time!', 'bot');
+            hideTypingIndicator();
+        }
+
+        // Default response if the message is not recognized
+        else {
+            appendMessage('I am sorry, I don\'t have an answer to that, visit leasecaptain.com/support. Please allow me to connect you to a support agent.', 'bot');
+            hideTypingIndicator();
+
+            // Simulate transitioning to support
+            setTimeout(() => {
+                appendMessage('A support agent will assist you shortly. Please be patient.', 'bot');
+                switchToSupport();
+            }, 1500);
+        }
+    }
+
+</script>
 
 
 
-    <footer class="text-center py-0">
+
+    <footer class="text-center py-3">
         &copy; 2024 Lease Captain. All Rights Reserved || powered by
         <a href="/" target="_blank">Vickins Technologies</a>
         <p class="contact-info mb-0">
