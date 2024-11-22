@@ -343,124 +343,156 @@ router.get('/subscription', async (req, res) => {
     }
 });
 
-// POST /subscription (Initiate STK Push)
-router.post('/subscription', async (req, res) => {
+// Utility function for sending payment requests
+async function sendPaymentRequest(payload) {
     try {
-        if (!req.user) {
-            req.flash('error', 'Please log in to make a payment.');
-            return res.redirect('/login');
+        const response = await axios.post(
+            'https://api.umeskiasoftwares.com/api/v1/intiatestk',
+            payload,
+            { headers: { 'Content-Type': 'application/json' } }
+        );
+
+        if (response && response.status === 200) {
+            console.log('Payment request successful:', response.data);
+            return response.data;
+        } else {
+            console.error('Payment request failed: Invalid response status', response.status);
+            return { success: false, error: `Unexpected response status: ${response.status}` };
         }
-
-        const { msisdn, amount, plan } = req.body;
-        const reference = `REF-${Date.now()}`;
-
-        // Define available plans
-        const availablePlans = ['Basic', 'Standard', 'Pro', 'Advanced', 'Premium', 'Enterprise'];
-
-        // Check if the selected plan is valid
-        if (!availablePlans.includes(plan)) {
-            req.flash('error', 'Invalid plan selected.');
-            return res.redirect('/subscription');
+    } catch (err) {
+        if (err.response) {
+            console.error('Server error:', err.response.data);
+            return { success: false, error: err.response.data.message || 'Server error occurred.' };
+        } else if (err.request) {
+            console.error('Network error: No response received:', err.request);
+            return { success: false, error: 'No response from server. Please check your network connection.' };
+        } else {
+            console.error('Payment request failed:', err.message);
+            return { success: false, error: err.message || 'Unknown error occurred during payment request.' };
         }
+    }
+}
 
-        if (req.user.plan !== plan) {
-            req.user.plan = plan;
-            await req.user.save();
-        }
+// Poll payment status
+async function pollPaymentStatus(transactionRequestId, api_key, email) {
+    const pollingInterval = 5000; // 5 seconds
+    const pollingTimeout = 60000; // 1 minute
 
-        // Initiate STK Push with UMS Pay
-        const response = await axios.post('https://api.umeskiasoftwares.com/api/v1/intiatestk', {
-            api_key: 'VE5MTlkzRk06MTlwNjlkZWM=',
+    const startTime = Date.now();
+
+    return new Promise((resolve, reject) => {
+        const interval = setInterval(async () => {
+            try {
+                
+                console.log('Transaction Request ID for verification:', transactionRequestId);
+
+                const verificationPayload = {
+                    api_key,
+                    email,
+                    transaction_request_id: transactionRequestId,
+                };
+
+                console.log('Verifying payment with payload:', verificationPayload);
+
+                const response = await axios.post(
+                    'https://api.umeskiasoftwares.com/api/v1/transactionstatus',
+                    verificationPayload,
+                    { headers: { 'Content-Type': 'application/json' } }
+                );
+
+                console.log('Verification response:', response.data);
+
+                const { ResultCode, TransactionStatus } = response.data;
+
+                if (TransactionStatus === 'Completed' && ResultCode === '200') {
+                    clearInterval(interval);
+                    console.log('Payment completed.');
+                    resolve('completed');
+                } else if (TransactionStatus === 'Pending') {
+                    console.log('Payment pending. Continuing polling...');
+                } else {
+                    clearInterval(interval);
+                    console.warn('Payment failed or canceled.');
+                    resolve('failed');
+                }
+
+                // Stop polling if timeout is reached
+                if (Date.now() - startTime > pollingTimeout) {
+                    clearInterval(interval);
+                    console.warn('Polling timeout reached. Stopping polling.');
+                    resolve('timeout');
+                }
+            } catch (error) {
+                console.error('Error during payment verification:', error.message);
+                clearInterval(interval);
+                reject(error);
+            }
+        }, pollingInterval);
+    });
+}
+
+
+// Subscription route
+router.post('/subscription', async (req, res) => {
+    const { msisdn, amount, plan } = req.body;
+
+    try {
+        const payload = {
+            api_key: 'VEpGOTVNTlY6dnUxaG5odHA=',
             email: 'vickinstechnologies@gmail.com',
             account_id: 'UMPAY772831690',
             amount,
             msisdn,
-            reference
-        }, {
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            timeout: 15000
-        });
+            reference: `REF-${Date.now()}`,
+        };
 
-        const data = response.data;
-        // Check if the request was successful
-        if (data.success === '200') {
+        const paymentResponse = await sendPaymentRequest(payload);
+
+        if (paymentResponse.success === '200') {
+            // Correctly extract the transaction request ID, considering the misspelled key
+            const transactionRequestId = paymentResponse.transaction_request_id || paymentResponse.tranasaction_request_id;
+        
+            if (!transactionRequestId) {
+                req.flash('error', 'Transaction request ID is missing. Payment initiation failed.');
+                return res.redirect('/subscription');
+            }
+        
+            console.log('Transaction Request ID:', transactionRequestId);
             req.user.paymentStatus = {
                 status: 'pending',
-                transactionId: data.tranasaction_request_id,
-                amount
+                transactionId: transactionRequestId,
+                amount,
             };
             await req.user.save();
-
-            req.flash('success', 'Payment request sent successfully. Please complete the STK push on your phone.');
-
-            // Periodically check the payment status
-            const interval = setInterval(async () => {
-                try {
-                    const paymentStatus = await checkTransactionStatus(data.tranasaction_request_id);
-
-                    if (paymentStatus === 'completed') {
-                        clearInterval(interval); // Stop checking
-                        req.user.paymentStatus.status = 'completed';
-                        await req.user.save();
-
-                        req.flash('success', 'Payment completed successfully! Welcome to the ${req.user.plan} plan. Enjoy our premium features tailored for you! .');
-                        return res.redirect('/tenancy-manager/dashboard');
-                    }
-                } catch (statusError) {
-                    console.error('Error checking payment status:', statusError);
-                    clearInterval(interval);
-                    req.flash('error', 'Could not verify payment status. Please check back later.');
-                    return res.redirect('/subscription');
-                }
-            }, 5000);
+        
+            req.flash('info', 'Payment initiated. Awaiting confirmation.');
+            // Proceed to polling status
+            const status = await pollPaymentStatus(transactionRequestId, payload.api_key, payload.email);
+        
+            if (status === 'completed') {
+                req.flash('success', `Payment completed successfully! Welcome to the ${plan} plan.`);
+                return res.redirect('/dashboard');
+            } else if (status === 'failed') {
+                req.flash('error', 'Payment failed. Please try again.');
+                return res.redirect('/subscription');
+            } else {
+                req.flash('error', 'Payment verification timed out. Please check back later.');
+                return res.redirect('/subscription');
+            }
         } else {
-            req.flash('error', 'Failed to initiate payment request. Please try again.');
+            req.flash('error', 'Payment initiation failed. Please try again.');
             return res.redirect('/subscription');
         }
-    } catch (err) {
-        if (err.code === 'ECONNABORTED') {
-            console.error('Request timed out:', err);
-            req.flash('error', 'The payment request timed out. Please try again later.');
-        } else if (err.response) {
-            console.error('Error response from UMS Pay:', err.response.data);
-            req.flash('error', 'Payment service responded with an error. Please try again later.');
-        } else {
-            console.error('Error initiating payment:', err);
-            req.flash('error', 'An error occurred while processing your payment. Please try again.');
-        }
+    } catch (error) {
+        console.error(error);
+        req.flash('error', 'Payment initiation failed. Please try again.');
         return res.redirect('/subscription');
-    }
+        }
 });
 
 
-// Function to check the transaction status from UMS Pay
-async function checkTransactionStatus(transactionId) {
-    try {
-        const statusPayload = {
-            api_key: 'VE5MTlkzRk06MTlwNjlkZWM=',
-            email: 'vickinstechnologies@gmail.com',
-            tranasaction_request_id: transactionId
-        };
 
-        const headers = {
-            'Content-Type': 'application/json'
-        };
 
-        const response = await axios.post('https://api.umeskiasoftwares.com/api/v1/transactionstatus', statusPayload, { headers });
-        const data = response.data;
-
-        // Check if the transaction status is completed
-        if (data.ResultCode === '200' && data.TransactionStatus === 'Completed') {
-            return 'completed';
-        }
-        return 'pending';
-    } catch (err) {
-        console.error('Error checking transaction status:', err);
-        return 'error';
-    }
-}
 
 // POST endpoint to handle support form submission
 router.post('/submit', async (req, res) => {
