@@ -720,37 +720,44 @@
     </style>
 
 
-    <script>
-        let utilityCount = 1;
+<script>
+    let utilityCount = 1;
 
-        function addUtility() {
-            const utilitiesContainer = document.getElementById('utilitiesContainer');
+    function addUtility() {
+        const utilitiesContainer = document.getElementById('utilitiesContainer');
 
-            const newUtilityDiv = document.createElement('div');
-            newUtilityDiv.className = 'utility-item';
+        const newUtilityDiv = document.createElement('div');
+        newUtilityDiv.className = 'utility-item';
+        newUtilityDiv.style.border = "none";
+        newUtilityDiv.style.marginBottom = "10px";
+        newUtilityDiv.style.padding = "10px";
+        newUtilityDiv.style.position = "relative";
 
-            newUtilityDiv.innerHTML = `
-                    <div class="form-group">
-                        <label for="utilityType">Utility Type</label>
-                        <input type="text" class="form-control" name="utilities[${utilityCount}][type]" required
-                            placeholder="e.g. service charge, electricity, water...">
-                    </div>
-                    <div class="form-group">
-                        <label for="utilityAmount">Utility Amount (Ksh)</label>
-                        <input type="number" class="form-control" name="utilities[${utilityCount}][amount]"
-                            required>
-                    </div>
-                `;
+        newUtilityDiv.innerHTML = `
+            <button type="button" class="close-utility" onclick="removeUtility(this)" 
+                style="position: absolute; top: 5px; right: 5px; background: none; border: none; color: red; font-size: 16px; cursor: pointer;">
+                &times;
+            </button>
+            <div class="form-group">
+                <label for="utilityType">Utility Type</label>
+                <input type="text" class="form-control" name="utilities[${utilityCount}][type]" required
+                    placeholder="e.g. service charge, electricity, water...">
+            </div>
+            <div class="form-group">
+                <label for="utilityAmount">Utility Amount (Ksh)</label>
+                <input type="number" class="form-control" name="utilities[${utilityCount}][amount]" required>
+            </div>
+        `;
 
-            utilitiesContainer.appendChild(newUtilityDiv);
-            utilityCount++; // Increment the utility count
-        }
-    </script>
+        utilitiesContainer.appendChild(newUtilityDiv);
+        utilityCount++; // Increment the utility count
+    }
 
-
-
-
-
+    function removeUtility(button) {
+        // Remove the parent utility item div
+        button.parentElement.remove();
+    }
+</script>
 
 
     <footer class="text-center py-0">

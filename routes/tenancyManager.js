@@ -21,7 +21,6 @@ const Permission = require('../models/permissions');
 const axios = require('axios')
 const SupportMessage = require('../models/supportMessage');
 
-
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -29,7 +28,6 @@ const transporter = nodemailer.createTransport({
         pass: 'vnueayfgjstaazxh'
     }
 });
-
 
 // Route to render the verification page
 router.get('/verification', (req, res) => {
@@ -48,7 +46,7 @@ router.get('/verification', (req, res) => {
     res.render('verification', { user: req.user });
 });
 
-
+// Route to send verification email
 router.get('/verify/:token', async (req, res) => {
     try {
         const user = await User.findOne({ verificationToken: req.params.token });
@@ -97,7 +95,6 @@ router.get('/resend-verification', async (req, res) => {
         res.redirect('/tenancy-manager/dashboard');
     }
 });
-
 
 const sendWelcomeEmail = async (email, username, verificationToken) => {
     const mailOptions = {
@@ -293,7 +290,6 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
     }
 });
 
-
 router.get('/subscription', async (req, res) => {
     try {
         if (!req.user) {
@@ -307,7 +303,7 @@ router.get('/subscription', async (req, res) => {
             Pro: 2999,
             Advanced: 4499,
             Enterprise: 6999,
-            Premium: null
+            Premium: null,
         };
 
         const planDetails = {
@@ -316,14 +312,12 @@ router.get('/subscription', async (req, res) => {
             Pro: { amount: 2999, units: 50 },
             Advanced: { amount: 4499, units: 10 },
             Enterprise: { amount: 6999, units: 150 },
-            Premium: { amount: null, units: "Contact Support for Pricing" }
+            Premium: { amount: null, units: "Contact Support for Pricing" },
         };
 
+        const expectedAmount = planAmounts[req.user.plan] || 0; // Default to 0 if undefined
+        const hasPaid = req.user.paymentStatus?.status === 'completed';
 
-        const expectedAmount = planAmounts[req.user.plan];
-        const hasPaid = req.user.paymentStatus && req.user.paymentStatus.status === 'completed';
-
-        // If the user has already paid, redirect them to the dashboard
         if (hasPaid) {
             req.flash('success', 'You have already paid for this subscription.');
             return res.redirect('/tenancy-manager/dashboard');
@@ -334,7 +328,12 @@ router.get('/subscription', async (req, res) => {
             expectedAmount,
             hasPaid,
             currentUser: req.user,
-            planDetails
+            planDetails,
+            messages: {
+                success: req.flash('success') || [],
+                error: req.flash('error') || [],
+                info: req.flash('info') || [],
+            },
         });
     } catch (err) {
         console.error('Error loading subscription page:', err);
@@ -343,98 +342,162 @@ router.get('/subscription', async (req, res) => {
     }
 });
 
-// Utility function for sending payment requests
-async function sendPaymentRequest(payload) {
+async function sendPaymentRequest(payload, req, res) {
     try {
+        const transactionId = `LC${Math.floor(100000 + Math.random() * 900000)}`;
+        payload.transaction_id = transactionId;
+
+        console.log('Sending payment initiation request with payload:', payload);
+
         const response = await axios.post(
             'https://api.umeskiasoftwares.com/api/v1/intiatestk',
             payload,
             { headers: { 'Content-Type': 'application/json' } }
         );
 
-        if (response && response.status === 200) {
+        console.log('Payment initiation response:', response.data);
+
+        const transactionRequestId = response.data.tranasaction_request_id || null;
+
+        if (response.status === 200 && transactionRequestId) {
             console.log('Payment request successful:', response.data);
-            return response.data;
+            req.flash('info', 'Payment request initiated successfully! Please enter your Mpesa pin to complete the payment.');
+            return { success: '200', transaction_request_id: transactionRequestId };
         } else {
-            console.error('Payment request failed: Invalid response status', response.status);
-            return { success: false, error: `Unexpected response status: ${response.status}` };
+            console.error('Invalid response from payment initiation:', response.data);
+            req.flash('error', 'Payment request failed. Please try again.');
+            return { success: 'error' };
         }
     } catch (err) {
-        if (err.response) {
-            console.error('Server error:', err.response.data);
-            return { success: false, error: err.response.data.message || 'Server error occurred.' };
-        } else if (err.request) {
-            console.error('Network error: No response received:', err.request);
-            return { success: false, error: 'No response from server. Please check your network connection.' };
-        } else {
-            console.error('Payment request failed:', err.message);
-            return { success: false, error: err.message || 'Unknown error occurred during payment request.' };
-        }
+        console.error('Payment request failed:', err.message);
+        req.flash('error', `Error: ${err.message || 'Unknown error occurred during payment request.'}`);
+        return { success: 'error' };
     }
 }
 
-// Poll payment status
-async function pollPaymentStatus(transactionRequestId, api_key, email) {
+async function pollPaymentStatus(transactionRequestId, transactionId, api_key, email, expectedAmount, user, plan, req, res) {
     const pollingInterval = 5000; // 5 seconds
     const pollingTimeout = 60000; // 1 minute
-
     const startTime = Date.now();
+    let responseSent = false;
 
-    return new Promise((resolve, reject) => {
-        const interval = setInterval(async () => {
-            try {
-                
-                console.log('Transaction Request ID for verification:', transactionRequestId);
+    const interval = setInterval(async () => {
+        if (responseSent) {
+            clearInterval(interval);
+            return;
+        }
 
-                const verificationPayload = {
-                    api_key,
-                    email,
-                    transaction_request_id: transactionRequestId,
-                };
+        try {
+            const verificationPayload = {
+                api_key,
+                email,
+                transaction_id: transactionId,
+                tranasaction_request_id: transactionRequestId,
+            };
 
-                console.log('Verifying payment with payload:', verificationPayload);
+            console.log('Verifying payment with payload:', verificationPayload);
 
-                const response = await axios.post(
-                    'https://api.umeskiasoftwares.com/api/v1/transactionstatus',
-                    verificationPayload,
-                    { headers: { 'Content-Type': 'application/json' } }
-                );
+            const response = await axios.post(
+                'https://api.umeskiasoftwares.com/api/v1/transactionstatus',
+                verificationPayload,
+                { headers: { 'Content-Type': 'application/json' } }
+            );
 
-                console.log('Verification response:', response.data);
-
-                const { ResultCode, TransactionStatus } = response.data;
+            if (response && response.data) {
+                const { ResultCode, TransactionStatus, TransactionAmount } = response.data;
 
                 if (TransactionStatus === 'Completed' && ResultCode === '200') {
                     clearInterval(interval);
-                    console.log('Payment completed.');
-                    resolve('completed');
+                    responseSent = true;
+
+                    if (parseFloat(TransactionAmount) >= parseFloat(expectedAmount)) {
+                        // Update payment status only once
+                        user.paymentStatus = {
+                            status: 'completed',
+                            transactionId,
+                            amount: TransactionAmount,
+                            plan,
+                        };
+
+                        // Send invoice
+                        await sendInvoice(user, transactionId, TransactionAmount, plan);
+
+                        req.flash('success', `Payment completed! Welcome to the ${plan} plan.`);
+                        return res.redirect('/tenancy-manager/dashboard');
+                    } else {
+                        req.flash('error', 'Insufficient payment amount. Please try again.');
+                        return res.redirect('/subscription');
+                    }
                 } else if (TransactionStatus === 'Pending') {
                     console.log('Payment pending. Continuing polling...');
                 } else {
                     clearInterval(interval);
-                    console.warn('Payment failed or canceled.');
-                    resolve('failed');
+                    responseSent = true;
+                    req.flash('error', 'Payment failed. Please try again.');
+                    return res.redirect('/subscription');
                 }
-
-                // Stop polling if timeout is reached
-                if (Date.now() - startTime > pollingTimeout) {
-                    clearInterval(interval);
-                    console.warn('Polling timeout reached. Stopping polling.');
-                    resolve('timeout');
-                }
-            } catch (error) {
-                console.error('Error during payment verification:', error.message);
+            } else {
+                console.error('Invalid response during payment verification:', response);
                 clearInterval(interval);
-                reject(error);
+                req.flash('error', 'An error occurred during payment verification. Please try again.');
+                return res.redirect('/subscription');
             }
-        }, pollingInterval);
-    });
+        } catch (error) {
+            console.error('Error during payment verification:', error.message);
+            clearInterval(interval);
+            req.flash('error', 'An error occurred during payment verification. Please try again.');
+            return res.redirect('/subscription');
+        }
+
+        // Timeout handling
+        if (Date.now() - startTime > pollingTimeout) {
+            clearInterval(interval);
+            if (!responseSent) {
+                responseSent = true;
+                req.flash('error', 'Payment verification timed out. Please check back later.');
+                return res.redirect('/subscription');
+            }
+        }
+    }, pollingInterval);
 }
 
+async function sendInvoice(user, transactionId, amount) {
+    // Avoid re-sending emails or SMS
+    if (user.invoiceSent) {
+        console.log('Invoice already sent, skipping...');
+        return;
+    }
 
-// Subscription route
+    try {
+        // Send invoice email
+        await sendInvoiceEmail(user, {
+            reference: transactionId,
+            amount,
+            date: new Date().toLocaleString(),
+            status: 'Completed',
+        });
+
+        console.log('Invoice email sent to', user.email);
+
+        // Send SMS
+        const smsResponse = await sendInvoiceSMS(user, {
+            reference: transactionId,
+            amount,
+        });
+
+        console.log('Invoice SMS response:', smsResponse);
+
+        // Update the user object to reflect that the invoice has been sent
+        user.invoiceSent = true;
+        await user.save();
+    } catch (error) {
+        console.error('Error sending invoice:', error.message);
+    }
+}
+
 router.post('/subscription', async (req, res) => {
     const { msisdn, amount, plan } = req.body;
+    const user = req.user;
 
     try {
         const payload = {
@@ -443,42 +506,24 @@ router.post('/subscription', async (req, res) => {
             account_id: 'UMPAY772831690',
             amount,
             msisdn,
-            reference: `REF-${Date.now()}`,
+            reference: `L-${Date.now()}`,
         };
 
-        const paymentResponse = await sendPaymentRequest(payload);
+        const paymentResponse = await sendPaymentRequest(payload, req, res);
 
         if (paymentResponse.success === '200') {
-            // Correctly extract the transaction request ID, considering the misspelled key
             const transactionRequestId = paymentResponse.transaction_request_id || paymentResponse.tranasaction_request_id;
-        
+
             if (!transactionRequestId) {
                 req.flash('error', 'Transaction request ID is missing. Payment initiation failed.');
                 return res.redirect('/subscription');
             }
-        
+
             console.log('Transaction Request ID:', transactionRequestId);
-            req.user.paymentStatus = {
-                status: 'pending',
-                transactionId: transactionRequestId,
-                amount,
-            };
-            await req.user.save();
-        
-            req.flash('info', 'Payment initiated. Awaiting confirmation.');
-            // Proceed to polling status
-            const status = await pollPaymentStatus(transactionRequestId, payload.api_key, payload.email);
-        
-            if (status === 'completed') {
-                req.flash('success', `Payment completed successfully! Welcome to the ${plan} plan.`);
-                return res.redirect('/dashboard');
-            } else if (status === 'failed') {
-                req.flash('error', 'Payment failed. Please try again.');
-                return res.redirect('/subscription');
-            } else {
-                req.flash('error', 'Payment verification timed out. Please check back later.');
-                return res.redirect('/subscription');
-            }
+
+            const transactionId = `LC${Math.floor(100000 + Math.random() * 900000)}`;
+
+            await pollPaymentStatus(transactionRequestId, transactionId, payload.api_key, payload.email, amount, user, plan, req, res);
         } else {
             req.flash('error', 'Payment initiation failed. Please try again.');
             return res.redirect('/subscription');
@@ -487,12 +532,118 @@ router.post('/subscription', async (req, res) => {
         console.error(error);
         req.flash('error', 'Payment initiation failed. Please try again.');
         return res.redirect('/subscription');
-        }
+    }
 });
 
+const sendInvoiceEmail = async (user, invoiceDetails) => {
+    try {
+        const mailOptions = {
+            from: `"Lease Captain" <${process.env.EMAIL_USERNAME}>`,
+            to: user.email,
+            subject: `Invoice for Your Payment: ${invoiceDetails.reference}`,
+            html: `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        background-color: #f9f9f9;
+                        margin: 0;
+                        padding: 0;
+                        color: #333333;
+                    }
+                    .container {
+                        width: 100%;
+                        max-width: 600px;
+                        margin: 20px auto;
+                        background-color: #ffffff;
+                        padding: 20px;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                    }
+                    .header {
+                        text-align: center;
+                        background-color: #003366;
+                        padding: 15px;
+                        border-radius: 8px 8px 0 0;
+                        color: #ffffff;
+                    }
+                    .header h1 {
+                        margin: 0;
+                    }
+                    .content {
+                        line-height: 1.6;
+                        padding: 20px;
+                    }
+                    .footer {
+                        text-align: center;
+                        font-size: 12px;
+                        color: #666666;
+                        padding: 10px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>Payment Invoice</h1>
+                    </div>
+                    <div class="content">
+                        <p>Dear ${user.username},</p>
+                        <p>Thank you for your payment. Below are the details of your transaction:</p>
+                        <table>
+                            <tr><td><strong>Reference:</strong></td><td>${invoiceDetails.reference}</td></tr>
+                            <tr><td><strong>Amount:</strong></td><td>KES ${invoiceDetails.amount}</td></tr>
+                            <tr><td><strong>Date:</strong></td><td>${invoiceDetails.date}</td></tr>
+                            <tr><td><strong>Status:</strong></td><td>${invoiceDetails.status}</td></tr>
+                        </table>
+                        <p>If you have any questions or require support, feel free to reach out to our team.</p>
+                        <p>Best regards,<br>Lease Captain Team</p>
+                    </div>
+                    <div class="footer">
+                        <p>&copy; 2024 Lease Captain. All rights reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            `,
+        };
 
+        await transporter.sendMail(mailOptions);
+        console.log(`Invoice email sent to ${user.email}`);
+    } catch (error) {
+        console.error('Error sending invoice email:', error);
+    }
+};
 
+const sendInvoiceSMS = async (user, invoiceDetails) => {
+    const message = `Dear ${user.name}, thank you for your payment. Reference: ${invoiceDetails.reference}, Amount: KES ${invoiceDetails.amount}. Check your email for the detailed invoice.`;
 
+    try {
+        const response = await axios.post(
+            'https://api.umeskiasoftwares.com/api/v1/sms',
+            {
+                api_key: "VEpGOTVNTlY6dnUxaG5odHA=",
+                email: "vickinstechnologies@gmail.com",
+                Sender_Id: "UMS_SMS",
+                message: message,
+                phone: user.phone
+            },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+
+        console.log('Invoice SMS sent successfully via UMS API:', response.data);
+    } catch (error) {
+        console.error('Error sending invoice SMS via UMS API:', error.response ? error.response.data : error.message);
+    }
+};
 
 // POST endpoint to handle support form submission
 router.post('/submit', async (req, res) => {
@@ -626,7 +777,6 @@ router.post('/tenancy-manager/security', isTenancyManager, async (req, res) => {
         res.redirect('/tenancy-manager/security');
     }
 });
-
 
 // Update User Profile
 router.post('/tenancy-manager/profile', isTenancyManager, async (req, res) => {
@@ -793,7 +943,6 @@ router.post('/tenancy-manager/tenant/new', async (req, res) => {
     }
 });
 
-
 // Function to send tenant email separately
 async function sendTenantEmail(newTenant, propertyName) {
 
@@ -892,7 +1041,6 @@ async function sendTenantEmail(newTenant, propertyName) {
         console.error('Error sending email:', emailError);
     }
 }
-
 const sendWelcomeSMS = async (tenant) => {
     const { phone, name, propertyName } = tenant;
     const message = `Dear ${name}, welcome to your new home at ${propertyName}! Use the credentials sent to your email to log in to your portal. Access it here: leasecaptain.com/tenantPortal/login.`;
@@ -919,7 +1067,6 @@ const sendWelcomeSMS = async (tenant) => {
         console.error('Error sending SMS via UMS API:', error.response ? error.response.data : error.message);
     }
 };
-
 // Route to resend the welcome email to a tenant
 router.post('/tenancy-manager/tenant/resend-email/:tenantId', async (req, res) => {
     try {
@@ -1486,7 +1633,6 @@ router.get('/top-ups', isTenancyManager, async (req, res) => {
         });
     }
 });
-
 
 //GET sms&email
 router.get('/sms&email', isTenancyManager, async (req, res) => {
