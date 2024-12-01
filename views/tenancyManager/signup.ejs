@@ -5,332 +5,244 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lease Captain - Sign Up</title>
-  <!-- Bootstrap CSS CDN -->
+  <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <!-- FontAwesome CDN -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   <link rel="icon" href="/images/icon.png" type="image/png">
-
   <style>
-    body,
-    html {
+    body {
+      background-color: #f7f7f7;
+      font-family: 'Arial', sans-serif;
       margin: 0;
       padding: 0;
-      height: 100%;
-      background-color: #f4f4f4;
-    }
-
-    .container-fluid {
-      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      height: 100vh;
+      flex-direction: column;
     }
 
-    .right-section {
-      padding: 20px;
-      background-color: white;
-      border-radius: 10px;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
-      width: 100%;
-      max-width: 550px;
-      margin: auto;
-    }
-
-    .right-section h1 {
-      font-weight: bold;
-      font-size: 2rem;
+    h1 {
       color: #003366;
-    }
-
-    .btn-primary {
-      background-color: #003366;
-      border-color: #003366;
-      font-size: 1rem;
-    }
-
-    .btn-primary:hover {
-      background-color: #00509e;
-      border-color: #00509e;
-    }
-
-    .alert {
+      text-align: center;
       margin-bottom: 20px;
+      font-size: 24px;
     }
 
-    .form-group label i {
-      margin-right: 5px;
-    }
-
-    /* Responsive styles */
-    @media (max-width: 768px) {
-      .right-section {
-        padding: 15px;
-        width: 90%;
-      }
-
-      .right-section h1 {
-        font-size: 1.8rem;
-      }
-
-      .btn-primary {
-        font-size: 0.6rem;
-      }
-
-      .p {
-        font-size: 0.5rem;
-      }
-    }
-
-    @media (max-width: 576px) {
-      .container-fluid {
-        padding: 15px;
-      }
-
-      .right-section {
-        padding: 10px;
-        width: 100%;
-      }
-
-      .right-section h1 {
-        font-size: 1.0rem;
-      }
-
-      .form-group label {
-        font-size: 0.6rem;
-      }
-
-      .btn-primary {
-        font-size: 0.5rem;
-      }
-
-      .form-control {
-        font-size: 0.5rem;
-      }
-
-      .text-center {
-        font-size: 0.7rem;
-      }
-
-      .form-check-label {
-        font-size: 0.rem;
-      }
-
-      .form-check-input {
-        margin-right: 0.3rem;
-      }
-
+    .form-label {
+      font-weight: bold;
+      color: #003366;
+      margin-bottom: 5px;
     }
 
     .form-group {
-      margin-bottom: 1rem;
+      margin-bottom: 20px;
+      width: 500px;
     }
 
-    .form-check {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
+    input[type="password"], input[type="text"], input[type="email"], input[type="tel"], select {
+      width: 100%;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
     }
 
-    .form-check-input {
-      margin-right: 0.5rem;
+    input[type="password"]:focus, input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus, select:focus {
+      outline: none;
+      border-color: #003366;
     }
 
+    .btn-submit {
+      background-color: #003366;
+      color: white;
+      border: none;
+      padding: 5px;
+      width: 100%;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .btn-submit:hover {
+      background-color: #005bb5;
+    }
+
+    .forgot-password {
+      text-align: right;
+    }
+
+    .forgot-password a {
+      color: #003366;
+      text-decoration: none;
+    }
+
+    .forgot-password a:hover {
+      text-decoration: underline;
+    }
+
+    .sign-up-link {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .sign-up-link a {
+      color: #003366;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .sign-up-link a:hover {
+      text-decoration: underline;
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .logo img {
+      width: 200px;
+    }
+
+    /* Responsive design */
     @media (max-width: 768px) {
-
-      /* For smaller screens, reduce padding and font sizes */
-      .form-control {
-        font-size: 0.9rem;
-        padding: 0.5rem;
+      h1 {
+        font-size: 20px;
       }
 
-      .form-check-label {
-        font-size: 0.9rem;
-      }
-
-      .form-check-input {
-        margin-right: 0.3rem;
+      .logo img {
+        width: 150px;
       }
     }
 
     @media (max-width: 576px) {
-
-      /* Further reduce font sizes for very small screens */
-      .form-control {
-        font-size: 0.8rem;
+      h1 {
+        font-size: 23px;
       }
 
-      .form-check-label {
-        font-size: 0.8rem;
+      .form-group {
+        max-width: 350px;
+      }
+
+      .btn-submit {
+        font-size: 0.9rem;
+      }
+
+      .logo img {
+        width: 150px;
       }
     }
   </style>
 </head>
 
 <body>
-  <div class="container-fluid">
-    <div class="right-section">
-      <h1 class="text-center"><i class="fas fa-user-plus"></i> Sign Up</h1>
-
-      <!-- Error Message -->
-      <% if (error && error.length> 0) { %>
-        <div class="alert alert-danger text-center" role="alert" style="font-size: 0.9rem;">
-          <%= error %>
-        </div>
-        <% } %>
-
-          <!-- Success Message -->
-          <% if (success && success.length> 0) { %>
-            <div class="alert alert-success text-center" role="alert" style="font-size: 0.9rem;">
-              <%= success %>
-            </div>
-            <% } %>
-
-              <form id="signupForm" action="/signup" method="POST">
-                <div class="form-group">
-                  <label for="email"><i class="fas fa-envelope"></i> Email</label>
-                  <input type="email" name="email" id="email" class="form-control" placeholder="Enter your email"
-                    required>
-                </div>
-
-                <div class="form-group">
-                  <label for="username"><i class="fas fa-user"></i> Username</label>
-                  <input type="text" name="username" id="username" class="form-control"
-                    placeholder="Enter your username" required>
-                </div>
-
-                <div class="form-group">
-                  <label for="phone"><i class="fas fa-phone"></i> Phone Number</label>
-                  <input type="tel" name="phone" id="phone" class="form-control" placeholder="Enter your phone number"
-                    required>
-                </div>
-
-                <div class="form-group">
-                  <label for="password"><i class="fas fa-lock"></i> Password</label>
-                  <div class="password-container">
-                    <input type="password" name="password" id="password" class="form-control"
-                      placeholder="Enter password" required>
-                    <div class="form-check mt-2">
-                      <input type="checkbox" id="showPassword" class="form-check-input">
-                      <label for="showPassword" class="form-check-label">Show Password</label>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="confirm-password"><i class="fas fa-lock"></i> Confirm Password</label>
-                  <input type="password" name="confirm-password" id="confirm-password" class="form-control"
-                    placeholder="Confirm password" required>
-                  <small class="form-text text-muted" id="passwordHelp" style="display:none;">Passwords do not
-                    match.</small>
-                </div>
-
-                <script>
-                  // Show/Hide Password Functionality
-                  document.getElementById('showPassword').addEventListener('change', function () {
-                    const passwordField = document.getElementById('password');
-                    const confirmPasswordField = document.getElementById('confirm-password');
-                    if (this.checked) {
-                      passwordField.type = 'text';
-                      confirmPasswordField.type = 'text';
-                    } else {
-                      passwordField.type = 'password';
-                      confirmPasswordField.type = 'password';
-                    }
-                  });
-
-                  // Password Match Validation
-                  const form = document.querySelector('form');
-                  form.addEventListener('submit', function (event) {
-                    const password = document.getElementById('password').value;
-                    const confirmPassword = document.getElementById('confirm-password').value;
-                    const passwordHelp = document.getElementById('passwordHelp');
-
-                    if (password !== confirmPassword) {
-                      event.preventDefault();
-                      passwordHelp.style.display = 'block';
-                    } else {
-                      passwordHelp.style.display = 'none';
-                    }
-                  });
-
-                </script>
-
-                <div class="form-group">
-                  <label for="plan"><i class="fas fa-layer-group"></i> Select Your Plan</label>
-                  <select name="plan" id="plan" class="form-control" required>
-                    <option value="Basic">Demo</option>
-                    <option value="Standard">Standard (Up to 20 Units) - Ksh. 1,499/month</option>
-                    <option value="Pro">Pro (Up to 50 Units) - Ksh. 2,999/month</option>
-                    <option value="Advanced">Advanced (Up to 100 Units) - Ksh. 4,499/month</option>
-                    <option value="Enterprise">Enterprise (Up to 150 Units) - Ksh. 6,999/month</option>
-                    <option value="Premium">Custom (Unlimited Units) - Contact Us</option>
-                  </select>
-                </div>
-
-
-                <script>
-                  const urlParams = new URLSearchParams(window.location.search);
-                  const selectedPlan = urlParams.get('plan');
-                  if (selectedPlan) {
-                    document.getElementById('plan').value = selectedPlan;
-                  }
-                </script>
-
-                <button type="submit" id="signupButton" onclick="handleSignupClick()" style="
-    display: block;
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    font-weight: bold;
-    color: #fff;
-    background-color: #003366;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    text-align: center;
-">
-                  <i class="fas fa-user-plus"></i> Sign Up
-                </button>
-
-                <script>
-                  function handleSignupClick() {
-                    const signupButton = document.getElementById("signupButton");
-
-                    // Disable the button to prevent multiple submissions
-                    signupButton.disabled = true;
-
-                    // Change the button text to "Processing..."
-                    signupButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-
-                    // Submit the form
-                    document.getElementById("signupForm").submit();
-                  }
-                </script>
-
-
-
-
-
-
-                <p class="text-center">Already have an account? <a href="/login"><i class="fas fa-sign-in-alt"></i>
-                    Login</a></p>
+  <div class="signup-container">
+    <div class="logo">
+      <img src="/images/logo2.png" alt="Lease Captain Logo">
     </div>
-  </div>
-  <!-- jQuery and Bootstrap JS (include only if not already added) -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <h5><strong>Fill in your details to create account</strong></h5>
 
-  <!-- Bootstrap JS and dependencies -->
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Error Message -->
+    <% if (error && error.length > 0) { %>
+      <div class="alert alert-danger" style="color: red; font-size: 0.7rem;">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <!-- Success Message -->
+    <% if (success && success.length > 0) { %>
+      <div class="alert alert-success" style="color: green; font-size: 0.7rem;">
+        <%= success %>
+      </div>
+    <% } %>
+
+    <form id="signupForm" action="/signup" method="POST">
+      <div class="form-group">
+        <label for="email"><i class="fas fa-envelope"></i> Email</label>
+        <input type="email" name="email" id="email" placeholder="e.g example@domain.com" required>
+      </div>
+
+      <div class="form-group">
+        <label for="username"><i class="fas fa-user"></i> Username</label>
+        <input type="text" name="username" id="username" placeholder="e.g John" required>
+      </div>
+
+      <div class="form-group">
+        <label for="phone"><i class="fas fa-phone"></i> Phone Number</label>
+        <input type="tel" name="phone" id="phone" placeholder="0768****69" required>
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label for="password"><i class="fas fa-lock"></i> Password</label>
+        <input type="password" name="password" id="password" placeholder="Create your password" required>
+      </div>
+
+      <div class="form-group">
+        <label for="confirm-password"><i class="fas fa-lock"></i> Confirm Password</label>
+        <input type="password" name="confirm-password" id="confirm-password" placeholder="Confirm password" required>
+        <small id="passwordHelp" style="color: red; display: none;">Passwords do not match.</small>
+      </div>
+
+      <script>
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirm-password');
+        const passwordHelp = document.getElementById('passwordHelp');
+
+        confirmPassword.addEventListener('input', () => {
+          if (password.value !== confirmPassword.value) {
+            passwordHelp.style.display = 'block';
+          } else {
+            passwordHelp.style.display = 'none';
+          }
+        });
+
+        document.querySelector('form').addEventListener('submit', (e) => {
+          if (password.value !== confirmPassword.value) {
+            e.preventDefault();
+            alert('Passwords do not match!');
+          }
+        });
+      </script>
+
+      <div class="form-group">
+        <label for="plan"><i class="fas fa-layer-group"></i> Select Your Plan</label>
+        <select name="plan" id="plan" class="form-control" required>
+          <option value="Basic">Demo</option>
+          <option value="Standard">Standard (Up to 20 Units) - Ksh. 1,499/month</option>
+          <option value="Pro">Pro (Up to 50 Units) - Ksh. 2,999/month</option>
+          <option value="Advanced">Advanced (Up to 100 Units) - Ksh. 4,499/month</option>
+          <option value="Enterprise">Enterprise (Up to 150 Units) - Ksh. 6,999/month</option>
+          <option value="Premium">Custom (Unlimited Units) - Contact Us</option>
+        </select>
+      </div>
+
+      <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedPlan = urlParams.get('plan');
+        if (selectedPlan) {
+          document.getElementById('plan').value = selectedPlan;
+        }
+      </script>
+
+      <button type="submit" id="signupButton" class="btn-submit">
+        <i class="fas fa-user-plus"></i> Sign Up
+      </button>
+    </form>
+
+   
+  </div>
+  <p>Already have an account? <a href="/login"><i class="fas fa-sign-in-alt"></i><strong>Login</strong></a></p>
   <script>
+    // Show/Hide Password Functionality
     document.getElementById('showPassword').addEventListener('change', function () {
-      const passwordInput = document.getElementById('password');
-      const confirmPasswordInput = document.getElementById('confirm-password');
-      passwordInput.type = this.checked ? 'text' : 'password';
-      confirmPasswordInput.type = this.checked ? 'text' : 'password';
+      const passwordField = document.getElementById('password');
+      const confirmPasswordField = document.getElementById('confirm-password');
+      const fieldType = this.checked ? 'text' : 'password';
+      passwordField.type = fieldType;
+      confirmPasswordField.type = fieldType;
     });
   </script>
 </body>

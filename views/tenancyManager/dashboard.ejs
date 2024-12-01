@@ -30,7 +30,7 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 250px;
+            width: 265px;
             overflow-y: auto;
             transition: all 0.3s ease;
             box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
@@ -45,7 +45,7 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 260px;
+            width: 265px;
             overflow-y: auto;
             transition: transform 0.3s ease, width 0.3s ease;
             /* Smooth sidebar transition */
@@ -285,7 +285,6 @@
         <button class="btn btn-light" id="sidebarToggle" aria-label="Toggle sidebar">
             <i class="fas fa-bars"></i>
         </button>
-
         <div class="header-right d-flex align-items-center">
             <div class="dropdown">
                 <button class="btn btn-light dropdown-toggle d-flex align-items-center" type="button"
@@ -294,7 +293,6 @@
                         class="rounded-circle mr-2" width="35" height="35">
                     <span>Welcome, <%= currentUser.username %></span>
                 </button>
-
                 <!-- Dropdown Menu -->
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
                     <a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
@@ -366,74 +364,119 @@
         }
     </style>
 
-    <!-- Sidebar -->
-    <nav class="sidebar" id="sidebarMenu">
+<!-- Sidebar -->
+<nav class="sidebar" id="sidebarMenu">
+    <div class="sidebar-header">
         <h2 class="sidebar-title"><strong>Lease Captain</strong></h2>
-        <ul class="nav flex-column">
-            <li>
-                <a class="nav-link" href="/tenancy-manager/dashboard">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
-                </a>
-            </li>
-            <li>
-                <a class="nav-link dropdown-toggle" href="#propertiesSubmenu" data-toggle="collapse">
-                    <i class="fas fa-home"></i> Property Management
-                </a>
-                <ul class="collapse" id="propertiesSubmenu">
-                    <li><a class="nav-link" href="/tenancy-manager/properties">Properties</a></li>
-                    <li><a class="nav-link" href="/tenancy-manager/property/units">Property Units</a></li>
-                </ul>
-            </li>
-            <li>
-                <a class="nav-link dropdown-toggle" href="#tenantsSubmenu" data-toggle="collapse">
-                    <i class="fas fa-users"></i> Tenant Management
-                </a>
-                <ul class="collapse" id="tenantsSubmenu">
-                    <li><a class="nav-link" href="/tenancy-manager/tenants">Tenants</a></li>
-                    <li><a class="nav-link" href="/maintenance-requests">Maintenance Requests</a></li>
-                </ul>
-            </li>
-            <li>
-                <a class="nav-link dropdown-toggle" href="#billingSubmenu" data-toggle="collapse">
-                    <i class="fas fa-money-bill-wave"></i> Financial Overview
-                </a>
-                <ul class="collapse" id="billingSubmenu">
-                    <li><a class="nav-link" href="/tenancy-manager/payments">Payment Transactions</a></li>
-                    <li><a class="nav-link" href="/reports-invoices">Reports & Invoices</a></li>
-                    <li><a class="nav-link" href="/expenses">Expense Tracking</a></li>
-                </ul>
-            </li>
-            <li>
-                <a class="nav-link dropdown-toggle" href="#smsSubmenu" data-toggle="collapse">
-                    <i class="fas fa-sms"></i> Notification Management
-                </a>
-                <ul class="collapse" id="smsSubmenu">
-                    <li><a class="nav-link" href="/top-ups">Credit Top-Up</a></li>
-                    <li><a class="nav-link" href="/sms&email">SMS & Email Notifications</a></li>
-                </ul>
-            </li>
-            <li>
-                <a class="nav-link dropdown-toggle" href="#userSubmenu" data-toggle="collapse">
-                    <i class="fas fa-users-cog"></i> User Administration
-                </a>
-                <ul class="collapse" id="userSubmenu">
-                    <li><a class="nav-link" href="/users">User Accounts</a></li>
-                    <li><a class="nav-link" href="/roles">User Roles</a></li>
-                </ul>
-            </li>
-            <li>
-                <a class="nav-link dropdown-toggle" href="#settingsSubmenu" data-toggle="collapse">
-                    <i class="fas fa-cog"></i> Account Settings
-                </a>
-                <ul class="collapse" id="settingsSubmenu">
-                    <li><a class="nav-link" href="/tenancy-manager/profile">Profile Settings</a></li>
-                    <li><a class="nav-link" href="/tenancy-manager/security">Security Settings</a></li>
-                    <li><a class="nav-link" href="/connect">Payment Gateway Integration</a></li>
-                </ul>
-            </li>
-        </ul>
-    </nav>
+    </div>
 
+    <ul class="nav flex-column">
+        <li>
+            <a class="nav-link" style="background-color: #003366; color: #ffffff;" href="/tenancy-manager/dashboard">
+                <i class="fas fa-tachometer-alt" style="color: #f1f1f1;"></i> Dashboard
+            </a>
+        </li>
+        
+        <li>
+            <a class="nav-link dropdown-toggle" href="#propertiesSubmenu" data-toggle="collapse">
+                <i class="fas fa-home"></i> Property Management
+            </a>
+            <ul class="collapse" id="propertiesSubmenu">
+                <li><a class="nav-link" href="/tenancy-manager/properties">Properties</a></li>
+                <li><a class="nav-link" href="/tenancy-manager/property/units">Property Units</a></li>
+            </ul>
+        </li>
+        <li>
+            <a class="nav-link dropdown-toggle" href="#tenantsSubmenu" data-toggle="collapse">
+                <i class="fas fa-users"></i> Tenant Management
+            </a>
+            <ul class="collapse" id="tenantsSubmenu">
+                <li><a class="nav-link" href="/tenancy-manager/tenants">Tenants</a></li>
+                <li><a class="nav-link" href="/maintenance-requests">Maintenance Requests</a></li>
+            </ul>
+        </li>
+        <li>
+            <a class="nav-link dropdown-toggle" href="#billingSubmenu" data-toggle="collapse">
+                <i class="fas fa-money-bill-wave"></i> Financial Overview
+            </a>
+            <ul class="collapse" id="billingSubmenu">
+                <li><a class="nav-link" href="/tenancy-manager/payments">Payment Transactions</a></li>
+                <li><a class="nav-link" href="/reports-invoices">Reports & Invoices</a></li>
+                <li><a class="nav-link" href="/expenses">Expense Tracking</a></li>
+            </ul>
+        </li>
+        <li>
+            <a class="nav-link dropdown-toggle" href="#smsSubmenu" data-toggle="collapse">
+                <i class="fas fa-sms"></i> Notification Management
+            </a>
+            <ul class="collapse" id="smsSubmenu">
+                <li><a class="nav-link" href="/top-ups">Credit Top-Up</a></li>
+                <li><a class="nav-link" href="/sms&email">SMS & Email Notifications</a></li>
+            </ul>
+        </li>
+        <li>
+            <a class="nav-link dropdown-toggle" href="#userSubmenu" data-toggle="collapse">
+                <i class="fas fa-users-cog"></i> User Administration
+            </a>
+            <ul class="collapse" id="userSubmenu">
+                <li><a class="nav-link" href="/users">User Accounts</a></li>
+                <li><a class="nav-link" href="/roles">User Roles</a></li>
+            </ul>
+        </li>
+        <li>
+            <a class="nav-link dropdown-toggle" href="#settingsSubmenu" data-toggle="collapse">
+                <i class="fas fa-cog"></i> Account Settings
+            </a>
+            <ul class="collapse" id="settingsSubmenu">
+                <li><a class="nav-link" href="/tenancy-manager/profile">Profile Settings</a></li>
+                <li><a class="nav-link" href="/tenancy-manager/security">Security Settings</a></li>
+                <li><a class="nav-link" href="/connect">Payment Gateway Integration</a></li>
+            </ul>
+        </li>
+
+       
+        
+        
+    </ul>
+</nav>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const userProgress = {
+            hasProperties: true,
+            hasPropertyUnits: false,
+            hasTenants: false
+        };
+
+        // Update progress tracker dynamically
+        const steps = [
+            { key: 'hasProperties', selector: '.step-properties' },
+            { key: 'hasPropertyUnits', selector: '.step-property-units' },
+            { key: 'hasTenants', selector: '.step-tenants' }
+        ];
+
+        let completedSteps = 0;
+
+        steps.forEach(step => {
+            const element = document.querySelector(step.selector);
+            if (userProgress[step.key]) {
+                element.classList.remove('incomplete');
+                element.classList.add('complete');
+                element.style.backgroundColor = '#e6ffe6'; // Greenish background for completed steps
+                completedSteps++;
+            }
+        });
+
+        // Calculate the percentage of completion
+        const totalSteps = steps.length;
+        const percentage = (completedSteps / totalSteps) * 100;
+
+        // Update the progress bar and percentage text
+        document.getElementById('progressBar').style.width = `${percentage}%`;
+        document.getElementById('progressPercentage').textContent = `${Math.round(percentage)}%`;
+    });
+</script>
 
     <div class="container mt-4">
         <% if (typeof success !=='undefined' && success.length> 0) { %>
@@ -475,343 +518,350 @@
                             }
                         </style>
 
-                        <div class="row mt-4">
 
 
-                            <!-- Total Rent Collected Card -->
-                            <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                                <div class="card shadow-lg border-0 h-100">
-                                    <div class="card-header text-white"
-                                        style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                        <h5 class="mb-0">Total Rent Collected</h5>
+
+
+                                <div class="row mt-4">
+
+
+                                    <!-- Total Rent Collected Card -->
+                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                        <div class="card shadow-lg border-0 h-100">
+                                            <div class="card-header text-white"
+                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                                <h5 class="mb-0">Total Rent Collected</h5>
+                                            </div>
+                                            <div class="card-body bg-light d-flex align-items-center justify-content-between"
+                                                style="border-radius: 0 0 0.5rem 0.5rem;">
+                                                <i class="fas fa-money-bill-wave fa-2x text-success"></i>
+                                                <p class="card-text mb-0">
+                                                    <strong style="color: #003366;">
+                                                        <%= totalRentCollected || 0 %>
+                                                    </strong> Ksh
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="card-body bg-light d-flex align-items-center justify-content-between"
-                                        style="border-radius: 0 0 0.5rem 0.5rem;">
-                                        <i class="fas fa-money-bill-wave fa-2x text-success"></i>
-                                        <p class="card-text mb-0">
-                                            <strong style="color: #003366;">
-                                                <%= totalRentCollected || 0 %>
-                                            </strong> Ksh
-                                        </p>
+
+                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                        <div class="card shadow-lg border-0 h-100">
+                                            <div class="card-header text-white"
+                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                                <h5 class="mb-0">Utility Paid</h5>
+                                            </div>
+                                            <div class="card-body bg-light d-flex align-items-center justify-content-between"
+                                                style="border-radius: 0 0 0.5rem 0.5rem;">
+                                                <i class="fas fa-money-bill-alt fa-2x text-success"></i>
+                                                <p class="card-text mb-0">
+                                                    <strong style="color: #003366;">
+                                                        <%= utilityCollected %> Ksh
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Total Rent Due Card -->
+                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                        <div class="card shadow-lg border-0 h-100">
+                                            <div class="card-header text-white"
+                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                                <h5 class="mb-0">Total Rent Due</h5>
+                                            </div>
+                                            <div class="card-body bg-light d-flex align-items-center justify-content-between"
+                                                style="border-radius: 0 0 0.5rem 0.5rem;">
+                                                <i class="fas fa-calendar-times fa-2x text-warning"></i>
+                                                <p class="card-text mb-0">
+                                                    <strong style="color: #003366;">
+                                                        <%= totalRentDue || 0 %>
+                                                    </strong> Ksh
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+
+                                    <!-- Utility Due Card -->
+                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                        <div class="card shadow-lg border-0 h-100">
+                                            <div class="card-header text-white"
+                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                                <h5 class="mb-0">Utility Due</h5>
+                                            </div>
+                                            <div class="card-body bg-light d-flex align-items-center justify-content-between"
+                                                style="border-radius: 0 0 0.5rem 0.5rem;">
+                                                <i class="fas fa-water fa-2x text-info"></i>
+                                                <p class="card-text mb-0">
+                                                    <strong style="color: #003366;">
+                                                        <%= utilityDue || 0 %>
+                                                    </strong> Ksh
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Total Properties Card -->
+                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                        <div class="card shadow-lg border-0 h-100">
+                                            <div class="card-header text-white"
+                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                                <h5 class="mb-0">Total Properties</h5>
+                                            </div>
+                                            <div class="card-body bg-light d-flex align-items-center justify-content-between"
+                                                style="border-radius: 0 0 0.5rem 0.5rem;">
+                                                <i class="fas fa-home fa-2x text-primary"></i>
+                                                <p class="card-text mb-0">
+                                                    <strong style="color: #003366;">
+                                                        <%= properties.length %>
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Number of Units Card -->
+                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                        <div class="card shadow-lg border-0 h-100">
+                                            <div class="card-header text-white"
+                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                                <h5 class="mb-0">Number of Property Units</h5>
+                                            </div>
+                                            <div class="card-body bg-light d-flex align-items-center justify-content-between"
+                                                style="border-radius: 0 0 0.5rem 0.5rem;">
+                                                <i class="fas fa-building fa-2x text-dark"></i>
+                                                <p class="card-text mb-0">
+                                                    <strong style="color: #003366;">
+                                                        <%= numberOfUnits %>
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Occupied Units Card -->
+                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                        <div class="card shadow-lg border-0 h-100">
+                                            <div class="card-header text-white"
+                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                                <h5 class="mb-0">Occupied Property Units</h5>
+                                            </div>
+                                            <div class="card-body bg-light d-flex align-items-center justify-content-between"
+                                                style="border-radius: 0 0 0.5rem 0.5rem;">
+                                                <i class="fas fa-user-check fa-2x text-success"></i>
+                                                <p class="card-text mb-0">
+                                                    <strong style="color: #003366;">
+                                                        <%= occupiedUnitsCount %>
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Number of Tenants Card -->
+                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                        <div class="card shadow-lg border-0 h-100">
+                                            <div class="card-header text-white"
+                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                                <h5 class="mb-0">Number of Tenants</h5>
+                                            </div>
+                                            <div class="card-body bg-light d-flex align-items-center justify-content-between"
+                                                style="border-radius: 0 0 0.5rem 0.5rem;">
+                                                <i class="fas fa-users fa-2x text-info"></i>
+                                                <p class="card-text mb-0">
+                                                    <strong style="color: #003366;">
+                                                        <%= numberOfTenants || 0 %>
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Maintenance Requests Card -->
+                                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                        <div class="card shadow-lg border-0 h-100">
+                                            <div class="card-header text-white"
+                                                style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
+                                                <h5 class="mb-0">Maintenance Requests</h5>
+                                            </div>
+                                            <div class="card-body bg-light d-flex align-items-center justify-content-between"
+                                                style="border-radius: 0 0 0.5rem 0.5rem;">
+                                                <i class="fas fa-tools fa-2x text-danger"></i>
+                                                <p class="card-text mb-0">
+                                                    <strong style="color: #003366;">
+                                                        <%= totalRequests || 0 %>
+                                                    </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <style>
+                                        /* Styles for Cards */
+                                        .card-header {
+                                            font-size: 1.25rem;
+                                            font-weight: bold;
+                                        }
+
+                                        .card-body {
+                                            padding: 1.5rem;
+                                            font-size: 1.1rem;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: space-between;
+                                        }
+
+                                        .hover-effect {
+                                            transition: transform 0.3s ease;
+                                        }
+
+                                        .hover-effect:hover {
+                                            transform: scale(1.05);
+                                        }
+
+                                        /* For screens smaller than 768px */
+                                        @media (max-width: 768px) {
+                                            .card-header {
+                                                font-size: 1rem;
+                                            }
+
+                                            .card-body {
+                                                padding: 2rem;
+                                                flex-direction: column;
+                                                align-items: center;
+                                                justify-content: center;
+                                                text-align: center;
+                                            }
+
+                                            .card i {
+                                                font-size: 2rem;
+                                                margin-bottom: 0.5rem;
+                                            }
+
+                                            .card-text {
+                                                font-size: 1rem;
+                                            }
+
+                                            .col-md-6,
+                                            .col-lg-4 {
+                                                width: 100% !important;
+                                                margin-bottom: 1.5rem;
+                                            }
+
+                                            .card {
+                                                margin-bottom: 1.5rem;
+                                            }
+                                        }
+                                    </style>
+                                </div>
+
+                                <div class="card mt-4 border-0 shadow ">
+                                    <div class="card-header text-center"
+                                        style="background-color: #003366; color: #ffffff;">
+                                        <h5 class="mb-0">Quick Actions</h5>
+                                    </div>
+                                    <div class="card-body" style="background-color: #ffffff;">
+                                        <div class="row text-center justify-content-between">
+                                            <!-- Add Properties Button -->
+                                            <div class="col-lg-3 col-md-6 mb-3">
+                                                <a href="/tenancy-manager/properties"
+                                                    class="btn btn-action animate-pop">
+                                                    <i class="fas fa-home mr-2"></i> Add Properties
+                                                </a>
+                                            </div>
+
+                                            <!-- Add Property Units Button -->
+                                            <div class="col-lg-3 col-md-6 mb-3">
+                                                <a href="/tenancy-manager/property/units"
+                                                    class="btn btn-action animate-pop">
+                                                    <i class="fas fa-door-open mr-2"></i> Add Property Units
+                                                </a>
+                                            </div>
+
+                                            <!-- Add Tenants Button -->
+                                            <div class="col-lg-3 col-md-6 mb-3">
+                                                <a href="/tenancy-manager/tenants" class="btn btn-action animate-pop">
+                                                    <i class="fas fa-users mr-2"></i> Add Tenants
+                                                </a>
+                                            </div>
+
+                                            <!-- Transactions Button -->
+                                            <div class="col-lg-3 col-md-6 mb-3">
+                                                <a href="/tenancy-manager/payments" class="btn btn-action animate-pop">
+                                                    <i class="fas fa-money-bill-wave mr-2"></i> Transactions
+                                                </a>
+                                            </div>
+
+                                            <!-- Payment Gateway Integration Button -->
+                                            <div class="col-lg-3 col-md-6 mb-3">
+                                                <a href="/connect" class="btn btn-action animate-pop">
+                                                    <i class="fas fa-plug mr-2"></i> Payment Gateway
+                                                </a>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                                <div class="card shadow-lg border-0 h-100">
-                                    <div class="card-header text-white"
-                                        style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                        <h5 class="mb-0">Utility Paid</h5>
-                                    </div>
-                                    <div class="card-body bg-light d-flex align-items-center justify-content-between"
-                                        style="border-radius: 0 0 0.5rem 0.5rem;">
-                                        <i class="fas fa-money-bill-alt fa-2x text-success"></i>
-                                        <p class="card-text mb-0">
-                                            <strong style="color: #003366;">
-                                                <%= utilityCollected %> Ksh
-                                            </strong>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Total Rent Due Card -->
-                            <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                                <div class="card shadow-lg border-0 h-100">
-                                    <div class="card-header text-white"
-                                        style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                        <h5 class="mb-0">Total Rent Due</h5>
-                                    </div>
-                                    <div class="card-body bg-light d-flex align-items-center justify-content-between"
-                                        style="border-radius: 0 0 0.5rem 0.5rem;">
-                                        <i class="fas fa-calendar-times fa-2x text-warning"></i>
-                                        <p class="card-text mb-0">
-                                            <strong style="color: #003366;">
-                                                <%= totalRentDue || 0 %>
-                                            </strong> Ksh
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
 
 
-
-
-                            <!-- Utility Due Card -->
-                            <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                                <div class="card shadow-lg border-0 h-100">
-                                    <div class="card-header text-white"
-                                        style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                        <h5 class="mb-0">Utility Due</h5>
-                                    </div>
-                                    <div class="card-body bg-light d-flex align-items-center justify-content-between"
-                                        style="border-radius: 0 0 0.5rem 0.5rem;">
-                                        <i class="fas fa-water fa-2x text-info"></i>
-                                        <p class="card-text mb-0">
-                                            <strong style="color: #003366;">
-                                                <%= utilityDue || 0 %>
-                                            </strong> Ksh
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Total Properties Card -->
-                            <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                                <div class="card shadow-lg border-0 h-100">
-                                    <div class="card-header text-white"
-                                        style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                        <h5 class="mb-0">Total Properties</h5>
-                                    </div>
-                                    <div class="card-body bg-light d-flex align-items-center justify-content-between"
-                                        style="border-radius: 0 0 0.5rem 0.5rem;">
-                                        <i class="fas fa-home fa-2x text-primary"></i>
-                                        <p class="card-text mb-0">
-                                            <strong style="color: #003366;">
-                                                <%= properties.length %>
-                                            </strong>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Number of Units Card -->
-                            <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                                <div class="card shadow-lg border-0 h-100">
-                                    <div class="card-header text-white"
-                                        style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                        <h5 class="mb-0">Number of Property Units</h5>
-                                    </div>
-                                    <div class="card-body bg-light d-flex align-items-center justify-content-between"
-                                        style="border-radius: 0 0 0.5rem 0.5rem;">
-                                        <i class="fas fa-building fa-2x text-dark"></i>
-                                        <p class="card-text mb-0">
-                                            <strong style="color: #003366;">
-                                                <%= numberOfUnits %>
-                                            </strong>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Occupied Units Card -->
-                            <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                                <div class="card shadow-lg border-0 h-100">
-                                    <div class="card-header text-white"
-                                        style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                        <h5 class="mb-0">Occupied Property Units</h5>
-                                    </div>
-                                    <div class="card-body bg-light d-flex align-items-center justify-content-between"
-                                        style="border-radius: 0 0 0.5rem 0.5rem;">
-                                        <i class="fas fa-user-check fa-2x text-success"></i>
-                                        <p class="card-text mb-0">
-                                            <strong style="color: #003366;">
-                                                <%= occupiedUnitsCount %>
-                                            </strong>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Number of Tenants Card -->
-                            <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                                <div class="card shadow-lg border-0 h-100">
-                                    <div class="card-header text-white"
-                                        style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                        <h5 class="mb-0">Number of Tenants</h5>
-                                    </div>
-                                    <div class="card-body bg-light d-flex align-items-center justify-content-between"
-                                        style="border-radius: 0 0 0.5rem 0.5rem;">
-                                        <i class="fas fa-users fa-2x text-info"></i>
-                                        <p class="card-text mb-0">
-                                            <strong style="color: #003366;">
-                                                <%= numberOfTenants || 0 %>
-                                            </strong>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Maintenance Requests Card -->
-                            <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                                <div class="card shadow-lg border-0 h-100">
-                                    <div class="card-header text-white"
-                                        style="background-color: #003366; border-radius: 0.5rem 0.5rem 0 0;">
-                                        <h5 class="mb-0">Maintenance Requests</h5>
-                                    </div>
-                                    <div class="card-body bg-light d-flex align-items-center justify-content-between"
-                                        style="border-radius: 0 0 0.5rem 0.5rem;">
-                                        <i class="fas fa-tools fa-2x text-danger"></i>
-                                        <p class="card-text mb-0">
-                                            <strong style="color: #003366;">
-                                                <%= totalRequests || 0 %>
-                                            </strong>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <style>
-                                /* Styles for Cards */
-                                .card-header {
-                                    font-size: 1.25rem;
-                                    font-weight: bold;
-                                }
-
-                                .card-body {
-                                    padding: 1.5rem;
-                                    font-size: 1.1rem;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: space-between;
-                                }
-
-                                .hover-effect {
-                                    transition: transform 0.3s ease;
-                                }
-
-                                .hover-effect:hover {
-                                    transform: scale(1.05);
-                                }
-
-                                /* For screens smaller than 768px */
-                                @media (max-width: 768px) {
-                                    .card-header {
-                                        font-size: 1rem;
+                                <!-- Styles -->
+                                <style>
+                                    .card {
+                                        border-radius: 8px;
+                                        margin-bottom: 20px;
                                     }
 
-                                    .card-body {
-                                        padding: 2rem;
-                                        flex-direction: column;
+                                    .card-header {
+                                        font-size: 18px;
+                                        font-weight: bold;
+                                    }
+
+                                    .btn-action {
+                                        color: #003366;
+                                        background-color: #ffffff;
+                                        border-radius: 8px;
+                                        padding: 20px;
+                                        font-size: 16px;
+                                        font-weight: 500;
+                                        height: 80px;
+                                        display: flex;
                                         align-items: center;
                                         justify-content: center;
-                                        text-align: center;
+                                        transition: transform 0.2s;
+                                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                                        animation: popUpDown 1.5s ease-in-out infinite alternate;
                                     }
 
-                                    .card i {
-                                        font-size: 2rem;
-                                        margin-bottom: 0.5rem;
+                                    .btn-action:hover {
+                                        background-color: #003366;
+                                        color: #ffffff;
+                                        transform: scale(1.05);
                                     }
 
-                                    .card-text {
-                                        font-size: 1rem;
+                                    .animate-pop {
+                                        animation: popUpDown 1.5s ease-in-out infinite alternate;
                                     }
 
-                                    .col-md-6,
-                                    .col-lg-4 {
-                                        width: 100% !important;
-                                        margin-bottom: 1.5rem;
+                                    @keyframes popUpDown {
+                                        0% {
+                                            transform: translateY(0px);
+                                        }
+
+                                        100% {
+                                            transform: translateY(-5px);
+                                        }
                                     }
 
-                                    .card {
-                                        margin-bottom: 1.5rem;
+                                    /* Responsive adjustments */
+                                    @media (max-width: 768px) {
+                                        .btn-action {
+                                            font-size: 14px;
+                                            height: auto;
+                                            padding: 15px;
+                                        }
                                     }
-                                }
-                            </style>
-                        </div>
-
-                        <div class="card mt-4 border-0 shadow ">
-                            <div class="card-header text-center" style="background-color: #003366; color: #ffffff;">
-                                <h5 class="mb-0">Quick Actions</h5>
-                            </div>
-                            <div class="card-body" style="background-color: #ffffff;">
-                                <div class="row text-center justify-content-between">
-                                    <!-- Add Properties Button -->
-                                    <div class="col-lg-3 col-md-6 mb-3">
-                                        <a href="/tenancy-manager/properties" class="btn btn-action animate-pop">
-                                            <i class="fas fa-home mr-2"></i> Add Properties
-                                        </a>
-                                    </div>
-
-                                    <!-- Add Property Units Button -->
-                                    <div class="col-lg-3 col-md-6 mb-3">
-                                        <a href="/tenancy-manager/property/units" class="btn btn-action animate-pop">
-                                            <i class="fas fa-door-open mr-2"></i> Add Property Units
-                                        </a>
-                                    </div>
-
-                                    <!-- Add Tenants Button -->
-                                    <div class="col-lg-3 col-md-6 mb-3">
-                                        <a href="/tenancy-manager/tenants" class="btn btn-action animate-pop">
-                                            <i class="fas fa-users mr-2"></i> Add Tenants
-                                        </a>
-                                    </div>
-
-                                    <!-- Transactions Button -->
-                                    <div class="col-lg-3 col-md-6 mb-3">
-                                        <a href="/tenancy-manager/payments" class="btn btn-action animate-pop">
-                                            <i class="fas fa-money-bill-wave mr-2"></i> Transactions
-                                        </a>
-                                    </div>
-
-                                    <!-- Payment Gateway Integration Button -->
-                                    <div class="col-lg-3 col-md-6 mb-3">
-                                        <a href="/connect" class="btn btn-action animate-pop">
-                                            <i class="fas fa-plug mr-2"></i> Payment Gateway
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <!-- Styles -->
-                        <style>
-                            .card {
-                                border-radius: 8px;
-                                margin-bottom: 20px;
-                            }
-
-                            .card-header {
-                                font-size: 18px;
-                                font-weight: bold;
-                            }
-
-                            .btn-action {
-                                color: #003366;
-                                background-color: #ffffff;
-                                border-radius: 8px;
-                                padding: 20px;
-                                font-size: 16px;
-                                font-weight: 500;
-                                height: 80px;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                transition: transform 0.2s;
-                                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                                animation: popUpDown 1.5s ease-in-out infinite alternate;
-                            }
-
-                            .btn-action:hover {
-                                background-color: #003366;
-                                color: #ffffff;
-                                transform: scale(1.05);
-                            }
-
-                            .animate-pop {
-                                animation: popUpDown 1.5s ease-in-out infinite alternate;
-                            }
-
-                            @keyframes popUpDown {
-                                0% {
-                                    transform: translateY(0px);
-                                }
-
-                                100% {
-                                    transform: translateY(-5px);
-                                }
-                            }
-
-                            /* Responsive adjustments */
-                            @media (max-width: 768px) {
-                                .btn-action {
-                                    font-size: 14px;
-                                    height: auto;
-                                    padding: 15px;
-                                }
-                            }
-                        </style>
+                                </style>
     </div>
 
     <!-- Report Graph Section -->
@@ -1050,357 +1100,366 @@
             }
         }
     </style>
-<!-- Floating Messenger Button -->
-<div class="floating-support">
-    <button class="support-btn" onclick="toggleChat()">
-        <i class="fas fa-comment-dots"></i> Support
-    </button>
-</div>
-
-<!-- Messenger Chat Window -->
-<div class="chat-window" id="chatWindow">
-    <div class="chat-header">
-        <h5>Contact Support</h5>
-        <button class="close-btn" onclick="toggleChat()">×</button>
+    <!-- Floating Messenger Button -->
+    <div class="floating-support">
+        <button class="support-btn" onclick="toggleChat()">
+            <i class="fas fa-comment-dots"></i> Support
+        </button>
     </div>
-    <div class="chat-body" id="chatBody">
-        <div class="welcome-message">
-            <p>👋 Hello! Need assistance? We’re here to help you. Ask us anything or type your query below to get started!</p>
+
+    <!-- Messenger Chat Window -->
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+            <h5>Contact Support</h5>
+            <button class="close-btn" onclick="toggleChat()">×</button>
         </div>
-        <div class="typing-indicator" id="typingIndicator" style="display: none;">
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
+        <div class="chat-body" id="chatBody">
+            <div class="welcome-message">
+                <p>👋 Hello! Need assistance? We’re here to help you. Ask us anything or type your query below to get
+                    started!</p>
+            </div>
+            <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="chatInput" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
+            <button class="send-btn" onclick="sendMessage()">Send</button>
         </div>
     </div>
-    <div class="chat-footer">
-        <input type="text" id="chatInput" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
-        <button class="send-btn" onclick="sendMessage()">Send</button>
-    </div>
-</div>
 
 
-<!-- Styles -->
-<style>
-    /* General Styles */
-    body {
-        font-family: 'Arial', sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f9f9f9;
-    }
-    .welcome-message {
-        background-color: #f1f9ff;
-        padding: 12px;
-        border-radius: 12px;
-        text-align: center;
-        font-size: 0.9rem;
-        color: #003366;
-        margin-bottom: 15px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        animation: slideDown 0.3s ease-in-out;
-    }
+    <!-- Styles -->
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
 
-    @keyframes slideDown {
-        from {
+        .welcome-message {
+            background-color: #f1f9ff;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #003366;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: slideDown 0.3s ease-in-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .floating-support {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .support-btn {
+            background-color: #003366;
+            color: #ffffff;
+            font-size: 1.1rem;
+            padding: 10px 18px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .support-btn:hover {
+            transform: scale(1.1);
+            background-color: #004080;
+        }
+
+        /* Chat Window */
+        .chat-window {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            background-color: linear-gradient(135deg, #b64949, #e0f7fa);
+            ;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: none;
+            flex-direction: column;
             opacity: 0;
-            transform: translateY(-20px);
+            transform: translateY(30px) scale(0.9);
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
-        to {
+
+        .chat-window.show {
+            display: flex;
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
         }
-    }
 
-    .floating-support {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 1000;
-    }
-
-    .support-btn {
-        background-color: #003366;
-        color: #ffffff;
-        font-size: 1.1rem;
-        padding: 10px 18px;
-        border-radius: 50px;
-        border: none;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        transition: transform 0.3s ease, background-color 0.3s ease;
-    }
-
-    .support-btn:hover {
-        transform: scale(1.1);
-        background-color: #004080;
-    }
-
-    /* Chat Window */
-    .chat-window {
-        position: fixed;
-        bottom: 80px;
-        right: 20px;
-        width: 350px;
-        height: 500px;
-        background-color: linear-gradient(135deg, #b64949, #e0f7fa);;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        display: none;
-        flex-direction: column;
-        opacity: 0;
-        transform: translateY(30px) scale(0.9);
-        transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-
-    .chat-window.show {
-        display: flex;
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-
-    .chat-header {
-        background-color: #003366;
-        color: #ffffff;
-        padding: 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-top-left-radius: 12px;
-        border-top-right-radius: 12px;
-    }
-
-    .chat-header h5 {
-        margin: 0;
-        font-size: 1rem;
-    }
-
-    .close-btn {
-        background: none;
-        border: none;
-        color: #ffffff;
-        font-size: 1.5rem;
-        cursor: pointer;
-        transition: transform 0.2s ease;
-    }
-
-    .close-btn:hover {
-        transform: rotate(90deg);
-    }
-
-    /* Chat Body */
-    .chat-body {
-        flex: 1;
-        padding: 10px;
-        overflow-y: auto;
-        background-color: #f9f9f9;
-    }
-
-
-
-.chat-message {
-        word-wrap: break-word;
-        white-space: pre-wrap;
-        padding: 8px 12px;
-        margin-bottom: 12px;
-        border-radius: 15px;
-        position: relative;
-    }
-
-    .chat-message.user {
-        background-color: #e0f7fa;
-        align-self: flex-end;
-        margin-left: auto;
-        border-top-right-radius: 0;
-        text-align: right;
-        font-size: 0.8rem;
-    }
-
-    .chat-message.bot {
-        background-color: #f1f1f1;
-        align-self: flex-start;
-        margin-right: auto;
-        border-top-left-radius: 0;
-        text-align: left;
-        font-size: 0.8rem;
-    }
-
-    .chat-message .timestamp {
-    font-size: 0.75rem;
-    color: #777;
-    margin-top: 5px; /* Space between text and timestamp */
-    display: block; /* Ensures timestamp aligns naturally with content */
-}
-
-    /* Typing Indicator */
-    .typing-indicator {
-        display: flex;
-        gap: 5px;
-        align-items: center;
-    }
-
-    .dot {
-        width: 8px;
-        height: 8px;
-        background-color: #bbb;
-        border-radius: 50%;
-        animation: typing 1s infinite;
-    }
-
-    .dot:nth-child(2) {
-        animation-delay: 0.2s;
-    }
-
-    .dot:nth-child(3) {
-        animation-delay: 0.4s;
-    }
-
-    @keyframes typing {
-        0%, 100% {
-            opacity: 0.3;
-            transform: scale(0.8);
+        .chat-header {
+            background-color: #003366;
+            color: #ffffff;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
         }
-        50% {
-            opacity: 1;
-            transform: scale(1.2);
+
+        .chat-header h5 {
+            margin: 0;
+            font-size: 1rem;
         }
-    }
 
-    /* Chat Footer */
-    .chat-footer {
-        padding: 10px;
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        border-top: 1px solid #ddd;
-    }
-
-    .chat-footer input {
-        flex: 1;
-        padding: 10px;
-        border-radius: 25px;
-        border: 1px solid #ccc;
-        outline: none;
-        transition: box-shadow 0.3s ease;
-    }
-
-    .chat-footer input:focus {
-        box-shadow: 0 0 5px rgba(0, 102, 204, 0.8);
-    }
-
-    .send-btn {
-        background-color: #003366;
-        color: #ffffff;
-        border: none;
-        border-radius: 25px;
-        padding: 10px 20px;
-        cursor: pointer;
-        transition: transform 0.2s ease;
-    }
-
-    .send-btn:hover {
-        transform: scale(1.1);
-        background-color: #0066cc;
-    }
-</style>
-
-<!-- JavaScript -->
-<script>const chatWindow = document.getElementById('chatWindow');
-    const chatBody = document.getElementById('chatBody');
-    const chatInput = document.getElementById('chatInput');
-    const typingIndicator = document.getElementById('typingIndicator');
-    
-    function toggleChat() {
-        chatWindow.classList.toggle('show');
-    }
-    
-    function sendMessage() {
-        const message = chatInput.value.trim();
-        if (message) {
-            appendMessage(message, 'user');
-            chatInput.value = '';
-            showTypingIndicator();
-    
-            // Call bot function to analyze the user's message
-            setTimeout(() => {
-                botResponse(message);
-            }, 1000);
+        .close-btn {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
         }
-    }
-    
-    function showTypingIndicator() {
-        typingIndicator.style.display = 'flex';
-        chatBody.scrollTop = chatBody.scrollHeight;
-    }
-    
-    function hideTypingIndicator() {
-        typingIndicator.style.display = 'none';
-    }
-    
-    function appendMessage(message, type) {
-        const messageElement = document.createElement('div');
-        messageElement.className = `chat-message ${type}`;
-        messageElement.innerHTML = message;
-    
-        const timestamp = document.createElement('span');
-        timestamp.className = 'timestamp';
-        timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        messageElement.appendChild(timestamp);
-    
-        chatBody.appendChild(messageElement);
-        chatBody.scrollTop = chatBody.scrollHeight;
-    }
-    
-    function handleKeyPress(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            sendMessage();
+
+        .close-btn:hover {
+            transform: rotate(90deg);
         }
-    }
-    
-    function botResponse(userMessage) {
-    // Convert user input to lowercase for easy comparison
-    const lowerMessage = userMessage.toLowerCase();
 
-    // Responses for greetings
-    if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
-        appendMessage('Hello! How can I assist you today? 😊', 'bot');
-        hideTypingIndicator();
-    } else if (lowerMessage.includes('good morning')) {
-        appendMessage('Good morning! I hope you have a great day. How can I help you? ☀️', 'bot');
-        hideTypingIndicator();
-    } else if (lowerMessage.includes('good afternoon')) {
-        appendMessage('Good afternoon! What can I do for you today? 🌤️', 'bot');
-        hideTypingIndicator();
-    } else if (lowerMessage.includes('good evening')) {
-        appendMessage('Good evening! How can I assist you tonight? 🌙', 'bot');
-        hideTypingIndicator();
-    } else if (lowerMessage.includes('how are you')) {
-        appendMessage('I’m just a bot, but I’m doing great! How about you? 🤖', 'bot');
-        hideTypingIndicator();
-    }
-    // Responses for Lease Captain or related terms
-    else if (lowerMessage.includes('lease captain')) {
-        appendMessage('The Lease Captain is responsible for managing lease agreements and ensuring smooth operations between tenants and landlords. Let me know if you need more details on this!', 'bot');
-        hideTypingIndicator();
-    } else if (lowerMessage.includes('lease agreement') || lowerMessage.includes('rental agreement')) {
-        appendMessage('A lease agreement is a contract outlining the terms and conditions of renting a property. If you have specific questions about your lease, feel free to ask!', 'bot');
-        hideTypingIndicator();
-    }
-    // Default response if the message is not recognized
-    else {
-        appendMessage('I am sorry, I don\'t have an answer to that. Please allow me to connect you to a support agent.', 'bot');
-        hideTypingIndicator();
+        /* Chat Body */
+        .chat-body {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+        }
 
-        // Simulate transitioning to support
-        setTimeout(() => {
-            appendMessage('A support agent will assist you shortly. Please be patient.', 'bot');
-            switchToSupport();
-        }, 1500);
-    }
-}
+
+
+        .chat-message {
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            padding: 8px 12px;
+            margin-bottom: 12px;
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .chat-message.user {
+            background-color: #e0f7fa;
+            align-self: flex-end;
+            margin-left: auto;
+            border-top-right-radius: 0;
+            text-align: right;
+            font-size: 0.8rem;
+        }
+
+        .chat-message.bot {
+            background-color: #f1f1f1;
+            align-self: flex-start;
+            margin-right: auto;
+            border-top-left-radius: 0;
+            text-align: left;
+            font-size: 0.8rem;
+        }
+
+        .chat-message .timestamp {
+            font-size: 0.75rem;
+            color: #777;
+            margin-top: 5px;
+            /* Space between text and timestamp */
+            display: block;
+            /* Ensures timestamp aligns naturally with content */
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background-color: #bbb;
+            border-radius: 50%;
+            animation: typing 1s infinite;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+
+            0%,
+            100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        /* Chat Footer */
+        .chat-footer {
+            padding: 10px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            border-top: 1px solid #ddd;
+        }
+
+        .chat-footer input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 25px;
+            border: 1px solid #ccc;
+            outline: none;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .chat-footer input:focus {
+            box-shadow: 0 0 5px rgba(0, 102, 204, 0.8);
+        }
+
+        .send-btn {
+            background-color: #003366;
+            color: #ffffff;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.1);
+            background-color: #0066cc;
+        }
+    </style>
+
+    <!-- JavaScript -->
+    <script>const chatWindow = document.getElementById('chatWindow');
+        const chatBody = document.getElementById('chatBody');
+        const chatInput = document.getElementById('chatInput');
+        const typingIndicator = document.getElementById('typingIndicator');
+
+        function toggleChat() {
+            chatWindow.classList.toggle('show');
+        }
+
+        function sendMessage() {
+            const message = chatInput.value.trim();
+            if (message) {
+                appendMessage(message, 'user');
+                chatInput.value = '';
+                showTypingIndicator();
+
+                // Call bot function to analyze the user's message
+                setTimeout(() => {
+                    botResponse(message);
+                }, 1000);
+            }
+        }
+
+        function showTypingIndicator() {
+            typingIndicator.style.display = 'flex';
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            typingIndicator.style.display = 'none';
+        }
+
+        function appendMessage(message, type) {
+            const messageElement = document.createElement('div');
+            messageElement.className = `chat-message ${type}`;
+            messageElement.innerHTML = message;
+
+            const timestamp = document.createElement('span');
+            timestamp.className = 'timestamp';
+            timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            messageElement.appendChild(timestamp);
+
+            chatBody.appendChild(messageElement);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function botResponse(userMessage) {
+            // Convert user input to lowercase for easy comparison
+            const lowerMessage = userMessage.toLowerCase();
+
+            // Responses for greetings
+            if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
+                appendMessage('Hello! How can I assist you today? 😊', 'bot');
+                hideTypingIndicator();
+            } else if (lowerMessage.includes('good morning')) {
+                appendMessage('Good morning! I hope you have a great day. How can I help you? ☀️', 'bot');
+                hideTypingIndicator();
+            } else if (lowerMessage.includes('good afternoon')) {
+                appendMessage('Good afternoon! What can I do for you today? 🌤️', 'bot');
+                hideTypingIndicator();
+            } else if (lowerMessage.includes('good evening')) {
+                appendMessage('Good evening! How can I assist you tonight? 🌙', 'bot');
+                hideTypingIndicator();
+            } else if (lowerMessage.includes('how are you')) {
+                appendMessage('I’m just a bot, but I’m doing great! How about you? 🤖', 'bot');
+                hideTypingIndicator();
+            }
+            // Responses for Lease Captain or related terms
+            else if (lowerMessage.includes('lease captain')) {
+                appendMessage('The Lease Captain is responsible for managing lease agreements and ensuring smooth operations between tenants and landlords. Let me know if you need more details on this!', 'bot');
+                hideTypingIndicator();
+            } else if (lowerMessage.includes('lease agreement') || lowerMessage.includes('rental agreement')) {
+                appendMessage('A lease agreement is a contract outlining the terms and conditions of renting a property. If you have specific questions about your lease, feel free to ask!', 'bot');
+                hideTypingIndicator();
+            }
+            // Default response if the message is not recognized
+            else {
+                appendMessage('I am sorry, I don\'t have an answer to that. Please allow me to connect you to a support agent.', 'bot');
+                hideTypingIndicator();
+
+                // Simulate transitioning to support
+                setTimeout(() => {
+                    appendMessage('A support agent will assist you shortly. Please be patient.', 'bot');
+                    switchToSupport();
+                }, 1500);
+            }
+        }
 
     </script>
 

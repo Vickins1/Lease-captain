@@ -3,117 +3,216 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lease Captain Login</title>
-  <!-- Bootstrap CSS CDN -->
+  <title>Lease Captain - Sign-in</title>
+  <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   <link rel="icon" href="/images/icon.png" type="image/png">
-
   <style>
     body {
-      background-color: #f4f4f4;
-      font-family: 'Arial', sans-serif; 
+      background-color: #f7f7f7;
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
     }
-    .container {
-      margin-top: 10%;
-      margin-bottom: 10%;
-      max-width: 500px;
-      padding: 30px;
-      background-color: #ffffff; 
-      border-radius: 10px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); 
-    }
-    h1 {
-      font-weight: bold; 
+  
+    h2 {
       color: #003366;
-      font-size: 30px;
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 24px;
     }
-    .form-group label {
-      font-weight: 600; 
+  
+    .form-label {
+      font-weight: bold;
+      color: #003366;
+      margin-bottom: 5px;
     }
-    .error-message {
-      color: red; 
-      background-color: #f8d7da; 
-      border: 1px solid #f5c6cb; 
-      border-radius: 5px; 
-      margin-bottom: 15px; 
+  
+    .form-group {
+      margin-bottom: 20px;
+      width: 500px;
     }
+  
+    input[type="password"], input[type="text"], input[type="email"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+  
+    input[type="password"]:focus, input[type="text"]:focus, input[type="email"]:focus {
+      outline: none;
+      border-color: #003366;
+    }
+  
     .btn-primary {
-      background-color: #003366; 
+      background-color: #003366;
+      color: white;
       border: none;
+      padding: 10px;
+      width: 100%;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
     }
+  
     .btn-primary:hover {
-      background-color: #003366; 
+      background-color: #005bb5;
     }
-    .text-center a {
+  
+    .social-login {
+      text-align: center;
+      margin-top: 15px;
+    }
+  
+    .social-login .btn {
+      width: 100%;
+      max-width: 250px;
+      margin: 10px auto;
+    }
+  
+    .forgot-password {
+      text-align: right;
+    }
+  
+    .forgot-password a {
       color: #003366;
+      text-decoration: none;
     }
-    .text-center a:hover {
-      text-decoration: underline; 
+  
+    .forgot-password a:hover {
+      text-decoration: underline;
     }
-
-    /* Responsive adjustments */
+  
+    .sign-up-link {
+      text-align: center;
+      margin-top: 15px;
+    }
+  
+    .sign-up-link a {
+      color: #003366;
+      font-weight: bold;
+      text-decoration: none;
+    }
+  
+    .sign-up-link a:hover {
+      text-decoration: underline;
+    }
+  
+    .logo {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+  
+    .logo img {
+      width: 200px;
+    }
+  
+    /* Responsive design */
+    @media (max-width: 768px) {
+      h2 {
+        font-size: 20px;
+      }
+  
+      .logo img {
+        width: 150px;
+      }
+    }
+  
     @media (max-width: 576px) {
-      .container {
-        margin-top: 20%; 
-        padding: 20px;
-        width: 90%;
+      h2 {
+        font-size: 18px;
       }
-      h1 {
-        font-size: 1.5rem; 
+      .form-group{
+        max-width: 350px;
       }
-      .form-group label, .text-center, .btn-primary, .form-control, .btn {
-        font-size: 0.8rem;
+  
+      .btn-primary {
+        font-size: 0.9rem;
       }
-      .error-message {
-        font-size: 0.8rem; 
-        padding: 5px;
+  
+      .logo img {
+        width: 150px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1 class="text-center">Login to Lease Captain</h1>
-  
-    <!-- Error Message -->
-    <% if (error && error.length > 0) { %>
+  <div class="login-container">
+    <!-- Logo -->
+    <div class="logo text-center">
+      <img src="/images/logo2.png" alt="Lease Captain Logo">
+    </div>
+
+    <!-- Title -->
+    <h2><strong>Sign-in to Lease Captain</strong></h2>
+
+    <!-- Login Form -->
+    <form id="loginForm" action="/login" method="POST" onsubmit="showLoaderModal(event)">
+     <!-- Error and Success Messages -->
+     <% if (error && error.length > 0) { %>
       <div class="alert alert-danger text-center" role="alert">
-          <%= error %>
+        <%= error %>
       </div>
     <% } %>
-
-    <!-- Success Message -->
     <% if (success && success.length > 0) { %>
       <div class="alert alert-success text-center" role="alert">
-          <%= success %>
+        <%= success %>
       </div>
     <% } %>
-  
-    <form id="loginForm" action="/login" method="POST" onsubmit="showLoaderModal(event)">
+
+      <!-- Username -->
       <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" name="username" id="username" class="form-control" placeholder="Enter your username" required>
+        <label for="username"><i class="fas fa-user"></i> Username</label>
+        <input type="text" name="username" id="username" class="form-control" placeholder="e.g John" required>
       </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" name="password" id="password" class="form-control" placeholder="Enter your password" required>
-        <input type="checkbox" id="showPassword"> <label for="showPassword">Show Password</label>
+
+      <!-- Password -->
+<div class="form-group">
+  <label for="password"><i class="fas fa-lock"></i> Password</label>
+  <div class="d-flex align-items-center position-relative">
+    <input type="password" name="password" id="password" class="form-control" 
+      placeholder="Enter your password" required style="flex: 1;">
+    <span id="togglePassword" class="position-absolute" style="right: 10px; cursor: pointer;">
+      <i class="fas fa-eye"></i>
+    </span>
+  </div>
+</div>
+
+
+      <!-- Login Button -->
+      <button type="submit" class="btn btn-dark w-100" style="background-color: #003366;"><strong>Sign-in</strong></button>
+
+      <!-- Social Login -->
+      <div class="text-center mt-3">
+        <p>Or sign-in with:</p>
+        <a href="/auth/google" class="btn btn-outline-danger">
+          <i class="fab fa-google"></i> Google
+        </a>
+        <a href="/auth/facebook" class="btn btn-outline-primary">
+          <i class="fab fa-facebook"></i> Facebook
+        </a>
       </div>
-      <button type="submit" class="btn btn-dark btn-block" style="background-color: #003366;">
-        Login
-      </button>
+      <!-- Forgot Password -->
+      <p class="text-center mt-2">
+        <a href="#" data-toggle="modal" data-target="#forgotPasswordModal">Forgot Password?</a>
+      </p>
+
+      <!-- Sign-Up Link -->
+      <div class="sign-up-link text-center mt-3">
+        <p>Don't have an account? <a href="/signup">Sign up now</a></p>
+      </div>
     </form>
-    <p class="text-right"> <a href="#" data-toggle="modal" data-target="#forgotPasswordModal">Forget Password?</a></p>
-    <div class="text-center mt-4">
-      <a href="/auth/google" class="btn btn-outline-danger btn-lg d-flex align-items-center justify-content-center px-4 py-2 rounded-pill w-100" style="max-width: 300px; margin: auto;">
-        <i class="fab fa-google mr-2"></i> Sign in with Google
-      </a>
-    </div>
-    <p class="text-center">Don't have an account? <a href="/signup">Sign Up</a></p>
   </div>
 
-<!-- Loader Modal -->
+ <!-- Loader Modal -->
 <div class="modal" id="loaderModal" tabindex="-1" aria-hidden="true" style="display: none;">
   <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content" style="border: none; border-radius: 12px; overflow: hidden;">
@@ -158,13 +257,12 @@
   }
 </style>
 
-
-  <!-- Forget Password Modal -->
-  <div class="modal fade" id="forgotPasswordModal" tabindex="-1" role="dialog" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+  <!-- Forgot Password Modal -->
+  <div class="modal fade" id="forgotPasswordModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="forgotPasswordModalLabel">Reset Password</h5>
+          <h5 class="modal-title">Reset Password</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -172,42 +270,51 @@
         <div class="modal-body">
           <form action="/forgot-password" method="POST">
             <div class="form-group">
-              <label for="email">Enter your email address</label>
-              <input type="email" name="email" id="email" class="form-control" placeholder="Enter your email" required>
+              <label for="email">Email Address</label>
+              <input type="email" name="email" id="email" class="form-control" placeholder="Enter your email" style="max-width: 400px;" required>
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Send Reset Link</button>
+            <button type="submit" class="btn btn-custom btn-block" style="background-color: #003366; color:#ffffff;">Request Reset Link</button>
           </form>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Bootstrap JS and dependencies -->
+  <!-- Bootstrap and JS Libraries -->
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+<script>
+  const passwordField = document.getElementById('password');
+  const togglePassword = document.getElementById('togglePassword');
+
+  togglePassword.addEventListener('click', () => {
+    // Toggle the password field type between "password" and "text"
+    const type = passwordField.type === 'password' ? 'text' : 'password';
+    passwordField.type = type;
+
+    // Toggle the icon
+    togglePassword.innerHTML = passwordField.type === 'password' 
+      ? '<i class="fas fa-eye"></i>' 
+      : '<i class="fas fa-eye-slash"></i>';
+  });
+</script>
 
   <script>
-    // Show/Hide password functionality
-    document.getElementById('showPassword').addEventListener('change', function() {
+    // Show/Hide Password Toggle
+    document.getElementById('showPassword').addEventListener('change', function () {
       const passwordField = document.getElementById('password');
       passwordField.type = this.checked ? 'text' : 'password';
     });
 
+    // Show Loader Modal on Form Submit
     function showLoaderModal(event) {
-    event.preventDefault();
-    
-    $('#loaderModal').modal('show');
-    
-    setTimeout(() => {
-        document.getElementById("loginForm").submit();
-        
-        setTimeout(() => {
-            $('#loaderModal').modal('hide');
-        }, 1000); 
-    }, 500);
-}
-
+      event.preventDefault();
+      $('#loaderModal').modal('show');
+      setTimeout(() => document.getElementById('loginForm').submit(), 500);
+    }
   </script>
 </body>
 </html>

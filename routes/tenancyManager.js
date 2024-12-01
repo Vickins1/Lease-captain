@@ -267,6 +267,13 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
             tenantId: { $in: tenants.map(tenant => tenant._id) }
         });
 
+        const userProgress = {
+            hasProperties: false,
+            hasPropertyUnits: false,
+            hasTenants: true
+        };
+        
+        
         // Render the dashboard
         res.render('tenancyManager/dashboard', {
             properties,
@@ -282,6 +289,7 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
             currentUser: req.user,
             transactionRequestId: 'your-transaction-id',
             userPlan: req.user.plan,
+            userProgress
         });
     } catch (err) {
         console.error('Error fetching dashboard data:', err);
@@ -289,6 +297,7 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
         res.redirect('/login');
     }
 });
+
 
 router.get('/subscription', async (req, res) => {
     try {
@@ -1615,7 +1624,7 @@ router.post('/delete/:id', async (req, res) => {
 
 
 // Get top-up page
-router.get('/top-ups', isTenancyManager, async (req, res) => {
+router.get('/top-up', isTenancyManager, async (req, res) => {
     try {
         const topups = await Topups.find({ createdBy: req.user._id });
         res.render('tenancyManager/topups', {
