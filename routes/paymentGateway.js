@@ -205,7 +205,7 @@ async function sendPaymentRequest(payload) {
 
 
 const pollPaymentStatus = async (req, api_key, email, tenantId) => {
-    const paymentTimeout = 10000;
+    const paymentTimeout = 30000;
     const startTime = Date.now();
 
     console.log("Received tenantId:", tenantId);
