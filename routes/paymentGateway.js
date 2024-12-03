@@ -172,8 +172,6 @@ router.post('/payment/utility', async (req, res) => {
     }
 });
 
-
-
 async function sendPaymentRequest(payload) {
     try {
         const response = await axios.post(
@@ -225,7 +223,7 @@ const pollPaymentStatus = async (req, api_key, email, tenantId) => {
             throw new Error(`Owner for tenant with ID ${tenantId} does not exist.`);
         }
 
-        const { email: ownerEmail, phone: ownerPhone } = tenant.owner;
+        const { email: ownerEmail, phone: ownerPhone, username: owneruserName } = tenant.owner;
 
         const interval = setInterval(async () => {
             try {
@@ -267,8 +265,8 @@ const pollPaymentStatus = async (req, api_key, email, tenantId) => {
 
                         updatePaymentData(paymentData, "completed");
                         await savePaymentToDatabase(paymentData);
-                        await sendPaymentNotificationEmail(ownerEmail, paymentData.tenantName, paymentData.amount, paymentData.paymentType);
-                        await sendPaymentNotificationSMS(ownerPhone, paymentData.tenantName, paymentData.amount, paymentData.paymentType);
+                        await sendPaymentNotificationEmail(ownerEmail, owneruserName, paymentData.tenantName, paymentData.amount, paymentData.paymentType);
+                        await sendPaymentNotificationSMS(ownerPhone, owneruserName, paymentData.tenantName, paymentData.amount, paymentData.paymentType);
                     } else if (TransactionStatus === "Pending") {
                         console.log("Payment still pending, continuing to poll...");
                     } else {
@@ -329,17 +327,22 @@ const sendPaymentNotificationEmail = async (ownerEmail, tenantName, amount, paym
         to: ownerEmail,
         subject: `Payment Notification: ${tenantName} (${paymentType})`,
         html: `
-        <div style="font-family: Arial, sans-serif; color: #333;">
-            <h1>Payment Notification</h1>
-            <p>Dear Owner,</p>
-            <p>We are pleased to inform you that <strong>${tenantName}</strong> has successfully made a payment.</p>
-            <p><strong>Details:</strong></p>
-            <ul>
-                <li>Payment Type: ${paymentType}</li>
-                <li>Amount: $${amount}</li>
-            </ul>
-            <p>Thank you for using Lease Captain to manage your properties.</p>
-            <p>Best regards,<br>Lease Captain Team</p>
+        <div style="font-family: Arial, sans-serif; color: #003366; background-color: #ffffff; padding: 20px; border: 1px solid #003366; border-radius: 8px;">
+            <h1 style="color: #003366; border-bottom: 2px solid #003366; padding-bottom: 10px;">Payment Notification</h1>
+            <p>Dear Property Owner,</p>
+            <p>We are pleased to inform you that <strong>${tenantName}</strong> has successfully completed a payment.</p>
+            <div style="margin: 20px 0; padding: 15px; border: 1px solid #003366; background-color: #f9f9f9; border-radius: 5px;">
+                <h3 style="color: #003366; margin: 0 0 10px;">Payment Details</h3>
+                <ul style="list-style: none; padding: 0; margin: 0; color: #333;">
+                    <li><strong>Payment Type:</strong> ${paymentType}</li>
+                    <li><strong>Amount:</strong> $${amount}</li>
+                </ul>
+            </div>
+            <p>Thank you for trusting Lease Captain to manage your properties. If you have any questions, feel free to contact our support team.</p>
+            <footer style="margin-top: 30px; border-top: 1px solid #003366; padding-top: 10px; text-align: center; color: #666;">
+                <p style="font-size: 12px;">Lease Captain Team<br>Contact Us: <a href="mailto:support@leasecaptain.com" style="color: #003366;">support@leasecaptain.com</a></p>
+                <p style="font-size: 12px;">&copy; ${new Date().getFullYear()} Lease Captain. All Rights Reserved.</p>
+            </footer>
         </div>
         `,
     };
@@ -352,8 +355,8 @@ const sendPaymentNotificationEmail = async (ownerEmail, tenantName, amount, paym
     }
 };
 
-const sendPaymentNotificationSMS = async (ownerPhone, tenantName, amount, paymentType) => {
-    const message = `Payment Alert: ${tenantName} has paid $${amount} for ${paymentType}. Check your dashboard for more details. - Lease Captain`;
+const sendPaymentNotificationSMS = async (owneruserName, ownerPhone, tenantName, amount, paymentType) => {
+    const message = `Dear ${owneruserName},\n\nWe are pleased to notify you that ${tenantName} has successfully made a payment of $${amount} for ${paymentType}. Please log in to your dashboard for more details.\n\nThank you for using Lease Captain!`;
 
     try {
         const response = await axios.post(
@@ -372,6 +375,7 @@ const sendPaymentNotificationSMS = async (ownerPhone, tenantName, amount, paymen
         console.error('Error sending SMS via UMS API:', error.response?.data || error.message);
     }
 };
+
 
 
 module.exports = router;
