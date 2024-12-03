@@ -330,28 +330,28 @@ const sendPaymentNotificationEmail = async (ownerEmail, tenantName, amount, paym
         subject: `Payment Notification: ${tenantName} (${paymentType})`,
         html: `
         <div style="font-family: Arial, sans-serif; background-color: #ffffff; padding: 20px; color: #333;">
-            <div style="max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+            <div style="max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 0; overflow: hidden;">
                 <!-- Header -->
                 <div style="background-color: #003366; color: #ffffff; padding: 20px; text-align: center;">
-                    <h1 style="margin: 0; font-size: 24px;">Payment Notification</h1>
+                    <h1 style="margin: 0; font-size: 15px;"><strong>Payment Notification</strong></h1>
                 </div>
     
                 <!-- Body -->
                 <div style="padding: 20px;">
-                    <p style="font-size: 16px; line-height: 1.6;">Dear <strong>Owner</strong>,</p>
-                    <p style="font-size: 16px; line-height: 1.6;">We are pleased to inform you that <strong>${tenantName}</strong> has successfully made a payment.</p>
+                    <p style="font-size: 13px; line-height: 1.6;">Dear <strong>Property Owner</strong>,</p>
+                    <p style="font-size: 13px; line-height: 1.6;">We are pleased to inform you that <strong>${tenantName}</strong> has successfully made a payment.</p>
     
                     <p style="font-size: 16px; line-height: 1.6;"><strong>Payment Details:</strong></p>
                     <ul style="font-size: 16px; line-height: 1.6; list-style: none; padding: 0;">
-                        <li style="margin-bottom: 8px;"><strong>Payment Type:</strong> ${paymentType}</li>
-                        <li><strong>Amount:</strong> $${amount}</li>
+                        <li style="margin-bottom: 8px;"><strong>Payment Type: </strong> ${paymentType}</li>
+                        <li><strong>Amount:</strong> Ksh.${amount}</li>
                     </ul>
     
                     <p style="font-size: 16px; line-height: 1.6;">Thank you for using Lease Captain to manage your properties.</p>
                 </div>
     
                 <!-- Footer -->
-                <div style="background-color: #003366; color: #ffffff; padding: 20px; text-align: center; font-size: 14px;">
+                <div style="background-color: #003366; color: #ffffff; padding: 10px; text-align: center; font-size: 14px;">
                     <p style="margin: 0;">Lease Captain | Property Management Simplified</p>
                     <p style="margin: 0;">&copy; ${new Date().getFullYear()} Lease Captain. All Rights Reserved.</p>
                 </div>
@@ -370,7 +370,7 @@ const sendPaymentNotificationEmail = async (ownerEmail, tenantName, amount, paym
 };
 
 const sendPaymentNotificationSMS = async (ownerPhone, tenantName, amount, paymentType) => {
-    const message = `Dear Property Owner, ${tenantName} has successfully paid $${amount} for ${paymentType}. Log in to your Lease Captain dashboard for details.`;
+    const message = `Dear Property Owner, \n\nWe are pleased to inform you that ${tenantName} has successfully made a payment of Ksh.${amount} for ${paymentType}. \n\nPlease log in to your Lease Captain dashboard for more details.\n\nBest regards,\nLease Captain`;
 
     try {
         const response = await axios.post(
