@@ -22,8 +22,9 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app);
 app.set('trust proxy', 1);
+const axios = require('axios')
 
-const uri = "mongodb://Admin:Kefini360@lease-captain-shard-00-00.ryokh.mongodb.net:27017,lease-captain-shard-00-01.ryokh.mongodb.net:27017,lease-captain-shard-00-02.ryokh.mongodb.net:27017/LC-db?ssl=true&replicaSet=atlas-67tjyi-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Lease-Captain";
+const uri = "mongodb://localhost:27017/LC-db";
 
 async function createDatabaseAndCollections() {
     try {
@@ -115,6 +116,33 @@ app.use('/', sendRemindersRoutes);
 // Landing page
 app.get('/', (req, res) => {
     res.render('landingPage');
+});
+
+// Handle chat messages from the client
+app.post('/chat', async (req, res) => {
+    const userMessage = req.body.message;  // Get message from client
+
+    try {
+        // Send the message to OpenAI and get a response
+        const openAiResponse = await axios.post('https://api.openai.com/v1/completions', {
+            model: 'text-davinci-003',
+            prompt: userMessage,
+            max_tokens: 150,
+            temperature: 0.7,
+        }, {
+            headers: {
+                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        // Get the response text from OpenAI
+        const botMessage = openAiResponse.data.choices[0].text.trim();
+        res.json({ reply: botMessage });
+    } catch (error) {
+        console.error('Error with OpenAI API:', error);
+        res.status(500).json({ reply: 'Sorry, something went wrong. Please try again.' });
+    }
 });
 
 // Route to render support page

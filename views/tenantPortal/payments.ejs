@@ -15,111 +15,109 @@
         body {
             background-color: #f8f9fa;
             font-family: Arial, sans-serif;
+            font-size: 14px; /* Reduced base font size */
         }
-
+    
         .container {
             padding: 15px;
-            padding-top: 40px;
+            padding-top: 30px;
         }
-
+    
         /* Sidebar with White Background */
         .sidebar {
             background-color: #ffffff;
             color: #333333;
             height: 100vh;
-            padding: 30px 10px;
+            padding: 20px 10px; 
             position: fixed;
             top: 0;
             left: 0;
-            width: 250px;
+            width: 220px;
             overflow-y: auto;
             transition: all 0.3s ease;
             box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
             z-index: 1000;
-            /* Ensure it's on top of content */
         }
-
+    
         /* Sidebar Title Styling */
         .sidebar-title {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             color: #000000;
-            font-size: 1.5em;
+            font-size: 1em;
             text-align: center;
             font-weight: 700;
             border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 10px;
+            padding-bottom: 8px; 
         }
-
+    
         /* Navigation Link Styles */
         .sidebar .nav-link {
             color: #333333;
-            padding: 15px 20px;
-            margin: 10px 0;
+            padding: 10px 15px; /* Reduced padding */
+            margin: 8px 0; /* Reduced margin */
             text-decoration: none;
-            font-size: 1.1em;
+            font-size: 0.9em; /* Reduced font size */
             display: flex;
             align-items: center;
-            border-radius: 10px;
+            border-radius: 8px; /* Slightly smaller corners */
             transition: background-color 0.3s, color 0.3s;
         }
-
+    
         .sidebar .nav-link i {
-            margin-right: 15px;
+            margin-right: 10px; /* Reduced margin */
             color: #555555;
-            /* Icon color */
         }
-
+    
         /* Hover Effects */
         .sidebar .nav-link:hover {
             background-color: #f8f9fa;
             color: #003366;
         }
-
+    
         .sidebar .nav-link:hover i {
             color: #003366;
-            /* Icon hover color */
         }
-
+    
         /* Active Link Styling */
         .sidebar .nav-link.active {
             background-color: #003366;
             color: #ffffff;
             font-weight: bold;
         }
-
+    
         .sidebar .nav-link.active i {
             color: #ffffff;
         }
-
+    
         .sidebar .nav-link:hover {
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transform: translateY(-2px);
         }
-
+    
         @media (max-width: 768px) {
             .sidebar {
-                width: 220px;
+                width: 200px;
                 position: absolute;
                 top: 0;
                 left: -250px;
                 z-index: 2000;
                 transition: all 0.3s ease-in-out;
             }
-
+    
             .sidebar.active {
                 left: 0;
             }
-
+    
             .content.active {
-                margin-left: 220px;
+                margin-left: 200px;
             }
         }
-
+    
         #sidebarToggle {
             display: block;
             background-color: #ffffff;
-            padding: 0.5rem 1rem;
-            font-size: 1rem;
+            padding: 0.4rem 0.8rem; /* Reduced padding */
+            font-size: 0.9rem; /* Reduced font size */
             border: 2px solid #ffffff;
             border-radius: 5px;
             z-index: 3000;
@@ -127,23 +125,16 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: background-color 0.3s, box-shadow 0.3s;
         }
-        @media (min-width: 969px) {
-            #sidebarToggle {
-                display: none;
-            }
-        }
-
+    
         .content {
-            padding: 20px;
+            padding: 15px; /* Reduced padding */
             transition: margin-left 0.3s ease;
         }
-
-
-
+    
         .header {
             background-color: #ffffff;
             color: #000000;
-            padding: 10px 20px;
+            padding: 8px 15px; /* Reduced padding */
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -155,40 +146,29 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: left 0.3s ease, width 0.3s ease;
         }
-
+    
         .header-right {
             margin-left: auto;
             display: flex;
             align-items: center;
         }
-
+    
         @media (max-width: 968px) {
             .header {
                 width: 100%;
                 left: 0;
             }
-
+    
             .header-right {
                 justify-content: flex-end;
                 width: 100%;
             }
-
+    
             .mobile-sidebar-btn {
                 margin-right: auto;
             }
         }
-
-
-        .content {
-            margin-left: 220px;
-            padding: 20px;
-            transition: margin-left 0.3s ease;
-        }
-
-        .content.collapsed {
-            margin-left: 60px;
-        }
-
+    
         footer {
             position: fixed;
             left: 0;
@@ -198,59 +178,8 @@
             text-align: center;
             padding: 5px 0;
         }
-
-        .mobile-sidebar-btn {
-            display: block;
-            background-color: #ffffff;
-            color: rgb(255, 255, 255);
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-            border: 2px solid #ffffff;
-            border-radius: 5px;
-            z-index: 2000;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s, box-shadow 0.3s;
-        }
-
-        .mobile-sidebar-btn i {
-            color: #000000;
-        }
-
-        @media (min-width: 968px) {
-            .sidebar {
-                width: 250px;
-            }
-
-            .header {
-                width: calc(100% - 250px);
-                left: 250px;
-            }
-
-            .content {
-                margin-left: 250px;
-            }
-        }
-
-        @media (max-width: 968px) {
-            .sidebar {
-                transform: translateX(-220px);
-            }
-
-            .sidebar.active {
-                transform: translateX(0);
-            }
-
-            .header {
-                width: 100%;
-                left: 0;
-            }
-
-            .content {
-                margin-left: 0;
-            }
-        }
     </style>
+    
 </head>
 
 <body>
@@ -275,7 +204,7 @@
             </div>
         </div>
     </div>
-    
+
 
 
     <div class="d-flex">
@@ -302,6 +231,7 @@
                     </a></li>
             </ul>
         </nav>
+
 
 
         <div class="container mt-5">

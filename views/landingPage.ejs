@@ -339,7 +339,7 @@
                             </a>
                         </li>
                         <li class="nav-item mx-2">
-                            <a href="/support" class="nav-link text-dark">
+                            <a href="/signup" class="nav-link text-dark">
                                 <i class="fas fa-desktop mr-1"></i> <strong>Demo</strong>
                             </a>
                         </li>
@@ -1342,7 +1342,7 @@
     bottom: 80px;
     right: 20px;
     width: 350px;
-    height: 500px;
+    height:60vh;
     background-color: linear-gradient(135deg, #b64949, #e0f7fa);
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -1510,153 +1510,65 @@
 
 <!-- JavaScript -->
 <script>
+// Toggle chat window visibility
+function toggleChat() {
+    const chatWindow = document.getElementById('chatWindow');
+    chatWindow.classList.toggle('show');
+}
+
+// Close welcome message
 function closeWelcomeMessage() {
     const welcomeMessage = document.querySelector('.welcome-message');
     welcomeMessage.style.display = 'none';
 }
 
+// Handle keypress for Enter key to send message
+function handleKeyPress(event) {
+    if (event.key === 'Enter') {
+        sendMessage();
+    }
+}
 
-    const chatWindow = document.getElementById('chatWindow');
-    const chatBody = document.getElementById('chatBody');
+// Send message to backend (OpenAI API)
+async function sendMessage() {
     const chatInput = document.getElementById('chatInput');
+    const message = chatInput.value;
+
+    if (message.trim() === '') return;
+
+    // Display user message
+    const chatBody = document.getElementById('chatBody');
+    chatBody.innerHTML += `<div class="chat-message user">${message}</div>`;
+
+    // Show typing indicator
     const typingIndicator = document.getElementById('typingIndicator');
+    typingIndicator.style.display = 'flex';
 
-    function toggleChat() {
-        chatWindow.classList.toggle('show');
-    }
+    // Clear input field
+    chatInput.value = '';
 
-    function sendMessage() {
-        const message = chatInput.value.trim();
-        if (message) {
-            appendMessage(message, 'user');
-            chatInput.value = '';
-            showTypingIndicator();
+    try {
+        const response = await fetch('/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message }),
+        });
+        const data = await response.json();
 
-            // Call bot function to analyze the user's message
-            setTimeout(() => {
-                botResponse(message);
-            }, 1000);
-        }
-    }
-
-    function showTypingIndicator() {
-        typingIndicator.style.display = 'flex';
-        chatBody.scrollTop = chatBody.scrollHeight;
-    }
-
-    function hideTypingIndicator() {
+        // Hide typing indicator
         typingIndicator.style.display = 'none';
-    }
 
-    function appendMessage(message, type) {
-        const messageElement = document.createElement('div');
-        messageElement.className = `chat-message ${type}`;
-        messageElement.innerHTML = message;
-
-        const timestamp = document.createElement('span');
-        timestamp.className = 'timestamp';
-        timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        messageElement.appendChild(timestamp);
-
-        chatBody.appendChild(messageElement);
+        // Display bot reply
+        const botMessage = data.reply;
+        chatBody.innerHTML += `<div class="chat-message bot">${botMessage}</div>`;
         chatBody.scrollTop = chatBody.scrollHeight;
+    } catch (error) {
+        console.error('Error sending message:', error);
     }
+}
 
-    function handleKeyPress(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            sendMessage();
-        }
-    }
-
-    function botResponse(userMessage) {
-        // Convert user input to lowercase for easy comparison
-        const lowerMessage = userMessage.toLowerCase();
-
-        // Responses for greetings
-        if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
-            appendMessage('Hello! How can I assist you today? 😊', 'bot');
-            hideTypingIndicator();
-        } else if (lowerMessage.includes('good morning')) {
-            appendMessage('Good morning! I hope you have a great day. How can I help you? ☀️', 'bot');
-            hideTypingIndicator();
-        } else if (lowerMessage.includes('good afternoon')) {
-            appendMessage('Good afternoon! What can I do for you today? 🌤️', 'bot');
-            hideTypingIndicator();
-        } else if (lowerMessage.includes('good evening')) {
-            appendMessage('Good evening! How can I assist you tonight? 🌙', 'bot');
-            hideTypingIndicator();
-        } else if (lowerMessage.includes('how are you')) {
-            appendMessage('I’m just a bot, but I’m doing great! How about you? 🤖', 'bot');
-            hideTypingIndicator();
-        }
-
-        // Responses for Lease Captain or related terms
-        else if (lowerMessage.includes('lease captain')) {
-            appendMessage('The Lease Captain is a platform designed to manage lease agreements, track payments, and provide seamless communication between landlords and tenants. It ensures transparency and efficient management of rental properties.', 'bot');
-            hideTypingIndicator();
-        } else if (lowerMessage.includes('how does lease captain work')) {
-            appendMessage('Lease Captain works by automating lease management tasks, including contract creation, payment tracking, and document storage. It simplifies the entire leasing process and allows landlords and tenants to communicate directly through the platform.', 'bot');
-            hideTypingIndicator();
-        } else if (lowerMessage.includes('features of lease captain')) {
-            appendMessage('Some of the key features of Lease Captain include:\n1. **Lease Agreement Management**: Easily create and manage lease contracts.\n2. **Payment Tracking**: Automatically track rent payments and reminders.\n3. **Document Storage**: Store and share lease-related documents securely.\n4. **Maintenance Requests**: Tenants can submit maintenance issues directly.\n5. **Online Communication**: Landlords and tenants can communicate through the platform for efficient issue resolution.\n6. **Renewal & Termination**: Automate lease renewal and termination processes.', 'bot');
-            hideTypingIndicator();
-        }
-
-        // Lease payment related queries
-        else if (lowerMessage.includes('lease payment') || lowerMessage.includes('pay rent') || lowerMessage.includes('how to pay rent')) {
-            appendMessage('Lease payments are typically made monthly, and you can pay through the online portal or by bank transfer. Need help with payments? Let me know!', 'bot');
-            hideTypingIndicator();
-        }
-        
-        // Lease duration inquiries
-        else if (lowerMessage.includes('lease duration') || lowerMessage.includes('how long is the lease')) {
-            appendMessage('The lease duration can vary depending on the agreement but typically ranges from 6 months to 1 year. Please check your lease for specific details.', 'bot');
-            hideTypingIndicator();
-        }
-
-        // Maintenance request
-        else if (lowerMessage.includes('maintenance') || lowerMessage.includes('repair') || lowerMessage.includes('broken')) {
-            appendMessage('If you need a repair or maintenance request, please contact our support team directly. They will help you with any issues! 🛠️', 'bot');
-            hideTypingIndicator();
-        }
-
-        // Lease renewal queries
-        else if (lowerMessage.includes('renew lease') || lowerMessage.includes('lease renewal') || lowerMessage.includes('how to renew lease')) {
-            appendMessage('You can initiate your lease renewal by contacting our support team or through the portal. Would you like more assistance with this?', 'bot');
-            hideTypingIndicator();
-        }
-
-        // Lease termination queries
-        else if (lowerMessage.includes('terminate lease') || lowerMessage.includes('end lease') || lowerMessage.includes('break lease')) {
-            appendMessage('If you wish to terminate your lease, please check your lease agreement for specific terms or contact support for assistance with the process.', 'bot');
-            hideTypingIndicator();
-        }
-
-        // 24/7 Support response
-        else if (lowerMessage.includes('24/7 support') || lowerMessage.includes('support 24/7') || lowerMessage.includes('always available')) {
-            appendMessage('Yes, we offer 24/7 support. You can reach out at any time, and we’ll be happy to assist you!', 'bot');
-            hideTypingIndicator();
-        }
-
-        // Business days response
-        else if (lowerMessage.includes('business days') || lowerMessage.includes('working days')) {
-            appendMessage('Our support team is available 24/7, but our business hours are from 9 AM to 6 PM, Monday through Friday. Feel free to ask any questions during this time!', 'bot');
-            hideTypingIndicator();
-        }
-
-        // Default response if the message is not recognized
-        else {
-            appendMessage('I am sorry, I don\'t have an answer to that, visit leasecaptain.com/support. Please allow me to connect you to a support agent.', 'bot');
-            hideTypingIndicator();
-
-            // Simulate transitioning to support
-            setTimeout(() => {
-                appendMessage('A support agent will assist you shortly. Please be patient.', 'bot');
-                switchToSupport();
-            }, 1500);
-        }
-    }
 
 </script>
 

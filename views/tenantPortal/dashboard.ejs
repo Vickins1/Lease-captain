@@ -15,236 +15,144 @@
         body {
             background-color: #f8f9fa;
             font-family: Arial, sans-serif;
+            font-size: 14px;
+            margin: 0; 
+            padding: 0;
+            overflow-x: hidden; 
         }
-
+    
         .container {
             padding: 15px;
-            padding-top: 40px;
+            padding-top: 30px;
         }
-
+    
         /* Sidebar with White Background */
         .sidebar {
             background-color: #ffffff;
             color: #333333;
-            height: 100vh;
-            padding: 30px 10px;
-            position: fixed;
+            height: 100vh; /* Full viewport height */
+            width: 220px;
+            position: fixed; /* Fixed position to ensure it stays in view */
             top: 0;
             left: 0;
-            width: 250px;
-            overflow-y: auto;
-            transition: all 0.3s ease;
+            padding: 20px 10px;
+            overflow-y: auto; /* Enable vertical scrolling for sidebar content */
             box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            /* Ensure it's on top of content */
+            z-index: 1000; /* Ensure it appears above other elements */
         }
-
+    
         /* Sidebar Title Styling */
         .sidebar-title {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             color: #000000;
-            font-size: 1.5em;
+            font-size: 1em;
             text-align: center;
             font-weight: 700;
             border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 10px;
+            padding-bottom: 8px;
         }
-
+    
         /* Navigation Link Styles */
         .sidebar .nav-link {
             color: #333333;
-            padding: 15px 20px;
-            margin: 10px 0;
+            padding: 10px 15px;
+            margin: 8px 0;
             text-decoration: none;
-            font-size: 1.1em;
+            font-size: 0.9em;
             display: flex;
             align-items: center;
-            border-radius: 10px;
+            border-radius: 8px;
             transition: background-color 0.3s, color 0.3s;
         }
-
+    
         .sidebar .nav-link i {
-            margin-right: 15px;
+            margin-right: 10px;
             color: #555555;
-            /* Icon color */
         }
-
+    
         /* Hover Effects */
         .sidebar .nav-link:hover {
             background-color: #f8f9fa;
             color: #003366;
         }
-
+    
         .sidebar .nav-link:hover i {
             color: #003366;
         }
-
+    
         /* Active Link Styling */
         .sidebar .nav-link.active {
             background-color: #003366;
             color: #ffffff;
             font-weight: bold;
         }
-
+    
         .sidebar .nav-link.active i {
             color: #ffffff;
         }
-
+    
         .sidebar .nav-link:hover {
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transform: translateY(-2px);
         }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 220px;
-                position: absolute;
-                top: 0;
-                left: -250px;
-                z-index: 2000;
-                transition: all 0.3s ease-in-out;
-            }
-
-            .sidebar.active {
-                left: 0;
-            }
-
-            .content.active {
-                margin-left: 220px;
-            }
-        }
-
-        #sidebarToggle {
-            display: block;
-            background-color: #ffffff;
-            padding: 0.5rem 1rem;
-            font-size: 1rem;
-            border: 2px solid #ffffff;
-            border-radius: 5px;
-            z-index: 3000;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s, box-shadow 0.3s;
-        }
-
+    
+        /* Content Styling */
         .content {
-            padding: 20px;
+            margin-left: 220px; /* Ensure content aligns with sidebar */
+            padding: 15px;
             transition: margin-left 0.3s ease;
         }
-
-
-
+    
         .header {
             background-color: #ffffff;
             color: #000000;
-            padding: 10px 20px;
+            padding: 8px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: fixed;
-            width: calc(100% - 220px);
+            width: calc(100% - 220px); /* Adjust width to fit next to sidebar */
             top: 0;
-            left: 220px;
-            z-index: 1001;
+            left: 220px; /* Align with sidebar width */
+            z-index: 1001; /* Ensure header appears above content */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: left 0.3s ease, width 0.3s ease;
         }
-
-        .header-right {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-        }
-
-        @media (max-width: 968px) {
+    
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+                left: 0;
+            }
+    
+            .content {
+                margin-left: 0;
+            }
+    
             .header {
                 width: 100%;
                 left: 0;
             }
-
-            .header-right {
-                justify-content: flex-end;
-                width: 100%;
-            }
-
-            .mobile-sidebar-btn {
-                margin-right: auto;
+    
+            #sidebarToggle {
+                display: block;
             }
         }
-
-
-        .content {
-            margin-left: 220px;
-            padding: 20px;
-            transition: margin-left 0.3s ease;
-        }
-
-        .content.collapsed {
-            margin-left: 60px;
-        }
-
+    
         footer {
             position: fixed;
             left: 0;
             bottom: 0;
             width: 100%;
+            background: #ffffff;
             color: rgb(0, 0, 0);
             text-align: center;
             padding: 5px 0;
-        }
-
-        .mobile-sidebar-btn {
-            display: block;
-            background-color: #ffffff;
-            color: rgb(255, 255, 255);
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-            border: 2px solid #ffffff;
-            border-radius: 5px;
-            z-index: 2000;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s, box-shadow 0.3s;
-        }
-
-        .mobile-sidebar-btn i {
-            color: #000000;
-        }
-
-        @media (min-width: 968px) {
-            .sidebar {
-                width: 250px;
-            }
-
-            .header {
-                width: calc(100% - 250px);
-                left: 250px;
-            }
-
-            .content {
-                margin-left: 250px;
-            }
-        }
-
-        @media (max-width: 968px) {
-            .sidebar {
-                transform: translateX(-220px);
-            }
-
-            .sidebar.active {
-                transform: translateX(0);
-            }
-
-            .header {
-                width: 100%;
-                left: 0;
-            }
-
-            .content {
-                margin-left: 0;
-            }
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
         }
     </style>
+    
 </head>
 
 <body>
@@ -269,33 +177,32 @@
             </div>
         </div>
     </div>
-
-
-
     <div class="d-flex">
-        <nav class="sidebar fixed" id="sidebarMenu">
-            <h2 class="sidebar-title"><strong>Tenant Portal</strong></h2>
-            <ul class="nav flex-column">
-                <li><a class="nav-link" href="/tenantPortal/dashboard">
-                        <i class="fas fa-tachometer-alt"></i> <strong>Dashboard</strong>
-                    </a></li>
-                <li><a class="nav-link" href="/payments">
-                        <i class="fas fa-money-bill-wave"></i> <strong>Payments</strong>
-                    </a></li>
-                <li><a class="nav-link" href="/requestMaintenance">
-                        <i class="fas fa-wrench"></i> <strong>Maintenance</strong>
-                    </a></li>
-                <li><a class="nav-link" href="/lease">
-                        <i class="fas fa-file-contract"></i> <strong>Lease</strong>
-                    </a></li>
-                <li><a class="nav-link" href="/tenant/agreement">
-                        <i class="fas fa-hourglass-half"></i> <strong>Agreement</strong>
-                    </a></li>
-                <li><a class="nav-link" href="/tenant/profile">
-                        <i class="fas fa-user"></i> <strong>Profile</strong>
-                    </a></li>
-            </ul>
-        </nav>
+    <nav class="sidebar fixed" id="sidebarMenu">
+        <h2 class="sidebar-title"><strong>Tenant Portal</strong></h2>
+        <ul class="nav flex-column">
+            <li><a class="nav-link" href="/tenantPortal/dashboard">
+                    <i class="fas fa-tachometer-alt"></i> <strong>Dashboard</strong>
+                </a></li>
+            <li><a class="nav-link" href="/payments">
+                    <i class="fas fa-money-bill-wave"></i> <strong>Payments</strong>
+                </a></li>
+            <li><a class="nav-link" href="/requestMaintenance">
+                    <i class="fas fa-wrench"></i> <strong>Maintenance</strong>
+                </a></li>
+            <li><a class="nav-link" href="/lease">
+                    <i class="fas fa-file-contract"></i> <strong>Lease</strong>
+                </a></li>
+            <li><a class="nav-link" href="/tenant/agreement">
+                    <i class="fas fa-hourglass-half"></i> <strong>Agreement</strong>
+                </a></li>
+            <li><a class="nav-link" href="/tenant/profile">
+                    <i class="fas fa-user"></i> <strong>Profile</strong>
+                </a></li>
+        </ul>
+    </nav>
+
+
 
 
 
@@ -334,7 +241,7 @@
                                         </div>
                                         <div class="card-body bg-light" style="border-radius: 0 0 0.5rem 0.5rem;">
                                             <p class="mb-0" style="font-size: 1.1rem;">
-                                                <i class="fas fa-home mr-3 text-primary" style="font-size: 1.5rem;"></i>
+                                                <i class="fas fa-home mr-3 text-primary" style="font-size: 1rem;"></i>
                                                 <strong style="color: #003366;">
                                                     <%= tenant.property ? tenant.property.name : 'N/A' %>
                                                 </strong>
@@ -351,7 +258,7 @@
                                             <h5 class="mb-0">Unit Name</h5>
                                         </div>
                                         <div class="card-body bg-light" style="border-radius: 0 0 0.5rem 0.5rem;">
-                                            <p class="mb-0" style="font-size: 1.1rem;">
+                                            <p class="mb-0" style="font-size: 1rem;">
                                                 <i class="fas fa-door-open mr-3 text-info"
                                                     style="font-size: 1.5rem;"></i>
                                                 <strong style="color: #003366;">
@@ -370,7 +277,7 @@
                                             <h5 class="mb-0">Room Number</h5>
                                         </div>
                                         <div class="card-body bg-light" style="border-radius: 0 0 0.5rem 0.5rem;">
-                                            <p class="mb-0" style="font-size: 1.1rem;">
+                                            <p class="mb-0" style="font-size: 1rem;">
                                                 <i class="fas fa-door-closed mr-3 text-warning"
                                                     style="font-size: 1.5rem;"></i>
                                                 <strong style="color: #003366;">
@@ -390,7 +297,7 @@
                                             <h5 class="mb-0">Monthly Rent</h5>
                                         </div>
                                         <div class="card-body bg-light" style="border-radius: 0 0 0.5rem 0.5rem;">
-                                            <p style="font-size: 1.1rem;">Ksh. <strong style="color: #003366;">
+                                            <p style="font-size: 1rem;">Ksh. <strong style="color: #003366;">
                                                     <%= tenant.unit && tenant.unit.unitPrice ?
                                                         tenant.unit.unitPrice.toFixed(2) : 'N/A' %>
                                                 </strong></p>
@@ -406,7 +313,7 @@
                                             <h5 class="mb-0">Rent Paid</h5>
                                         </div>
                                         <div class="card-body bg-light" style="border-radius: 0 0 0.5rem 0.5rem;">
-                                            <p style="font-size: 1.1rem;">Ksh. <strong style="color: #003366;">
+                                            <p style="font-size: 1rem;">Ksh. <strong style="color: #003366;">
                                                     <%= totalRentPaid ? totalRentPaid.toFixed(2) : '0' %>
                                                 </strong></p>
                                         </div>
@@ -421,7 +328,7 @@
                                             <h5 class="mb-0">Utility Paid</h5>
                                         </div>
                                         <div class="card-body bg-light" style="border-radius: 0 0 0.5rem 0.5rem;">
-                                            <p style="font-size: 1.1rem;">Ksh. <strong style="color: #003366;">
+                                            <p style="font-size: 1rem;">Ksh. <strong style="color: #003366;">
                                                     <%= utilityPaid ? utilityPaid.toFixed(2) : '0' %>
                                                 </strong></p>
                                         </div>
@@ -436,7 +343,7 @@
                                             <h5 class="mb-0">Deposit Paid</h5>
                                         </div>
                                         <div class="card-body bg-light" style="border-radius: 0 0 0.5rem 0.5rem;">
-                                            <p style="font-size: 1.1rem;">
+                                            <p style="font-size: 1rem;">
                                                 Ksh.
                                                 <strong style="color: #003366;">
                                                     <%= typeof depositPaid !=='undefined' && depositPaid !=null ?
@@ -458,7 +365,7 @@
                                             <h5 class="mb-0">Rent Due</h5>
                                         </div>
                                         <div class="card-body bg-light" style="border-radius: 0 0 0.5rem 0.5rem;">
-                                            <p style="font-size: 1.1rem;">Ksh. <strong style="color: #003366;">
+                                            <p style="font-size: 1rem;">Ksh. <strong style="color: #003366;">
                                                     <%= (rentDue || 0).toFixed(2) %>
                                                 </strong></p>
                                         </div>
@@ -473,7 +380,7 @@
                                             <h5 class="mb-0">Utility Due</h5>
                                         </div>
                                         <div class="card-body bg-light" style="border-radius: 0 0 0.5rem 0.5rem;">
-                                            <p style="font-size: 1.1rem;">Ksh. <strong style="color: #003366;">
+                                            <p style="font-size: 1rem;">Ksh. <strong style="color: #003366;">
                                                     <%= (utilityDue || 0).toFixed(2) %>
                                                 </strong></p>
                                         </div>
@@ -490,9 +397,9 @@
                                             <h5 class="mb-0">Rent Due Date</h5>
                                         </div>
                                         <div class="card-body bg-light" style="border-radius: 0 0 0.5rem 0.5rem;">
-                                            <p class="mb-0" style="font-size: 1.1rem;">
+                                            <p class="mb-0" style="font-size: 1rem;">
                                                 <i class="fas fa-calendar-alt mr-3 text-warning"
-                                                    style="font-size: 1.5rem;"></i>
+                                                    style="font-size: 1rem;"></i>
                                                 <strong style="color: #003366;">
                                                     <%= nextRentDue %>
                                                 </strong>
@@ -509,9 +416,9 @@
                                             <h5 class="mb-0">Lease Start Date</h5>
                                         </div>
                                         <div class="card-body bg-light" style="border-radius: 0 0 0.5rem 0.5rem;">
-                                            <p class="mb-0" style="font-size: 1.1rem;">
+                                            <p class="mb-0" style="font-size: 1rem;">
                                                 <i class="fas fa-calendar-check mr-3 text-success"
-                                                    style="font-size: 1.5rem;"></i>
+                                                    style="font-size: 1rem;"></i>
                                                 <strong style="color: #003366;">
                                                     <%= tenant.leaseStartDate ? tenant.leaseStartDate.toDateString()
                                                         : 'N/A' %>
@@ -534,8 +441,8 @@
                                                     style="border-radius: 0 0 0.5rem 0.5rem;">
                                                     <div class="d-flex align-items-center mb-2">
                                                         <i class="fas fa-wrench text-danger mr-2"
-                                                            style="font-size: 1.5rem;"></i>
-                                                        <p class="mb-0" style="font-size: 1.1rem; color: #003366;">
+                                                            style="font-size: 1rem;"></i>
+                                                        <p class="mb-0" style="font-size: 1.rem; color: #003366;">
                                                             <strong>
                                                                 <%= schedule.scheduleDateFormatted %>
                                                             </strong>
@@ -591,17 +498,13 @@
                                                     </style>
 
 
-
-
-
-
                                                     <style>
                                                         .card-header {
-                                                            font-size: 1.25rem;
+                                                            font-size: 1rem;
                                                         }
 
                                                         .card-body {
-                                                            padding: 1.0rem;
+                                                            padding: 0.8rem;
                                                         }
 
                                                         .card-body p,
@@ -822,26 +725,16 @@
                             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
+                            
                             <script>
-                                $(document).ready(function () {
-                                    // Toggle sidebar on button click
-                                    $('#sidebarToggle').click(function () {
-                                        $('#sidebarMenu').toggleClass('active');
-                                    });
-
-                                    // Collapse sidebar when clicking outside
-                                    $(document).click(function (event) {
-                                        if (!$(event.target).closest('#sidebarMenu, #sidebarToggle').length) {
-                                            $('#sidebarMenu').removeClass('active');
-                                        }
-                                    });
-
-                                    // Close other collapsibles when one is opened
-                                    $('.collapse').on('show.bs.collapse', function () {
-                                        $('.collapse').not(this).collapse('hide');
-                                    });
+                                const sidebar = document.getElementById("sidebar");
+                                const sidebarToggle = document.getElementById("sidebarToggle");
+                            
+                                sidebarToggle.addEventListener("click", () => {
+                                    sidebar.classList.toggle("active");
                                 });
                             </script>
+                            
 
 
 
