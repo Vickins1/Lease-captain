@@ -120,7 +120,7 @@ app.get('/', (req, res) => {
 
 // Handle chat messages from the client
 app.post('/chat', async (req, res) => {
-    const userMessage = req.body.message;  // Get message from client
+    const userMessage = req.body.message;  
 
     try {
         // Send the message to OpenAI and get a response
