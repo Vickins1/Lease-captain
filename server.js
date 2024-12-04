@@ -118,33 +118,6 @@ app.get('/', (req, res) => {
     res.render('landingPage');
 });
 
-// Handle chat messages from the client
-app.post('/chat', async (req, res) => {
-    const userMessage = req.body.message;  
-
-    try {
-        // Send the message to OpenAI and get a response
-        const openAiResponse = await axios.post('https://api.openai.com/v1/completions', {
-            model: 'text-davinci-003',
-            prompt: userMessage,
-            max_tokens: 150,
-            temperature: 0.7,
-        }, {
-            headers: {
-                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-                'Content-Type': 'application/json',
-            },
-        });
-
-        // Get the response text from OpenAI
-        const botMessage = openAiResponse.data.choices[0].text.trim();
-        res.json({ reply: botMessage });
-    } catch (error) {
-        console.error('Error with OpenAI API:', error);
-        res.status(500).json({ reply: 'Sorry, something went wrong. Please try again.' });
-    }
-});
-
 // Route to render support page
 app.get('/support', (req, res) => {
     const successMessage = req.flash('success') || null;

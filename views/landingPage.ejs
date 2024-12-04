@@ -30,7 +30,7 @@
             background-color:#ffffffda;
             border-bottom: 1px solid #e5e5e5;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            height: 70px;
+            height: 60px;
             display: flex;
             justify-content: space-around;
             align-items: center;
@@ -40,7 +40,7 @@
         /* Logo Styling */
         .logo {
             margin-top: 10px;
-            width: 130px;
+            width: 100px;
             height: auto;
             margin-right: 300px;
         }
@@ -56,7 +56,7 @@
 
         @media (max-width: 576px) {
             .logo {
-                width: 120px;
+                width: 100px;
                 /* Further reduce the logo width for mobile devices */
                 margin-right: 10px;
                 /* Even smaller right margin */
@@ -79,14 +79,17 @@
 
         .hero h1 {
             color: #003366;
-            font-size: 3rem;
+            font-size: 2rem;
             font-weight: bold;
             text-align: center;
         }
+        .hero h1{
+    text-shadow: 1px 1px 1px #003366; 
+}
 
         .hero p {
             color: #001b36;
-            font-size: 1.25rem;
+            font-size: 1rem;
             text-align: center;
         }
 
@@ -117,9 +120,9 @@
         /* Button Styling */
         .hero .btn {
             padding: 15px 30px;
-            font-size: 1.1rem;
+            font-size: 0.7rem;
             font-weight: 600;
-            border-radius: 30px;
+            border-radius: 5px;
             transition: all 0.4s ease;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
             margin: 5px;
@@ -295,7 +298,6 @@
                 <a href="/" class="navbar-brand mx-auto">
                     <img src="/images/logo2.png" alt="Lease Captain Logo" class="logo img-fluid">
                 </a>
-
                 <!-- Toggler for Small Screens -->
                 <button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse"
                     data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
@@ -318,34 +320,31 @@
                 <!-- Collapsible Links -->
                 <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
                     <ul class="navbar-nav">
+                        
+                       
                         <li class="nav-item mx-2">
-                            <a href="/login" class="nav-link text-dark">
-                                <i class="fas fa-sign-in-alt mr-1"></i> <strong>Login</strong>
+                            <a href="#help-section" class="nav-link text-dark">
+                                <i class="fas fa-question-circle mr-1"></i> Help
                             </a>
-                        </li>
-                        <li class="nav-item dropdown mx-2">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarHelp" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-question-circle mr-1"></i> <strong>Help</strong>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarHelp">
-                                <a class="dropdown-item" href="#help-section">FAQ</a>
-                                <a class="dropdown-item" href="/support">Contact Support</a>
-                            </div>
                         </li>
                         <li class="nav-item mx-2">
                             <a href="#pricing-section" class="nav-link text-dark">
-                                <i class="fas fa-tags mr-1"></i> <strong>Pricing</strong>
+                                <i class="fas fa-tags mr-1"></i> Pricing
                             </a>
                         </li>
                         <li class="nav-item mx-2">
                             <a href="/signup" class="nav-link text-dark">
-                                <i class="fas fa-desktop mr-1"></i> <strong>Demo</strong>
+                                <i class="fas fa-desktop mr-1"></i> Demo
+                            </a>
+                        </li>
+                        <li class="nav-item mx-2">
+                            <a href="/login" class="nav-link text-dark">
+                                <i class="fas fa-sign-in-alt mr-1"></i> Sign-in
                             </a>
                         </li>
                         <li class="nav-item mx-2">
                             <a href="/signup" class="nav-link btn-signup text-dark">
-                                <i class="fas fa-user-plus mr-1"></i> <strong>Sign Up</strong>
+                                <i class="fas fa-user-plus mr-1"></i> Sign Up
                             </a>
                         </li>
                     </ul>
@@ -380,23 +379,21 @@
 
 
     <!-- Hero Section -->
-    <section class="hero d-flex align-items-center">
-        <div class="container text-center">
-            <h1 class="display-4 font-weight-bold"><strong>Welcome to Lease Captain!</strong></h1>
-            <p class="lead font-weight-bold">Your Cutting Edge Property Manager.</p>
-            <div class="mt-4">
-                <a href="/signup" class="btn btn-primary btn-lg mx-2">
-                    <i class="fas fa-user-plus mr-2"></i> Get Started Now!
-                </a>
-                <!-- Request Demo Button -->
-                <a href="/support" class="btn btn-outline-primary btn-lg mx-2">
-                    <i class="fas fa-play-circle mr-2"></i> Request Demo
-                </a>
-
-            </div>
+<section class="hero d-flex align-items-center">
+    <div class="container text-center text-white">
+        <h1 class="display-4 font-weight-bold"><strong>Welcome to Lease Captain!</strong></h1>
+        <p class="lead font-weight-bold">Your Cutting Edge Property Manager.</p>
+        <div class="mt-4">
+            <a href="/signup" class="btn btn-primary btn-lg mx-2">
+                <i class="fas fa-user-plus mr-2"></i> Get Started Now!
+            </a>
+            <!-- Request Demo Button -->
+            <a href="/support" class="btn btn-outline-primary btn-lg mx-2">
+                <i class="fas fa-play-circle mr-2"></i> Request Demo
+            </a>
         </div>
-    </section>
-
+    </div>
+</section>
 
 
     <!-- Core Features Section -->
@@ -419,7 +416,7 @@
                                 <i class="fas fa-credit-card" style="color: #003366; font-size: 2rem;"></i>
                             </div>
                             <h3>Seamless Payment Processing</h3>
-                            <p>Lease Captain integrates with Mpesa and major banks, allowing tenants to pay via Mpesa STK Push through the tenant portal. Payments are instantly recorded and you’re notified when a payment is made to your bank.</p>
+                            <p style="font-size: 0.7;">Lease Captain integrates with Mpesa and major banks, allowing tenants to pay via Mpesa STK Push through the tenant portal. Payments are instantly recorded and you’re notified when a payment is made to your bank.</p>
                         </div>
                     </div>
                 </div>
@@ -432,7 +429,7 @@
                                 <i class="fas fa-user-check" style="color: #003366; font-size: 2rem;"></i>
                             </div>
                             <h3>Tenant Records</h3>
-                            <p>Keep detailed and current tenant records with Lease Captain. Easily manage account
+                            <p style="font-size: 0.8;">Keep detailed and current tenant records with Lease Captain. Easily manage account
                                 balances, invoices, and payment history to resolve disputes swiftly and ensure all
                                 tenant data is accurate.</p>
                         </div>
@@ -447,7 +444,7 @@
                                 <i class="fas fa-file-invoice-dollar" style="color: #003366; font-size: 2rem;"></i>
                             </div>
                             <h3>Advanced Invoice Management</h3>
-                            <p>Send digital invoices and receipts directly via SMS, keeping records organized and making
+                            <p style="font-size: 0.8;">Send digital invoices and receipts directly via SMS, keeping records organized and making
                                 it easy to stay paperless with Lease Captain’s secure transaction storage.</p>
                         </div>
                     </div>
@@ -461,7 +458,7 @@
                                 <i class="fas fa-sms" style="color: #003366; font-size: 2rem;"></i>
                             </div>
                             <h3>SMS/Email Communication</h3>
-                            <p>Easily send tenants important updates, payment reminders, and announcements with SMS
+                            <p style="font-size: 0.8;">Easily send tenants important updates, payment reminders, and announcements with SMS
                                 notifications. Manage all communication from your dashboard for seamless engagement.</p>
                         </div>
                     </div>
@@ -475,7 +472,7 @@
                                 <i class="fas fa-sync-alt" style="color: #003366; font-size: 2rem;"></i>
                             </div>
                             <h3>Automate Routine Tasks</h3>
-                            <p>Streamline your workflow by automating routine tasks like payment notifications, receipt
+                            <p style="font-size: 0.8;">Streamline your workflow by automating routine tasks like payment notifications, receipt
                                 generation, and record updates. Lease Captain lets you focus on growing your business by
                                 handling the rest.</p>
                         </div>
@@ -490,7 +487,7 @@
                                 <i class="fas fa-chart-line" style="color: #003366; font-size: 2rem;"></i>
                             </div>
                             <h3>Reports</h3>
-                            <p>Generate comprehensive reports and statements for tenants, properties, and landlords at
+                            <p style="font-size: 0.8;">Generate comprehensive reports and statements for tenants, properties, and landlords at
                                 the push of a button. Lease Captain keeps you informed with clear and organized
                                 financial data.</p>
                         </div>
@@ -565,7 +562,7 @@
 
 .intro-list li {
     margin-bottom: 10px; /* Space between list items */
-    font-size: 1rem; /* Adjust font size as needed */
+    font-size: 0.8rem; /* Adjust font size as needed */
     color: #003366; /* Use your theme color */
 }
 
@@ -704,8 +701,6 @@
         }
     </style>
 
-
-
     <!-- Reviews Section -->
     <section id="reviews-section" class="py-4">
         <div class="container">
@@ -734,9 +729,9 @@
                         <div class="row">
                             <div class="col-12 col-md-8 offset-md-2">
                                 <div class="card p-4">
-                                    <p class="lead" style="font-size: 1rem;">"I love the ease of use and the detailed
+                                    <p class="lead" style="font-size: 0.8rem;">"I love the ease of use and the detailed
                                         reporting features. Highly recommend!"</p>
-                                    <h5 class="font-weight-bold" style="font-size: 1rem;">- Joseph Waithima, Real Estate
+                                    <h5 class="font-weight-bold" style="font-size: 0.8rem;">- Joseph Waithima, Real Estate
                                         Investor</h5>
                                 </div>
                             </div>
@@ -748,9 +743,9 @@
                         <div class="row">
                             <div class="col-12 col-md-8 offset-md-2">
                                 <div class="card p-4">
-                                    <p class="lead" style="font-size: 1rem;">"The best property management tool I’ve
+                                    <p class="lead" style="font-size: 0.8rem;">"The best property management tool I’ve
                                         used. It has everything I need in one place."</p>
-                                    <h5 class="font-weight-bold" style="font-size: 1rem;">- Emily White, Landlord</h5>
+                                    <h5 class="font-weight-bold" style="font-size: 0.8rem;">- Emily White, Landlord</h5>
                                 </div>
                             </div>
                         </div>
@@ -761,9 +756,9 @@
                         <div class="row">
                             <div class="col-12 col-md-8 offset-md-2">
                                 <div class="card p-4">
-                                    <p class="lead" style="font-size: 1rem;">"Lease Captain has helped me streamline my
+                                    <p class="lead" style="font-size: 0.8rem;">"Lease Captain has helped me streamline my
                                         property management and save so much time!"</p>
-                                    <h5 class="font-weight-bold" style="font-size: 1rem;">- Tawanda Nyoni, Property
+                                    <h5 class="font-weight-bold" style="font-size: 0.8rem;">- Tawanda Nyoni, Property
                                         Manager</h5>
                                 </div>
                             </div>
@@ -775,9 +770,9 @@
                         <div class="row">
                             <div class="col-12 col-md-8 offset-md-2">
                                 <div class="card p-4">
-                                    <p class="lead" style="font-size: 1rem;">"It's an all-in-one tool that makes
+                                    <p class="lead" style="font-size: 0.8rem;">"It's an all-in-one tool that makes
                                         managing my rental properties much easier."</p>
-                                    <h5 class="font-weight-bold" style="font-size: 1rem;">- Ayodele Adebayo, Real Estate
+                                    <h5 class="font-weight-bold" style="font-size: 0.8rem;">- Ayodele Adebayo, Real Estate
                                         Investor</h5>
                                 </div>
                             </div>
@@ -789,9 +784,9 @@
                         <div class="row">
                             <div class="col-12 col-md-8 offset-md-2">
                                 <div class="card p-4">
-                                    <p class="lead" style="font-size: 1rem;">"I appreciate the detailed tenant records
+                                    <p class="lead" style="font-size: 0.8rem;">"I appreciate the detailed tenant records
                                         and easy-to-use dashboard. It's made my life easier!"</p>
-                                    <h5 class="font-weight-bold" style="font-size: 1rem;">- Kofi Mensah, Landlord</h5>
+                                    <h5 class="font-weight-bold" style="font-size: 0.8rem;">- Kofi Mensah, Landlord</h5>
                                 </div>
                             </div>
                         </div>
@@ -802,9 +797,9 @@
                         <div class="row">
                             <div class="col-12 col-md-8 offset-md-2">
                                 <div class="card p-4">
-                                    <p class="lead" style="font-size: 1rem;">"This platform has really improved how I
+                                    <p class="lead" style="font-size: 0.8rem;">"This platform has really improved how I
                                         track payments and stay organized. Highly recommend it!"</p>
-                                    <h5 class="font-weight-bold" style="font-size: 1rem;">- Zanele Moyo, Property
+                                    <h5 class="font-weight-bold" style="font-size: 0.8rem;">- Zanele Moyo, Property
                                         Manager</h5>
                                 </div>
                             </div>
@@ -816,9 +811,9 @@
                         <div class="row">
                             <div class="col-12 col-md-8 offset-md-2">
                                 <div class="card p-4">
-                                    <p class="lead" style="font-size: 1rem;">"I can easily manage multiple properties
+                                    <p class="lead" style="font-size: 0.8rem;">"I can easily manage multiple properties
                                         and stay on top of everything with Lease Captain!"</p>
-                                    <h5 class="font-weight-bold" style="font-size: 1rem;">- Kwame Owusu, Real Estate
+                                    <h5 class="font-weight-bold" style="font-size: 0.8rem;">- Kwame Owusu, Real Estate
                                         Investor</h5>
                                 </div>
                             </div>
@@ -839,13 +834,13 @@
         </div>
     </section>
 
-
 <!-- Pricing Section -->
 <section id="pricing-section" class="py-5 bg-light">
     <div class="container">
-        <h3 class="text-center mb-5" style="color: #001b36;">
+        <h3 class="text-center mb-5" style="color: #001b36; font-size: 1.75rem;">
             <i class="fas fa-tags mr-2"></i> <strong>Our Pricing Plans</strong>
         </h3>
+        <p style="font-size: smaller;">Slide to view</p>
 
         <!-- Row for Pricing Cards with Responsive Layout -->
         <div class="row flex-nowrap overflow-auto text-center">
@@ -854,15 +849,15 @@
             <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
                 <div class="card h-100 shadow border-0">
                     <div class="card-body text-center">
-                        <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
+                        <div class="feature-icon mb-3" style="font-size: 1.75rem; color: #003366;">
                             <i class="fas fa-user"></i>
                         </div>
-                        <h3 class="card-title" style="color: #003366;">Standard</h3>
-                        <p class="lead">Up to 20 Units</p>
-                        <p class="font-weight-bold" style="font-size: 1.75rem;">
-                            Ksh.1,499 <span class="text-muted" style="font-size: 0.8rem; vertical-align: super;">/ month</span>
+                        <h3 class="card-title" style="color: #003366; font-size: 1.5rem;">Standard</h3>
+                        <p class="lead" style="font-size: 1.1rem;">Up to 20 Units</p>
+                        <p class="font-weight-bold" style="font-size: 1.25rem;">
+                            Ksh.1,499 <span class="text-muted" style="font-size: 0.6rem; vertical-align: super;">/ month</span>
                         </p>
-                        <p>Designed for small property managers looking to streamline unit management.</p>
+                        <p style="font-size: 0.8rem;">Designed for small property managers looking to streamline unit management.</p>
                         <a href="/signup?plan=Standard" class="btn btn-primary animated-button mt-3">Get Started Today!</a>
                     </div>
                 </div>
@@ -872,15 +867,15 @@
             <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
                 <div class="card h-100 shadow-sm">
                     <div class="card-body">
-                        <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
+                        <div class="feature-icon mb-3" style="font-size: 1.75rem; color: #003366;">
                             <i class="fas fa-building"></i>
                         </div>
-                        <h3 class="card-title" style="color: #003366;">Pro</h3>
-                        <p class="lead">Up to 50 Units</p>
-                        <p class="font-weight-bold" style="font-size: 1.5rem;">
+                        <h3 class="card-title" style="color: #003366; font-size: 1.5rem;">Pro</h3>
+                        <p class="lead" style="font-size: 1.1rem;">Up to 50 Units</p>
+                        <p class="font-weight-bold" style="font-size: 1.25rem;">
                             Ksh.2,999 <span class="text-muted" style="font-size: 0.8rem; vertical-align: super;">/ month</span>
                         </p>
-                        <p>Ideal for medium-sized portfolios seeking comprehensive management tools.</p>
+                        <p style="font-size: 0.8rem;">Ideal for medium-sized portfolios seeking comprehensive management tools.</p>
                         <a href="/signup?plan=Pro" class="btn btn-primary animated-button mt-3">Get Started Today!</a>
                     </div>
                 </div>
@@ -890,15 +885,15 @@
             <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
                 <div class="card h-100 shadow-sm">
                     <div class="card-body">
-                        <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
+                        <div class="feature-icon mb-3" style="font-size: 1.75rem; color: #003366;">
                             <i class="fas fa-users"></i>
                         </div>
-                        <h3 class="card-title" style="color: #003366;">Advanced</h3>
-                        <p class="lead">Up to 100 Units</p>
-                        <p class="font-weight-bold" style="font-size: 1.75rem;">
+                        <h3 class="card-title" style="color: #003366; font-size: 1.5rem;">Advanced</h3>
+                        <p class="lead" style="font-size: 1.1rem;">Up to 100 Units</p>
+                        <p class="font-weight-bold" style="font-size: 1.25rem;">
                             Ksh.4,499 <span class="text-muted" style="font-size: 0.8rem; vertical-align: super;">/ month</span>
                         </p>
-                        <p>Perfect for larger portfolios, equipped with all essential features.</p>
+                        <p style="font-size: 0.8rem;">Perfect for larger portfolios, equipped with all essential features.</p>
                         <a href="/signup?plan=Advanced" class="btn btn-primary animated-button mt-3">Get Started Today!</a>
                     </div>
                 </div>
@@ -908,15 +903,15 @@
             <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
                 <div class="card h-100 shadow-sm">
                     <div class="card-body">
-                        <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
+                        <div class="feature-icon mb-3" style="font-size: 1.75rem; color: #003366;">
                             <i class="fas fa-city"></i>
                         </div>
-                        <h3 class="card-title" style="color: #003366;">Enterprise</h3>
-                        <p class="lead">Up to 150 Units</p>
-                        <p class="font-weight-bold" style="font-size: 1.75rem;">
+                        <h3 class="card-title" style="color: #003366; font-size: 1.5rem;">Enterprise</h3>
+                        <p class="lead" style="font-size: 1.1rem;">Up to 150 Units</p>
+                        <p class="font-weight-bold" style="font-size: 1.25rem;">
                             Ksh.6,999 <span class="text-muted" style="font-size: 0.8rem; vertical-align: super;">/ month</span>
                         </p>
-                        <p>Designed for substantial portfolios, offering complete management flexibility.</p>
+                        <p style="font-size: 0.8rem;">Designed for substantial portfolios, offering complete management flexibility.</p>
                         <a href="/signup?plan=Enterprise" class="btn btn-primary animated-button mt-3">Get Started Today!</a>
                     </div>
                 </div>
@@ -926,13 +921,13 @@
             <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
                 <div class="card h-100 shadow-sm">
                     <div class="card-body">
-                        <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
+                        <div class="feature-icon mb-3" style="font-size: 1.75rem; color: #003366;">
                             <i class="fas fa-briefcase"></i>
                         </div>
-                        <h3 class="card-title" style="color: #003366;">Premium</h3>
-                        <p class="lead">Unlimited Units</p>
-                        <p class="font-weight-bold" style="font-size: 1.75rem;">Custom</p>
-                        <p>Contact us for a personalized plan tailored to your portfolio’s specific needs.</p>
+                        <h3 class="card-title" style="color: #003366; font-size: 1.5rem;">Premium</h3>
+                        <p class="lead" style="font-size: 1.1rem;">Unlimited Units</p>
+                        <p class="font-weight-bold" style="font-size: 1.5rem;">Custom</p>
+                        <p style="font-size: 0.8rem;">Contact us for a personalized plan tailored to your portfolio’s specific needs.</p>
                         <a href="/signup?plan=Custom" class="btn btn-primary animated-button mt-3">Get Started Today!</a>
                     </div>
                 </div>
@@ -943,11 +938,13 @@
 
 
 
+
     <style>
         /* Pricing Section Styles */
         #pricing-section {
+            margin-top: 100px;
             background-color: #f8f9fa;
-            padding: 3rem 1rem;
+            padding: 1.5rem 0.5rem;
         }
 
         #pricing-section h3 {
@@ -967,20 +964,20 @@
         .card {
             border: none;
             border-radius: 10px;
-            padding: 1rem;
+            padding: 0.5rem;
             transition: transform 0.3s ease;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             /* Align content properly */
-            height: 100%;
+            height: 80%;
         }
 
         .card-body {
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            height: 100%;
+            height: 80%;
         }
 
         .feature-icon {
@@ -992,8 +989,8 @@
         .card-title {
             color: #003366;
             font-weight: bold;
-            font-size: 1.25rem;
-            margin-bottom: 1rem;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
         }
 
         .lead {
@@ -1001,13 +998,13 @@
         }
 
         .font-weight-bold {
-            font-size: 1.5rem;
+            font-size: 1rem;
             margin: 1rem 0;
         }
 
         .btn-primary {
-            padding: 0.75rem 1.5rem;
-            font-size: 1rem;
+            padding: 0.55rem 0.5rem;
+            font-size: 0.8rem;
             border-radius: 25px;
             font-weight: bold;
             transition: all 0.3s ease;
@@ -1026,23 +1023,23 @@
         /* Responsive Design for Smaller Screens */
         @media (max-width: 992px) {
             #pricing-section h3 {
-                font-size: 1.5rem;
+                font-size: 1rem;
             }
 
             .card-title {
-                font-size: 1.25rem;
+                font-size: 0.9rem;
             }
 
             .feature-icon {
-                font-size: 1.5rem;
+                font-size: 1rem;
             }
 
             .font-weight-bold {
-                font-size: 1.5rem;
+                font-size: 1rem;
             }
 
             .btn-primary {
-                font-size: 0.8rem;
+                font-size: 0.6rem;
             }
 
             .row {
@@ -1071,24 +1068,24 @@
             }
 
             #pricing-section h3 {
-                font-size: 1.0rem;
+                font-size: 0.9rem;
             }
 
             .feature-icon {
-                font-size: 1.5rem;
-            }
-
-            .card-title {
                 font-size: 1rem;
             }
 
+            .card-title {
+                font-size: 0.9rem;
+            }
+
             .font-weight-bold {
-                font-size: 1.25rem;
+                font-size: 1rem;
             }
 
             .btn-primary {
-                font-size: 0.9rem;
-                padding: 0.5rem 1.2rem;
+                font-size: 0.7rem;
+                padding: 0.5rem 1rem;
             }
         }
 
@@ -1098,19 +1095,19 @@
             }
 
             .feature-icon {
-                font-size: 1.2rem;
-            }
-
-            .card-title {
                 font-size: 1rem;
             }
 
+            .card-title {
+                font-size: 0.9rem;
+            }
+
             .font-weight-bold {
-                font-size: 1.25rem;
+                font-size: 1rem;
             }
 
             .btn-primary {
-                font-size: 0.9rem;
+                font-size: 0.7rem;
                 padding: 0.5rem 1.2rem;
             }
         }
@@ -1145,7 +1142,7 @@
     /* Title Styles */
     .help-title {
         color: #2d2d2d; /* Dark gray for modern feel */
-        font-size: 2.5rem;
+        font-size: 1.5rem;
         font-weight: 700;
         margin-bottom: 15px;
         letter-spacing: 2px;
@@ -1154,7 +1151,7 @@
     /* Intro Text Styles */
     .help-intro {
         color: #777; /* Medium gray */
-        font-size: 1.2rem;
+        font-size: 0.9rem;
         line-height: 1.6;
         margin-bottom: 25px;
         max-width: 700px;
@@ -1173,8 +1170,7 @@
         align-items: center;
         background-color: #0056b3; /* Sleek blue */
         color: #ffffff;
-        padding: 15px 30px;
-        font-size: 1.1rem;
+        font-size: 0.9rem;
         font-weight: 500;
         border-radius: 30px; /* More rounded edges for a soft look */
         text-decoration: none;
@@ -1184,7 +1180,7 @@
 
     .btn-support i {
         margin-right: 12px;
-        font-size: 1.3rem;
+        font-size: 0.9rem;
     }
 
     /* Button Hover Effect */
@@ -1211,41 +1207,50 @@
     /* Responsive Adjustments */
     @media (max-width: 768px) {
         .help-title {
-            font-size: 2rem;
+            font-size: 1rem;
         }
 
         .help-intro {
-            font-size: 1.1rem;
+            font-size: 0.8rem;
         }
 
         .btn-support {
-            font-size: 1rem;
+            font-size: 0.6rem;
             padding: 14px 28px;
         }
     }
 
     @media (max-width: 480px) {
         .btn-support {
-            font-size: 0.9rem;
+            font-size: 0.6rem;
             padding: 12px 25px;
         }
     }
 </style>
 
 
-<!-- Floating Messenger Button -->
+<!-- Floating Messenger Button with waves -->
 <div class="floating-support">
     <button class="support-btn" onclick="toggleChat()">
-        <i class="fas fa-comment-dots"></i>
+        <i class="fas fa-comments"></i> Talk to us!
     </button>
 </div>
+
+
 
 <!-- Messenger Chat Window -->
 <div class="chat-window" id="chatWindow">
     <div class="chat-header">
-        <h5>Support bot</h5>
+        <div class="profile">
+            <img src="/images/logo2.png" alt="Bot Profile" class="profile-pic">
+            <div class="profile-info">
+                <h5 id="botName">Lease Captain</h5>
+                <p id="status" class="online"><span class="status-dot"></span></p>
+            </div>
+        </div>
         <button class="close-btn" onclick="toggleChat()">×</button>
     </div>
+    
     <div class="chat-body" id="chatBody">
         <div class="welcome-message">
             <p>Greetings! 🤖 I'm your Lease Captain assistant, ready to help. Ask me anything or type your query, and I'll take care of the rest!</p>
@@ -1266,6 +1271,71 @@
 
 <!-- Styles -->
 <style>
+.chat-header {
+    background-color: #fff;
+    padding: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Profile section with white background */
+.chat-header .profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #fff;
+    padding: 5px;
+    border-radius: 10px;
+}
+
+.profile-pic {
+    width: 60px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #003366;
+}
+
+.profile-info h5 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #003366;
+}
+
+.profile-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #007bff;
+}
+
+/* Status colors */
+.profile-info p.online {
+    color: #28a745;
+}
+
+.profile-info p.offline {
+    color: #dc3545;
+}
+
+/* Close button */
+.close-btn {
+    font-size: 1.5rem;
+    color: #003366;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+    color: #dc3545;
+}
+
+     
 /* Close button styling */
 .close-welcome {
     background: none;
@@ -1289,10 +1359,10 @@
     }
     .welcome-message {
         background-color: #f1f9ff;
-        padding: 12px;
-        border-radius: 12px;
+        padding: 5px;
+        border-radius: 5px;
         text-align: center;
-        font-size: 0.9rem;
+        font-size: 0.7rem;
         color: #003366;
         margin-bottom: 15px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -1320,8 +1390,8 @@
     .support-btn {
         background-color: #003366;
         color: #ffffff;
-        font-size: 1.1rem;
-        padding: 10px 18px;
+        font-size: 0.8rem;
+        padding: 5px 9px;
         border-radius: 50px;
         border: none;
         cursor: pointer;
@@ -1333,43 +1403,105 @@
 
     .support-btn:hover {
         transform: scale(1.1);
-        background-color: #004080;
+        background-color: #68adf1;
     }
 
-    /* Chat Window */
+
+/* Chat Window Appearance with Animation */
 .chat-window {
     position: fixed;
     bottom: 80px;
     right: 20px;
     width: 350px;
-    height:60vh;
-    background-color: linear-gradient(135deg, #b64949, #e0f7fa);
-    border-radius: 12px;
+    height: 70vh;
+    background-color: linear-gradient(135deg, #003366, #e0f7fa);
+    border-radius: 5px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     display: none;
     flex-direction: column;
     opacity: 0;
     transform: translateY(30px) scale(0.9);
     transition: opacity 0.3s ease, transform 0.3s ease;
-    z-index: 9999; /* Ensures chat window is on top */
+    z-index: 9999;
 }
 
+/* Show the chat window with an animated effect */
 .chat-window.show {
     display: flex;
     opacity: 1;
     transform: translateY(0) scale(1);
+    animation: slideIn 0.5s ease-out, bounceIn 0.5s ease-out;
 }
+
+/* Hide the chat window with an animated effect */
+.chat-window.hide {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+    animation: slideOut 0.5s ease-in, bounceOut 0.5s ease-in;
+}
+
+/* Slide and Fade In Animation */
+@keyframes slideIn {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Bounce effect for a smooth entrance */
+@keyframes bounceIn {
+    0% {
+        transform: translateY(30px) scale(1.1);
+    }
+    50% {
+        transform: translateY(-10px) scale(1.05);
+    }
+    100% {
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Slide and Fade Out Animation */
+@keyframes slideOut {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.9);
+    }
+}
+
+/* Bounce effect for a smooth exit */
+@keyframes bounceOut {
+    0% {
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        transform: translateY(10px) scale(1.05);
+    }
+    100% {
+        transform: translateY(30px) scale(0.9);
+    }
+}
+
+
 
 
     .chat-header {
         background-color: #003366;
         color: #ffffff;
-        padding: 12px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-top-left-radius: 12px;
-        border-top-right-radius: 12px;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        font-size: x-small;
     }
 
     .chat-header h5 {
@@ -1381,7 +1513,7 @@
         background: none;
         border: none;
         color: #ffffff;
-        font-size: 1.5rem;
+        font-size: 1rem;
         cursor: pointer;
         transition: transform 0.2s ease;
     }
@@ -1390,45 +1522,63 @@
         transform: rotate(90deg);
     }
 
-    /* Chat Body */
-    .chat-body {
-        flex: 1;
-        padding: 10px;
-        overflow-y: auto;
-        background-color: #f9f9f9;
-    }
+/* Chat Body */
+.chat-body {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    background-color: #f5f5f5; /* Light grey background */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #333; /* Dark text color */
+}
+
+/* Scrollbar */
+.chat-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-body::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.chat-body::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
 
 
 
 .chat-message {
         word-wrap: break-word;
         white-space: pre-wrap;
-        padding: 8px 12px;
-        margin-bottom: 12px;
-        border-radius: 15px;
+        padding: 5px 9px;
+        margin-bottom: 10px;
+        border-radius: 10px;
         position: relative;
     }
 
     .chat-message.user {
         background-color: #e0f7fa;
         align-self: flex-end;
-        margin-left: auto;
+        margin-left: 100px;
         border-top-right-radius: 0;
         text-align: right;
-        font-size: 0.8rem;
+        font-size: 0.7rem;
     }
 
     .chat-message.bot {
         background-color: #f1f1f1;
         align-self: flex-start;
-        margin-right: auto;
+        margin-right: 100px;
         border-top-left-radius: 0;
         text-align: left;
-        font-size: 0.8rem;
+        font-size: 0.7rem;
     }
 
     .chat-message .timestamp {
-    font-size: 0.75rem;
+    font-size: 0.5rem;
     color: #777;
     margin-top: 5px; /* Space between text and timestamp */
     display: block; /* Ensures timestamp aligns naturally with content */
@@ -1470,9 +1620,9 @@
 
     /* Chat Footer */
     .chat-footer {
-        padding: 10px;
+        padding: 5px;
         display: flex;
-        gap: 10px;
+        gap: 5px;
         align-items: center;
         border-top: 1px solid #ddd;
     }
@@ -1484,6 +1634,7 @@
         border: 1px solid #ccc;
         outline: none;
         transition: box-shadow 0.3s ease;
+        font-size: smaller;
     }
 
     .chat-footer input:focus {
@@ -1498,6 +1649,7 @@
         padding: 10px 20px;
         cursor: pointer;
         transition: transform 0.2s ease;
+        font-size: smaller;
     }
 
     .send-btn:hover {
@@ -1510,64 +1662,175 @@
 
 <!-- JavaScript -->
 <script>
-// Toggle chat window visibility
-function toggleChat() {
-    const chatWindow = document.getElementById('chatWindow');
-    chatWindow.classList.toggle('show');
-}
-
-// Close welcome message
 function closeWelcomeMessage() {
     const welcomeMessage = document.querySelector('.welcome-message');
     welcomeMessage.style.display = 'none';
 }
 
-// Handle keypress for Enter key to send message
-function handleKeyPress(event) {
-    if (event.key === 'Enter') {
-        sendMessage();
-    }
-}
 
-// Send message to backend (OpenAI API)
-async function sendMessage() {
-    const chatInput = document.getElementById('chatInput');
-    const message = chatInput.value;
-
-    if (message.trim() === '') return;
-
-    // Display user message
+    const chatWindow = document.getElementById('chatWindow');
     const chatBody = document.getElementById('chatBody');
-    chatBody.innerHTML += `<div class="chat-message user">${message}</div>`;
-
-    // Show typing indicator
+    const chatInput = document.getElementById('chatInput');
     const typingIndicator = document.getElementById('typingIndicator');
-    typingIndicator.style.display = 'flex';
 
-    // Clear input field
-    chatInput.value = '';
+    function toggleChat() {
+        chatWindow.classList.toggle('show');
+    }
 
-    try {
-        const response = await fetch('/chat', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ message }),
-        });
-        const data = await response.json();
+    function sendMessage() {
+        const message = chatInput.value.trim();
+        if (message) {
+            appendMessage(message, 'user');
+            chatInput.value = '';
+            showTypingIndicator();
 
-        // Hide typing indicator
-        typingIndicator.style.display = 'none';
+            // Call bot function to analyze the user's message
+            setTimeout(() => {
+                botResponse(message);
+            }, 1000);
+        }
+    }
 
-        // Display bot reply
-        const botMessage = data.reply;
-        chatBody.innerHTML += `<div class="chat-message bot">${botMessage}</div>`;
+    function showTypingIndicator() {
+        typingIndicator.style.display = 'flex';
         chatBody.scrollTop = chatBody.scrollHeight;
-    } catch (error) {
-        console.error('Error sending message:', error);
+    }
+
+    function hideTypingIndicator() {
+        typingIndicator.style.display = 'none';
+    }
+
+    function appendMessage(message, type) {
+        const messageElement = document.createElement('div');
+        messageElement.className = `chat-message ${type}`;
+        messageElement.innerHTML = message;
+
+        const timestamp = document.createElement('span');
+        timestamp.className = 'timestamp';
+        timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        messageElement.appendChild(timestamp);
+
+        chatBody.appendChild(messageElement);
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            sendMessage();
+        }
+    }
+
+    function botResponse(userMessage) {
+    // Normalize the message to lowercase and remove extra spaces
+    const lowerMessage = userMessage.toLowerCase().trim();
+
+    // Common misspellings and variations
+    const greetings = ['hello', 'hi', 'hey', 'hiya', 'helo', 'hullo', 'greetings', 'whats up', 'howdy', 'sup'];
+    const timeGreetings = ['good morning', 'good afternoon', 'good evening', 'gm', 'ga', 'gevening', 'morning', 'afternoon', 'evening'];
+    const thankYous = ['thank you', 'thanks', 'thx', 'thankyou', 'thanks a lot', 'much appreciated'];
+    const farewells = ['bye', 'goodbye', 'see you', 'later', 'take care', 'peace out', 'adios', 'bye bye', 'cya'];
+
+    const leaseTerms = ['lease captain', 'leasecaptain', 'lease captin', 'leasecp', 'lease', 'lease agreement', 'rental agreement', 'rent contract'];
+    const paymentTerms = ['payment', 'pay rent', 'pay', 'lease payment', 'rent payment', 'how to pay', 'how to make payment'];
+    const maintenanceTerms = ['maintenance', 'repair', 'fix', 'broken', 'issue', 'problem', 'broken item'];
+    const renewalTerms = ['renew lease', 'extend lease', 'lease renewal', 'renew contract', 'lease extension'];
+    const terminationTerms = ['terminate lease', 'break lease', 'end lease', 'cancel lease', 'terminate contract'];
+
+    // Greetings (handle multiple variants and misspellings)
+    if (greetings.some(greet => lowerMessage.includes(greet))) {
+        appendMessage('Hello! How can I assist you today? 😊', 'bot');
+        hideTypingIndicator();
+    } else if (timeGreetings.some(timeGreet => lowerMessage.includes(timeGreet))) {
+        if (lowerMessage.includes('good morning') || lowerMessage.includes('gm') || lowerMessage.includes('morning')) {
+            appendMessage('Good morning! I hope you have a great day. How can I help you? ☀️', 'bot');
+        } else if (lowerMessage.includes('good afternoon') || lowerMessage.includes('ga') || lowerMessage.includes('afternoon')) {
+            appendMessage('Good afternoon! What can I do for you today? 🌤️', 'bot');
+        } else if (lowerMessage.includes('good evening') || lowerMessage.includes('gevening') || lowerMessage.includes('evening')) {
+            appendMessage('Good evening! How can I assist you tonight? 🌙', 'bot');
+        }
+        hideTypingIndicator();
+    }
+
+    // Handling thanks and gratitude
+    else if (thankYous.some(thank => lowerMessage.includes(thank))) {
+        appendMessage('You’re welcome! 😊 Let me know if you need further assistance.', 'bot');
+        hideTypingIndicator();
+    }
+
+    // Handling farewells
+    else if (farewells.some(farewell => lowerMessage.includes(farewell))) {
+        appendMessage('Goodbye! Feel free to reach out anytime. Take care! 👋', 'bot');
+        hideTypingIndicator();
+    }
+
+    // Handling queries about Lease Captain
+    else if (leaseTerms.some(term => lowerMessage.includes(term))) {
+        appendMessage('The Lease Captain is a platform designed to manage lease agreements, track payments, and provide seamless communication between landlords and tenants. It ensures transparency and efficient management of rental properties.', 'bot');
+        hideTypingIndicator();
+    }
+
+    // Handling lease payment-related queries
+    else if (paymentTerms.some(term => lowerMessage.includes(term))) {
+        appendMessage('Lease payments are typically made monthly, and you can pay through the online portal or by bank transfer. Need help with payments? Let me know!', 'bot');
+        hideTypingIndicator();
+    }
+
+    // Handling maintenance or repair queries
+    else if (maintenanceTerms.some(term => lowerMessage.includes(term))) {
+        appendMessage('If you need a repair or maintenance request, please contact our support team directly. They will help you with any issues! 🛠️', 'bot');
+        hideTypingIndicator();
+    }
+
+    // Handling renewal or extension inquiries
+    else if (renewalTerms.some(term => lowerMessage.includes(term))) {
+        appendMessage('You can initiate your lease renewal by contacting our support team or through the portal. Would you like more assistance with this?', 'bot');
+        hideTypingIndicator();
+    }
+
+    // Handling lease termination or early exit
+    else if (terminationTerms.some(term => lowerMessage.includes(term))) {
+        appendMessage('If you wish to terminate your lease, please check your lease agreement for specific terms or contact support for assistance with the process.', 'bot');
+        hideTypingIndicator();
+    }
+
+    // Handling common questions about business hours
+    else if (/business.*days|working.*hours|business.*hours/.test(lowerMessage)) {
+        appendMessage('Our support team is available 24/7. Feel free to ask any questions during this time!', 'bot');
+        hideTypingIndicator();
+    }
+
+    // Handling 24/7 support queries
+    else if (/24\/7.*support|always.*available|support.*anytime/.test(lowerMessage)) {
+        appendMessage('Yes, we offer 24/7 support. You can reach out at any time, and we’ll be happy to assist you!', 'bot');
+        hideTypingIndicator();
+    }
+
+    // Handling lease duration or length inquiries
+    else if (/lease.*duration|how.*long.*lease|lease.*term/.test(lowerMessage)) {
+        appendMessage('The lease duration can vary depending on the agreement but typically ranges from 6 months to 1 year. Please check your lease for specific details.', 'bot');
+        hideTypingIndicator();
+    }
+
+    // Handling other general queries
+    else if (/how.*can.*i.*help|help.*me|what.*can.*i.*do/.test(lowerMessage)) {
+        appendMessage('I am here to assist with your lease, payment, and account inquiries! What would you like help with today?', 'bot');
+        hideTypingIndicator();
+    }
+
+    // Default response if the message is not recognized
+    else {
+        appendMessage('I am sorry, I don\'t have an answer to that, visit leasecaptain.com/support. Please allow me to connect you to a support agent.', 'bot');
+        hideTypingIndicator();
+
+        // Simulate transitioning to support
+        setTimeout(() => {
+            appendMessage('A support agent will assist you shortly. Please be patient.', 'bot');
+            switchToSupport();
+        }, 1500);
     }
 }
+
 
 </script>
 
