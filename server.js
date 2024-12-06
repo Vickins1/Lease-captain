@@ -15,6 +15,7 @@ const paymentGatewayRoutes = require('./routes/paymentGateway');
 const sendRemindersRoutes = require('./routes/sendReminders');
 const SupportMessage = require('./models/supportMessage');
 const nodemailer = require('nodemailer');
+const cron = require('node-cron');
 const fs = require('fs');
 const os = require('os');
 require('dotenv').config();
@@ -22,7 +23,6 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app);
 app.set('trust proxy', 1);
-const axios = require('axios')
 
 const uri = "mongodb://Admin:Kefini360@lease-captain-shard-00-00.ryokh.mongodb.net:27017,lease-captain-shard-00-01.ryokh.mongodb.net:27017,lease-captain-shard-00-02.ryokh.mongodb.net:27017/LC-db?ssl=true&replicaSet=atlas-67tjyi-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Lease-Captain";
 
@@ -30,12 +30,11 @@ const uri = "mongodb://Admin:Kefini360@lease-captain-shard-00-00.ryokh.mongodb.n
 async function createDatabaseAndCollections() {
     try {
         await mongoose.connect(uri);
-        console.log("Connected to MongoDB!");
+        console.log("Connected to MongoDB Atlas!");
 
         const modelNames = mongoose.modelNames();
 
         if (modelNames.length === 0) {
-            console.log("No models found! Ensure you have registered Mongoose models.");
             return;
         }
 
@@ -50,7 +49,6 @@ async function createDatabaseAndCollections() {
             if (existingCollections.length > 0) {
             } else {
                 await model.init();
-                console.log(`Collection for model '${modelName}' created.`);
             }
         }
 
@@ -283,6 +281,228 @@ app.post('/callback', async (req, res) => {
         res.status(500).json({ status: 'error', message: 'Error processing callback data' });
     }
 });
+
+// Utility function to check reminder days
+const isReminderDay = (paymentDay, daysBefore) => {
+    const today = new Date();
+    const targetDate = new Date(today.getFullYear(), today.getMonth(), paymentDay - daysBefore);
+  
+    // Adjust for previous month overflow
+    if (targetDate.getMonth() < today.getMonth() || targetDate.getFullYear() < today.getFullYear()) {
+      targetDate.setMonth(today.getMonth() - 1);
+      targetDate.setFullYear(today.getFullYear());
+    }
+  
+    return today.getDate() === targetDate.getDate() && today.getMonth() === targetDate.getMonth();
+  };
+  
+
+  // Email logic function
+  const sendReminderEmail = async (recipientEmail, tenantName, reminderType, dueType = 'Rent, Utility', amountDue = 0) => {
+    let subject = '';
+    let message = '';
+
+    const tenant = await Tenant.findOne({ email: recipientEmail }).populate('owner');
+    const ownerEmail = tenant?.owner?.email || 'defaultowneremail@domain.com';
+  
+    switch (reminderType) {
+      case '10_days':
+        subject = `${dueType} Payment Reminder: Upcoming Deadline in 10 Days`;
+        message = `
+          Dear ${tenantName},<br><br>
+          We hope this message finds you well. We are writing to remind you that your upcoming ${dueType.toLowerCase()} payment of <strong>$${amountDue.toFixed(2)}</strong> is due in 10 days.<br><br>
+          To avoid any inconvenience or penalties, we kindly ask that you complete the payment via your Tenant Portal by the due date. Your prompt attention to this matter is greatly appreciated.<br><br>
+          If you have already scheduled this payment, please disregard this message.<br><br>
+          For easy and secure payment processing, you can access your Tenant Portal directly through the link below:<br><br>
+          <a href="https://leasecaptain.com/tenantPortal/login" style="color: #003366;">Complete Payment Now</a><br><br>
+          Best regards,<br>
+          The Management Team
+        `;
+        break;
+  
+      case '5_days':
+        subject = `${dueType} Payment Reminder: Deadline Approaching in 5 Days`;
+        message = `
+          Dear ${tenantName},<br><br>
+          This is a reminder that your ${dueType.toLowerCase()} payment of <strong>$${amountDue.toFixed(2)}</strong> is due in 5 days. Please ensure the payment is made on time by completing the process through your Tenant Portal.<br><br>
+          If you have any questions or need assistance, feel free to reach out to us. Your cooperation in ensuring timely payments is greatly valued.<br><br>
+          You can conveniently complete the payment by logging into your Tenant Portal using the link below:<br><br>
+          <a href="https://leasecaptain.com/tenantPortal/login" style="color: #003366;">Complete Payment Now</a><br><br>
+          Thank you for your attention to this matter.<br><br>
+          Warm regards,<br>
+          The Management Team
+        `;
+        break;
+  
+      case 'due_today':
+        subject = `${dueType} Payment Due: Immediate Attention Required`;
+        message = `
+          Dear ${tenantName},<br><br>
+          We wish to remind you that your ${dueType.toLowerCase()} payment of <strong>$${amountDue.toFixed(2)}</strong> is due today. Please ensure that the payment is completed via your Tenant Portal to avoid any late fees or service disruptions.<br><br>
+          If you have already processed this payment, we thank you for your diligence. Should you require any assistance or have any questions, please do not hesitate to contact us.<br><br>
+          You can access your Tenant Portal and complete the payment by clicking the link below:<br><br>
+          <a href="https://leasecaptain.com/tenantPortal/login" style="color: #003366;">Complete Payment Now</a><br><br>
+          Thank you for your prompt attention.<br><br>
+          Sincerely,<br>
+          The Management Team
+        `;
+        break;
+  
+      default:
+        console.error('Invalid reminder type.');
+        return;
+    }
+  
+    const htmlTemplate = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              background-color: #f4f4f4;
+              margin: 0;
+              padding: 0;
+            }
+            .email-container {
+              background-color: white;
+              margin: 0 auto;
+              padding: 20px;
+              border-radius: 8px;
+              max-width: 600px;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+              color: #333;
+            }
+            .header {
+              background-color: #003366;
+              color: white;
+              padding: 15px;
+              border-radius: 8px 8px 0 0;
+              text-align: center;
+            }
+            .header h1 {
+              font-size: 18px;
+              margin: 0;
+            }
+            .content {
+              padding: 20px;
+              font-size: 14px;
+              line-height: 1.6;
+            }
+            .footer {
+              font-size: 12px;
+              color: #555;
+              text-align: center;
+              padding: 15px 0;
+            }
+            .footer a {
+              color: #003366;
+              text-decoration: none;
+            }
+            .cta {
+              display: inline-block;
+              margin-top: 20px;
+              padding: 10px 15px;
+              background-color: #003366;
+              color: white;
+              text-decoration: none;
+              border-radius: 4px;
+            }
+            .cta:hover {
+              background-color: #00509e;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="email-container">
+            <div class="header">
+              <h1>${dueType} Payment Reminder</h1>
+            </div>
+            <div class="content">
+              <p>Hi ${tenantName},</p>
+              <p>${message}</p>
+              <p>If you have already made the payment, please disregard this reminder.</p>
+            </div>
+            <div class="footer">
+              <p>&copy; ${new Date().getFullYear()} Lease Captain. All rights reserved.</p>
+              <p>
+                <a href="https://leasecaptain.com">Visit our website</a> | 
+                 <a href="mailto:${ownerEmail}">Contact Management</a>
+              </p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+  
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: recipientEmail,
+      subject,
+      html: htmlTemplate,
+    };
+  
+    // Create transporter for email sending (if not already defined)
+    const transporter = nodemailer.createTransport({
+      service: 'gmail', // Or another email service you're using
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+  
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log(`Email sent to ${recipientEmail}: ${subject}`);
+    } catch (error) {
+      console.error(`Error sending email to ${recipientEmail}:`, error);
+    }
+  };
+  
+  // Cron job to send reminders
+  cron.schedule('30 18 * * *', async () => {
+    console.log(`[${new Date().toISOString()}] Running rent and utility reminder cron job...`);
+  
+    try {
+      const tenants = await Tenant.find().populate('property');
+  
+      const reminderPromises = tenants.map(async (tenant) => {
+        const { name, email, rentDue, utilityDue, property } = tenant;
+  
+        if (property && property.paymentDay) {
+          const { paymentDay } = property;
+  
+          // Rent reminders
+          if (rentDue > 0) {
+            if (isReminderDay(paymentDay, 10)) {
+              await sendReminderEmail(email, name, '10_days', 10, 'Rent', rentDue);
+            } else if (isReminderDay(paymentDay, 5)) {
+              await sendReminderEmail(email, name, '5_days', 5, 'Rent', rentDue);
+            } else if (isReminderDay(paymentDay, 0)) {
+              await sendReminderEmail(email, name, 'due_today', 0, 'Rent', rentDue);
+            }
+          }
+  
+          // Utility reminders
+          if (utilityDue > 0) {
+            if (isReminderDay(paymentDay, 10)) {
+              await sendReminderEmail(email, name, '10_days', 10, 'Utility', utilityDue);
+            } else if (isReminderDay(paymentDay, 5)) {
+              await sendReminderEmail(email, name, '5_days', 5, 'Utility', utilityDue);
+            } else if (isReminderDay(paymentDay, 0)) {
+              await sendReminderEmail(email, name, 'due_today', 0, 'Utility', utilityDue);
+            }
+          }
+        }
+      });
+  
+      await Promise.all(reminderPromises);
+      console.log(`[${new Date().toISOString()}] Reminder emails successfully processed.`);
+    } catch (error) {
+      console.error(`[${new Date().toISOString()}] Error during rent and utility reminders:`, error);
+    }
+  });
+  
 
 
 // Get local IP address for server
