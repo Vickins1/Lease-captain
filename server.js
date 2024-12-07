@@ -14,6 +14,7 @@ const authRoutes = require('./routes/auth');
 const paymentGatewayRoutes = require('./routes/paymentGateway');
 const sendRemindersRoutes = require('./routes/sendReminders');
 const SupportMessage = require('./models/supportMessage');
+const { SitemapStream, streamToPromise } = require('sitemap');
 const nodemailer = require('nodemailer');
 const cron = require('node-cron');
 const fs = require('fs');
@@ -30,7 +31,7 @@ const uri = "mongodb://Admin:Kefini360@lease-captain-shard-00-00.ryokh.mongodb.n
 async function createDatabaseAndCollections() {
     try {
         await mongoose.connect(uri);
-        console.log("Connected to MongoDB Atlas!");
+        console.log("Connected to MongoDB!");
 
         const modelNames = mongoose.modelNames();
 
@@ -59,6 +60,20 @@ async function createDatabaseAndCollections() {
 }
 
 createDatabaseAndCollections().catch(console.dir);
+
+
+(async () => {
+  const sitemap = new SitemapStream({ hostname: 'https://leasecaptain.com' });
+  const writeStream = fs.createWriteStream('./public/sitemap.xml');
+
+  sitemap.pipe(writeStream);
+  
+  sitemap.write({ url: '/', changefreq: 'daily', priority: 1.0 });
+  
+  sitemap.end();
+
+  await streamToPromise(writeStream).then(() => console.log('Sitemap created!'));
+})();
 
 
 // View engine setup
@@ -460,7 +475,7 @@ const isReminderDay = (paymentDay, daysBefore) => {
   };
   
   // Cron job to send reminders
-  cron.schedule('30 18 * * *', async () => {
+  cron.schedule('0 9 * * *', async () => {
     console.log(`[${new Date().toISOString()}] Running rent and utility reminder cron job...`);
   
     try {
