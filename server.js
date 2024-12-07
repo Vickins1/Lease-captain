@@ -62,17 +62,23 @@ async function createDatabaseAndCollections() {
 createDatabaseAndCollections().catch(console.dir);
 
 
+const { SitemapStream, streamToPromise } = require('sitemap');
+const fs = require('fs');
+
 (async () => {
   const sitemap = new SitemapStream({ hostname: 'https://leasecaptain.com' });
   const writeStream = fs.createWriteStream('./public/sitemap.xml');
 
   sitemap.pipe(writeStream);
-  
+
   sitemap.write({ url: '/', changefreq: 'daily', priority: 1.0 });
   
   sitemap.end();
 
-  await streamToPromise(writeStream).then(() => console.log('Sitemap created!'));
+  // Use `streamToPromise` with the `sitemap` stream
+  await streamToPromise(sitemap)
+    .then(() => console.log('Sitemap created!'))
+    .catch((error) => console.error('Error creating sitemap:', error));
 })();
 
 
