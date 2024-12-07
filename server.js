@@ -62,9 +62,6 @@ async function createDatabaseAndCollections() {
 createDatabaseAndCollections().catch(console.dir);
 
 
-const { SitemapStream, streamToPromise } = require('sitemap');
-const fs = require('fs');
-
 (async () => {
   const sitemap = new SitemapStream({ hostname: 'https://leasecaptain.com' });
   const writeStream = fs.createWriteStream('./public/sitemap.xml');
