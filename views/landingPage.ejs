@@ -1,1234 +1,1311 @@
-<!DOCTYPE html>
-<html lang="en">
-
+<!DOCTYPE HTML>
+<html lang="en-US">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Discover the best rental management software with advanced tenant and payment tracking. Free demo available!">
-    <meta name="keywords" content="Lease Captain, property management software, tenant portal, payment tracking">
-    <title>Lease Captain</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.css">
-    <link rel="icon" href="/images/icon.png" type="image/png">
+	<meta charset="UTF-8">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<title>Lease Captain - Landing Page</title>
+	<meta name="description"
+		content="Discover Lease Captain, the best rental management software with advanced tenant and payment tracking. Free demo available!">
+	<meta name="author" content="Lease Captain Team">
+	<meta name="robots" content="index, follow">
+	<meta property="og:title" content="Lease Captain - Advanced Property Management Software">
+	<meta property="og:description"
+		content="Manage properties effortlessly with Lease Captain's powerful tenant and payment tracking features. Try our free demo today!">
+	<meta property="og:image" content="https://leasecaptain.com/images/banner1.jpeg">
+	<meta property="og:url" content="https://leasecaptain.com">
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:title" content="Lease Captain - Advanced Property Management Software">
+	<meta name="twitter:description"
+		content="Manage properties effortlessly with Lease Captain's powerful tenant and payment tracking features. Try our free demo today!">
+	<meta name="twitter:image" content="https://leasecaptain.com/images/banner1.jpeg">
+	<link rel="canonical" href="https://leasecaptain.com">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <style>
-        /* General Styles */
-        body {
-            background-color: #ffffff;
-            color: #003366;
-            font-family: 'Arial', sans-serif;
-        }
 
-        /* Container */
-        .container {
-            position: relative;
-            z-index: 1;
-            color: #003366;
-        }
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GFB5LRVMW6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
-        /* Header Styling */
-        header {
-            background-color:#ffffffda;
-            border-bottom: 1px solid #e5e5e5;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            height: 60px;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 10 30px;
-        }
+  gtag('config', 'G-GFB5LRVMW6');
+</script>
 
-        /* Logo Styling */
-        .logo {
-            margin-top: 10px;
-            width: 100px;
-            height: auto;
-            margin-right: 300px;
-        }
 
-        @media (max-width: 768px) {
-            .logo {
-                width: 100px;
-                /* Reduce the logo width for tablets */
-                margin-right: 20px;
-                /* Decrease right margin */
-            }
-        }
-
-        @media (max-width: 576px) {
-            .logo {
-                width: 100px;
-                /* Further reduce the logo width for mobile devices */
-                margin-right: 10px;
-                /* Even smaller right margin */
-            }
-        }
-
-        /* Hero Section Styling */
-        .hero {
-            margin-top: 60px;
-            background-color: #f0f4f8;
-            padding: 100px 0;
-            position: relative;
-            height: 80vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .hero h1 {
-            color: #003366;
-            font-size: 2rem;
-            font-weight: bold;
-            text-align: center;
-        }
-        .hero h1{
-    text-shadow: 1px 1px 1px #003366; 
-}
-
-        .hero p {
-            color: #001b36;
-            font-size: 1rem;
-            text-align: center;
-        }
-
-        /* Hero Background Images */
-        .hero::before,
-        .hero::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            width: 50%;
-            height: 80vh;
-            background-size: cover;
-            background-position: center;
-            z-index: 0;
-            opacity: 0.7;
-        }
-
-        .hero::before {
-            left: 0;
-            background-image: url('/images/banner1.jpeg');
-        }
-
-        .hero::after {
-            right: 0;
-            background-image: url('/images/banner2.jpeg');
-        }
-
-        /* Button Styling */
-        .hero .btn {
-            padding: 15px 30px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            border-radius: 5px;
-            transition: all 0.4s ease;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            margin: 5px;
-        }
-
-        .btn-primary {
-            background-color: #003366;
-            border: none;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-            box-shadow: 0px 8px 20px rgba(0, 86, 179, 0.3);
-            transform: translateY(-3px);
-        }
-
-        .btn-outline-primary {
-            color: #003366;
-            border: 2px solid #003366;
-            background-color: transparent;
-        }
-
-        .btn-outline-primary:hover {
-            color: white;
-            background-color: #003366;
-            box-shadow: 0px 8px 20px rgba(0, 51, 102, 0.3);
-            transform: translateY(-3px);
-        }
-
-        /* Button Animation */
-        @keyframes pulse {
-
-            0%,
-            100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.05);
-            }
-        }
-
-        .hero .btn-primary,
-        .hero .btn-outline-primary {
-            animation: pulse 2s infinite;
-        }
-
-        /* Card Styling */
-        .card {
-            border: none;
-            transition: transform 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        /* Footer Styling */
-        .footer {
-            background-color: #000000;
-            color: #ffffff;
-            padding: 15px 0;
-            text-align: center;
-        }
-
-        .footer a {
-            color: #ffffff;
-            text-decoration: underline;
-        }
-
-        .footer a:hover {
-            color: #cccccc;
-        }
-
-        /* Responsive Adjustments */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 1.5rem;
-            }
-
-            .hero p {
-                font-size: 0.8rem;
-            }
-
-            .hero .btn {
-                font-size: 0.8rem;
-                padding: 6px 16px;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .hero h1 {
-                font-size: 1.6rem;
-            }
-
-            .hero p {
-                font-size: 0.8rem;
-            }
-
-            .btn-primary,
-            .btn-outline-primary {
-                padding: 12px 20px;
-                font-size: 0.9rem;
-            }
-
-            .footer {
-                padding: 10px 0;
-            }
-        }
-
-       /* Dropdown Styling */
-.dropdown-menu {
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-    transition: opacity 0.4s ease, transform 0.4s ease;
-    opacity: 0;
-    transform: translateY(10px);
-    visibility: hidden;
-    margin-top: 10px; /* Add margin top to create space for logo and toggler */
-}
-
-/* Show Dropdown */
-.dropdown-menu.show {
-    opacity: 1;
-    transform: translateY(0);
-    visibility: visible;
-}
-
-/* Dropdown Item Styling */
-.dropdown-item {
-    color: #003366;
-    font-weight: bold;
-    padding: 10px 15px;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    border-radius: 4px;
-}
-
-/* Hover Effect */
-.dropdown-item:hover {
-    background-color: #003366;
-    color: #ffffff;
-}
-
-/* Responsive Adjustments for Smaller Screens */
-@media (max-width: 768px) {
-    .navbar-collapse {
-        margin-top: 50px;
-        background-color: #ffffff96;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Center dropdown menu on small screens */
-    .dropdown-menu {
-        margin-top: 10px; /* Maintain top margin */
-        position: static;
-        width: 100%;
-    }
-}
-
-    </style>
-
+	<!-- Favicon -->
+	<link rel="icon" type="image/png" sizes="56x56" href="/assets/images/1.png">
+	<!-- bootstrap CSS -->
+	<link rel="stylesheet" href="/assets/css/bootstrap.min.css" type="text/css" media="all">
+	<!-- carousel CSS -->
+	<link rel="stylesheet" href="/assets/css/owl.carousel.min.css" type="text/css" media="all">
+	<!-- animate CSS -->
+	<link rel="stylesheet" href="/assets/css/animate.css" type="text/css" media="all">
+	<!-- font-awesome CSS -->
+	<link rel="stylesheet" href="assets/css/all.min.css" type="text/css" media="all">
+	<!-- font-flaticon CSS -->
+	<link rel="stylesheet" href="/assets/css/flaticon.css" type="text/css" media="all">
+	<!-- theme-default CSS -->
+	<link rel="stylesheet" href="assets/css/theme-default.css" type="text/css" media="all">
+	<!-- meanmenu CSS -->
+	<link rel="stylesheet" href="/assets/css/meanmenu.min.css" type="text/css" media="all">
+	<!-- transitions CSS -->
+	<link rel="stylesheet" href="/assets/css/owl.transitions.css" type="text/css" media="all">
+	<!-- venobox CSS -->
+	<link rel="stylesheet" href="/venobox/venobox.css" type="text/css" media="all">
+	<!-- bootstrap icons -->
+	<link rel="stylesheet" href="assets/css/bootstrap-icons.css" type="text/css" media="all">
+	<!-- Slick Slider -->
+	<link rel="stylesheet" type="text/css" href="/assets/slick/slick.css">
+	<link rel="stylesheet" type="text/css" href="assets/slick/slick-theme.css">
+	<!-- Main Style CSS -->
+	<link rel="stylesheet" href="assets/css/style.css" type="text/css" media="all">
+	<!-- Dropdown CSS -->
+	<link rel="stylesheet" href="/assets/css/dropdown.css" type="text/css" media="all">
+	<!-- responsive CSS -->
+	<link rel="stylesheet" href="assets/css/responsive.css" type="text/css" media="all">
+	<!-- rangeslider CSS -->
+	<link rel="stylesheet" href="assets/css/rangeslider.css" type="text/css" media="all">
+	<!-- modernizr js -->
+	<script src="/assets/js/vendor/modernizr-3.5.0.min.js"></script>
 </head>
 
 <body>
-    <header class="navbar-header bg-white fixed-top shadow-sm py-3">
-        <nav class="navbar navbar-expand-lg navbar-light">
-            <div class="container">
-                <!-- Logo -->
-                <a href="/" class="navbar-brand mx-auto">
-                    <img src="/images/logo2.png" alt="Lease Captain Logo" class="logo img-fluid">
-                </a>
-                <!-- Toggler for Small Screens -->
-                <button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse"
-                    data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
-                    aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <style>
-                    @media (max-width: 968px) {
-                        .navbar-toggler {
-                            margin-left: 140px;
-                            font-size: 0.9rem;
-                        }
-
-                        .navbar-brand {
-                            margin-right: auto;
-                        }
-                    }
-                </style>
-
-                <!-- Collapsible Links -->
-                <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-                    <ul class="navbar-nav">
-                        
-                       
-                        <li class="nav-item mx-2">
-                            <a href="#help-section" class="nav-link text-dark">
-                                <i class="fas fa-question-circle mr-1"></i> Help
-                            </a>
-                        </li>
-                        <li class="nav-item mx-2">
-                            <a href="#pricing-section" class="nav-link text-dark">
-                                <i class="fas fa-tags mr-1"></i> Pricing
-                            </a>
-                        </li>
-                        <li class="nav-item mx-2">
-                            <a href="/signup" class="nav-link text-dark">
-                                <i class="fas fa-desktop mr-1"></i> Demo
-                            </a>
-                        </li>
-                        <li class="nav-item mx-2">
-                            <a href="/login" class="nav-link text-dark">
-                                <i class="fas fa-sign-in-alt mr-1"></i> Sign-in
-                            </a>
-                        </li>
-                        <li class="nav-item mx-2">
-                            <a href="/signup" class="nav-link btn-signup text-dark">
-                                <i class="fas fa-user-plus mr-1"></i> Sign Up
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <script>
-        // Dropdown hover effect
-        document.querySelectorAll('.nav-item.dropdown').forEach(function (dropdown) {
-            dropdown.addEventListener('mouseenter', function () {
-                this.querySelector('.dropdown-menu').classList.add('show');
-            });
-            dropdown.addEventListener('mouseleave', function () {
-                this.querySelector('.dropdown-menu').classList.remove('show');
-            });
-        });
-
-        // Close navbar on outside click for mobile view
-        document.addEventListener('click', function (event) {
-            const navbarCollapse = document.getElementById('navbarNav');
-            const navbarToggler = document.querySelector('.navbar-toggler');
-
-            if (!navbarCollapse.contains(event.target) && !navbarToggler.contains(event.target)) {
-                if (navbarCollapse.classList.contains('show')) {
-                    navbarCollapse.classList.remove('show');
-                }
-            }
-        });
-    </script>
+	<!-- loder -->
+	<div class="preloader">
+		<div class="circles">
+			<div class="circle1"></div>
+			<div class="circle2"></div>
+			<div class="circle3"></div>
+			<div class="circle4"></div>
+			<div class="circle5"></div>
+			<div class="circle6"></div>
+			<div class="circle7"></div>
+			<div class="circle8"></div>
+			<div class="circle9"></div>
+			<div class="circle10"></div>
+			<div class="circle11"></div>
+			<div class="circle12"></div>
+			<div class="circle13"></div>
+			<div class="circle14"></div>
+			<div class="circle15"></div>
+		</div>
+	</div>
 
 
-    <!-- Hero Section -->
-<section class="hero d-flex align-items-center">
-    <div class="container text-center text-white">
-        <h1 class="display-4 font-weight-bold"><strong>Welcome to Lease Captain!</strong></h1>
-        <p class="lead font-weight-bold">Your Cutting Edge Property Manager.</p>
-        <div class="mt-4">
-            <a href="/signup" class="btn btn-primary btn-lg mx-2">
-                <i class="fas fa-user-plus mr-2"></i> Get Started Now!
-            </a>
-            <!-- Request Demo Button -->
-            <a href="/support" class="btn btn-outline-primary btn-lg mx-2">
-                <i class="fas fa-play-circle mr-2"></i> Request Demo
-            </a>
-        </div>
-    </div>
-</section>
+	<!--==================================================-->
+	<!-- Start Header Area -->
+	<!--==================================================-->
+	<header class="header-area" id="sticky-header">
+		<div class="container">
+			<div class="row align-items-center">
+				<div class="col-lg-3">
+					<div class="logo">
+						<a href="/"><img src="assets/images/2.png"
+								style="height: 70px; width: 80px;" alt=""></a>
+					</div>
+				</div>
+				<div class="col-lg-9">
+					<div class="header-menu">
+						<ul>
+							<li><a href="/">Home
 
+								</a>
 
-    <!-- Core Features Section -->
-    <section class="py-5 bg-light">
-        <div class="container">
+							</li>
+							<li><a href="#about">About</a></li>
+							<li><a href="#pricing-section">Pricing</a></li>
+							<li><a href="/services">Services <i class="bi bi-chevron-down"></i></a>
+								<div class="sub-menu">
+									<ul>
+										<li><a href="/service">Service</a></li>
+										<li><a href="/service-details">Service
+												Details</a></li>
+									</ul>
+								</div>
+							</li>
+							<li><a href="#">Blog <i class="bi bi-chevron-down"></i></a>
+								<div class="sub-menu">
+									<ul>
+										<li><a href="/blog">Blog</a></li>
+										<li><a href="/blog-details">Blog Details</a>
+										</li>
+									</ul>
+								</div>
+							</li>
+							<li><a href="/contacts">contacts</a></li>
+						</ul>
+						<div class="hamilton-btn">
+							<a href="/login">Add Property</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
 
-            <h2 class="text-center mb-5" style="color: #001b36;">
-                <i class="fas fa-star mr-2"></i> <strong>Our Core Features</strong>
-            </h2>
+	<!-- Hamilton Mobile Menu Area -->
+	<div class="mobile-menu-area sticky-menu" id="navbar">
+		<div class="mobile-menu">
+			<div class="mobile-logo">
+				<a href="/"><img src="/assets/images/2.png" style="height: 80px; width: 80px;" alt=""></a>
+			</div>
+			<div class="side-menu-info">
+				<div class="sidebar-menu">
+					<a class="navSidebar-button" href="#"><i class="bi bi-justify-right"></i></a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--==================================================-->
+	<!-- End Header Area -->
+	<!--==================================================-->
 
+	<!--==================================================-->
+	<!-- Start Banner Area -->
+	<!--==================================================-->
+	<section class="banner-section">
+		<div class="banner-carousel owl-carousel">
+			<div class="slide-item one">
+				<div class="image-layer" style="background-image: url('assets/images/slider/slider1.jpg');">
+				</div>
+				<div class="container">
+					<div class="row">
+						<div class="col-lg-6 col-md-12">
+							<div class="slider-content">
+								<div class="slider-title-shape">
+									<img src="assets/images/slider/title-shape.png"
+										alt="Title Decoration">
+								</div>
+								<div class="slider-sub-title">
+									<h4>Your Dream Home Awaits – Let's Make It a Reality</h4>
+								</div>
+								<div class="slider-main-title">
+									<h1 style="font-size: 50px;">The Efficient and Safest Way
+										to Lease, Rent or Manage your properties!</h1>
+								</div>
+								<div class="slider-discripton">
+									<p>Discover a seamless and secure way to rent, manage,
+										and invest in properties. At Lease Captain, we're
+										here to help you every step of the way, providing
+										expert services and unmatched support.</p>
+								</div>
+								<div class="slider-button">
+									<div class="hamilton-btn slider">
+										<a href="/services">Our Services</a>
+									</div>
+								</div>
+							</div>
+						</div>
 
-            <div class="row text-center">
+						<div class="col-lg-6 col-md-12">
+							<div class="banner-search-box">
+								<div class="banner-search-box-title">
+									<h4>Find Your Accessible
+										Homes For Rent</h4>
+								</div>
+								<div class="search-contents ">
+									<form method="GET">
+										<div class="form-group">
+											<select class="selectpicker search-fields"
+												name="PropertyType">
+												<option>Property Type</option>
+												<option>Apartment</option>
+												<option>Bungalow</option>
+												<option>Maisonette</option>
+												<option>Townhouse</option>
+												<option>Single Family Home</option>
+												<option>Farmhouse</option>
+											</select>
+										</div>
+										<div class="form-group">
+											<select class="selectpicker search-fields"
+												name="Category">
+												<option>All Categories</option>
+												<option>Residential</option>
+												<option>Commercial</option>
+												<option>Agricultural</option>
+											</select>
+										</div>
+										<div class="form-group">
+											<select class="selectpicker search-fields"
+												name="City">
+												<option>All Cities</option>
+												<option>Nairobi</option>
+												<option>Mombasa</option>
+												<option>Kisumu</option>
+												<option>Thika</option>
+												<option>Nakuru</option>
+												<option>Eldoret</option>
+												<option>Meru</option>
+												<option>Kiambu</option>
+												<option>Voi</option>
+												<option>Nyeri</option>
+												<option>Bomet</option>
+												<option>Bungoma</option>
+												<option>Busia</option>
+												<option>Elgeyo Marakwet</option>
+												<option>Embu</option>
+												<option>Garissa</option>
+												<option>Homa Bay</option>
+												<option>Isiolo</option>
+												<option>Kajiado</option>
+												<option>Kakamega</option>
+												<option>Kapsabet</option>
+												<option>Kericho</option>
+												<option>Kisii</option>
+												<option>Kitui</option>
+												<option>Kuria</option>
+												<option>Laikipia</option>
+												<option>Lamu</option>
+												<option>Machakos</option>
+												<option>Makueni</option>
+												<option>Mandera</option>
+												<option>Meru</option>
+												<option>Migori</option>
+												<option>Mombasa</option>
+												<option>Murang'a</option>
+												<option>Narok</option>
+												<option>Nandi</option>
+												<option>Nairobi</option>
+												<option>Nyamira</option>
+												<option>Nyandarua</option>
+												<option>West Pokot</option>
+												<option>Wajir</option>
+												<option>Trans Nzoia</option>
+												<option>Samburu</option>
+												<option>Siaya</option>
+												<option>Tanariver</option>
+												<option>Taita Taveta</option>
+												<option>Tharaka Nithi</option>
+												<option>Uasin Gishu</option>
+												<option>Vihiga</option>
+												<option>Wajir</option>
+											</select>
+										</div>
 
+										<div class="form-group">
+											<div class="range-slider">
+												<div data-min="0" data-max="5000000"
+													data-unit="Ksh."
+													data-min-name="min_price"
+													data-max-name="max_price"
+													class="range-slider-ui ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all"
+													aria-disabled="false">
+													<span
+														class="min-value">Ksh.0</span>
+													<span
+														class="max-value">Ksh.5,000,000</span>
+													<input class="current-min"
+														type="hidden"
+														name="min_price"
+														value="0">
+													<input class="current-max"
+														type="hidden"
+														name="max_price"
+														value="5000000">
+													<div class="ui-slider-range ui-widget-header ui-corner-all"
+														style="left: 0%; width: 100%;">
+													</div>
+													<a class="ui-slider-handle ui-state-default ui-corner-all"
+														href="#"
+														style="left: 0%;"></a>
+													<a class="ui-slider-handle ui-state-default ui-corner-all"
+														href="#"
+														style="left: 100%;"></a>
+												</div>
+											</div>
+										</div>
+										<div class="form-group mb-0">
+											<button
+												class="search-button">Search</button>
+										</div>
+									</form>
 
-                <!-- Payments Integration Feature -->
-                <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-duration="1000">
-                    <div class="card h-100 shadow">
-                        <div class="card-body">
-                            <div class="feature-icon mb-3">
-                                <i class="fas fa-credit-card" style="color: #003366; font-size: 2rem;"></i>
-                            </div>
-                            <h3>Seamless Payment Processing</h3>
-                            <p style="font-size: 0.7;">Lease Captain integrates with Mpesa and major banks, allowing tenants to pay via Mpesa STK Push through the tenant portal. Payments are instantly recorded and you’re notified when a payment is made to your bank.</p>
-                        </div>
-                    </div>
-                </div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!--==================================================-->
+	<!-- End Banner Area -->
+	<!--==================================================-->
 
-                <!-- Updated Tenant Records Feature -->
-                <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-duration="1000">
-                    <div class="card h-100 shadow">
-                        <div class="card-body">
-                            <div class="feature-icon mb-3">
-                                <i class="fas fa-user-check" style="color: #003366; font-size: 2rem;"></i>
-                            </div>
-                            <h3>Tenant Records</h3>
-                            <p style="font-size: 0.8;">Keep detailed and current tenant records with Lease Captain. Easily manage account
-                                balances, invoices, and payment history to resolve disputes swiftly and ensure all
-                                tenant data is accurate.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Invoice/Receipt Management Feature -->
-                <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-duration="1000">
-                    <div class="card h-100 shadow">
-                        <div class="card-body">
-                            <div class="feature-icon mb-3">
-                                <i class="fas fa-file-invoice-dollar" style="color: #003366; font-size: 2rem;"></i>
-                            </div>
-                            <h3>Advanced Invoice Management</h3>
-                            <p style="font-size: 0.8;">Send digital invoices and receipts directly via SMS, keeping records organized and making
-                                it easy to stay paperless with Lease Captain’s secure transaction storage.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SMS Communication Feature -->
-                <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-duration="1000">
-                    <div class="card h-100 shadow">
-                        <div class="card-body">
-                            <div class="feature-icon mb-3">
-                                <i class="fas fa-sms" style="color: #003366; font-size: 2rem;"></i>
-                            </div>
-                            <h3>SMS/Email Communication</h3>
-                            <p style="font-size: 0.8;">Easily send tenants important updates, payment reminders, and announcements with SMS
-                                notifications. Manage all communication from your dashboard for seamless engagement.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Task Automation Feature -->
-                <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-duration="1000">
-                    <div class="card h-100 shadow">
-                        <div class="card-body">
-                            <div class="feature-icon mb-3">
-                                <i class="fas fa-sync-alt" style="color: #003366; font-size: 2rem;"></i>
-                            </div>
-                            <h3>Automate Routine Tasks</h3>
-                            <p style="font-size: 0.8;">Streamline your workflow by automating routine tasks like payment notifications, receipt
-                                generation, and record updates. Lease Captain lets you focus on growing your business by
-                                handling the rest.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Reports & Statements Feature -->
-                <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-duration="1000">
-                    <div class="card h-100 shadow">
-                        <div class="card-body">
-                            <div class="feature-icon mb-3">
-                                <i class="fas fa-chart-line" style="color: #003366; font-size: 2rem;"></i>
-                            </div>
-                            <h3>Reports</h3>
-                            <p style="font-size: 0.8;">Generate comprehensive reports and statements for tenants, properties, and landlords at
-                                the push of a button. Lease Captain keeps you informed with clear and organized
-                                financial data.</p>
-                        </div>
-                    </div>
-                </div>
-                <style>
-                    .feature-icon {
-                        font-size: 2rem;
-                        color: #003366;
-                        margin-bottom: 15px;
-                    }
-
-                    @media (max-width: 768px) {
-                        .feature-icon {
-                            font-size: 1.5rem;
-                        }
-
-                        .card-body h3 {
-                            font-size: 1.0rem;
-                        }
-
-                        .card-body p {
-                            font-size: 0.3rem;
-                        }
-
-                        .card {
-                            margin-bottom: 20px;
-                        }
-
-                        .row.text-center>div {
-                            margin-bottom: 20px;
-                        }
-                    }
-
-                    @media (max-width: 576px) {
-                        .container {
-                            padding-left: 15px;
-                            padding-right: 15px;
-                        }
-
-                        .card-body {
-                            padding: 10px;
-                        }
-
-                        h2 {
-                            font-size: 0.9rem;
-                        }
-
-                        .card-body p {
-                            font-size: 0.5rem;
-                        }
-                    }
-                </style>
-            </div>
-        </div>
-    </section>
-
-    <section id="dashboard-preview" class="dashboard-preview-section text-center py-5">
-        <div class="container">
-            <h2 class="font-weight-bold mb-4">Dashboard Preview</h2>
-            <ul class="intro-list mb-5">
-                <li><strong>Efficient Management:</strong> Experience efficient, modern property management with Lease Captain.</li>
-                <li><strong>Intuitive Dashboards:</strong> Our platform provides intuitive dashboards for both property managers and tenants.</li>
-                <li><strong>Streamlined Operations:</strong> Streamline operations and enhance communication.</li>
-                <li><strong>Seamless Management:</strong> Explore the power of seamless management with Lease Captain.</li>
-            </ul>
-<style>
-    .intro-list {
-    list-style-type: none; /* Remove default bullet points */
-    padding: 0; /* Remove padding */
-}
-
-.intro-list li {
-    margin-bottom: 10px; /* Space between list items */
-    font-size: 0.8rem; /* Adjust font size as needed */
-    color: #003366; /* Use your theme color */
-}
-
-.intro-list li strong {
-    color: #00509e; /* Differentiate the strong text */
-}
-
-</style>            
-            <div class="row-container">
-                <!-- Laptop Dashboard Preview -->
-                <div class="laptop-frame">
-                    <div class="laptop-border">
-                        <img src="/images/dashboard.png" alt="Dashboard Screenshot" class="dashboard-screenshot">
-                    </div>
-                    <p class="preview-label">Lease Captain Dashboard</p>
-                </div>
-
-                <!-- Tenant Portal Preview -->
-                <div class="tenant-portal">
-                    <div class="laptop-border">
-                        <img src="/images/tenantdash.png" alt="Tenant Portal Screenshot" class="dashboard-screenshot">
-                    </div>
-                    <p class="preview-label">Tenant Portal</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <style>
-        /* Main section styling */
-        .dashboard-preview-section {
-            background-color: #f8f9fa;
-            padding: 60px 0;
-        }
-
-        #dashboard-preview h2 {
-            color: #001b36;
-            font-size: 2.5rem;
-            margin-bottom: 30px;
-        }
-
-        .core-feature-intro {
-            font-weight: bold;
-            font-size: 1.5rem;
-            background: linear-gradient(120deg, #003366, #0056b3);
-            -webkit-text-fill-color: transparent;
-            margin-top: 20px;
-            padding-bottom: 5px;
-            border-bottom: 3px solid #003366;
-            display: inline-block;
-            text-align: center;
-        }
-
-
-        /* Row container for flex layout */
-        .row-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        /* Shared styling for laptop and tenant portal frames */
-        .laptop-frame,
-        .tenant-portal {
-            position: relative;
-            width: 45%;
-            /* Adjust width as needed */
-            max-width: 600px;
-            padding: 10px;
-            border-radius: 15px;
-            box-shadow: 0px 15px 35px rgba(0, 0, 0, 0.3);
-            background: #ffffff;
-            text-align: center;
-        }
-
-        /* Laptop frame and portal border */
-        .laptop-border {
-            border-radius: 8px;
-            overflow: hidden;
-            background-color: #1a1a1a;
-            padding: 10px;
-            position: relative;
-        }
-
-        /* Dashboard screenshot styling */
-        .dashboard-screenshot {
-            width: 100%;
-            height: auto;
-            border-radius: 4px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease-in-out;
-        }
-
-        .laptop-frame:hover .dashboard-screenshot,
-        .tenant-portal:hover .dashboard-screenshot {
-            transform: scale(1.04);
-        }
-
-        /* Subtle animation */
-        .laptop-frame,
-        .tenant-portal {
-            animation: fadeInUp 1s ease both;
-        }
-
-        @keyframes fadeInUp {
-            0% {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Responsive adjustments for smaller screens */
-        @media (max-width: 568px) {
-            #dashboard-preview h2 {
-                font-size: 1.2rem;
-            }
-
-            #intro-paragraph h4 {
-                font-size: 0.7rem;
-            }
-
-            .row-container {
-                flex-direction: column;
-            }
-
-            .laptop-frame,
-            .tenant-portal {
-                width: 100%;
-            }
-        }
-    </style>
-
-    <!-- Reviews Section -->
-    <section id="reviews-section" class="py-4">
-        <div class="container">
-            <h2 class="text-center" style="color: #001b36; font-weight: bold; font-size: 1.2rem;">What Our Clients Say
-            </h2>
-
-            <!-- Carousel for Sliding Reviews -->
-            <div id="reviewsCarousel" class="carousel slide mt-4" data-ride="carousel">
-                <div class="carousel-inner">
-                    <!-- Review 1 -->
-                    <div class="carousel-item active">
-                        <div class="row">
-                            <div class="col-12 col-md-8 offset-md-2">
-                                <div class="card p-4">
-                                    <p class="lead" style="font-size: 0.8rem;">"Lease Captain has transformed how I
-                                        manage my properties. It's a life-saver!"</p>
-                                    <h5 class="font-weight-bold" style="font-size: 0.8rem;">- Moses Grey, Property
-                                        Manager</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Review 2 -->
-                    <div class="carousel-item">
-                        <div class="row">
-                            <div class="col-12 col-md-8 offset-md-2">
-                                <div class="card p-4">
-                                    <p class="lead" style="font-size: 0.8rem;">"I love the ease of use and the detailed
-                                        reporting features. Highly recommend!"</p>
-                                    <h5 class="font-weight-bold" style="font-size: 0.8rem;">- Joseph Waithima, Real Estate
-                                        Investor</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Review 3 -->
-                    <div class="carousel-item">
-                        <div class="row">
-                            <div class="col-12 col-md-8 offset-md-2">
-                                <div class="card p-4">
-                                    <p class="lead" style="font-size: 0.8rem;">"The best property management tool I’ve
-                                        used. It has everything I need in one place."</p>
-                                    <h5 class="font-weight-bold" style="font-size: 0.8rem;">- Emily White, Landlord</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Review 4 -->
-                    <div class="carousel-item">
-                        <div class="row">
-                            <div class="col-12 col-md-8 offset-md-2">
-                                <div class="card p-4">
-                                    <p class="lead" style="font-size: 0.8rem;">"Lease Captain has helped me streamline my
-                                        property management and save so much time!"</p>
-                                    <h5 class="font-weight-bold" style="font-size: 0.8rem;">- Tawanda Nyoni, Property
-                                        Manager</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Review 5 -->
-                    <div class="carousel-item">
-                        <div class="row">
-                            <div class="col-12 col-md-8 offset-md-2">
-                                <div class="card p-4">
-                                    <p class="lead" style="font-size: 0.8rem;">"It's an all-in-one tool that makes
-                                        managing my rental properties much easier."</p>
-                                    <h5 class="font-weight-bold" style="font-size: 0.8rem;">- Ayodele Adebayo, Real Estate
-                                        Investor</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Review 6 -->
-                    <div class="carousel-item">
-                        <div class="row">
-                            <div class="col-12 col-md-8 offset-md-2">
-                                <div class="card p-4">
-                                    <p class="lead" style="font-size: 0.8rem;">"I appreciate the detailed tenant records
-                                        and easy-to-use dashboard. It's made my life easier!"</p>
-                                    <h5 class="font-weight-bold" style="font-size: 0.8rem;">- Kofi Mensah, Landlord</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Review 7 -->
-                    <div class="carousel-item">
-                        <div class="row">
-                            <div class="col-12 col-md-8 offset-md-2">
-                                <div class="card p-4">
-                                    <p class="lead" style="font-size: 0.8rem;">"This platform has really improved how I
-                                        track payments and stay organized. Highly recommend it!"</p>
-                                    <h5 class="font-weight-bold" style="font-size: 0.8rem;">- Zanele Moyo, Property
-                                        Manager</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Review 8 -->
-                    <div class="carousel-item">
-                        <div class="row">
-                            <div class="col-12 col-md-8 offset-md-2">
-                                <div class="card p-4">
-                                    <p class="lead" style="font-size: 0.8rem;">"I can easily manage multiple properties
-                                        and stay on top of everything with Lease Captain!"</p>
-                                    <h5 class="font-weight-bold" style="font-size: 0.8rem;">- Kwame Owusu, Real Estate
-                                        Investor</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Carousel Controls -->
-                <a class="carousel-control-prev" href="#reviewsCarousel" role="button" data-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Previous</span>
-                </a>
-                <a class="carousel-control-next" href="#reviewsCarousel" role="button" data-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Next</span>
-                </a>
-            </div>
-        </div>
-    </section>
-
-<!-- Pricing Section -->
-<section id="pricing-section" class="py-5 bg-light">
+<!--==================================================-->
+<!-- Start Feature Area -->
+<!--==================================================-->
+<div class="feature-area">
     <div class="container">
-        <h3 class="text-center mb-5" style="color: #001b36; font-size: 1.75rem;">
-            <i class="fas fa-tags mr-2"></i> <strong>Our Pricing Plans</strong>
-        </h3>
-        <p style="font-size: smaller;">Slide to view</p>
-
-        <!-- Row for Pricing Cards with Responsive Layout -->
-        <div class="row flex-nowrap overflow-auto text-center">
-
-            <!-- Standard Plan -->
-            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
-                <div class="card h-100 shadow border-0">
-                    <div class="card-body text-center">
-                        <div class="feature-icon mb-3" style="font-size: 1.75rem; color: #003366;">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <h3 class="card-title" style="color: #003366; font-size: 1.5rem;">Standard</h3>
-                        <p class="lead" style="font-size: 1.1rem;">Up to 20 Units</p>
-                        <p class="font-weight-bold" style="font-size: 1.25rem;">
-                            Ksh.1,499 <span class="text-muted" style="font-size: 0.6rem; vertical-align: super;">/ month</span>
-                        </p>
-                        <p style="font-size: 0.8rem;">Designed for small property managers looking to streamline unit management.</p>
-                        <a href="/signup?plan=Standard" class="btn btn-primary animated-button mt-3">Get Started Today!</a>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-title text-center">
+                    <h2><strong>Lease Captain Core Features</strong></h2>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <!-- Feature 1 -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="feature-single-box shadow h-100">
+                    <div class="feature-icon mb-3">
+                        <img src="/assets/images/resource/feature-icon1.png" alt="Rent a Property">
+                    </div>
+                    <div class="feature-content">
+                        <h4><a href="#">Rent a Property</a></h4>
+                        <p>Discover a wide selection of properties for lease. Whether you're looking for a commercial space or residential property, find the perfect match here.</p>
+                    </div>
+                    <div class="feature-btn">
+                        <a href="#">Explore Properties <i class="bi bi-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
 
-            <!-- Pro Plan -->
-            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <div class="feature-icon mb-3" style="font-size: 1.75rem; color: #003366;">
-                            <i class="fas fa-building"></i>
-                        </div>
-                        <h3 class="card-title" style="color: #003366; font-size: 1.5rem;">Pro</h3>
-                        <p class="lead" style="font-size: 1.1rem;">Up to 50 Units</p>
-                        <p class="font-weight-bold" style="font-size: 1.25rem;">
-                            Ksh.2,999 <span class="text-muted" style="font-size: 0.8rem; vertical-align: super;">/ month</span>
-                        </p>
-                        <p style="font-size: 0.8rem;">Ideal for medium-sized portfolios seeking comprehensive management tools.</p>
-                        <a href="/signup?plan=Pro" class="btn btn-primary animated-button mt-3">Get Started Today!</a>
+            <!-- Feature 2 -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="feature-single-box shadow h-100">
+                    <div class="feature-icon mb-3">
+                        <img src="/assets/images/resource/feature-icon2.png" alt="List Your Property">
+                    </div>
+                    <div class="feature-content">
+                        <h4><a href="#">List Your Property</a></h4>
+                        <p>Lease Captain connects you with potential tenants to ensure your property doesn’t stay vacant for long.</p>
+                    </div>
+                    <div class="feature-btn">
+                        <a href="#">Get Started <i class="bi bi-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
 
-            <!-- Advanced Plan -->
-            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <div class="feature-icon mb-3" style="font-size: 1.75rem; color: #003366;">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <h3 class="card-title" style="color: #003366; font-size: 1.5rem;">Advanced</h3>
-                        <p class="lead" style="font-size: 1.1rem;">Up to 100 Units</p>
-                        <p class="font-weight-bold" style="font-size: 1.25rem;">
-                            Ksh.4,499 <span class="text-muted" style="font-size: 0.8rem; vertical-align: super;">/ month</span>
-                        </p>
-                        <p style="font-size: 0.8rem;">Perfect for larger portfolios, equipped with all essential features.</p>
-                        <a href="/signup?plan=Advanced" class="btn btn-primary animated-button mt-3">Get Started Today!</a>
+            <!-- Feature 3 -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="feature-single-box shadow h-100">
+                    <div class="feature-icon mb-3">
+                        <img src="/assets/images/resource/feature-icon3.png" alt="Lease Captain Software">
+                    </div>
+                    <div class="feature-content">
+                        <h4><a href="#">Lease Captain Software</a></h4>
+                        <p>Streamline your property management process with our cutting-edge software. Manage leasing, tenant tracking, and property maintenance effortlessly.</p>
+                    </div>
+                    <div class="feature-btn">
+                        <a href="#">Request Demo <i class="bi bi-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
 
-            <!-- Enterprise Plan -->
-            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <div class="feature-icon mb-3" style="font-size: 1.75rem; color: #003366;">
-                            <i class="fas fa-city"></i>
-                        </div>
-                        <h3 class="card-title" style="color: #003366; font-size: 1.5rem;">Enterprise</h3>
-                        <p class="lead" style="font-size: 1.1rem;">Up to 150 Units</p>
-                        <p class="font-weight-bold" style="font-size: 1.25rem;">
-                            Ksh.6,999 <span class="text-muted" style="font-size: 0.8rem; vertical-align: super;">/ month</span>
-                        </p>
-                        <p style="font-size: 0.8rem;">Designed for substantial portfolios, offering complete management flexibility.</p>
-                        <a href="/signup?plan=Enterprise" class="btn btn-primary animated-button mt-3">Get Started Today!</a>
+            <!-- Feature 4 -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="feature-single-box shadow h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-credit-card" style="color: #003366; font-size: 2rem;"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Seamless Payment Processing</h4>
+                        <p>Lease Captain integrates with Mpesa and major banks, allowing tenants to pay via Mpesa STK Push through the tenant portal. Payments are instantly recorded.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Custom Plan -->
-            <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <div class="feature-icon mb-3" style="font-size: 1.75rem; color: #003366;">
-                            <i class="fas fa-briefcase"></i>
-                        </div>
-                        <h3 class="card-title" style="color: #003366; font-size: 1.5rem;">Premium</h3>
-                        <p class="lead" style="font-size: 1.1rem;">Unlimited Units</p>
-                        <p class="font-weight-bold" style="font-size: 1.5rem;">Custom</p>
-                        <p style="font-size: 0.8rem;">Contact us for a personalized plan tailored to your portfolio’s specific needs.</p>
-                        <a href="/signup?plan=Custom" class="btn btn-primary animated-button mt-3">Get Started Today!</a>
+            <!-- Feature 5 -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="feature-single-box shadow h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-user-check" style="color: #003366; font-size: 2rem;"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Tenant Records</h4>
+                        <p>Keep detailed tenant records, manage account balances, invoices, and payment history to resolve disputes efficiently.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 6 -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="feature-single-box shadow h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-file-invoice-dollar" style="color: #003366; font-size: 2rem;"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Advanced Invoice Management</h4>
+                        <p>Send digital invoices and receipts directly via SMS. Keep records organized and paperless with secure transaction storage.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 7 -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="feature-single-box shadow h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-sms" style="color: #003366; font-size: 2rem;"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>SMS/Email Communication</h4>
+                        <p>Send important updates, payment reminders, and announcements with SMS notifications. Manage all communication from your dashboard.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 8 -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="feature-single-box shadow h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-sync-alt" style="color: #003366; font-size: 2rem;"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Automate Routine Tasks</h4>
+                        <p>Automate tasks like payment notifications, receipt generation, and record updates. Focus on growing your business while Lease Captain handles the rest.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 9 -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="feature-single-box shadow h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-chart-line" style="color: #003366; font-size: 2rem;"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h4>Reports</h4>
+                        <p>Generate detailed reports and statements for tenants, properties, and landlords. Stay informed with clear financial data.</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
+<!--==================================================-->
+<!-- End Feature Area -->
+<!--==================================================-->
 
 
 
+	<!--==================================================-->
+	<!-- Start Choose Us Area -->
+	<!--==================================================-->
+	<div class="choose-us-area">
+		<div class="container-fluid pl-0 pr-50">
+			<div class="row align-items-center">
+				<div class="col-lg-6 col-md-12"></div>
+				<div class="col-lg-6 col-md-12">
+					<div class="choose-us-left">
+						<div class="section-title">
+							<div class="section-sub-thumb">
+								<img src="/assets/images/resource/s-title-shape.png" alt="">
+							</div>
+							<div class="section-main-title choose">
+								<h2>Why Choose Us</h2>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-lg-6 col-md-12">
+								<div class="choose-us-box active">
+									<div class="choose-icon-thumb">
+										<img src="/assets/images/resource/choose-icon1.png"
+											alt="">
+									</div>
+									<div class="choose-content active">
+										<p>The Perfect Residency </p>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6 col-md-12">
+								<div class="choose-us-box">
+									<div class="choose-icon-thumb">
+										<img src="/assets/images/resource/choose-icon2.png"
+											alt="">
+									</div>
+									<div class="choose-content">
+										<p>List Your Own Property </p>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6 col-md-12">
+								<div class="choose-us-box">
+									<div class="choose-icon-thumb">
+										<img src="/assets/images/resource/choose-icon3.png"
+											alt="">
+									</div>
+									<div class="choose-content">
+										<p>Trusted by Thousands </p>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6 col-md-12">
+								<div class="choose-us-box">
+									<div class="choose-icon-thumb">
+										<img src="assets/images/resource/choose-icon4.png"
+											alt="">
+									</div>
+									<div class="choose-content">
+										<p>Meeting with Agent </p>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6 col-md-12">
+								<div class="choose-us-box">
+									<div class="choose-icon-thumb">
+										<img src="/assets/images/resource/choose-icon5.png"
+											alt="">
+									</div>
+									<div class="choose-content">
+										<p>Built-in Storage</p>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6 col-md-12">
+								<div class="choose-us-box">
+									<div class="choose-icon-thumb">
+										<img src="/assets/images/resource/choose-icon6.png"
+											alt="">
+									</div>
+									<div class="choose-content">
+										<p>Select the Best Place</p>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6 col-md-12">
+								<div class="choose-us-box">
+									<div class="choose-icon-thumb">
+										<img src="/assets/images/resource/choose-icon7.png"
+											alt="">
+									</div>
+									<div class="choose-content">
+										<p>Global Architect</p>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6 col-md-12">
+								<div class="choose-us-box">
+									<div class="choose-icon-thumb">
+										<img src="/assets/images/resource/choose-icon8.png"
+											alt="">
+									</div>
+									<div class="choose-content">
+										<p>Go Out & Explore</p>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6 col-md-12">
+								<div class="choose-us-box">
+									<div class="choose-icon-thumb">
+										<img src="/assets/images/resource/choose-icon9.png"
+											alt="">
+									</div>
+									<div class="choose-content">
+										<p>Find Your Dream</p>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6 col-md-12">
+								<div class="choose-us-box">
+									<div class="choose-icon-thumb">
+										<img src="/assets/images/resource/choose-icon10.png"
+											alt="">
+									</div>
+									<div class="choose-content">
+										<p>Safest and Efficient Property Management
+											Software</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--==================================================-->
+	<!-- End Choose Us Area -->
+	<!--==================================================-->
 
-    <style>
-        /* Pricing Section Styles */
-        #pricing-section {
-            background-color: #f8f9fa;
-            padding: 1.5rem 0.5rem;
-        }
+	<!--==================================================-->
+	<!-- Start Service Area -->
+	<!--==================================================-->
+	<div class="service-area">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="section-title text-center">
+						<div class="section-main-title">
+							<h2>Discover Popular Properties in Kenya</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="service_list owl-carousel">
+					<!-- Property 1 -->
+					<div class="col-lg-12">
+						<div class="service-single-box">
+							<div class="service-thumb">
+								<img src="/assets/images/service/service1.png" alt="">
+								<div class="service-rate">
+									<h4>KSh 100,000<span>/Month</span></h4>
+								</div>
+							</div>
+							<div class="service-content">
+								<div class="service-title">
+									<h4><a href="#">Modern Apartment with Scenic Views</a>
+									</h4>
+								</div>
+								<div class="service-description">
+									<p>Beautiful apartment located in the heart of Nairobi
+										with breathtaking views of the city.</p>
+								</div>
+								<div class="service-facilities">
+									<ul>
+										<li>
+											<div class="service-icon-thumb">
+												<img src="/assets/images/service/service-icon1.png"
+													alt="">
+											</div>
+											<span>3 Bedrooms</span>
+										</li>
+										<li>
+											<div class="service-icon-thumb">
+												<img src="/assets/images/service/service-icon2.png"
+													alt="">
+											</div>
+											<span>2 Bathrooms</span>
+										</li>
+										<li>
+											<div class="service-icon-thumb">
+												<img src="/assets/images/service/service-icon3.png"
+													alt="">
+											</div>
+											<span>Parking</span>
+										</li>
+									</ul>
+								</div>
+								<div class="service-address">
+									<div class="service-location">
+										<span><i class="bi bi-geo-alt"></i> Lavington,
+											Nairobi</span>
+									</div>
+									<div class="service-icon">
+										<span><i class="bi bi-heart"></i></span>
+										<span><i class="bi bi-arrow-right"></i></span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- Property 2 -->
+					<div class="col-lg-12">
+						<div class="service-single-box">
+							<div class="service-thumb">
+								<img src="assets/images/service/service2.png" alt="">
+								<div class="service-rate">
+									<h4>KSh 80,000<span>/Month</span></h4>
+								</div>
+							</div>
+							<div class="service-content">
+								<div class="service-title">
+									<h4><a href="#">Spacious Single Family Home</a></h4>
+								</div>
+								<div class="service-description">
+									<p>A cozy family home located in the serene area of
+										Karen, perfect for your family.</p>
+								</div>
+								<div class="service-facilities">
+									<ul>
+										<li>
+											<div class="service-icon-thumb">
+												<img src="assets/images/service/service-icon1.png"
+													alt="">
+											</div>
+											<span>4 Bedrooms</span>
+										</li>
+										<li>
+											<div class="service-icon-thumb">
+												<img src="assets/images/service/service-icon2.png"
+													alt="">
+											</div>
+											<span>3 Bathrooms</span>
+										</li>
+										<li>
+											<div class="service-icon-thumb">
+												<img src="assets/images/service/service-icon3.png"
+													alt="">
+											</div>
+											<span>Garage</span>
+										</li>
+									</ul>
+								</div>
+								<div class="service-address">
+									<div class="service-location">
+										<span><i class="bi bi-geo-alt"></i> Karen,
+											Nairobi</span>
+									</div>
+									<div class="service-icon">
+										<span><i class="bi bi-heart"></i></span>
+										<span><i class="bi bi-arrow-right"></i></span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- Property 3 -->
+					<div class="col-lg-12">
+						<div class="service-single-box">
+							<div class="service-thumb">
+								<img src="/assets/images/service/service3.png" alt="">
+								<div class="service-rate">
+									<h4>KSh 120,000<span>/Month</span></h4>
+								</div>
+							</div>
+							<div class="service-content">
+								<div class="service-title">
+									<h4><a href="#">Luxury Family Home with Pool</a></h4>
+								</div>
+								<div class="service-description">
+									<p>This luxurious family home in Gigiri comes with a pool
+										and spacious garden for relaxation.</p>
+								</div>
+								<div class="service-facilities">
+									<ul>
+										<li>
+											<div class="service-icon-thumb">
+												<img src="/assets/images/service/service-icon1.png"
+													alt="">
+											</div>
+											<span>5 Bedrooms</span>
+										</li>
+										<li>
+											<div class="service-icon-thumb">
+												<img src="assets/images/service/service-icon2.png"
+													alt="">
+											</div>
+											<span>4 Bathrooms</span>
+										</li>
+										<li>
+											<div class="service-icon-thumb">
+												<img src="/assets/images/service/service-icon3.png"
+													alt="">
+											</div>
+											<span>Swimming Pool</span>
+										</li>
+									</ul>
+								</div>
+								<div class="service-address">
+									<div class="service-location">
+										<span><i class="bi bi-geo-alt"></i> Gigiri,
+											Nairobi</span>
+									</div>
+									<div class="service-icon">
+										<span><i class="bi bi-heart"></i></span>
+										<span><i class="bi bi-arrow-right"></i></span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- Add more properties as needed... -->
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--==================================================-->
+	<!-- End Service Area -->
+	<!--==================================================-->
 
-        #pricing-section h3 {
-            color: #003366;
-            font-size: 2rem;
-            font-weight: bold;
-        }
 
-        #pricing-section .row {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-            /* Distribute cards evenly */
-            gap: 1rem;
-        }
+	<!--==================================================-->
+	<!-- Start About Area -->
+	<!--==================================================-->
+	<div class="about-area">
+		<div class="container">
+			<div class="row">
+				<!-- Left Section: Text Content -->
+				<div class="col-lg-6 col-md-12">
+					<div class="section-title">
+						<div class="section-sub-thumb">
+							<img src="/assets/images/resource/s-title-shape.png" alt="">
+						</div>
+						<div class="section-main-title about">
+							<h2>Your Trusted Partner in Property Management</h2>
+						</div>
+					</div>
+					<div class="about-description">
+						<p>We specialize in providing end-to-end property management solutions that
+							help property owners streamline operations, increase rental income, and
+							maintain high tenant satisfaction. Our experienced team handles
+							everything from tenant acquisition to maintenance, ensuring your
+							property operates smoothly and profitably.</p>
+					</div>
+					<!-- About Features -->
+					<div class="about-single-box">
+						<div class="about-icon">
+							<i class="fas fa-users"></i>
+							<!-- Icon for Comprehensive Tenant Management -->
+						</div>
+						<div class="about-text">
+							<h4>Comprehensive Tenant Management</h4>
+							<p>We handle everything from finding the right tenants to managing
+								leases and payments, ensuring a seamless experience for both
+								property owners and tenants.</p>
+						</div>
+					</div>
+					<div class="about-single-box">
+						<div class="about-icon">
+							<i class="fas fa-bullhorn"></i>
+							<!-- Icon for Property Advertisements -->
+						</div>
+						<div class="about-text">
+							<h4>Property Advertisements</h4>
+							<p>We help you effectively market your property to reach a wider
+								audience. Our team creates compelling listings with high-quality
+								images and detailed descriptions to attract the right tenants
+								quickly and efficiently.</p>
+						</div>
+					</div>
 
-        .card {
-            border: none;
-            border-radius: 10px;
-            padding: 0.5rem;
-            transition: transform 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            /* Align content properly */
-            height: 80%;
-        }
+				</div>
+				<!-- Right Section: Image Content -->
+				<div class="col-lg-6 col-md-12">
+					<div class="about-images">
+						<div class="row">
+							<div class="col-lg-6 col-md-6">
+								<div class="about-shape">
+									<img src="/assets/images/about/about-shape1.png" alt="">
+								</div>
+							</div>
+							<div class="col-lg-6 col-md-6">
+								<div class="about-shape">
+									<img src="/assets/images/about/about-shape2.png" alt="">
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-lg-12">
+								<div class="about-thumb">
+									<img src="/assets/images/about/about-thumb.png" alt="">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--==================================================-->
+	<!-- End About Area -->
+	<!--==================================================-->
 
-        .card-body {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 80%;
-        }
 
-        .feature-icon {
-            font-size: 2rem;
-            color: #003366;
-            margin-bottom: 1rem;
-        }
+	<!-- Pricing Section -->
+	<section id="pricing-section" class="py-5 bg-light">
+		<div class="container">
+			<h3 class="text-center mb-5" style="color: #001b36; font-size: 1.75rem;">
+				<i class="fas fa-tags mr-2"></i> <strong>Our Pricing Plans</strong>
+			</h3>
+			<p style="font-size: smaller;">Slide to view</p>
 
-        .card-title {
-            color: #003366;
-            font-weight: bold;
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-        }
+			<!-- Row for Pricing Cards with Responsive Layout -->
+			<div class="row flex-nowrap overflow-auto text-center">
 
-        .lead {
-            font-size: 1rem;
-        }
+				<!-- Standard Plan -->
+				<div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
+					<div class="card h-100 shadow border-0">
+						<div class="card-body text-center">
+							<div class="feature-icon mb-3"
+								style="font-size: 1.75rem; color: #003366;">
+								<i class="fas fa-user"></i>
+							</div>
+							<h3 class="card-title" style="color: #003366; font-size: 1.5rem;">
+								Standard</h3>
+							<p class="lead" style="font-size: 1.1rem;">Up to 20 Units</p>
+							<p class="font-weight-bold" style="font-size: 1.25rem;">
+								Ksh.1,499 <span class="text-muted"
+									style="font-size: 0.6rem; vertical-align: super;">/
+									month</span>
+							</p>
+							<p style="font-size: 0.8rem;">Designed for small property managers
+								looking to streamline unit management.</p>
+							<div class="hamilton-btn slider mt-3">
+								<a href="/signup?plan=Standard">Get Started!</a>
+							</div>
+						</div>
+					</div>
+				</div>
 
-        .font-weight-bold {
-            font-size: 1rem;
-            margin: 1rem 0;
-        }
+				<!-- Pro Plan -->
+				<div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
+					<div class="card h-100 shadow-sm">
+						<div class="card-body">
+							<div class="feature-icon mb-3"
+								style="font-size: 1.75rem; color: #003366;">
+								<i class="fas fa-building"></i>
+							</div>
+							<h3 class="card-title" style="color: #003366; font-size: 1.5rem;">Pro
+							</h3>
+							<p class="lead" style="font-size: 1.1rem;">Up to 50 Units</p>
+							<p class="font-weight-bold" style="font-size: 1.25rem;">
+								Ksh.2,999 <span class="text-muted"
+									style="font-size: 0.8rem; vertical-align: super;">/
+									month</span>
+							</p>
+							<p style="font-size: 0.8rem;">Ideal for medium-sized portfolios seeking
+								comprehensive management tools.</p>
+							<div class="hamilton-btn slider mt-3">
+								<a href="/signup?plan=Pro">Get Started!</a>
+							</div>
+						</div>
+					</div>
+				</div>
 
-        .btn-primary {
-            padding: 0.55rem 0.5rem;
-            font-size: 0.8rem;
-            border-radius: 25px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
+				<!-- Advanced Plan -->
+				<div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
+					<div class="card h-100 shadow-sm">
+						<div class="card-body">
+							<div class="feature-icon mb-3"
+								style="font-size: 1.75rem; color: #003366;">
+								<i class="fas fa-users"></i>
+							</div>
+							<h3 class="card-title" style="color: #003366; font-size: 1.5rem;">
+								Advanced</h3>
+							<p class="lead" style="font-size: 1.1rem;">Up to 100 Units</p>
+							<p class="font-weight-bold" style="font-size: 1.25rem;">
+								Ksh.4,499 <span class="text-muted"
+									style="font-size: 0.8rem; vertical-align: super;">/
+									month</span>
+							</p>
+							<p style="font-size: 0.8rem;">Perfect for larger portfolios, equipped
+								with all essential features.</p>
+							<div class="hamilton-btn slider mt-3">
+								<a href="/signup?plan=Advanced">Get Started!</a>
+							</div>
+						</div>
+					</div>
+				</div>
 
-        .btn-primary:hover {
-            background-color: #002a5c;
-            color: #ffffff;
-        }
+				<!-- Enterprise Plan -->
+				<div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
+					<div class="card h-100 shadow-sm">
+						<div class="card-body">
+							<div class="feature-icon mb-3"
+								style="font-size: 1.75rem; color: #003366;">
+								<i class="fas fa-city"></i>
+							</div>
+							<h3 class="card-title" style="color: #003366; font-size: 1.5rem;">
+								Enterprise</h3>
+							<p class="lead" style="font-size: 1.1rem;">Up to 150 Units</p>
+							<p class="font-weight-bold" style="font-size: 1.25rem;">
+								Ksh.6,999 <span class="text-muted"
+									style="font-size: 0.8rem; vertical-align: super;">/
+									month</span>
+							</p>
+							<p style="font-size: 0.8rem;">Designed for substantial portfolios,
+								offering complete management flexibility.</p>
+							<div class="hamilton-btn slider mt-3">
+								<a href="/signup?plan=Enterprise">Get Started!</a>
+							</div>
+						</div>
+					</div>
+				</div>
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 51, 102, 0.1);
-        }
+				<!-- Custom Plan -->
+				<div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
+					<div class="card h-100 shadow-sm">
+						<div class="card-body">
+							<div class="feature-icon mb-3"
+								style="font-size: 1.75rem; color: #003366;">
+								<i class="fas fa-briefcase"></i>
+							</div>
+							<h3 class="card-title" style="color: #003366; font-size: 1.5rem;">
+								Premium</h3>
+							<p class="lead" style="font-size: 1.1rem;">Unlimited Units</p>
+							<p class="font-weight-bold" style="font-size: 1.5rem;">Custom</p>
+							<p style="font-size: 0.8rem;">Contact us for a personalized plan
+								tailored to your portfolio’s specific needs.</p>
+							<div class="hamilton-btn slider mt-3">
+								<a href="/signup?plan=Custom">Get Started!</a>
+							</div>
+						</div>
+					</div>
+				</div>
 
-        /* Responsive Design for Smaller Screens */
-        @media (max-width: 992px) {
-            #pricing-section h3 {
-                font-size: 1rem;
-            }
+			</div>
+		</div>
+	</section>
 
-            .card-title {
-                font-size: 0.9rem;
-            }
 
-            .feature-icon {
-                font-size: 1rem;
-            }
+	<!--==================================================-->
+	<!-- Start Apartment Area -->
+	<!--==================================================-->
+	<div class="apartment-area">
+		<div class="container">
 
-            .font-weight-bold {
-                font-size: 1rem;
-            }
+			<div class="col-lg-6 col-md-12">
+				<div class="apartment-box">
+					<div class="apartment-content">
+						<h2>Contact us today</h2>
+						<p>We are happy to help. Anytime.</p>
+					</div>
+					<form action="/submit" method="POST" id="tech-time">
+						<div class="row align-items-center">
+							<div class="col-lg-6 col-md-6">
+								<div class="form-box inner">
+									<input type="text" name="name" placeholder="Name">
+									<i class="bi bi-person"></i>
+								</div>
+							</div>
+							<div class="col-lg-6 col-md-6">
+								<div class="form-box inner">
+									<input type="text" name="email"
+										placeholder="Email Address">
+									<i class="bi bi-envelope"></i>
+								</div>
+							</div>
+							<div class="col-lg-6 col-md-6">
+								<div class="form-box inner">
+									<input type="text" name="number" placeholder="Phone">
+									<i class="fas fa-tty"></i>
+								</div>
+							</div>
+							<div class="col-lg-6 col-md-6">
+								<div class="form-box inner">
+									<input type="text" name="name" placeholder="Address">
+									<i class="bi bi-geo-alt"></i>
+								</div>
+							</div>
+							<div class="col-lg-12">
+								<div class="form-box inner">
+									<textarea name="massage" id="massage" cols="30" rows="10"
+										placeholder="How can we help you? Feel free to get in touch!"></textarea>
+									<i class="bi bi-pencil"></i>
+								</div>
+							</div>
+							<div class="col-lg-6 col-md-6">
+								<div class="form-box-button">
+									<button type="Submit">Get In Touch</button>
+								</div>
+							</div>
+							<div class="col-lg-6 col-md-6">
+								<div class="checkbox-box">
+									<input type="checkbox" id="reviewcheck"
+										name="reviewcheck">
+									<label for="reviewcheck"> I agree that my data is <a
+											href="#">collected</a>.</label>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--==================================================-->
+	<!-- End Apartment Area -->
+	<!--==================================================-->
 
-            .btn-primary {
-                font-size: 0.6rem;
-            }
+	<!--==================================================-->
+	<!-- Start Sidebar Area -->
+	<!--==================================================-->
+	<div class="sidebar-group info-group">
+		<div class="sidebar-widget">
+			<div class="sidebar-widget-container">
+				<div class="widget-heading">
+					<a href="#" class="close-side-widget">
+						<i class="bi bi-x-lg"></i>
+					</a>
+				</div>
+				<div class="sidebar-textwidget">
+					<div class="sidebar-info-contents">
+						<div class="content-inner">
+							<div class="sidebar-logo">
+								<a href="/"><img src="/assets/images/1.png"
+										alt="logo"></a>
+							</div>
+							<div class="sidebar-widget-menu">
+								<ul>
+									<li class="dropdown"><a href="#"
+											data-toggle="dropdown">Home</a>
+									</li>
+									<li class="dropdown"><a href="#"
+											data-toggle="dropdown">Service <i
+												class="icon-arrow"></i></a>
+										<ul class="dropdown-menu">
+											<li><a href="/service1">Services</a>
+											</li>
+											<li><a href="/services">Services
+													Details</a></li>
+										</ul>
+									</li>
+									<li class="dropdown"><a href="#"
+										data-toggle="dropdown">Blog <i
+											class="icon-arrow"></i></a>
+									<ul class="dropdown-menu">
+										<li><a href="/tech">Tech Spaces</a>
+										</li>
+										<li><a href="/updates">Managements updates</a></li>
+									</ul>
+								</li>
+									<li class="dropdown"><a href="#"
+										data-toggle="dropdown">About</a>
+								</li>
+								
+								</ul>
+							</div>
+							<div class="contact-info">
+								<h2>Contact Info</h2>
+								<ul class="list-style-one">
+									<li><i class="bi bi-telephone-fill"></i>(+254)
+										794-501-005</li>
+									<li><i class="bi bi-envelope"></i> info@leasecaptain.com</li>
+									<li><i class="bi bi-alarm-fill"></i> 24/7 Online Support</li>
+									</li>
+								</ul>
+							</div>
+							<ul class="social-box" style="list-style: none; display: flex; gap: 15px; padding: 0; margin-top: 20px;">
+								<li class="facebook">
+								    <a href="#" class="fab fa-facebook-f" style="text-decoration: none; font-size: 20px; color: black;"></a>
+								</li>
+								<li class="instagram">
+								    <a href="#" class="fab fa-instagram" style="text-decoration: none; font-size: 20px; color: black;"></a>
+								</li>
+								<li class="x">
+								    <a href="#" style="display: inline-block; text-decoration: none;">
+									 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="black">
+									     <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z" />
+									 </svg>
+								    </a>
+								</li>
+								<li class="youtube">
+								    <a href="#" class="fab fa-youtube" style="text-decoration: none; font-size: 20px; color: black;"></a>
+								</li>
+							   </ul>
+							   
+							   
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--==================================================-->
+	<!-- End Sidebar Area -->
+	<!--==================================================-->
 
-            .row {
-                justify-content: center;
-            }
+	<!--==================================================-->
+	<!-- Start Footer Area -->
+	<!--==================================================-->
+	<div class="footer-area" style="background-color: #004aad; color: #ffffff;">
+		<div class="container">
+			<div class="row">
+				<!-- Company Info -->
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-widget">
+						<div class="footer-widget-logo">
+							<a href="/"><img src="assets/images/1.png"
+									alt="Lease Captain Logo"></a>
+						</div>
+						<div class="footer-widget-text">
+							<p style="color: #ffffff;">Lease Captain offers innovative rental
+								management solutions, ensuring smooth operations for landlords
+								and tenants alike.</p>
+						</div>
+						<div class="footer-social-title">
+							<h4 style="color: #ffffff;">Follow Us</h4>
+						</div>
+						<div class="footer-social">
+							<ul style="display: flex; gap: 15px; padding: 0; list-style: none; align-items: center; margin: 0;">
+                                <li>
+                                    <a href="#" style="text-decoration: none;">
+                                        <i class="fab fa-facebook-f" style="color: #ffffff; font-size: 20px;"></i>
+                                    </a>
+                                </li>
+                                <li class="x">
+                                    <a href="#" style="display: inline-block; text-decoration: none;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="white">
+                                            <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z" />
+                                        </svg>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" style="text-decoration: none;">
+                                        <i class="fab fa-instagram" style="color: #ffffff; font-size: 20px;"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                            
+						</div>
+					</div>
+				</div>
+				<!-- Navigation Links -->
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-widget">
+						<div class="footer-widget-title">
+							<h4 style="color: #ffffff;">Quick Links</h4>
+						</div>
+						<div class="footer-widget-menu">
+							<ul style="list-style: none; padding: 0;">
+								<li><a href="#" style="color: #ffffff;"><i
+											class="bi bi-chevron-double-right"></i>
+										Home</a></li>
+								<li><a href="#" style="color: #ffffff;"><i
+											class="bi bi-chevron-double-right"></i>
+										About Us</a></li>
+								<li><a href="#" style="color: #ffffff;"><i
+											class="bi bi-chevron-double-right"></i>
+										Services</a></li>
+								<li><a href="#" style="color: #ffffff;"><i
+											class="bi bi-chevron-double-right"></i>
+										Contact</a></li>
+								<li><a href="#" style="color: #ffffff;"><i
+											class="bi bi-chevron-double-right"></i>
+										FAQ</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<!-- Services -->
+				<div class="col-lg-3 col-md-6">
+					<div class="footer-widget">
+						<div class="footer-widget-title">
+							<h4 style="color: #ffffff;">Our Services</h4>
+						</div>
+						<div class="footer-widget-menu">
+							<ul style="list-style: none; padding: 0;">
+								<li><a href="#" style="color: #ffffff;"><i
+											class="bi bi-chevron-double-right"></i>
+										Seamless Payment Processing</a></li>
+								<li><a href="#" style="color: #ffffff;"><i
+											class="bi bi-chevron-double-right"></i>
+										Tenant Records</a></li>
+								<li><a href="#" style="color: #ffffff;"><i
+											class="bi bi-chevron-double-right"></i>
+										Advanced Invoice Management</a></li>
+								<li><a href="#" style="color: #ffffff;"><i
+											class="bi bi-chevron-double-right"></i>
+										SMS/Email Communication</a></li>
+								<li><a href="#" style="color: #ffffff;"><i
+											class="bi bi-chevron-double-right"></i>
+										Automate Routine Tasks</a></li>
+								<li><a href="#" style="color: #ffffff;"><i
+											class="bi bi-chevron-double-right"></i>
+										Generate Comprehensive Reports</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
 
-            .col-md-6 {
-                flex: 0 0 50%;
-            }
-
-            .col-lg-3 {
-                flex: 0 0 100%;
-                /* Full width on small screens */
-            }
-        }
-
-        @media (max-width: 768px) {
-            .row {
-                justify-content: center;
-            }
-
-            .col-md-6,
-            .col-lg-3 {
-                flex: 0 0 100%;
-                /* Cards take full width */
-            }
-
-            #pricing-section h3 {
-                font-size: 0.9rem;
-            }
-
-            .feature-icon {
-                font-size: 1rem;
-            }
-
-            .card-title {
-                font-size: 0.9rem;
-            }
-
-            .font-weight-bold {
-                font-size: 1rem;
-            }
-
-            .btn-primary {
-                font-size: 0.7rem;
-                padding: 0.5rem 1rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            #pricing-section h3 {
-                font-size: 1.0rem;
-            }
-
-            .feature-icon {
-                font-size: 1rem;
-            }
-
-            .card-title {
-                font-size: 0.9rem;
-            }
-
-            .font-weight-bold {
-                font-size: 1rem;
-            }
-
-            .btn-primary {
-                font-size: 0.7rem;
-                padding: 0.5rem 1.2rem;
-            }
-        }
-    </style>
-
-<!-- Help Section -->
-<section id="help-section">
-    <div class="container">
-        <h2 class="help-title">Need Assistance?</h2>
-        <p class="help-intro">Let’s simplify property management—reach out, and we’ll make it easier for you!</p>
-        <div class="contact-btn-container">
-            <a href="/support" class="btn btn-support">
-                <i class="fas fa-headset"></i> Contact Support
-            </a>
-        </div>
-    </div>
-</section>
-
-<style>
-    /* Help Section Styles */
-    #help-section {
-        background-color: #ffffff; /* Clean white background */
-        padding: 60px 30px; /* Balanced padding */
-        border-radius: 10px; /* Slightly rounded corners */
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1); /* Larger, softer shadow */
-        margin: 0 auto;
-        max-width: 900px; /* Max width for centered content */
-        text-align: center;
-        position: relative;
-    }
-
-    /* Title Styles */
-    .help-title {
-        color: #2d2d2d; /* Dark gray for modern feel */
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin-bottom: 15px;
-        letter-spacing: 2px;
-    }
-
-    /* Intro Text Styles */
-    .help-intro {
-        color: #777; /* Medium gray */
-        font-size: 0.9rem;
-        line-height: 1.6;
-        margin-bottom: 25px;
-        max-width: 700px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    /* Button container */
-    .contact-btn-container {
-        margin-top: 30px;
-    }
-
-    /* Support Button Styling */
-    .btn-support {
-        display: inline-flex;
-        align-items: center;
-        background-color: #0056b3; /* Sleek blue */
-        color: #ffffff;
-        font-size: 0.9rem;
-        font-weight: 500;
-        border-radius: 30px; /* More rounded edges for a soft look */
-        text-decoration: none;
-        transition: all 0.3s ease;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    }
-
-    .btn-support i {
-        margin-right: 12px;
-        font-size: 0.9rem;
-    }
-
-    /* Button Hover Effect */
-    .btn-support:hover {
-        background-color: #004494;
-        transform: translateY(-3px);
-        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
-    }
-
-    /* Smooth Icon Animation */
-    .btn-support i {
-        animation: smooth-bounce 1.5s ease-in-out infinite;
-    }
-
-    @keyframes smooth-bounce {
-        0%, 100% {
-            transform: translateY(0);
-        }
-        50% {
-            transform: translateY(-6px);
-        }
-    }
-
-    /* Responsive Adjustments */
-    @media (max-width: 768px) {
-        .help-title {
-            font-size: 1rem;
-        }
-
-        .help-intro {
-            font-size: 0.8rem;
-        }
-
-        .btn-support {
-            font-size: 0.6rem;
-            padding: 14px 28px;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .btn-support {
-            font-size: 0.6rem;
-            padding: 12px 25px;
-        }
-    }
-</style>
-
+				<!-- Footer Bottom -->
+				<div class="row mt-4">
+					<div class="col-lg-12 text-center">
+						<p style="color: #ffffff;">&copy; 2024 Lease Captain. All Rights Reserved |
+							Powered by <a href="/" target="_blank"
+								style="color: #0051ff; text-decoration: underline;">Vickins
+								Technologies</a></p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--==================================================-->
+		<!-- End Footer Area -->
+		<!--==================================================-->
 
 <!-- Floating Messenger Button with waves -->
 <div class="floating-support">
@@ -1297,14 +1374,14 @@
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid #003366;
+    border: 2px solid #1685b6;
 }
 
 .profile-info h5 {
     margin: 0;
     font-size: 0.9rem;
     font-weight: bold;
-    color: #003366;
+    color: #1685b6;
 }
 
 .profile-info p {
@@ -1325,7 +1402,7 @@
 /* Close button */
 .close-btn {
     font-size: 1.5rem;
-    color: #003366;
+    color: #1685b6;
     background: none;
     border: none;
     cursor: pointer;
@@ -1341,7 +1418,7 @@
 .close-welcome {
     background: none;
     border: none;
-    color: #003366;
+    color: #1685b6;
     font-weight: bold;
     cursor: pointer;
     transition: color 0.3s ease;
@@ -1364,7 +1441,7 @@
         border-radius: 5px;
         text-align: center;
         font-size: 0.7rem;
-        color: #003366;
+        color: 1685b6;
         margin-bottom: 15px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         animation: slideDown 0.3s ease-in-out;
@@ -1389,7 +1466,7 @@
     }
 
     .support-btn {
-        background-color: #003366;
+        background-color: #1685b6;
         color: #ffffff;
         font-size: 0.8rem;
         padding: 5px 9px;
@@ -1404,7 +1481,7 @@
 
     .support-btn:hover {
         transform: scale(1.1);
-        background-color: #68adf1;
+        background-color: #c0ddfa;
     }
 
 
@@ -1415,7 +1492,7 @@
     right: 20px;
     width: 350px;
     height: 70vh;
-    background-color: linear-gradient(135deg, #003366, #e0f7fa);
+    background-color: linear-gradient(135deg, #1685b6, #e0f7fa);
     border-radius: 5px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     display: none;
@@ -1495,7 +1572,7 @@
 
 
     .chat-header {
-        background-color: #003366;
+        background-color: #1685b6;
         color: #ffffff;
         display: flex;
         justify-content: space-between;
@@ -1643,7 +1720,7 @@
     }
 
     .send-btn {
-        background-color: #003366;
+        background-color: #1685b6;
         color: #ffffff;
         border: none;
         border-radius: 25px;
@@ -1837,46 +1914,116 @@ function closeWelcomeMessage() {
 
 
 
+		<!--==================================================-->
+		<!-- Start Search Popup Area -->
+		<!--==================================================-->
+		<div class="search-popup">
+			<button class="close-search style-two"><span class="flaticon-multiply"><i
+						class="far fa-times-circle"></i></span></button>
+			<button class="close-search"><i class="fas fa-arrow-up"></i></button>
+			<form method="post" action="#">
+				<div class="form-group">
+					<input type="search" name="search-field" value="" placeholder="Search Here"
+						required="">
+					<button type="submit"><i class="fa fa-search"></i></button>
+				</div>
+			</form>
+		</div>
+		<!--==================================================-->
+		<!-- End Search Popup Area -->
+		<!--==================================================-->
 
-    <footer class="text-center py-3">
-        &copy; 2024 Lease Captain. All Rights Reserved || powered by
-        <a href="/" target="_blank">Vickins Technologies</a>
-        <p class="contact-info mb-0">
-            <i class="fas fa-phone-alt"></i><a href="tel:+254794501005"> Call us</a> |
-            <i class="fas fa-envelope"></i> <a href="mailto:vickinstechnologies@gmail.com"> info@leasecaptain.com</a>
-        </p>
-    </footer>
+		<!--==================================================-->
+		<!-- Start scrollup section Area -->
+		<!--==================================================-->
+		<!-- scrollup section -->
+		<div class="prgoress_scrollup">
+			<svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
+				<path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" />
+			</svg>
+		</div>
+
+		<!--==================================================-->
+		<!-- End scrollup section Area -->
+		<!--==================================================-->
 
 
-    <style>
-        footer {
-            font-size: 0.9rem;
-        }
+		<!-- jquery js -->
+		<script src="/assets/js/vendor/jquery-3.6.2.min.js"></script>
 
-        @media (max-width: 768px) {
-            footer {
-                font-size: 0.6rem;
-                padding: 5px;
-            }
-        }
+		<script src="/assets/js/popper.min.js"></script>
 
-        @media (max-width: 576px) {
-            footer {
-                font-size: 0.5rem;
-                padding: 2px;
-            }
-        }
-    </style>
+		<!-- bootstrap js -->
+		<script src="/assets/js/bootstrap.min.js"></script>
 
+		<!-- carousel js -->
+		<script src="/assets/js/owl.carousel.min.js"></script>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.js"></script>
+		<!-- counterup js -->
+		<script src="/assets/js/jquery.counterup.min.js"></script>
 
-    <script>
-        AOS.init();
-    </script>
+		<!-- waypoints js -->
+		<script src="/assets/js/waypoints.min.js"></script>
+
+		<!-- wow js -->
+		<script src="/assets/js/wow.min.js"></script>
+
+		<!-- imagesloaded js -->
+		<script src="/assets/js/imagesloaded.pkgd.min.js"></script>
+
+		<!-- venobox js -->
+		<script src="/venobox/venobox.js"></script>
+
+		<!--  animated-text js -->
+		<script src="/assets/js/animated-text.js"></script>
+
+		<!-- venobox min js -->
+		<script src="/venobox/venobox.min.js"></script>
+
+		<!-- isotope js -->
+		<script src="/assets/js/isotope.pkgd.min.js"></script>
+
+		<!-- jquery meanmenu js -->
+		<script src="/assets/js/jquery.meanmenu.js"></script>
+
+		<!-- jquery scrollup js -->
+		<script src="/assets/js/jquery.scrollUp.js"></script>
+
+		<!-- Slick Slider -->
+		<script src="/assets/slick/slick.min.js"></script>
+
+		<script src="/assets/js/jquery.barfiller.js"></script>
+		<!-- jquery js -->
+
+		<!-- ragrslider js -->
+		<script src="/assets/js/rangeslider.js"></script>
+
+		<!-- ragrslider js -->
+		<script src="/assets/js/mixitup.min.js"></script>
+
+		<!-- theme js -->
+		<script src="/assets/js/theme.js"></script>
+
+		<!-- scroll js -->
+		<script src="/assets/js/script.js"></script>
+
+		<script>
+			function changeToggle() {
+				let toggle = document.getElementById("toggle");
+				let h3 = document.getElementsByClassName("h3");
+				if (toggle.style.float != "right") {
+					toggle.style.float = "right";
+					h3[0].innerHTML = "<span>$</span>350";
+					h3[1].innerHTML = "<span>$</span>240";
+					h3[2].innerHTML = "<span>$</span>480";
+				} else {
+					toggle.style.float = "none";
+					h3[0].innerHTML = "<span>$</span>217";
+					h3[1].innerHTML = "<span>$</span>144";
+					h3[2].innerHTML = "<span>$</span>359";
+				}
+			}
+		</script>
+
 </body>
-
 </html>

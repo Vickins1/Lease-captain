@@ -265,7 +265,6 @@
                 <i class="fas fa-sms"></i> Notification Management
             </a>
             <ul class="collapse" id="smsSubmenu">
-                <li><a class="nav-link" href="/top-ups">Credit Top-Up</a></li>
                 <li><a class="nav-link" href="/sms&email">SMS & Email Notifications</a></li>
             </ul>
         </li>
@@ -309,142 +308,67 @@
                 <%= success %>
             </div>
         <% } %>
-    
-       
-<!-- Reminder Section -->
-<div class="section-header mt-5">
-    <h5>Your Reminders</h5>
-    <button class="btn create-button" onclick="showModal('reminderModal')">Create New Reminder</button>
-</div>
 
-<div class="table-wrapper">
-    <table class="custom-table">
-        <thead>
-            <tr>
-             
-                <th>Send At</th>
-                <th>Frequency</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% reminders.forEach(reminder => { %>
-                <tr>
-                  
-                    <td><%= new Date(reminder.sendAt).toLocaleString() %></td>
-                    <td><%= reminder.frequency %></td>
-                    <td><%= reminder.status %></td>
-                    <td class="actions">
-                        <button class="btn edit-button" onclick="showModal('editReminderModal-<%= reminder._id %>')">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <form action="/reminders/delete/<%= reminder._id %>" method="POST" class="inline-form">
-                            <button class="btn delete-button" type="submit">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-
-                <!-- Edit Reminder Modal -->
-                <div id="editReminderModal-<%= reminder._id %>" class="modal">
-                    <div class="modal-content">
-                        <span class="close" onclick="closeModal('editReminderModal-<%= reminder._id %>')">&times;</span>
-                        <h5>Edit Reminder</h5>
-                        <form action="/reminders/edit/<%= reminder._id %>" method="POST">
-                            <div class="form-group">
-                                <label for="sendAt">Send At</label>
-                                <input type="datetime-local" class="form-control" name="sendAt" value="<%= new Date(reminder.sendAt).toISOString().slice(0, 16) %>" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="frequency">Frequency</label>
-                                <select class="form-control" name="frequency" required>
-                                    <option value="once" <%= reminder.frequency === 'once' ? 'selected' : '' %>>Once</option>
-                                    <option value="daily" <%= reminder.frequency === 'daily' ? 'selected' : '' %>>Daily</option>
-                                    <option value="weekly" <%= reminder.frequency === 'weekly' ? 'selected' : '' %>>Weekly</option>
-                                    <option value="monthly" <%= reminder.frequency === 'monthly' ? 'selected' : '' %>>Monthly</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn save-button">Save Changes</button>
-                        </form>
-                    </div>
-                </div>
-            <% }); %>
-        </tbody>
-    </table>
-</div>
-
-<!-- Create Reminder Modal -->
-<div id="reminderModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal('reminderModal')">&times;</span>
-        <h5>Create New Reminder</h5>
-        <form id="createReminderForm">
-            <div class="form-group">
-                <label for="sendAt">Send At</label>
-                <input type="datetime-local" id="sendAt" name="sendAt" required>
-            </div>
-            <div class="form-group">
-                <label for="frequency">Frequency</label>
-                <select id="frequency" name="frequency" required>
-                    <option value="once">Once</option>
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                </select>
-            </div>
-            <button type="submit" class="btn save-button">Create Reminder</button>
-        </form>
-    </div>
-</div>
-
-<script>
-    function showModal(modalId) {
-        const modal = document.getElementById(modalId);
-        if (modal) {
-            modal.style.display = 'flex';
-        }
-    }
-
-    function closeModal(modalId) {
-        const modal = document.getElementById(modalId);
-        if (modal) {
-            modal.style.display = 'none';
-        }
-    }
-
-    // Handle form submission
-    document.getElementById('createReminderForm').addEventListener('submit', async (event) => {
-        event.preventDefault();
         
-        const formData = new FormData(event.target);
-        const data = Object.fromEntries(formData.entries());
-
-        try {
-            const response = await fetch('/reminders/create', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-
-            if (response.ok) {
-                alert('Reminder created and scheduled successfully!');
-                closeModal('reminderModal');
+        <h1>Resend Reminders</h1>
+        <form id="reminderForm">
+          <label for="reminderOption">Send Reminder To:</label>
+          <select id="reminderOption" required>
+            <option value="all">All Tenants</option>
+            <option value="single">Single Tenant</option>
+          </select>
+      
+          <div id="tenantDropdown" style="display: none;">
+            <label for="tenantId">Select Tenant:</label>
+            <select id="tenantId">
+              <option value="" disabled selected>Loading tenants...</option>
+            </select>
+          </div>
+      
+          <button type="submit">Send Reminder</button>
+        </form>
+      
+        <script>
+          const form = document.getElementById('reminderForm');
+          const reminderOption = document.getElementById('reminderOption');
+          const tenantDropdown = document.getElementById('tenantDropdown');
+          const tenantIdSelect = document.getElementById('tenantId');
+      
+          // Show or hide Tenant dropdown based on selected option
+          reminderOption.addEventListener('change', () => {
+            if (reminderOption.value === 'single') {
+              tenantDropdown.style.display = 'block';
+              loadTenants(); // Fetch tenants from the backend
             } else {
-                const result = await response.json();
-                alert(`Failed to create reminder: ${result.error || 'Unknown error'}`);
+              tenantDropdown.style.display = 'none';
             }
-        } catch (error) {
-            console.error('Error creating reminder:', error);
-            alert('An error occurred while creating the reminder. Please try again later.');
-        }
-    });
-</script>
+          });
+      
+          // Fetch tenants from the backend
+          function loadTenants() {
+            fetch('/api/tenants') // Replace with your actual API endpoint
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error('Failed to fetch tenants');
+                }
+                return response.json();
+              })
+              .then((tenants) => {
+                // Populate the dropdown with tenants
+                tenantIdSelect.innerHTML = tenants
+                  .map(
+                    (tenant) =>
+                      `<option value="${tenant.id}">${tenant.name} (${tenant.email})</option>`
+                  )
+                  .join('');
+              })
+              .catch((error) => {
+                tenantIdSelect.innerHTML = `<option value="" disabled>Error loading tenants</option>`;
+                console.error('Error:', error.message);
+              });
+          }
+          </script>
 
-
-
-    
 <!-- Manual SMS/Email Section -->
 <div class="sms-section mt-5">
     <h5>Send Message to All Tenants</h5>

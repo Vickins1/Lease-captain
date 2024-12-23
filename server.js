@@ -25,7 +25,7 @@ const http = require('http');
 const server = http.createServer(app);
 app.set('trust proxy', 1);
 
-const uri = "mongodb://Admin:Kefini360@lease-captain-shard-00-00.ryokh.mongodb.net:27017,lease-captain-shard-00-01.ryokh.mongodb.net:27017,lease-captain-shard-00-02.ryokh.mongodb.net:27017/LC-db?ssl=true&replicaSet=atlas-67tjyi-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Lease-Captain";
+const uri = "mongodb://localhost:27017/LC-db";
 
 
 async function createDatabaseAndCollections() {
@@ -97,7 +97,7 @@ app.use(session({
 }));
 
 app.use(flash());
-// Flash messages and user session handling
+
 app.use((req, res, next) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
