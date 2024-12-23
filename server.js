@@ -14,7 +14,6 @@ const authRoutes = require('./routes/auth');
 const paymentGatewayRoutes = require('./routes/paymentGateway');
 const sendRemindersRoutes = require('./routes/sendReminders');
 const SupportMessage = require('./models/supportMessage');
-const { SitemapStream, streamToPromise } = require('sitemap');
 const nodemailer = require('nodemailer');
 const cron = require('node-cron');
 const fs = require('fs');
@@ -60,23 +59,6 @@ async function createDatabaseAndCollections() {
 }
 
 createDatabaseAndCollections().catch(console.dir);
-
-
-(async () => {
-  const sitemap = new SitemapStream({ hostname: 'https://leasecaptain.com' });
-  const writeStream = fs.createWriteStream('./public/sitemap.xml');
-
-  sitemap.pipe(writeStream);
-
-  sitemap.write({ url: '/', changefreq: 'daily', priority: 1.0 });
-  
-  sitemap.end();
-
-  // Use `streamToPromise` with the `sitemap` stream
-  await streamToPromise(sitemap)
-    .then(() => console.log('Sitemap created!'))
-    .catch((error) => console.error('Error creating sitemap:', error));
-})();
 
 
 // View engine setup
