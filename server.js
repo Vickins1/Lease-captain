@@ -138,60 +138,85 @@ const transporter = nodemailer.createTransport({
 
 // POST endpoint to handle support form submission
 app.post('/support/submit', async (req, res) => {
-    const { emailAddress, supportMessage } = req.body;
+  const { name, email, number, address, massage, reviewcheck } = req.body;
 
-    // Basic validation
-    if (!emailAddress || !supportMessage) {
-        req.flash('error', 'Please fill in all required fields.');
-        return res.redirect('/support');
-    }
-    // Email format validation
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(emailAddress)) {
-        req.flash('error', 'Please enter a valid email address.');
-        return res.redirect('/support');
-    }
+  // Basic validation
+  if (!name || !email || !number || !address || !massage) {
+      req.flash('error', 'Please fill in all required fields.');
+      return res.redirect('/support');
+  }
 
-    try {
-        // Save the support message to the database
-        const newMessage = new SupportMessage({
-            email: emailAddress,
-            message: supportMessage,
-            submittedAt: new Date()
-        });
+  // Email format validation
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailPattern.test(email)) {
+      req.flash('error', 'Please enter a valid email address.');
+      return res.redirect('/support');
+  }
 
-        // Attempt to save the new support message
-        await newMessage.save();
+  // Phone number validation (optional, can be adjusted based on format)
+  const phonePattern = /^[0-9]{7,15}$/;
+  if (!phonePattern.test(number)) {
+      req.flash('error', 'Please enter a valid phone number.');
+      return res.redirect('/support');
+  }
 
-        // Set up email options
-        const mailOptions = {
-            from: 'vickinstechnologies@gmail.com',
-            to: 'vickievokes360@gmail.com',
-            subject: 'New Support Message',
-            text: `You have received a new support message from ${emailAddress}:\n\n${supportMessage}`
-        };
-        // Send email
-        await transporter.sendMail(mailOptions);
-        // Set success message after successful email sending
-        req.flash('success', 'Your message has been sent successfully, Our support team will be back to you ASAP!');
-        return res.redirect('/support'); // Redirect to support page
-    } catch (error) {
-        console.error('Error processing support request:', error);
+  // Check if user agreed to data collection
+  if (!reviewcheck) {
+      req.flash('error', 'You must agree to the data collection policy.');
+      return res.redirect('/support');
+  }
 
-        // Set error message based on specific error type
-        if (error instanceof mongoose.Error.ValidationError) {
-            req.flash('error', 'Validation failed: ' + error.message);
-        } else if (error.name === 'MongoError') {
-            req.flash('error', 'Failed to save your message due to a database error. Please try again later.');
-        } else if (error.responseCode) {
-            req.flash('error', 'Failed to send your message via email. Please try again later.');
-        } else {
-            req.flash('error', 'An unexpected error occurred. Please try again later.');
-        }
+  try {
+      // Save the support message to the database
+      const newMessage = new SupportMessage({
+          name,
+          email,
+          phone: number,
+          address,
+          message: massage,
+          submittedAt: new Date()
+      });
 
-        return res.redirect('/support');
-    }
+      await newMessage.save();
+
+      // Set up email options
+      const mailOptions = {
+          from: 'vickinstechnologies@gmail.com',
+          to: 'vickievokes360@gmail.com',
+          subject: 'New Support Message',
+          text: `You have received a new support message:
+          
+          Name: ${name}
+          Email: ${email}
+          Phone: ${number}
+          Address: ${address}
+          Message: ${massage}`
+      };
+
+      // Send email
+      await transporter.sendMail(mailOptions);
+
+      // Set success message
+      req.flash('success', 'Your message has been sent successfully. Our support team will be in touch with you ASAP!');
+      return res.redirect('/support');
+  } catch (error) {
+      console.error('Error processing support request:', error);
+
+      // Handle specific errors
+      if (error instanceof mongoose.Error.ValidationError) {
+          req.flash('error', 'Validation failed: ' + error.message);
+      } else if (error.name === 'MongoError') {
+          req.flash('error', 'Failed to save your message due to a database error. Please try again later.');
+      } else if (error.responseCode) {
+          req.flash('error', 'Failed to send your message via email. Please try again later.');
+      } else {
+          req.flash('error', 'An unexpected error occurred. Please try again later.');
+      }
+
+      return res.redirect('/support');
+  }
 });
+
 
 app.get('/verify/:token', async (req, res) => {
     const { token } = req.params;
