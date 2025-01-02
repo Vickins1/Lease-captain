@@ -1057,6 +1057,7 @@ const sendWelcomeSMS = async (tenant) => {
     try {
         const response = await axios.post(
             'https://api.umeskiasoftwares.com/api/v1/sms',
+            
             {
                 api_key: "VEpGOTVNTlY6dnUxaG5odHA=",
                 email: "vickinstechnologies@gmail.com",
@@ -1076,6 +1077,8 @@ const sendWelcomeSMS = async (tenant) => {
         console.error('Error sending SMS via UMS API:', error.response ? error.response.data : error.message);
     }
 };
+
+
 // Route to resend the welcome email to a tenant
 router.post('/tenancy-manager/tenant/resend-email/:tenantId', async (req, res) => {
     try {

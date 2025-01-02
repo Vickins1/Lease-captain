@@ -1811,7 +1811,7 @@
     /* banner area */
 
     .banner-carousel .slide-item {
-        min-height: 700px;
+        min-height: 500px;
     }
 
     .slider-content {
@@ -1819,7 +1819,7 @@
     }
 
     .slider-main-title h1 {
-        font-size: 49px;
+        font-size: 39px;
         line-height: 62px;
     }
 
@@ -1854,7 +1854,7 @@
     }
 
     .section-main-title.about h2 {
-        font-size: 44px;
+        font-size: 24px;
     }
 
     /* choose us area */
