@@ -2357,7 +2357,7 @@
     }
 
     .mobile-menu-area.sticky-menu .sidebar-menu {
-        top: 24px;
+        top: 15px;
     }
 
     .sidebar-menu {
@@ -2379,7 +2379,7 @@
     /* banner area */
 
     .banner-carousel .slide-item {
-        min-height: 700px;
+        min-height: 500px;
     }
 
     .slider-content {
@@ -2950,7 +2950,7 @@
     }
 
     .mobile-menu-area.sticky-menu .sidebar-menu {
-        top: 24px;
+        top: 14px;
     }
 
     .sidebar-menu {
@@ -2972,7 +2972,7 @@
     /* banner area */
 
     .banner-carousel .slide-item {
-        min-height: 700px;
+        min-height: 500px;
     }
 
     .slider-content {
@@ -2984,13 +2984,13 @@
     }
 
     .slider-sub-title h4 {
-        font-size: 17px;
+        font-size: 14px;
         margin-bottom: 15px;
     }
 
     .slider-main-title h1 {
-        font-size: 27px;
-        line-height: 46px;
+        font-size: 20px;
+        line-height: 25px;
     }
 
     .slider-discripton p {
@@ -3010,7 +3010,7 @@
     }
 
     .section-main-title h2 {
-        font-size: 33px;
+        font-size: 23px;
     }
 
     /* feature area */
@@ -3021,11 +3021,11 @@
 
     .feature-single-box {
         margin-bottom: 30px;
-        padding: 58px 27px 54px;
+        padding: 28px 7px 24px;
     }
 
     .feature-btn a {
-        width: 230px;
+        width: 130px;
     }
 
     /* service area */
@@ -3035,7 +3035,7 @@
     }
 
     .service-content {
-        padding: 45px 10px 28px;
+        padding: 35px 18px;
     }
 
     .service-faciliti {
@@ -3053,7 +3053,7 @@
     }
 
     .section-main-title.about h2 {
-        font-size: 32px;
+        font-size: 22px;
     }
 
     .about-icon {
@@ -3227,7 +3227,7 @@
 <-- Home Two All Css-->
 =================================================================*/
     .banner-area {
-        height: 600px;
+        height: 500px;
     }
 
     .banner-slider {
@@ -3235,8 +3235,8 @@
     }
 
     .slider-main-title.style-two h1 {
-        font-size: 38px;
-        line-height: 48px;
+        font-size: 28px;
+        line-height: 38px;
     }
 
     .slider-sub-title.style-two h4 {
@@ -3420,11 +3420,11 @@
     /* bratcom area */
 
     .breatcome-area {
-        padding: 120px 0 100px;
+        padding: 90px 0 60px;
     }
 
     .breatcome-title h1 {
-        font-size: 40px;
+        font-size: 30px;
     }
 
     .breatcome-discription p {
@@ -3521,11 +3521,11 @@
     /* contact inner page */
 
     .contact-area {
-        padding: 120px 0 74px;
+        padding: 90px 0 44px;
     }
 
     .row.contact {
-        padding: 110px 0px 70px;
+        padding: 80px 0px 50px;
     }
 
     .contact-box {
@@ -3553,11 +3553,11 @@
     /* service details inner page */
 
     .service-details-area {
-        padding: 120px 0 34px;
+        padding: 90px 0 24px;
     }
 
     .widget-contact-box {
-        padding: 63px 20px 57px;
+        padding: 43px 10px 37px;
     }
 
     .widget-download-box {
@@ -3583,7 +3583,7 @@
     /* project detailas inner page */
 
     .project-detials-area {
-        padding: 120px 0 48px;
+        padding: 90px 0 38px;
     }
 
     .porject-detials-discription.inner {
