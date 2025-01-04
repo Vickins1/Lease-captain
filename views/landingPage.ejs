@@ -65,26 +65,27 @@
 </head>
 
 <body>
-    <!-- loder -->
-    <div class="preloader">
-        <div class="circles">
-            <div class="circle1"></div>
-            <div class="circle2"></div>
-            <div class="circle3"></div>
-            <div class="circle4"></div>
-            <div class="circle5"></div>
-            <div class="circle6"></div>
-            <div class="circle7"></div>
-            <div class="circle8"></div>
-            <div class="circle9"></div>
-            <div class="circle10"></div>
-            <div class="circle11"></div>
-            <div class="circle12"></div>
-            <div class="circle13"></div>
-            <div class="circle14"></div>
-            <div class="circle15"></div>
-        </div>
+<!-- Preloader -->
+<div class="preloader">
+    <div class="circles">
+        <div class="circle1"></div>
+        <div class="circle2"></div>
+        <div class="circle3"></div>
+        <div class="circle4"></div>
+        <div class="circle5"></div>
+        <div class="circle6"></div>
+        <div class="circle7"></div>
+        <div class="circle8"></div>
+        <div class="circle9"></div>
+        <div class="circle10"></div>
+        <div class="circle11"></div>
+        <div class="circle12"></div>
+        <div class="circle13"></div>
+        <div class="circle14"></div>
+        <div class="circle15"></div>
     </div>
+</div>
+
 
 
     <!--==================================================-->
@@ -145,7 +146,7 @@
             </div>
             <div class="side-menu-info">
                 <div class="sidebar-menu">
-                    <a class="navSidebar-button" href="#"><i class="bi bi-justify-right"></i></a>
+                    <a class="navSidebar-button" href="/"><i class="bi bi-justify-right"></i></a>
                 </div>
             </div>
         </div>
@@ -272,28 +273,44 @@
                                                 <option>Wajir</option>
                                             </select>
                                         </div>
-
                                         <div class="form-group">
                                             <div class="range-slider">
-                                                <div data-min="0" data-max="5000000" data-unit="Ksh."
-                                                    data-min-name="min_price" data-max-name="max_price"
-                                                    class="range-slider-ui ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all"
-                                                    aria-disabled="false">
-                                                    <span class="min-value">Ksh.0</span>
-                                                    <span class="max-value">Ksh.5,000,000</span>
-                                                    <input class="current-min" type="hidden" name="min_price" value="0">
-                                                    <input class="current-max" type="hidden" name="max_price"
-                                                        value="5000000">
-                                                    <div class="ui-slider-range ui-widget-header ui-corner-all"
-                                                        style="left: 0%; width: 100%;">
-                                                    </div>
-                                                    <a class="ui-slider-handle ui-state-default ui-corner-all" href="#"
-                                                        style="left: 0%;"></a>
-                                                    <a class="ui-slider-handle ui-state-default ui-corner-all" href="#"
-                                                        style="left: 100%;"></a>
+                                                <label for="min-price">Min Price (Ksh.):</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">Ksh.</span>
+                                                    <input type="number" id="min-price" name="min_price" class="form-control" value="0" min="0" max="5000000" step="1000">
+                                                </div>
+                                        
+                                                <label for="max-price">Max Price (Ksh.):</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">Ksh.</span>
+                                                    <input type="number" id="max-price" name="max_price" class="form-control" value="5000000" min="0" max="5000000" step="1000">
                                                 </div>
                                             </div>
                                         </div>
+                                        
+                                        <script>
+                                            $(document).ready(function () {
+                                                // Validation to ensure proper min and max values
+                                                $("#min-price, #max-price").on("change", function () {
+                                                    const minPrice = parseInt($("#min-price").val());
+                                                    const maxPrice = parseInt($("#max-price").val());
+                                        
+                                                    // Check if min price exceeds max price
+                                                    if (minPrice > maxPrice) {
+                                                        alert("Min price cannot be greater than max price.");
+                                                        $("#min-price").val(maxPrice);
+                                                    }
+                                        
+                                                    // Check if max price is less than min price
+                                                    if (maxPrice < minPrice) {
+                                                        alert("Max price cannot be less than min price.");
+                                                        $("#max-price").val(minPrice);
+                                                    }
+                                                });
+                                            });
+                                        </script>
+                                        
                                         <div class="form-group mb-0">
                                             <button class="search-button">Search</button>
                                         </div>
@@ -331,12 +348,12 @@
                             <img src="/assets/images/resource/feature-icon1.png" alt="Rent a Property">
                         </div>
                         <div class="feature-content">
-                            <h4><a href="#">Rent a Property</a></h4>
+                            <h4><a href="/properties">Rent a Property</a></h4>
                             <p>Discover a wide selection of properties for lease. Whether you're looking for a
                                 commercial space or residential property, find the perfect match here.</p>
                         </div>
                         <div class="feature-btn">
-                            <a href="#">Explore Properties <i class="bi bi-arrow-right"></i></a>
+                            <a href="/properties">Explore Properties <i class="bi bi-arrow-right"></i></a>
                         </div>
                     </div>
                 </div>
@@ -348,12 +365,12 @@
                             <img src="/assets/images/resource/feature-icon2.png" alt="List Your Property">
                         </div>
                         <div class="feature-content">
-                            <h4><a href="#">List Your Property</a></h4>
+                            <h4><a href="/login">List Your Property</a></h4>
                             <p>Lease Captain connects you with potential tenants to ensure your property doesn’t stay
                                 vacant for long.</p>
                         </div>
                         <div class="feature-btn">
-                            <a href="#">Get Started <i class="bi bi-arrow-right"></i></a>
+                            <a href="/propertyListing">Get Started <i class="bi bi-arrow-right"></i></a>
                         </div>
                     </div>
                 </div>
@@ -365,12 +382,12 @@
                             <img src="/assets/images/resource/feature-icon3.png" alt="Lease Captain Software">
                         </div>
                         <div class="feature-content">
-                            <h4><a href="#">Lease Captain Software</a></h4>
+                            <h4><a href="/signup">Lease Captain Software</a></h4>
                             <p>Streamline your property management process with our cutting-edge software. Manage
                                 leasing, tenant tracking, and property maintenance effortlessly.</p>
                         </div>
                         <div class="feature-btn">
-                            <a href="#">Request Demo <i class="bi bi-arrow-right"></i></a>
+                            <a href="/signup">Request Demo <i class="bi bi-arrow-right"></i></a>
                         </div>
                     </div>
                 </div>
@@ -786,7 +803,7 @@
         <div class="container">
             <div class="row">
                 <!-- Left Section: Text Content -->
-                <div class="col-lg-6 col-md-12" >
+                <div class="col-lg-6 col-md-12">
                     <div class="section-title">
                         <div class="section-sub-thumb">
                             <img src="/assets/images/resource/s-title-shape.png" alt="">
@@ -1180,7 +1197,7 @@
                 <div class="row mt-4">
                     <div class="col-lg-12 text-center">
                         <p style="color: #ffffff;">
-                            &copy; 2024 Lease Captain. All Rights Reserved |
+                            &copy; 2024 - 2025 Lease Captain. All Rights Reserved |
                             Powered by
                             <a href="http://3.10.212.109" target="_blank"
                                 style="color: #0051ff; text-decoration: underline;">Vickins Technologies</a>
