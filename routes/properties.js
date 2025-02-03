@@ -220,7 +220,12 @@ router.get('/tenancy-manager/units/:propertyId', async (req, res) => {
         const propertyId = req.params.propertyId;
 
         // Fetch units associated with the selected property
-        const units = await Unit.find({ property: propertyId }); 
+        const units = await PropertyUnit.find({ propertyId: propertyId }); // Adjusted to use propertyId
+
+        // If no units found for the given property
+        if (!units || units.length === 0) {
+            return res.status(404).json({ message: 'No units found for this property' });
+        }
 
         res.json(units);
     } catch (err) {
@@ -234,10 +239,10 @@ router.get('/tenancy-manager/units/:propertyId', async (req, res) => {
 router.post('/tenancy-manager/property/units', isTenancyManager, async (req, res) => {
     try {
         
-        const { propertyId, unitName, unitType, unitCount, unitPrice, description, vacantUnits, utilities, depositAmount } = req.body;
+        const { propertyId, unitType, unitCount, unitPrice, utilities, depositAmount } = req.body;
 
         // Validate required fields
-        if (!propertyId || !unitName || !unitType || !unitCount || !unitPrice || vacantUnits === undefined || !utilities || depositAmount === undefined) {
+        if (!propertyId || !unitType || !unitCount || !unitPrice || !utilities || depositAmount === undefined) {
             req.flash('error', 'All fields are required.');
             return res.redirect('/tenancy-manager/property/units');
         }
@@ -245,12 +250,9 @@ router.post('/tenancy-manager/property/units', isTenancyManager, async (req, res
         // Create a new PropertyUnit instance
         const newUnit = new PropertyUnit({
             propertyId,
-            unitName,
             unitType,
             unitCount,
             unitPrice,
-            vacantUnits,
-            description,
             utilities, 
             deposit: depositAmount 
         });
@@ -269,7 +271,7 @@ router.post('/tenancy-manager/property/units', isTenancyManager, async (req, res
 
 // Create Property
 router.post('/tenancy-manager/property', isTenancyManager, async (req, res) => {
-    const { name, address, paymentDay, propertyType, rentCollected } = req.body;
+    const { name, address, paymentDay, propertyType } = req.body;
 
     // Input Validation
     if (!name || !address || !paymentDay || !propertyType) {
@@ -303,7 +305,7 @@ router.post('/tenancy-manager/property', isTenancyManager, async (req, res) => {
 // Edit property
 router.post('/tenancy-manager/property/edit/:id', isTenancyManager, async (req, res) => {
     try {
-        const { name, address, rentCollected, rentDue, propertyType, paymentDay, utilitiesCollected, utilitiesDue } = req.body;
+        const { name, address, propertyType, paymentDay} = req.body;
 
         // Input validation
         if (!name || !address || !propertyType || !paymentDay) {
@@ -312,11 +314,7 @@ router.post('/tenancy-manager/property/edit/:id', isTenancyManager, async (req, 
         }
 
         // Parse input values
-        const parsedPaymentDay = parseInt(paymentDay);
-        const parsedRentCollected = parseFloat(rentCollected) || 0;  
-        const parsedRentDue = parseFloat(rentDue) || 0;              
-        const parsedUtilitiesCollected = parseFloat(utilitiesCollected) || 0; 
-        const parsedUtilitiesDue = parseFloat(utilitiesDue) || 0;              
+        const parsedPaymentDay = parseInt(paymentDay);             
 
         // Fetch the current property from the database
         const property = await Property.findById(req.params.id);
@@ -343,44 +341,51 @@ router.post('/tenancy-manager/property/edit/:id', isTenancyManager, async (req, 
 });
 
 
-// Delete property
-router.get('/tenancy-manager/property/delete/:id', isTenancyManager, async (req, res) => {
+// Delete Property by ID using POST
+router.post('/tenancy-manager/property/delete/:id', isTenancyManager, async (req, res) => {
     try {
-        await Property.findByIdAndDelete(req.params.id);
+        const propertyId = req.params.id;
+        const property = await Property.findByIdAndDelete(propertyId);
+
+        if (!property) {
+            req.flash('error', 'Property not found.');
+            return res.status(404).redirect('/tenancy-manager/properties');
+        }
+
         req.flash('success', 'Property deleted successfully.');
         res.redirect('/tenancy-manager/properties');
-    } catch (err) {
-        console.error(err);
-        req.flash('error', 'Error deleting property.');
+    } catch (error) {
+        console.error(error);
+        req.flash('error', 'An error occurred while deleting the property.');
         res.redirect('/tenancy-manager/properties');
     }
 });
 
 
+
 // Edit Property Unit
 router.post('/tenancy-manager/property/units/edit/:id', isTenancyManager, async (req, res) => {
     try {
-        const { unitName, unitType, unitCount, unitPrice, description, vacantUnits, utilities, } = req.body;
+        // Extract data from the request body
+        const { unitType, unitCount, unitPrice, utilities, deposit } = req.body;
 
         // Validate required fields
-        if (!unitName || !unitType || unitCount === undefined || unitPrice === undefined || vacantUnits === undefined) {
+        if (!unitType || unitCount === undefined || unitPrice === undefined || deposit === undefined) {
             req.flash('error', 'All fields are required.');
             return res.redirect(`/tenancy-manager/property/units/${req.params.id}/edit`);
         }
 
         // Find the unit by ID and update it
         const updatedUnit = await PropertyUnit.findByIdAndUpdate(
-            req.params.id,
+            req.params.id, // Use req.params.id for the URL parameter ID
             {
-                unitName,
                 unitType,
                 unitCount,
                 unitPrice,
-                description,
-                vacantUnits,
-                utilities 
+                utilities,  // Assuming utilities is an array of objects
+                deposit
             },
-            { new: true } 
+            { new: true }  // Return the updated unit after modification
         );
 
         // Check if the unit was found and updated
@@ -398,6 +403,7 @@ router.post('/tenancy-manager/property/units/edit/:id', isTenancyManager, async 
         res.redirect(`/tenancy-manager/property/units/${req.params.id}/edit`);
     }
 });
+
 
 
 // DELETE route for a property unit

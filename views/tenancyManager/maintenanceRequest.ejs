@@ -2,278 +2,379 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lease Captain Dashboard</title>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="icon" href="/images/icon.png" type="image/png">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lease Captain | Dashboard</title>
 
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            padding: 15px;
-            padding-top: 40px;
-        }
-        .sidebar {
-            background-color: #ffffff;
-            color: #333333;
-            height: 100vh;
-            padding: 20px 3px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 250px;
-            overflow-y: auto;
-            transition: all 0.3s ease;
-            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-        }
-        .sidebar {
-            background-color: #ffffff;
-            color: #333333;
-            height: 100vh;
-            padding: 20px 10px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 260px;
-            overflow-y: auto;
-            transition: transform 0.3s ease, width 0.3s ease;
-            /* Smooth sidebar transition */
-            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-        }
-        .sidebar-title {
-            margin-bottom: 30px;
-            color: #000000;
-            font-size: 1.5em;
-            text-align: center;
-            font-weight: bold;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 10px;
-        }
-        .sidebar .nav-link {
-            color: #333333;
-            padding: 12px 20px;
-            margin: 8px 0;
-            text-decoration: none;
-            font-size: 0.9em;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            border-radius: 8px;
-            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .sidebar .nav-link i {
-            margin-right: 20px;
-            color: #555555;
-            transition: color 0.3s ease;
-        }
-
-        /* Hover Effects */
-        .sidebar .nav-link:hover {
-            background-color: #f1f1f1;
-            color: #003366;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transform: translateY(-1px);
-        }
-
-        .sidebar .nav-link:hover i {
-            color: #003366;
-        }
-
-        /* Active Link Styling */
-        .sidebar .nav-link.active {
-            background-color: #003366;
-            color: #ffffff;
-            font-weight: bold;
-        }
-
-        .sidebar .nav-link.active i {
-            color: #ffffff;
-        }
-
-        /* Smooth Collapsible Submenu */
-        .collapse {
-            transition: max-height 0.3s ease, opacity 0.3s ease;
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-        }
-        .collapse.show {
-            max-height: 500px;
-            opacity: 1;
-        }
-        @media (max-width: 968px) {
-            .sidebar {
-                transform: translateX(-250px);
-            }
-
-            .sidebar.active {
-                transform: translateX(0);
-            }
-        }
-        /* Header Styling */
-        .header {
-            background-color: #ffffff;
-            color: #000000;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: fixed;
-            width: calc(100% - 250px);
-            top: 0;
-            left: 260px;
-            z-index: 1001;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: left 0.3s ease, width 0.3s ease;
-        }
-        .header-right {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-        }
-        .header .btn {
-            background-color: #ffffff;
-            border: none;
-            font-size: 1rem;
-            color: #000;
-            padding: 0.5rem 1rem;
-        }
-        /* Footer */
-        footer {
-            position: fixed;
-            left: 0;
-            bottom: 0;
-            width: 100%;
-            background-color: #ffffff;
-            color: #000000;
-            text-align: center;
-            padding: 10px 0;
-            box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
-        }
-        /* Content Area */
-        .content {
-            padding: 20px;
-            margin-left: 250px;
-            margin-top: 70px;
-        }
-
-        /* Responsive Adjustments */
-        @media (max-width: 968px) {
-            .sidebar {
-                transform: translateX(-250px);
-            }
-
-            .sidebar.active {
-                transform: translateX(0);
-            }
-
-            .header {
-                width: 100%;
-                left: 0;
-            }
-
-            .content {
-                margin-left: 0;
-            }
-        }
-    </style>
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&amp;display=fallback">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/dist/css/adminlte.min2167.css?v=3.2.0">
+    <link rel="icon" type="image/png" sizes="56x56" href="/assets/images/1.png">
 </head>
 
-<body>
-    <!-- Header -->
-    <div class="header">
-        <button class="btn" id="sidebarToggle">
-            <i class="fas fa-bars"></i>
-        </button>
-        <div class="header-right">
-            <div class="dropdown">
-                <button class="btn dropdown-toggle" type="button" id="profileDropdown" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-user"></i> Welcome, <%= currentUser.username %>
-                </button>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
-                    <a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                </div>
-            </div>
-        </div>
-    </div>
+<body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
+    <div class="wrapper">
 
-    <!-- Sidebar -->
-<nav class="sidebar" id="sidebarMenu">
-    <h2 class="sidebar-title"><strong>Lease Captain</strong></h2>
-    <ul class="nav flex-column">
-        <li>
-            <a class="nav-link" href="/tenancy-manager/dashboard">
-                <i class="fas fa-tachometer-alt"></i> Dashboard
-            </a>
-        </li>
-        <li>
-            <a class="nav-link dropdown-toggle" href="#propertiesSubmenu" data-toggle="collapse">
-                <i class="fas fa-home"></i> Property Management
-            </a>
-            <ul class="collapse" id="propertiesSubmenu">
-                <li><a class="nav-link" href="/tenancy-manager/properties">Properties</a></li>
-                <li><a class="nav-link" href="/tenancy-manager/property/units">Property Units</a></li>
+        <!-- Preloader -->
+        <div class="preloader flex-column justify-content-center align-items-center">
+            <img class="animation__wobble" src="/assets/images/2.png" alt="AdminLTELogo" height="150" width="150">
+        </div>
+
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-light">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                </li>
             </ul>
-        </li>
-        <li>
-            <a class="nav-link dropdown-toggle" href="#tenantsSubmenu" data-toggle="collapse">
-                <i class="fas fa-users"></i> Tenant Management
-            </a>
-            <ul class="collapse" id="tenantsSubmenu">
-                <li><a class="nav-link" href="/tenancy-manager/tenants">Tenants</a></li>
-                <li><a class="nav-link" href="/maintenance-requests">Maintenance Requests</a></li>
+
+            <!-- Right navbar links -->
+            <ul class="navbar-nav ml-auto">
+                <!-- Navbar Search -->
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="navbar-search" href="#" role="button">
+                        <i class="fas fa-search"></i>
+                    </a>
+                    <div class="navbar-search-block">
+                        <form class="form-inline">
+                            <div class="input-group input-group-sm">
+                                <input class="form-control form-control-navbar" type="search" placeholder="Search"
+                                    aria-label="Search">
+                                <div class="input-group-append">
+                                    <button class="btn btn-navbar" type="submit">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                    <button class="btn btn-navbar" type="button" data-widget="navbar-search">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </li>
+
+                <!-- Messages Dropdown Menu -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="far fa-comments"></i>
+                        <span class="badge badge-danger navbar-badge">3</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
+                    </div>
+                </li>
+                <!-- Notifications Dropdown Menu -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="far fa-bell"></i>
+                        <span class="badge badge-warning navbar-badge">15</span>
+                    </a>
+
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a href="/logout" class="nav-link" role="button">
+                        <i class="nav-icon fas fa-sign-out-alt"></i>
+                    </a>
+                </li>
+
             </ul>
-        </li>
-        <li>
-            <a class="nav-link dropdown-toggle" href="#billingSubmenu" data-toggle="collapse">
-                <i class="fas fa-money-bill-wave"></i> Financial Overview
+        </nav>
+        <!-- /.navbar -->
+
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-light-primary elevation-4">
+            <!-- Brand Logo -->
+            <a href="/" class="brand-link">
+                <img src="/assets/images/2.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+                    style="opacity: .8">
+                <h4 class="brand-text font-weight-bold"><strong>Lease Captain</strong></h4>
             </a>
-            <ul class="collapse" id="billingSubmenu">
-                <li><a class="nav-link" href="/tenancy-manager/payments">Payment Transactions</a></li>
-                <li><a class="nav-link" href="/reports-invoices">Reports & Invoices</a></li>
-                <li><a class="nav-link" href="/expenses">Expense Tracking</a></li>
-            </ul>
-        </li>
-        <li>
-            <a class="nav-link dropdown-toggle" href="#smsSubmenu" data-toggle="collapse">
-                <i class="fas fa-sms"></i> Notification Management
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Sidebar user panel (optional) -->
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                    <div class="image">
+                        <img src="/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+                    </div>
+                    <div class="info">
+                        <a href="#" class="d-block" aria-haspopup="true" aria-expanded="false">
+                            <span>Welcome,</span>
+                            <strong>
+                                <%= currentUser.username %>
+                            </strong>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                        data-accordion="false">
+                        <!-- Dashboard -->
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/dashboard" class="nav-link active"
+                                style="background-color: #003366; color: #ffffff;">
+                                <i class="nav-icon fas fa-tachometer-alt"></i>
+                                <p>Dashboard</p>
+                            </a>
+                        </li>
+
+                        <!-- Property Management -->
+                        <li class="nav-header"><strong>PROPERTY MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/properties" class="nav-link">
+                                <i class="nav-icon fas fa-building"></i>
+                                <p>Properties</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/property/units" class="nav-link">
+                                <i class="nav-icon fas fa-cogs"></i>
+                                <p>Property Units</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/propertyListing" class="nav-link">
+                                <i class="nav-icon fas fa-list-alt"></i>
+                                <p>List Properties</p>
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-chart-line"></i>
+                                <p>
+                                    Tenant Management
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="/tenancy-manager/tenants" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Tenants</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/maintenance-requests" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Maintenance Requests</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/tenancy-manager/tenant-reports" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Tenant Reports</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/tenancy-manager/rental-analytics" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Rental Analytics</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/tenancy-manager/vacancy-status" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Vacancy Status</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        
+                        
+
+
+                        <!-- Land Management -->
+                        <li class="nav-header"><strong>LAND MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/lands" class="nav-link">
+                                <i class="nav-icon fas fa-map"></i>
+                                <p>Registered Lands</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/land-parcels" class="nav-link">
+                                <i class="nav-icon fas fa-th-large"></i>
+                                <p>Land Parcels</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/land-reports" class="nav-link">
+                                <i class="nav-icon fas fa-chart-area"></i>
+                                <p>Land Reports</p>
+                            </a>
+                        </li>
+
+                        <!-- Lease Management -->
+                        <li class="nav-header"><strong>LEASE MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/leases" class="nav-link">
+                                <i class="nav-icon fas fa-file-contract"></i>
+                                <p>Leases</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/lease-templates" class="nav-link">
+                                <i class="nav-icon fas fa-file-alt"></i>
+                                <p>Lease Templates</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/lease-reports" class="nav-link">
+                                <i class="nav-icon fas fa-chart-bar"></i>
+                                <p>Lease Reports</p>
+                            </a>
+                        </li>
+
+                        <!-- Vehicle Management -->
+                        <li class="nav-header"><strong>VEHICLE MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/vehicles" class="nav-link">
+                                <i class="nav-icon fas fa-car"></i>
+                                <p>Registered Vehicles</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/vehicle-parking" class="nav-link">
+                                <i class="nav-icon fas fa-parking"></i>
+                                <p>Parking Spaces</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/vehicle-reports" class="nav-link">
+                                <i class="nav-icon fas fa-clipboard-list"></i>
+                                <p>Vehicle Reports</p>
+                            </a>
+                        </li>
+
+                        <!-- Finance -->
+                        <li class="nav-header"><strong>FINANCE MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/payments" class="nav-link">
+                                <i class="nav-icon fas fa-money-bill-wave"></i>
+                                <p>Payment Transactions</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/reports-invoices" class="nav-link">
+                                <i class="nav-icon fas fa-file-invoice"></i>
+                                <p>Reports & Invoices</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/expenses" class="nav-link">
+                                <i class="nav-icon fas fa-wallet"></i>
+                                <p>Expense Tracking</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/budget-planning" class="nav-link">
+                                <i class="nav-icon fas fa-chart-pie"></i>
+                                <p>Budget Planning</p>
+                            </a>
+                        </li>
+
+                        <!-- Notifications -->
+                        <li class="nav-header"><strong>NOTIFICATION MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/sms&email" class="nav-link">
+                                <i class="nav-icon fas fa-sms"></i>
+                                <p>SMS & Email</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/sms&email" class="nav-link">
+                                <i class="nav-icon fas fa-credit-card"></i>
+                                <p>Credit Top-up</p>
+                            </a>
+                        </li>
+
+                        <!-- Staff Management -->
+                        <li class="nav-header"><strong>STAFF MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/staff-directory" class="nav-link">
+                                <i class="nav-icon fas fa-user-tie"></i>
+                                <p>Staff Directory</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/staff-attendance" class="nav-link">
+                                <i class="nav-icon fas fa-calendar-check"></i>
+                                <p>Attendance</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/staff-payroll" class="nav-link">
+                                <i class="nav-icon fas fa-file-invoice-dollar"></i>
+                                <p>Payroll</p>
+                            </a>
+                        </li>
+
+                        <!-- Account Management -->
+                        <li class="nav-header"><strong>ACCOUNT MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/profile" class="nav-link">
+                                <i class="nav-icon fas fa-user"></i>
+                                <p>Profile Settings</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/security" class="nav-link">
+                                <i class="nav-icon fas fa-lock"></i>
+                                <p>Security Settings</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/connect" class="nav-link">
+                                <i class="nav-icon fas fa-link"></i>
+                                <p>Payment Gateway</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/users" class="nav-link">
+                                <i class="nav-icon fas fa-users"></i>
+                                <p>User Accounts</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/upgrade-subscription" class="nav-link">
+                                <i class="nav-icon fas fa-arrow-circle-up"></i>
+                                <p>Upgrade Subscription</p>
+                            </a>
+                        </li>
+                         <!-- Support -->
+        <li class="nav-item mt-auto">
+            <a href="/contacts" class="nav-link d-flex align-items-center justify-content-center"
+                style="background-color: #003366; color: #ffffff; border-radius: 5px; margin: 10px;">
+                <i class="fas fa-headset mr-2"></i>
+                <p>Support</p>
             </a>
-            <ul class="collapse" id="smsSubmenu">
-                <li><a class="nav-link" href="/top-ups">Credit Top-Up</a></li>
-                <li><a class="nav-link" href="/sms&email">SMS & Email Notifications</a></li>
-            </ul>
         </li>
-        <li>
-            <a class="nav-link dropdown-toggle" href="#userSubmenu" data-toggle="collapse">
-                <i class="fas fa-users-cog"></i> User Administration
-            </a>
-            <ul class="collapse" id="userSubmenu">
-                <li><a class="nav-link" href="/users">User Accounts</a></li>
-                <li><a class="nav-link" href="/roles">User Roles</a></li>
-            </ul>
-        </li>
-        <li>
-            <a class="nav-link dropdown-toggle" href="#settingsSubmenu" data-toggle="collapse">
-                <i class="fas fa-cog"></i> Account Settings
-            </a>
-            <ul class="collapse" id="settingsSubmenu">
-                <li><a class="nav-link" href="/tenancy-manager/profile">Profile Settings</a></li>
-                <li><a class="nav-link" href="/tenancy-manager/security">Security Settings</a></li>
-                <li><a class="nav-link" href="/connect">Payment Gateway Integration</a></li>
-            </ul>
-        </li>
-    </ul>
-</nav>
+                    </ul>
+                </nav>
+
+
+            </div>
+
+            <!-- /.sidebar -->
+
+        </aside>
 
 
 
@@ -450,73 +551,48 @@
 </style>
 
           
-        <footer class="text-center py-0">
-              &copy; 2024 Lease Captain. All Rights Reserved || powered by
-              <a href="https://vickinstechnologies.com" target="_blank">Vickins Technologies</a>
-          </footer>
-          
-          <style>
-              footer {
-                  font-size: 0.7rem;
-              }
-          
-              @media (max-width: 768px) {
-                  footer {
-                      font-size: 0.6rem;
-                      padding: 5px; 
-                  }
-              }
-          
-              @media (max-width: 576px) {
-                  footer {
-                      font-size: 0.5rem;
-                      padding: 2px; 
-                  }
-              }
-          </style>
-
-          <!-- Bootstrap JS -->
-          <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-          <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+       <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+        <!-- Control sidebar content goes here -->
+      </aside>
+      <!-- /.control-sidebar -->
   
-       
-          <script>
-              $(document).ready(function () {
-                  // Toggle sidebar on button click
-                  $('#sidebarToggle').click(function () {
-                      $('#sidebarMenu').toggleClass('active');
-                  });
-          
-                  // Collapse sidebar when clicking outside
-                  $(document).click(function (event) {
-                      if (!$(event.target).closest('#sidebarMenu, #sidebarToggle').length) {
-                          $('#sidebarMenu').removeClass('active');
-                      }
-                  });
-          
-                  $('.collapse').on('show.bs.collapse', function () {
-                      $('.collapse').not(this).collapse('hide');
-                  });
-        $('.datepicker').datepicker({
-            format: 'mm/dd/yyyy', 
-            startDate: '0d', 
-            autoclose: true
-        });
-    });
-          </script>
-          
-          <script>
-            $(document).ready(function () {
-                $('#sidebarToggle').on('click', function () {
-                    // Toggle the 'collapsed' class on sidebar, header, and content
-                    $('#sidebarMenu').toggleClass('collapsed');
-                    $('.header').toggleClass('collapsed');
-                    $('.content').toggleClass('collapsed');
-                });
-            });
-        </script>
-          
+      <!-- Main Footer -->
+      <footer class="main-footer">
+        <strong>Copyright &copy; 2024-2025 <a href="https://leasecaptain.com/">Lease Captain</a></strong>
+        All rights reserved.
+        <div class="float-right d-none d-sm-inline-block">
+          <b>Version</b> 1.0.2
+        </div>
+      </footer>
+    </div>
+    <!-- ./wrapper -->
   
+    <!-- REQUIRED SCRIPTS -->
+    <!-- jQuery -->
+    <script src="/plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- overlayScrollbars -->
+    <script src="/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="/dist/js/adminlte2167.js?v=3.2.0"></script>
+  
+    <!-- PAGE PLUGINS -->
+    <!-- jQuery Mapael -->
+    <script src="/plugins/jquery-mousewheel/jquery.mousewheel.js"></script>
+    <script src="/plugins/raphael/raphael.min.js"></script>
+    <script src="/plugins/jquery-mapael/jquery.mapael.min.js"></script>
+    <script src="/plugins/jquery-mapael/maps/usa_states.min.js"></script>
+    <!-- ChartJS -->
+    <script src="/plugins/chart.js/Chart.min.js"></script>
+  
+    <!-- AdminLTE for demo purposes -->
+    <script src="/dist/js/demo.js"></script>
+    <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+    <script src="/dist/js/pages/dashboard2.js"></script>
   </body>
+  
+  <!-- Mirrored from adminlte.io/themes/v3/index2.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 29 Nov 2024 09:27:35 GMT -->
   
   </html>

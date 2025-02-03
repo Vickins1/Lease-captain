@@ -6,6 +6,7 @@ const flash = require('connect-flash');
 const methodOverride = require('method-override');
 const User = require('./models/user');
 const Payment = require('./models/payment');
+const Tenant = require('./models/tenant');
 const tenancyManagerRoutes = require('./routes/tenancyManager');
 const propertyRoutes = require('./routes/properties');
 const tenantRoutes = require('./routes/tenant');
@@ -24,8 +25,7 @@ const http = require('http');
 const server = http.createServer(app);
 app.set('trust proxy', 1);
 
-
-const uri = "mongodb://Admin:Kefini360@lease-captain-shard-00-00.ryokh.mongodb.net:27017,lease-captain-shard-00-01.ryokh.mongodb.net:27017,lease-captain-shard-00-02.ryokh.mongodb.net:27017/LC-db?ssl=true&replicaSet=atlas-67tjyi-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Lease-Captain";
+const uri = "mongodb://localhost:27017/LC-db";
 
 
 
@@ -224,8 +224,6 @@ Message: ${message}`,
 });
 
 
-
-
 app.get('/verify/:token', async (req, res) => {
     const { token } = req.params;
 
@@ -252,9 +250,22 @@ app.get('/verify/:token', async (req, res) => {
     }
 });
 
-// 404 Error handling
 app.use((req, res) => {
-    res.status(404).render('404');
+  res.status(404).render('404', { currentUser: req.user || null });
+});
+
+
+// Tenancy Manager specific middleware
+app.use('/tenancy-manager', (req, res, next) => {
+  req.isTenancyManager = true; // Flag to identify Tenancy Manager routes
+  next();
+});
+
+app.use((req, res, next) => {
+  if (req.isTenancyManager) {
+      return res.status(404).render('tenancyManager/404', { title: 'Page Not Found', currentUser: req.user || null });
+  }
+  next(); // Pass to the next middleware if not Tenancy Manager
 });
 
 // 500 Error handling
@@ -329,213 +340,185 @@ const isReminderDay = (paymentDay, daysBefore) => {
   
     return today.getDate() === targetDate.getDate() && today.getMonth() === targetDate.getMonth();
   };
-  
 
-  // Email logic function
-  const sendReminderEmail = async (recipientEmail, tenantName, reminderType, dueType = 'Rent, Utility', amountDue = 0) => {
-    let subject = '';
-    let message = '';
-
-    const tenant = await Tenant.findOne({ email: recipientEmail }).populate('owner');
-    const ownerEmail = tenant?.owner?.email || 'defaultowneremail@domain.com';
-  
-    switch (reminderType) {
-      case '10_days':
-        subject = `${dueType} Payment Reminder: Upcoming Deadline in 10 Days`;
-        message = `
-          Dear ${tenantName},<br><br>
-          We hope this message finds you well. We are writing to remind you that your upcoming ${dueType.toLowerCase()} payment of <strong>$${amountDue.toFixed(2)}</strong> is due in 10 days.<br><br>
-          To avoid any inconvenience or penalties, we kindly ask that you complete the payment via your Tenant Portal by the due date. Your prompt attention to this matter is greatly appreciated.<br><br>
-          If you have already scheduled this payment, please disregard this message.<br><br>
-          For easy and secure payment processing, you can access your Tenant Portal directly through the link below:<br><br>
-          <a href="https://leasecaptain.com/tenantPortal/login" style="color: #003366;">Complete Payment Now</a><br><br>
-          Best regards,<br>
-          The Management Team
-        `;
-        break;
-  
-      case '5_days':
-        subject = `${dueType} Payment Reminder: Deadline Approaching in 5 Days`;
-        message = `
-          Dear ${tenantName},<br><br>
-          This is a reminder that your ${dueType.toLowerCase()} payment of <strong>$${amountDue.toFixed(2)}</strong> is due in 5 days. Please ensure the payment is made on time by completing the process through your Tenant Portal.<br><br>
-          If you have any questions or need assistance, feel free to reach out to us. Your cooperation in ensuring timely payments is greatly valued.<br><br>
-          You can conveniently complete the payment by logging into your Tenant Portal using the link below:<br><br>
-          <a href="https://leasecaptain.com/tenantPortal/login" style="color: #003366;">Complete Payment Now</a><br><br>
-          Thank you for your attention to this matter.<br><br>
-          Warm regards,<br>
-          The Management Team
-        `;
-        break;
-  
-      case 'due_today':
-        subject = `${dueType} Payment Due: Immediate Attention Required`;
-        message = `
-          Dear ${tenantName},<br><br>
-          We wish to remind you that your ${dueType.toLowerCase()} payment of <strong>$${amountDue.toFixed(2)}</strong> is due today. Please ensure that the payment is completed via your Tenant Portal to avoid any late fees or service disruptions.<br><br>
-          If you have already processed this payment, we thank you for your diligence. Should you require any assistance or have any questions, please do not hesitate to contact us.<br><br>
-          You can access your Tenant Portal and complete the payment by clicking the link below:<br><br>
-          <a href="https://leasecaptain.com/tenantPortal/login" style="color: #003366;">Complete Payment Now</a><br><br>
-          Thank you for your prompt attention.<br><br>
-          Sincerely,<br>
-          The Management Team
-        `;
-        break;
-  
-      default:
-        console.error('Invalid reminder type.');
-        return;
-    }
-  
-    const htmlTemplate = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <style>
-            body {
-              font-family: Arial, sans-serif;
-              background-color: #f4f4f4;
-              margin: 0;
-              padding: 0;
-            }
-            .email-container {
-              background-color: white;
-              margin: 0 auto;
-              padding: 20px;
-              border-radius: 8px;
-              max-width: 600px;
-              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-              color: #333;
-            }
-            .header {
-              background-color: #003366;
-              color: white;
-              padding: 15px;
-              border-radius: 8px 8px 0 0;
-              text-align: center;
-            }
-            .header h1 {
-              font-size: 18px;
-              margin: 0;
-            }
-            .content {
-              padding: 20px;
-              font-size: 14px;
-              line-height: 1.6;
-            }
-            .footer {
-              font-size: 12px;
-              color: #555;
-              text-align: center;
-              padding: 15px 0;
-            }
-            .footer a {
-              color: #003366;
-              text-decoration: none;
-            }
-            .cta {
-              display: inline-block;
-              margin-top: 20px;
-              padding: 10px 15px;
-              background-color: #003366;
-              color: white;
-              text-decoration: none;
-              border-radius: 4px;
-            }
-            .cta:hover {
-              background-color: #00509e;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="email-container">
-            <div class="header">
-              <h1>${dueType} Payment Reminder</h1>
-            </div>
-            <div class="content">
-              <p>Hi ${tenantName},</p>
-              <p>${message}</p>
-              <p>If you have already made the payment, please disregard this reminder.</p>
-            </div>
-            <div class="footer">
-              <p>&copy; ${new Date().getFullYear()} Lease Captain. All rights reserved.</p>
-              <p>
-                <a href="https://leasecaptain.com">Visit our website</a> | 
-                 <a href="mailto:${ownerEmail}">Contact Management</a>
-              </p>
-            </div>
-          </div>
-        </body>
-      </html>
-    `;
-  
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: recipientEmail,
-      subject,
-      html: htmlTemplate,
-    };
-  
-    // Create transporter for email sending (if not already defined)
-    const transporter = nodemailer.createTransport({
-      service: 'gmail', // Or another email service you're using
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-  
+  const sendReminderEmail = async (recipientEmail, tenantName, reminderType, dueType = 'Rent', tenantId = null) => {
     try {
+      // Fetch the tenant record
+      const tenant = await Tenant.findOne({ email: recipientEmail }).populate('owner');
+      if (!tenant) {
+        console.error(`[${new Date().toISOString()}] Tenant not found for email: ${recipientEmail}`);
+        return;
+      }
+  
+      // Resolve amountDue based on dueType (Rent or Utility)
+      let amountDue = 0;
+      const currentMonth = new Date().getMonth(); // Get the current month (0 = January, 11 = December)
+  
+      if (dueType.toLowerCase() === 'rent') {
+        // Get the rent due for the current month
+        amountDue = tenant.rentDue || 0;
+      } else if (dueType.toLowerCase() === 'utility') {
+        // Get the utility due for the current month
+        amountDue = tenant.utilityDue || 0;
+  
+        // Safely handle tenant.utilities being undefined or null
+        if (Array.isArray(tenant.utilities)) {
+          tenant.utilities.forEach((utility) => {
+            if (utility.month === currentMonth) {
+              amountDue += utility.amount; // Add the utility amount for the current month
+            }
+          });
+        }
+      } else {
+        console.error(`[${new Date().toISOString()}] Invalid dueType: ${dueType}`);
+        return;
+      }
+  
+      // Tenant owner's email
+      const ownerEmail = tenant.owner?.email || 'defaultowneremail@domain.com';
+  
+      // Define email subject and message
+      let subject = '';
+      let message = '';
+  
+      switch (reminderType) {
+        case '10_days':
+          subject = `${dueType} Payment Reminder: Upcoming Deadline in 10 Days`;
+          message = `
+            Dear ${tenantName},<br><br>
+            This is a reminder that your ${dueType.toLowerCase()} payment of <strong>Ksh.${amountDue.toFixed(2)}</strong> is due in 10 days.<br><br>
+            Please complete the payment through your Tenant Portal by the due date.<br><br>
+            <a href="https://leasecaptain.com/tenantPortal/login" style="color: #003366;">Make Payment Now</a>
+          `;
+          break;
+  
+        case '5_days':
+          subject = `${dueType} Payment Reminder: Deadline Approaching in 5 Days`;
+          message = `
+            Dear ${tenantName},<br><br>
+            This is a reminder that your ${dueType.toLowerCase()} payment of <strong>Ksh.${amountDue.toFixed(2)}</strong> is due in 5 days.<br><br>
+            Please log into your Tenant Portal to make the payment promptly.<br><br>
+            <a href="https://leasecaptain.com/tenantPortal/login" style="color: #003366;">Pay Now</a>
+          `;
+          break;
+  
+        case 'due_today':
+          subject = `${dueType} Payment Due: Immediate Attention Required`;
+          message = `
+            Dear ${tenantName},<br><br>
+            Your ${dueType.toLowerCase()} payment of <strong>Ksh.${amountDue.toFixed(2)}</strong> is due today.<br><br>
+            Please ensure the payment is completed to avoid late fees.<br><br>
+            <a href="https://leasecaptain.com/tenantPortal/login" style="color: #003366;">Complete Payment</a>
+          `;
+          break;
+  
+        default:
+          console.error(`[${new Date().toISOString()}] Invalid reminder type: ${reminderType}`);
+          return;
+      }
+  
+      // Email HTML template
+      const htmlTemplate = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <style>
+              body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
+              .email-container { background-color: white; margin: 20px auto; padding: 20px; border-radius: 8px; max-width: 600px; }
+              .header { background-color: #003366; color: white; padding: 15px; text-align: center; }
+              .content { font-size: 14px; line-height: 1.6; color: #333; }
+              .footer { font-size: 12px; color: #555; text-align: center; margin-top: 20px; }
+            </style>
+          </head>
+          <body>
+            <div class="email-container">
+              <div class="header">
+                <h2>${dueType} Payment Reminder</h2>
+              </div>
+              <div class="content">
+                ${message}
+                <p>If you have already made the payment, kindly ignore this reminder.</p>
+              </div>
+              <div class="footer">
+                <p>&copy; ${new Date().getFullYear()} Lease Captain. All rights reserved.</p>
+                <p>
+                  <a href="https://leasecaptain.com" style="color: #003366;">Visit our website</a> | 
+                  <a href="mailto:${ownerEmail}" style="color: #003366;">Contact Management</a>
+                </p>
+              </div>
+            </div>
+          </body>
+        </html>
+      `;
+  
+      // Email options
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: recipientEmail,
+        subject,
+        html: htmlTemplate,
+      };
+  
+      // Send email using Nodemailer
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
+  
       await transporter.sendMail(mailOptions);
       console.log(`Email sent to ${recipientEmail}: ${subject}`);
     } catch (error) {
-      console.error(`Error sending email to ${recipientEmail}:`, error);
+      console.error(`[${new Date().toISOString()}] Error sending email to ${recipientEmail}:`, error);
     }
   };
-  
-  // Cron job to send reminders
-  cron.schedule('0 9 * * *', async () => {
-    console.log(`[${new Date().toISOString()}] Running rent and utility reminder cron job...`);
-  
-    try {
-      const tenants = await Tenant.find().populate('property');
-  
-      const reminderPromises = tenants.map(async (tenant) => {
-        const { name, email, rentDue, utilityDue, property } = tenant;
-  
-        if (property && property.paymentDay) {
-          const { paymentDay } = property;
-  
-          // Rent reminders
-          if (rentDue > 0) {
-            if (isReminderDay(paymentDay, 10)) {
-              await sendReminderEmail(email, name, '10_days', 10, 'Rent', rentDue);
-            } else if (isReminderDay(paymentDay, 5)) {
-              await sendReminderEmail(email, name, '5_days', 5, 'Rent', rentDue);
-            } else if (isReminderDay(paymentDay, 0)) {
-              await sendReminderEmail(email, name, 'due_today', 0, 'Rent', rentDue);
-            }
-          }
-  
-          // Utility reminders
-          if (utilityDue > 0) {
-            if (isReminderDay(paymentDay, 10)) {
-              await sendReminderEmail(email, name, '10_days', 10, 'Utility', utilityDue);
-            } else if (isReminderDay(paymentDay, 5)) {
-              await sendReminderEmail(email, name, '5_days', 5, 'Utility', utilityDue);
-            } else if (isReminderDay(paymentDay, 0)) {
-              await sendReminderEmail(email, name, 'due_today', 0, 'Utility', utilityDue);
-            }
+
+// Cron job to send reminders
+cron.schedule('11 11 * * *', async () => {
+  console.log(`[${new Date().toISOString()}] Running rent and utility reminder cron job...`);
+
+  try {
+    const tenants = await Tenant.find().populate('property');
+
+    const reminderPromises = tenants.map(async (tenant) => {
+      const { name, email, rentDue, utilityDue, property } = tenant;
+
+      if (property && property.paymentDay) {
+        const { paymentDay } = property;
+
+        // Rent reminders
+        if (rentDue > 0) {
+          if (isReminderDay(paymentDay, 10)) {
+            await sendReminderEmail(email, name, '10_days', 'Rent', parseFloat(rentDue));
+          } else if (isReminderDay(paymentDay, 5)) {
+            await sendReminderEmail(email, name, '5_days', 'Rent', parseFloat(rentDue));
+          } else if (isReminderDay(paymentDay, 0)) {
+            await sendReminderEmail(email, name, 'due_today', 'Rent', parseFloat(rentDue));
           }
         }
-      });
-  
-      await Promise.all(reminderPromises);
-      console.log(`[${new Date().toISOString()}] Reminder emails successfully processed.`);
-    } catch (error) {
-      console.error(`[${new Date().toISOString()}] Error during rent and utility reminders:`, error);
-    }
-  });
+
+        // Utility reminders
+        if (utilityDue > 0) {
+          if (isReminderDay(paymentDay, 10)) {
+            await sendReminderEmail(email, name, '10_days', 'Utility', parseFloat(utilityDue));
+          } else if (isReminderDay(paymentDay, 5)) {
+            await sendReminderEmail(email, name, '5_days', 'Utility', parseFloat(utilityDue));
+          } else if (isReminderDay(paymentDay, 0)) {
+            await sendReminderEmail(email, name, 'due_today', 'Utility', parseFloat(utilityDue));
+          }
+        }
+      }
+    });
+
+    await Promise.all(reminderPromises);
+    console.log(`[${new Date().toISOString()}] Reminder emails successfully processed.`);
+  } catch (error) {
+    console.error(`[${new Date().toISOString()}] Error during rent and utility reminders:`, error);
+  }
+});
+
   
 
 

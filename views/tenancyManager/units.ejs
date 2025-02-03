@@ -2,738 +2,879 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lease Captain Dashboard</title>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="icon" href="/images/icon.png" type="image/png">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lease Captain | Dashboard</title>
 
-
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
-        }
-
-        .container {
-            padding: 15px;
-            padding-top: 40px;
-        }
-
-        .sidebar {
-            background-color: #ffffff;
-            color: #333333;
-            height: 100vh;
-            padding: 20px 3px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 250px;
-            overflow-y: auto;
-            transition: all 0.3s ease;
-            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-        }
-
-        .sidebar {
-            background-color: #ffffff;
-            color: #333333;
-            height: 100vh;
-            padding: 20px 10px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 260px;
-            overflow-y: auto;
-            transition: transform 0.3s ease, width 0.3s ease;
-            /* Smooth sidebar transition */
-            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-        }
-
-        /* Sidebar Title Styling */
-        .sidebar-title {
-            margin-bottom: 30px;
-            color: #000000;
-            font-size: 1.5em;
-            text-align: center;
-            font-weight: bold;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 10px;
-        }
-
-        .sidebar .nav-link {
-            color: #333333;
-            padding: 12px 20px;
-            margin: 8px 0;
-            text-decoration: none;
-            font-size: 0.9em;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            border-radius: 8px;
-            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .sidebar .nav-link i {
-            margin-right: 20px;
-            color: #555555;
-            transition: color 0.3s ease;
-        }
-
-        /* Hover Effects */
-        .sidebar .nav-link:hover {
-            background-color: #f1f1f1;
-            color: #003366;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transform: translateY(-1px);
-        }
-
-        .sidebar .nav-link:hover i {
-            color: #003366;
-        }
-
-        /* Active Link Styling */
-        .sidebar .nav-link.active {
-            background-color: #003366;
-            color: #ffffff;
-            font-weight: bold;
-        }
-
-        .sidebar .nav-link.active i {
-            color: #ffffff;
-        }
-
-        /* Smooth Collapsible Submenu */
-        .collapse {
-            transition: max-height 0.3s ease, opacity 0.3s ease;
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-        }
-
-        .collapse.show {
-            max-height: 500px;
-            opacity: 1;
-        }
-
-        @media (max-width: 968px) {
-            .sidebar {
-                transform: translateX(-250px);
-            }
-
-            .sidebar.active {
-                transform: translateX(0);
-            }
-        }
-
-
-        /* Header Styling */
-        .header {
-            background-color: #ffffff;
-            color: #000000;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: fixed;
-            width: calc(100% - 250px);
-            top: 0;
-            left: 260px;
-            z-index: 1001;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: left 0.3s ease, width 0.3s ease;
-        }
-
-        .header-right {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-        }
-
-        .header .btn {
-            background-color: #ffffff;
-            border: none;
-            font-size: 1rem;
-            color: #000;
-            padding: 0.5rem 1rem;
-        }
-
-        /* Footer */
-        footer {
-            position: fixed;
-            left: 0;
-            bottom: 0;
-            width: 100%;
-            background-color: #ffffff;
-            color: #000000;
-            text-align: center;
-            padding: 10px 0;
-            box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Content Area */
-        .content {
-            padding: 20px;
-            margin-left: 250px;
-            margin-top: 70px;
-        }
-
-        /* Responsive Adjustments */
-        @media (max-width: 968px) {
-            .sidebar {
-                transform: translateX(-250px);
-            }
-
-            .sidebar.active {
-                transform: translateX(0);
-            }
-
-            .header {
-                width: 100%;
-                left: 0;
-            }
-
-            .content {
-                margin-left: 0;
-            }
-        }
-    </style>
-
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&amp;display=fallback">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/dist/css/adminlte.min2167.css?v=3.2.0">
+    <link rel="icon" type="image/png" sizes="56x56" href="/assets/images/1.png">
 </head>
 
-<body>
-    <!-- Header -->
-    <div class="header">
-        <button class="btn" id="sidebarToggle">
-            <i class="fas fa-bars"></i>
-        </button>
-        <div class="header-right">
-            <div class="dropdown">
-                <button class="btn dropdown-toggle" type="button" id="profileDropdown" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-user"></i> Welcome, <%= currentUser.username %>
-                </button>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
-                    <a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                </div>
-            </div>
+<body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
+    <div class="wrapper">
+
+        <!-- Preloader -->
+        <div class="preloader flex-column justify-content-center align-items-center">
+            <img class="animation__wobble" src="/assets/images/2.png" alt="AdminLTELogo" height="150" width="150">
         </div>
-    </div>
- <!-- Sidebar -->
- <nav class="sidebar" id="sidebarMenu">
-    <h2 class="sidebar-title"><strong>Lease Captain</strong></h2>
-    <ul class="nav flex-column">
-        <li>
-            <a class="nav-link" href="/tenancy-manager/dashboard">
-                <i class="fas fa-tachometer-alt"></i> Dashboard
-            </a>
-        </li>
-        <li>
-            <a class="nav-link dropdown-toggle" href="#propertiesSubmenu" data-toggle="collapse">
-                <i class="fas fa-home"></i> Property Management
-            </a>
-            <ul class="collapse" id="propertiesSubmenu">
-                <li><a class="nav-link" href="/tenancy-manager/properties">Properties</a></li>
-                <li><a class="nav-link" href="/tenancy-manager/property/units">Property Units</a></li>
-            </ul>
-        </li>
-        <li>
-            <a class="nav-link dropdown-toggle" href="#tenantsSubmenu" data-toggle="collapse">
-                <i class="fas fa-users"></i> Tenant Management
-            </a>
-            <ul class="collapse" id="tenantsSubmenu">
-                <li><a class="nav-link" href="/tenancy-manager/tenants">Tenants</a></li>
-                <li><a class="nav-link" href="/maintenance-requests">Maintenance Requests</a></li>
-            </ul>
-        </li>
-        <li>
-            <a class="nav-link dropdown-toggle" href="#billingSubmenu" data-toggle="collapse">
-                <i class="fas fa-money-bill-wave"></i> Financial Overview
-            </a>
-            <ul class="collapse" id="billingSubmenu">
-                <li><a class="nav-link" href="/tenancy-manager/payments">Payment Transactions</a></li>
-                <li><a class="nav-link" href="/reports-invoices">Reports & Invoices</a></li>
-                <li><a class="nav-link" href="/expenses">Expense Tracking</a></li>
-            </ul>
-        </li>
-        <li>
-            <a class="nav-link dropdown-toggle" href="#smsSubmenu" data-toggle="collapse">
-                <i class="fas fa-sms"></i> Notification Management
-            </a>
-            <ul class="collapse" id="smsSubmenu">
-                <li><a class="nav-link" href="/top-ups">Credit Top-Up</a></li>
-                <li><a class="nav-link" href="/sms&email">SMS & Email Notifications</a></li>
-            </ul>
-        </li>
-        <li>
-            <a class="nav-link dropdown-toggle" href="#userSubmenu" data-toggle="collapse">
-                <i class="fas fa-users-cog"></i> User Administration
-            </a>
-            <ul class="collapse" id="userSubmenu">
-                <li><a class="nav-link" href="/users">User Accounts</a></li>
-                <li><a class="nav-link" href="/roles">User Roles</a></li>
-            </ul>
-        </li>
-        <li>
-            <a class="nav-link dropdown-toggle" href="#settingsSubmenu" data-toggle="collapse">
-                <i class="fas fa-cog"></i> Account Settings
-            </a>
-            <ul class="collapse" id="settingsSubmenu">
-                <li><a class="nav-link" href="/tenancy-manager/profile">Profile Settings</a></li>
-                <li><a class="nav-link" href="/tenancy-manager/security">Security Settings</a></li>
-                <li><a class="nav-link" href="/connect">Payment Gateway Integration</a></li>
-            </ul>
-        </li>
-    </ul>
-</nav>
 
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-light">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                </li>
+            </ul>
 
-
-
-    <!-- Table to display existing property units -->
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-12">
-
-                <h3 class="h4 text-center"><strong>Property Units</strong></h3>
-                <!-- Button to open the modal for adding a new property unit -->
-                <button type="button" class="btn btn-dark mb-4 w-100" style="background-color: #003366; color: white;"
-                    data-toggle="modal" data-target="#addUnitModal">
-                    Add Property Unit
-                </button>
-                <!-- Error Message -->
-                <% if (error && error.length> 0) { %>
-                    <div class="alert alert-danger text-center" role="alert" style="font-size: 0.9rem;">
-                        <%= error %>
-                    </div>
-                    <% } %>
-
-                        <!-- Success Message -->
-                        <% if (success && success.length> 0) { %>
-                            <div class="alert alert-success text-center" role="alert" style="font-size: 0.9rem;">
-                                <%= success %>
+            <!-- Right navbar links -->
+            <ul class="navbar-nav ml-auto">
+                <!-- Navbar Search -->
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="navbar-search" href="#" role="button">
+                        <i class="fas fa-search"></i>
+                    </a>
+                    <div class="navbar-search-block">
+                        <form class="form-inline">
+                            <div class="input-group input-group-sm">
+                                <input class="form-control form-control-navbar" type="search" placeholder="Search"
+                                    aria-label="Search">
+                                <div class="input-group-append">
+                                    <button class="btn btn-navbar" type="submit">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                    <button class="btn btn-navbar" type="button" data-widget="navbar-search">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
                             </div>
-                            <% } %>
-                                <style>
-                                    @media (max-width: 576px) {
-                                        .alert {
-                                            font-size: 0.8rem;
-                                        }
-                                    }
-                                </style>
+                        </form>
+                    </div>
+                </li>
 
-<div class="table-responsive">
-    <table class="table table-striped table-hover table-bordered table-sm w-100">
-        <thead class="text-center" style="background-color: #00172f; color: white;">
-            <tr>
-                <th style="width: 5%; text-align: center;">#</th>
-                <th style="width: 15%; text-align: left;">Property</th>
-                <th style="width: 12%; text-align: left;">Unit Name</th>
-                <th style="width: 12%; text-align: left;">Unit Type</th>
-                <th style="width: 7%; text-align: center;">No. of Units</th>
-                <th style="width: 7%; text-align: center;">Vacant</th>
-                <th style="width: 8%; text-align: center;">Status</th>
-                <th style="width: 12%; text-align: left;">Rent/Utilities</th>
-                <th style="width: 15%; text-align: left;">Total Rent Collected</th>
-                <th style="width: 8%; text-align: left;">Rent Due</th>
-                <th style="width: 8%; text-align: left;">Utilities Collected</th>
-                <th style="width: 8%; text-align: left;">Utilities Due</th>
-                <th style="width: 8%; text-align: left;">Deposit</th>
-                <th style="width: 10%; text-align: center;">Actions</th>
-            </tr>
-        </thead>
-        <tbody id="unitTableBody">
-            <% units.forEach(function(unit, index) { %>
-                <tr>
-                    <td><%= index + 1 %></td>
-                    <td><%= unit.property || 'N/A' %></td>
-                    <td><%= unit.unitName %></td>
-                    <td><%= unit.unitType %></td>
-                    <td><%= unit.unitCount %></td>
-                    <td><%= unit.vacantUnits || 0 %></td>
-                    <td>
-                        <% if (unit.vacantUnits === unit.unitCount) { %>
-                            <span class="badge badge-danger">Vacant</span>
-                        <% } else if (unit.vacantUnits === 0) { %>
-                            <span class="badge badge-success">Fully Occupied</span>
-                        <% } else { %>
-                            <span class="badge badge-warning">Partially Occupied</span>
-                        <% } %>
-                    </td>
-                    <td>Ksh.<%= unit.unitPrice %><br><strong>Utilities:</strong>Ksh.<%= unit.utilitiesAmount || 0 %></td>
-                    <td>Ksh.<%= unit.totalRentCollected || 0 %></td>
-                    <td>Ksh.<%= unit.rentDue || 0 %></td>
-                    <td>Ksh.<%= unit.totalUtilitiesPaid || 0 %></td>
-                    <td>Ksh.<%= unit.utilitiesDue || 0 %></td>
-                    <td>Ksh.<%= unit.deposit || 0 %></td>
-                    <td class="text-center">
-                        <div class="btn-group" role="group" aria-label="Property Actions">
-                            <button class="btn btn-info btn-sm mb-1" data-toggle="modal" data-target="#editModal<%= unit.id %>">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-danger btn-sm mb-1" data-toggle="modal" data-target="#deleteModal<%= unit.id %>">
-                                <i class="fas fa-trash-alt"></i>
+                <!-- Messages Dropdown Menu -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="far fa-comments"></i>
+                        <span class="badge badge-danger navbar-badge">3</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
+                    </div>
+                </li>
+                <!-- Notifications Dropdown Menu -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="far fa-bell"></i>
+                        <span class="badge badge-warning navbar-badge">15</span>
+                    </a>
+
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a href="/logout" class="nav-link" role="button">
+                        <i class="nav-icon fas fa-sign-out-alt"></i>
+                    </a>
+                </li>
+
+            </ul>
+        </nav>
+        <!-- /.navbar -->
+
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-light-primary elevation-4">
+            <!-- Brand Logo -->
+            <a href="/" class="brand-link">
+                <img src="/assets/images/2.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+                    style="opacity: .8">
+                <h4 class="brand-text font-weight-bold"><strong>Lease Captain</strong></h4>
+            </a>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Sidebar user panel (optional) -->
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                    <div class="image">
+                        <img src="/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+                    </div>
+                    <div class="info">
+                        <a href="#" class="d-block" aria-haspopup="true" aria-expanded="false">
+                            <span>Welcome,</span>
+                            <strong>
+                                <%= currentUser.username %>
+                            </strong>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                        data-accordion="false">
+                        <!-- Dashboard -->
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/dashboard" class="nav-link active"
+                                style="background-color: #003366; color: #ffffff;">
+                                <i class="nav-icon fas fa-tachometer-alt"></i>
+                                <p>Dashboard</p>
+                            </a>
+                        </li>
+
+                        <!-- Property Management -->
+                        <li class="nav-header"><strong>PROPERTY MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/properties" class="nav-link">
+                                <i class="nav-icon fas fa-building"></i>
+                                <p>Properties</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/property/units" class="nav-link">
+                                <i class="nav-icon fas fa-cogs"></i>
+                                <p>Property Units</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/propertyListing" class="nav-link">
+                                <i class="nav-icon fas fa-list-alt"></i>
+                                <p>List Properties</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-chart-line"></i>
+                                <p>
+                                    Tenant Management
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="/tenancy-manager/tenants" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Tenants</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/maintenance-requests" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Maintenance Requests</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/tenancy-manager/tenant-reports" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Tenant Reports</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/tenancy-manager/rental-analytics" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Rental Analytics</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/tenancy-manager/vacancy-status" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Vacancy Status</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+
+
+
+                        <!-- Land Management -->
+                        <li class="nav-header"><strong>LAND MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/lands" class="nav-link">
+                                <i class="nav-icon fas fa-map"></i>
+                                <p>Registered Lands</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/land-parcels" class="nav-link">
+                                <i class="nav-icon fas fa-th-large"></i>
+                                <p>Land Parcels</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/land-reports" class="nav-link">
+                                <i class="nav-icon fas fa-chart-area"></i>
+                                <p>Land Reports</p>
+                            </a>
+                        </li>
+
+                        <!-- Lease Management -->
+                        <li class="nav-header"><strong>LEASE MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/leases" class="nav-link">
+                                <i class="nav-icon fas fa-file-contract"></i>
+                                <p>Leases</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/lease-templates" class="nav-link">
+                                <i class="nav-icon fas fa-file-alt"></i>
+                                <p>Lease Templates</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/lease-reports" class="nav-link">
+                                <i class="nav-icon fas fa-chart-bar"></i>
+                                <p>Lease Reports</p>
+                            </a>
+                        </li>
+
+                        <!-- Vehicle Management -->
+                        <li class="nav-header"><strong>VEHICLE MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/vehicles" class="nav-link">
+                                <i class="nav-icon fas fa-car"></i>
+                                <p>Registered Vehicles</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/vehicle-parking" class="nav-link">
+                                <i class="nav-icon fas fa-parking"></i>
+                                <p>Parking Spaces</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/vehicle-reports" class="nav-link">
+                                <i class="nav-icon fas fa-clipboard-list"></i>
+                                <p>Vehicle Reports</p>
+                            </a>
+                        </li>
+
+                        <!-- Finance -->
+                        <li class="nav-header"><strong>FINANCE MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/payments" class="nav-link">
+                                <i class="nav-icon fas fa-money-bill-wave"></i>
+                                <p>Payment Transactions</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/reports-invoices" class="nav-link">
+                                <i class="nav-icon fas fa-file-invoice"></i>
+                                <p>Reports & Invoices</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/expenses" class="nav-link">
+                                <i class="nav-icon fas fa-wallet"></i>
+                                <p>Expense Tracking</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/budget-planning" class="nav-link">
+                                <i class="nav-icon fas fa-chart-pie"></i>
+                                <p>Budget Planning</p>
+                            </a>
+                        </li>
+
+                        <!-- Notifications -->
+                        <li class="nav-header"><strong>NOTIFICATION MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/sms&email" class="nav-link">
+                                <i class="nav-icon fas fa-sms"></i>
+                                <p>SMS & Email</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/sms&email" class="nav-link">
+                                <i class="nav-icon fas fa-credit-card"></i>
+                                <p>Credit Top-up</p>
+                            </a>
+                        </li>
+
+                        <!-- Staff Management -->
+                        <li class="nav-header"><strong>STAFF MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/staff-directory" class="nav-link">
+                                <i class="nav-icon fas fa-user-tie"></i>
+                                <p>Staff Directory</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/staff-attendance" class="nav-link">
+                                <i class="nav-icon fas fa-calendar-check"></i>
+                                <p>Attendance</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/staff-payroll" class="nav-link">
+                                <i class="nav-icon fas fa-file-invoice-dollar"></i>
+                                <p>Payroll</p>
+                            </a>
+                        </li>
+
+                        <!-- Account Management -->
+                        <li class="nav-header"><strong>ACCOUNT MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/profile" class="nav-link">
+                                <i class="nav-icon fas fa-user"></i>
+                                <p>Profile Settings</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/security" class="nav-link">
+                                <i class="nav-icon fas fa-lock"></i>
+                                <p>Security Settings</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/connect" class="nav-link">
+                                <i class="nav-icon fas fa-link"></i>
+                                <p>Payment Gateway</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/users" class="nav-link">
+                                <i class="nav-icon fas fa-users"></i>
+                                <p>User Accounts</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/upgrade-subscription" class="nav-link">
+                                <i class="nav-icon fas fa-arrow-circle-up"></i>
+                                <p>Upgrade Subscription</p>
+                            </a>
+                        </li>
+                        <!-- Support -->
+                        <li class="nav-item mt-auto">
+                            <a href="/contacts" class="nav-link d-flex align-items-center justify-content-center"
+                                style="background-color: #003366; color: #ffffff; border-radius: 5px; margin: 10px;">
+                                <i class="fas fa-headset mr-2"></i>
+                                <p>Support</p>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+
+            </div>
+
+            <!-- /.sidebar -->
+
+        </aside>
+
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+
+            <!-- Main content -->
+            <section class="content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <!-- Card for Property Units Table -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Property Units</h3>
+                                </div>
+                                <!-- /.card-header -->
+                                <div class="card-body">
+                                    <!-- Button to add a new property unit -->
+                                    <button type="button" class="btn btn-dark mb-4 w-30"
+                                        style="background-color: #003366; color: white;" data-toggle="modal"
+                                        data-target="#addUnitModal">
+                                        Add Property Unit
+                                    </button>
+
+                                    <!-- Error Message -->
+                                    <% if (error && error.length> 0) { %>
+                                        <div class="alert alert-danger text-center" role="alert"
+                                            style="font-size: 0.9rem;">
+                                            <%= error %>
+                                        </div>
+                                        <% } %>
+
+                                            <!-- Success Message -->
+                                            <% if (success && success.length> 0) { %>
+                                                <div class="alert alert-success text-center" role="alert"
+                                                    style="font-size: 0.9rem;">
+                                                    <%= success %>
+                                                </div>
+                                                <% } %>
+
+                                                    <!-- Responsive Table -->
+                                                    <div class="table-responsive">
+                                                        <table id="example1" class="table table-bordered table-striped">
+                                                            <thead class="text-center"
+                                                                style="background-color: #00172f; color: white;">
+                                                                <tr>
+                                                                    <th>#</th>
+                                                                    <th>Property</th>
+                                                                    <th>Unit Type</th>
+                                                                    <th>No. of Units</th>
+                                                                    <th>Status</th>
+                                                                    <th>Rent/Utilities</th>
+                                                                    <th>Deposit</th>
+                                                                    <th>Actions</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="unitTableBody">
+                                                                <% units.forEach(function(unit, index) { %>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <%= index + 1 %>
+                                                                        </td>
+                                                                        <td>
+                                                                            <%= unit.property || 'N/A' %>
+                                                                        </td>
+                                                                        <td>
+                                                                            <%= unit.unitType %>
+                                                                        </td>
+                                                                        <td>
+                                                                            <%= unit.unitCount %>
+                                                                        </td>
+                                                                        <td>
+                                                                            <% if (unit.vacantUnits===unit.unitCount) {
+                                                                                %>
+                                                                                <span
+                                                                                    class="badge badge-danger">Vacant</span>
+                                                                                <% } else if (unit.vacantUnits===0) { %>
+                                                                                    <span
+                                                                                        class="badge badge-success">Fully
+                                                                                        Occupied</span>
+                                                                                    <% } else { %>
+                                                                                        <span
+                                                                                            class="badge badge-warning">Partially
+                                                                                            Occupied</span>
+                                                                                        <% } %>
+                                                                        </td>
+                                                                        <td>Ksh.<%= unit.unitPrice %>
+                                                                                <br><strong>Utilities:</strong>Ksh.<%=
+                                                                                    unit.utilitiesAmount || 0 %>
+                                                                        </td>
+
+                                                                        <td>Ksh.<%= unit.deposit || 0 %>
+                                                                        </td>
+                                                                        <td class="text-center">
+                                                                            <div class="btn-group" role="group"
+                                                                                aria-label="Property Actions">
+                                                                                <button class="btn btn-info btn-sm mb-1"
+                                                                                    data-toggle="modal"
+                                                                                    data-target="#editModal<%= unit.id %>">
+                                                                                    <i class="fas fa-edit"></i>
+                                                                                </button>
+                                                                                <button
+                                                                                    class="btn btn-danger btn-sm mb-1"
+                                                                                    data-toggle="modal"
+                                                                                    data-target="#deleteModal<%= unit.id %>">
+                                                                                    <i class="fas fa-trash-alt"></i>
+                                                                                </button>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+
+                                                                    <!-- Edit Modal -->
+                                                                    <div class="modal fade" id="editModal<%= unit.id %>"
+                                                                        tabindex="-1" role="dialog"
+                                                                        aria-labelledby="editModalLabel<%= unit.id %>"
+                                                                        aria-hidden="true">
+                                                                        <div class="modal-dialog" role="document">
+                                                                            <div class="modal-content">
+                                                                                <div class="modal-header">
+                                                                                    <h5 class="modal-title"
+                                                                                        id="editModalLabel<%= unit.id %>">
+                                                                                        Edit Property Unit</h5>
+                                                                                    <button type="button" class="close"
+                                                                                        data-dismiss="modal"
+                                                                                        aria-label="Close">
+                                                                                        <span
+                                                                                            aria-hidden="true">&times;</span>
+                                                                                    </button>
+                                                                                </div>
+                                                                                <div class="modal-body">
+                                                                                    <form
+                                                                                        action="/tenancy-manager/property/units/edit/<%= unit.id %>"
+                                                                                        method="POST">
+                                                                                        <!-- Unit Type -->
+                                                                                        <div class="form-group">
+                                                                                            <label
+                                                                                                for="unitType<%= unit.id %>">Unit
+                                                                                                Type</label>
+                                                                                            <select class="form-control"
+                                                                                                id="unitType<%= unit.id %>"
+                                                                                                name="unitType"
+                                                                                                required>
+                                                                                                <option
+                                                                                                    value="Single Room"
+                                                                                                    <%=unit.unitType==='Single Room'
+                                                                                                    ? 'selected' : '' %>
+                                                                                                    >Single Room
+                                                                                                </option>
+                                                                                                <option
+                                                                                                    value="Bedsitter"
+                                                                                                    <%=unit.unitType==='Bedsitter'
+                                                                                                    ? 'selected' : '' %>
+                                                                                                    >Bedsitter</option>
+                                                                                                <option
+                                                                                                    value="Studio Apartment"
+                                                                                                    <%=unit.unitType==='Studio Apartment'
+                                                                                                    ? 'selected' : '' %>
+                                                                                                    >Studio Apartment
+                                                                                                </option>
+                                                                                                <option
+                                                                                                    value="1 Bedroom Apartment"
+                                                                                                    <%=unit.unitType==='1 Bedroom Apartment'
+                                                                                                    ? 'selected' : '' %>
+                                                                                                    >1 Bedroom Apartment
+                                                                                                </option>
+                                                                                                <option
+                                                                                                    value="2 Bedroom Apartment"
+                                                                                                    <%=unit.unitType==='2 Bedroom Apartment'
+                                                                                                    ? 'selected' : '' %>
+                                                                                                    >2 Bedroom Apartment
+                                                                                                </option>
+                                                                                                <option
+                                                                                                    value="3 Bedroom Apartment"
+                                                                                                    <%=unit.unitType==='3 Bedroom Apartment'
+                                                                                                    ? 'selected' : '' %>
+                                                                                                    >3 Bedroom Apartment
+                                                                                                </option>
+                                                                                                <option
+                                                                                                    value="Townhouse"
+                                                                                                    <%=unit.unitType==='Townhouse'
+                                                                                                    ? 'selected' : '' %>
+                                                                                                    >Townhouse</option>
+                                                                                                <option
+                                                                                                    value="Maisonette"
+                                                                                                    <%=unit.unitType==='Maisonette'
+                                                                                                    ? 'selected' : '' %>
+                                                                                                    >Maisonette</option>
+                                                                                                <option value="Condo"
+                                                                                                    <%=unit.unitType==='Condo'
+                                                                                                    ? 'selected' : '' %>
+                                                                                                    >Condo</option>
+                                                                                                <option
+                                                                                                    value="Multi Family Home"
+                                                                                                    <%=unit.unitType==='Multi Family Home'
+                                                                                                    ? 'selected' : '' %>
+                                                                                                    >Multi Family Home
+                                                                                                </option>
+                                                                                                <option
+                                                                                                    value="Single Family Home"
+                                                                                                    <%=unit.unitType==='Single Family Home'
+                                                                                                    ? 'selected' : '' %>
+                                                                                                    >Single Family Home
+                                                                                                </option>
+                                                                                                <option value="Villa"
+                                                                                                    <%=unit.unitType==='Villa'
+                                                                                                    ? 'selected' : '' %>
+                                                                                                    >Villa</option>
+                                                                                                <option
+                                                                                                    value="Penthouse"
+                                                                                                    <%=unit.unitType==='Penthouse'
+                                                                                                    ? 'selected' : '' %>
+                                                                                                    >Penthouse</option>
+                                                                                            </select>
+                                                                                        </div>
+
+                                                                                        <!-- Number of Units -->
+                                                                                        <div class="form-group">
+                                                                                            <label
+                                                                                                for="unitCount<%= unit.id %>">Number
+                                                                                                of Units</label>
+                                                                                            <input type="number"
+                                                                                                class="form-control"
+                                                                                                id="unitCount<%= unit.id %>"
+                                                                                                name="unitCount"
+                                                                                                value="<%= unit.unitCount %>"
+                                                                                                required>
+                                                                                        </div>
+
+                                                                                        <!-- Rent Price -->
+                                                                                        <div class="form-group">
+                                                                                            <label
+                                                                                                for="unitPrice<%= unit.id %>">Unit
+                                                                                                Rent Price (Ksh)</label>
+                                                                                            <input type="number"
+                                                                                                class="form-control"
+                                                                                                id="unitPrice<%= unit.id %>"
+                                                                                                name="unitPrice"
+                                                                                                value="<%= unit.unitPrice %>"
+                                                                                                required>
+                                                                                        </div>
+
+                                                                                        <!-- Utilities Amount -->
+                                                                                        <div class="form-group">
+                                                                                            <label
+                                                                                                for="utilitiesAmount<%= unit.id %>">Utilities
+                                                                                                Amount (Ksh)</label>
+                                                                                            <input type="number"
+                                                                                                class="form-control"
+                                                                                                id="utilitiesAmount<%= unit.id %>"
+                                                                                                name="utilitiesAmount"
+                                                                                                value="<%= unit.utilitiesAmount || 0 %>"
+                                                                                                required>
+                                                                                        </div>
+
+                                                                                        <!-- Deposit -->
+                                                                                        <div class="form-group">
+                                                                                            <label
+                                                                                                for="deposit<%= unit.id %>">Deposit
+                                                                                                Amount (Ksh)</label>
+                                                                                            <input type="number"
+                                                                                                class="form-control"
+                                                                                                id="deposit<%= unit.id %>"
+                                                                                                name="deposit"
+                                                                                                value="<%= unit.deposit %>"
+                                                                                                required>
+                                                                                        </div>
+
+                                                                                        <!-- Submit Button -->
+                                                                                        <button type="submit"
+                                                                                            class="btn btn-dark"
+                                                                                            style="background-color: #00172f; color: white;">Save
+                                                                                            changes</button>
+                                                                                    </form>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+
+
+                                                                    <!-- Delete Modal -->
+                                                                    <div class="modal fade"
+                                                                        id="deleteModal<%= unit.id %>" tabindex="-1"
+                                                                        role="dialog"
+                                                                        aria-labelledby="deleteModalLabel<%= unit.id %>"
+                                                                        aria-hidden="true">
+                                                                        <div class="modal-dialog" role="document">
+                                                                            <div class="modal-content">
+                                                                                <div class="modal-header"
+                                                                                    style="background-color: #ff1212; color: white;">
+                                                                                    <h5 class="modal-title"
+                                                                                        id="deleteModalLabel<%= unit.id %>">
+                                                                                        Delete Property Unit</h5>
+                                                                                    <button type="button" class="close"
+                                                                                        data-dismiss="modal"
+                                                                                        aria-label="Close">
+                                                                                        <span
+                                                                                            aria-hidden="true">&times;</span>
+                                                                                    </button>
+                                                                                </div>
+                                                                                <div class="modal-body">
+                                                                                    <p>Are you sure you want to delete
+                                                                                        the property unit: <strong>
+                                                                                            <%= unit.unitType %>
+                                                                                        </strong>?</p>
+                                                                                </div>
+                                                                                <div class="modal-footer">
+                                                                                    <button type="button"
+                                                                                        class="btn btn-secondary"
+                                                                                        data-dismiss="modal">Cancel</button>
+                                                                                    <form
+                                                                                        action="/tenancy-manager/property/units/delete/<%= unit.id %>"
+                                                                                        method="POST">
+                                                                                        <button type="submit"
+                                                                                            class="btn btn-danger">Delete</button>
+                                                                                    </form>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <% }) %>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                </div>
+                                <!-- /.card-body -->
+                            </div>
+                            <!-- /.card -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+
+
+
+
+
+            <div class="modal fade" id="addUnitModal" tabindex="-1" role="dialog" aria-labelledby="addUnitModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addUnitModalLabel"><i class="fas fa-plus-circle"></i> Add
+                                Property Unit
+                            </h5>
+                            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                    </td>
-                </tr>
-                                                <style>
-                                                    .table {
-                                                        font-size: 0.95rem;
-                                                    }
-
-                                                    .table th,
-                                                    .table td {
-                                                        padding: 0.5rem;
-                                                        vertical-align: middle;
-                                                    }
-
-                                                    .table thead {
-                                                        background-color: #00172f;
-                                                        color: white;
-                                                    }
-
-                                                    .table tbody tr:hover {
-                                                        background-color: #f2f2f2;
-                                                    }
-
-                                                    @media (max-width: 768px) {
-                                                        .table {
-                                                            font-size: 0.75rem;
-                                                        }
-
-                                                        .table th,
-                                                        .table td {
-                                                            white-space: nowrap;
-                                                            overflow: hidden;
-                                                            text-overflow: ellipsis;
-                                                        }
-
-                                                        .btn-group {
-                                                            display: flex;
-                                                            flex-direction: row;
-                                                        }
-
-                                                        .btn-group .btn {
-                                                            margin-bottom: 0;
-                                                        }
-                                                    }
-
-                                                    .table td {
-                                                        color: #333;
-                                                    }
-
-                                                    .table td strong {
-                                                        color: #00172f;
-                                                    }
-                                                </style>
-
-                                                <!-- Edit Modal -->
-                                                <div class="modal fade" id="editModal<%= unit.id %>" tabindex="-1"
-                                                    role="dialog" aria-labelledby="editModalLabel<%= unit.id %>"
-                                                    aria-hidden="true">
-                                                    <div class="modal-dialog" role="document">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header"
-                                                                style="background-color: #00172f; color: white;">
-                                                                <h5 class="modal-title"
-                                                                    id="editModalLabel<%= unit.id %>">Edit Property Unit
-                                                                </h5>
-                                                                <button type="button" class="close" data-dismiss="modal"
-                                                                    aria-label="Close">
-                                                                    <span aria-hidden="true">&times;</span>
-                                                                </button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                <!-- Form for editing the unit -->
-                                                                <form
-                                                                    action="/tenancy-manager/property/units/edit/<%= unit.id %>"
-                                                                    method="POST">
-                                                                    <div class="form-group">
-                                                                        <label for="unitName<%= unit.id %>">Unit
-                                                                            Name</label>
-                                                                        <input type="text" class="form-control"
-                                                                            id="unitName<%= unit.id %>" name="unitName"
-                                                                            value="<%= unit.unitName %>" required>
-                                                                    </div>
-                                                                    <div class="form-group">
-                                                                        <label for="unitType<%= unit.id %>">Unit
-                                                                            Type</label>
-                                                                        <input type="text" class="form-control"
-                                                                            id="unitType<%= unit.id %>" name="unitType"
-                                                                            value="<%= unit.unitType %>" required>
-                                                                    </div>
-                                                                    <div class="form-group">
-                                                                        <label for="unitCount<%= unit.id %>">Unit
-                                                                            Count</label>
-                                                                        <input type="number" class="form-control"
-                                                                            id="unitCount<%= unit.id %>"
-                                                                            name="unitCount"
-                                                                            value="<%= unit.unitCount %>" required>
-                                                                    </div>
-                                                                    <div class="form-group">
-                                                                        <label for="unitPrice<%= unit.id %>">Unit
-                                                                            Price</label>
-                                                                        <input type="number" class="form-control"
-                                                                            id="unitPrice<%= unit.id %>"
-                                                                            name="unitPrice"
-                                                                            value="<%= unit.unitPrice %>" required>
-                                                                    </div>
-                                                                    <div class="form-group">
-                                                                        <label for="vacantUnits<%= unit.id %>">Vacant
-                                                                            Units</label>
-                                                                        <input type="number" class="form-control"
-                                                                            id="vacantUnits<%= unit.id %>"
-                                                                            name="vacantUnits"
-                                                                            value="<%= unit.vacantUnits %>" required>
-                                                                    </div>
-                                                                    <div class="form-group">
-                                                                        <label
-                                                                            for="description<%= unit.id %>">Description</label>
-                                                                        <textarea class="form-control"
-                                                                            id="description<%= unit.id %>"
-                                                                            name="description"><%= unit.description %></textarea>
-                                                                    </div>
-                                                                    <div class="form-group">
-                                                                        <label for="deposit<%= unit.id %>">Deposit
-                                                                            Amount (Ksh) <span
-                                                                                class="text-danger">*</span></label>
-                                                                        <input type="number" class="form-control"
-                                                                            id="deposit<%= unit.id %>" name="deposit"
-                                                                            value="<%= unit.deposit %>" required>
-                                                                    </div>
-
-                                                                    <button type="submit" class="btn btn-dark"
-                                                                        style="background-color: #00172f; color: white;">Save
-                                                                        changes</button>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-
-
-
-                                                <!-- Delete Modal -->
-                                                <div class="modal fade" id="deleteModal<%= unit.id %>" tabindex="-1"
-                                                    role="dialog" aria-labelledby="deleteModalLabel<%= unit.id %>"
-                                                    aria-hidden="true">
-                                                    <div class="modal-dialog" role="document">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header"
-                                                                style="background-color: #00172f; color: white;">
-                                                                <h5 class="modal-title"
-                                                                    id="deleteModalLabel<%= unit.id %>">Delete Property
-                                                                    Unit</h5>
-                                                                <button type="button" class="close" data-dismiss="modal"
-                                                                    aria-label="Close">
-                                                                    <span aria-hidden="true">&times;</span>
-                                                                </button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                <p>Are you sure you want to delete the property unit:
-                                                                    <strong>
-                                                                        <%= unit.unitName %>
-                                                                    </strong>?</p>
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary"
-                                                                    data-dismiss="modal">Cancel</button>
-                                                                <form
-                                                                    action="/tenancy-manager/property/units/delete/<%= unit.id %>"
-                                                                    method="POST" style="display: inline;">
-                                                                    <button type="submit"
-                                                                        class="btn btn-danger">Delete</button>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-
-                                                <% }) %>
-                                        </tbody>
-                                    </table>
-                                </div>
-            </div>
-        </div>
-    </div>
-
-
-
-
-
-
-    <div class="modal fade" id="addUnitModal" tabindex="-1" role="dialog" aria-labelledby="addUnitModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header" style="background-color: #00172f; color: white;">
-                    <h5 class="modal-title" id="addUnitModalLabel"><i class="fas fa-plus-circle"></i> Add Property Unit
-                    </h5>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form action="/tenancy-manager/property/units" method="POST">
-                        <div class="row">
-                            <!-- First Column -->
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="propertySelect">Select Property</label>
-                                    <select class="form-control" id="propertySelect" name="propertyId" required>
-                                        <option value="">Select property</option>
-                                        <% properties.forEach(function(property) { %>
-                                            <option value="<%= property._id %>">
-                                                <%= property.name %>
-                                            </option>
-                                            <% }) %>
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="unitName">Unit Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="unitName" name="unitName" required
-                                        placeholder="Enter unit name">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="unitType">Unit Type <span class="text-danger">*</span></label>
-                                    <select class="form-control" id="unitType" name="unitType" required>
-                                        <option value="">Select unit type</option>
-                                        <option value="Single Room">Single Room</option>
-                                        <option value="Bedsitter">Bedsitter</option>
-                                        <option value="Studio Apartment">Studio Apartment</option>
-                                        <option value="1 Bedroom Apartment">1 Bedroom Apartment</option>
-                                        <option value="2 Bedroom Apartment">2 Bedroom Apartment</option>
-                                        <option value="3 Bedroom Apartment">3 Bedroom Apartment</option>
-                                        <option value="Townhouse">Townhouse</option>
-                                        <option value="Maisonette">Maisonette</option>
-                                        <option value="Condo">Condo</option>
-                                        <option value="Multi Family Home">Multi Family Home</option>
-                                        <option value="Single Family Home">Single Family Home</option>
-                                        <option value="Villa">Villa</option>
-                                        <option value="Penthouse">Penthouse</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="description">Description</label>
-                                    <textarea class="form-control" id="description" name="description" rows="4"
-                                        placeholder="Enter unit description"></textarea>
-                                </div>
-                            </div>
-
-                            <!-- Second Column -->
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="unitCount">Number of Units <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control" id="unitCount" name="unitCount" required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="unitPrice">Unit Price per Month (Ksh) <span
-                                            class="text-danger">*</span></label>
-                                    <input type="number" class="form-control" id="unitPrice" name="unitPrice" required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="depositAmount">Deposit Amount (Ksh) <span
-                                            class="text-danger">*</span></label>
-                                    <input type="number" class="form-control" id="depositAmount" name="depositAmount"
-                                        required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="vacantUnits">Number of Vacant Units <span
-                                            class="text-danger">*</span></label>
-                                    <input type="number" class="form-control" id="vacantUnits" name="vacantUnits"
-                                        required>
-                                </div>
-
-                                <h4>Utilities</h4>
-                                <div id="utilitiesContainer">
-                                    <div class="utility-item">
+                        <div class="modal-body">
+                            <form action="/tenancy-manager/property/units" method="POST">
+                                <div class="row">
+                                    <!-- First Column -->
+                                    <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="utilityType">Utility Type</label>
-                                            <input type="text" class="form-control" name="utilities[0][type]" required
-                                                placeholder="e.g. service charge, electricity, water...">
+                                            <label for="propertySelect">Select Property</label>
+                                            <select class="form-control" id="propertySelect" name="propertyId" required>
+                                                <option value="">Select property</option>
+                                                <% properties.forEach(function(property) { %>
+                                                    <option value="<%= property._id %>">
+                                                        <%= property.name %>
+                                                    </option>
+                                                    <% }) %>
+                                            </select>
                                         </div>
+
+
                                         <div class="form-group">
-                                            <label for="utilityAmount">Utility Amount (Ksh)</label>
-                                            <input type="number" class="form-control" name="utilities[0][amount]"
+                                            <label for="unitType">Unit Type <span class="text-danger">*</span></label>
+                                            <select class="form-control" id="unitType" name="unitType" required>
+                                                <option value="">Select unit type</option>
+                                                <option value="Studio">1 Room</option>
+                                                <option value="Studio">2 Rooms</option>
+                                                <option value="Studio">Studio</option>
+                                                <option value="1 Bedroom">1 Bedroom</option>
+                                                <option value="2 Bedroom">2 Bedroom</option>
+                                                <option value="3 Bedroom">3 Bedroom</option>
+                                                <option value="4 Bedroom">4 Bedroom</option>
+                                                <option value="Duplex">Duplex</option>
+                                                <option value="Penthouse">Penthouse</option>
+                                                <option value="Apartment (Flat)">Apartment (Flat)</option>
+                                                <option value="Townhouse">Townhouse</option>
+                                                <option value="Detached House">Detached House</option>
+                                                <option value="Semi-Detached House">Semi-Detached House</option>
+                                                <option value="Villa">Villa</option>
+                                                <option value="Mansion">Mansion</option>
+                                                <option value="Loft">Loft</option>
+                                                <option value="Bungalow">Bungalow</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="unitCount">Number of Units <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="number" class="form-control" id="unitCount" name="unitCount"
+                                                required>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="unitPrice">Unit Price per Month (Ksh) <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="number" class="form-control" id="unitPrice" name="unitPrice"
                                                 required>
                                         </div>
                                     </div>
-                                </div>
-                                <button type="button" class="btn btn-link" style="color: #00172f;"
-                                    onclick="addUtility()"><i class="fas fa-plus"></i> Add More Utilities</button>
-                            </div>
-                        </div>
 
-                        <div class="text-right">
-                            <button type="submit" class="btn btn-dark"
-                                style="background-color: #00172f; color: white;"><i class="fas fa-check"></i> Add
-                                Property Unit</button>
+                                    <!-- Second Column -->
+                                    <div class="col-md-6">
+
+
+                                        <div class="form-group">
+                                            <label for="depositAmount">Deposit Amount (Ksh) <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="number" class="form-control" id="depositAmount"
+                                                name="depositAmount" required>
+                                        </div>
+
+                                        <h4>Utilities</h4>
+                                        <div id="utilitiesContainer">
+                                            <div class="utility-item">
+                                                <div class="form-group">
+                                                    <label for="utilityType">Utility Type</label>
+                                                    <input type="text" class="form-control" name="utilities[0][type]"
+                                                        required
+                                                        placeholder="e.g. service charge, electricity, water...">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="utilityAmount">Utility Amount (Ksh)</label>
+                                                    <input type="number" class="form-control"
+                                                        name="utilities[0][amount]" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-link" style="color: #00172f;"
+                                            onclick="addUtility()"><i class="fas fa-plus"></i> Add More
+                                            Utilities</button>
+                                    </div>
+                                </div>
+
+                                <div class="text-right">
+                                    <button type="submit" class="btn btn-dark"
+                                        style="background-color: #00172f; color: white;"><i class="fas fa-check"></i>
+                                        Add
+                                        Property Unit</button>
+                                </div>
+                            </form>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <style>
-        @media (max-width: 576px) {
-            .modal-header h5 {
-                font-size: 0.9rem;
-                /* Reduce title size */
-            }
+            <style>
+                @media (max-width: 576px) {
+                    .modal-header h5 {
+                        font-size: 0.9rem;
+                        /* Reduce title size */
+                    }
 
-            .modal-body {
-                padding: 10px;
-                /* Reduce padding */
-            }
+                    .modal-body {
+                        padding: 10px;
+                        /* Reduce padding */
+                    }
 
-            .form-group label {
-                font-size: 0.7rem;
-                /* Reduce label size */
-            }
+                    .form-group label {
+                        font-size: 0.7rem;
+                        /* Reduce label size */
+                    }
 
-            .form-control {
-                font-size: 0.7rem;
-                /* Reduce input field size */
-            }
+                    .form-control {
+                        font-size: 0.7rem;
+                        /* Reduce input field size */
+                    }
 
-            .modal-body h4 {
-                font-size: 1rem;
-                /* Reduce utility heading size */
-            }
+                    .modal-body h4 {
+                        font-size: 1rem;
+                        /* Reduce utility heading size */
+                    }
 
-            button.btn {
-                font-size: 0.65rem;
-            }
-        }
-    </style>
+                    button.btn {
+                        font-size: 0.65rem;
+                    }
+                }
+            </style>
 
 
-<script>
-    let utilityCount = 1;
+            <script>
+                let utilityCount = 1;
 
-    function addUtility() {
-        const utilitiesContainer = document.getElementById('utilitiesContainer');
+                function addUtility() {
+                    const utilitiesContainer = document.getElementById('utilitiesContainer');
 
-        const newUtilityDiv = document.createElement('div');
-        newUtilityDiv.className = 'utility-item';
-        newUtilityDiv.style.border = "none";
-        newUtilityDiv.style.marginBottom = "10px";
-        newUtilityDiv.style.padding = "10px";
-        newUtilityDiv.style.position = "relative";
+                    const newUtilityDiv = document.createElement('div');
+                    newUtilityDiv.className = 'utility-item';
+                    newUtilityDiv.style.border = "none";
+                    newUtilityDiv.style.marginBottom = "10px";
+                    newUtilityDiv.style.padding = "10px";
+                    newUtilityDiv.style.position = "relative";
 
-        newUtilityDiv.innerHTML = `
+                    newUtilityDiv.innerHTML = `
             <button type="button" class="close-utility" onclick="removeUtility(this)" 
                 style="position: absolute; top: 5px; right: 5px; background: none; border: none; color: red; font-size: 16px; cursor: pointer;">
                 &times;
@@ -749,99 +890,59 @@
             </div>
         `;
 
-        utilitiesContainer.appendChild(newUtilityDiv);
-        utilityCount++; // Increment the utility count
-    }
-
-    function removeUtility(button) {
-        // Remove the parent utility item div
-        button.parentElement.remove();
-    }
-</script>
-
-
-    <footer class="text-center py-0">
-        &copy; 2024 Lease Captain. All Rights Reserved || powered by
-        <a href="https://vickinstechnologies.com" target="_blank">Vickins Technologies</a>
-    </footer>
-
-    <style>
-        footer {
-            font-size: 0.7rem;
-            /* Default font size */
-        }
-
-        @media (max-width: 768px) {
-            footer {
-                font-size: 0.6rem;
-                /* Smaller font size for small screens */
-                padding: 5px;
-                /* Adjust padding for smaller screens */
-            }
-        }
-
-        @media (max-width: 576px) {
-            footer {
-                font-size: 0.5rem;
-                /* Even smaller font size for extra small screens */
-                padding: 2px;
-                /* Adjust padding further for extra small screens */
-            }
-        }
-    </style>
-
-
-
-
-
-    <!-- Bootstrap JS -->
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-
-    <script>
-        $(document).ready(function () {
-            // Toggle sidebar on button click
-            $('#sidebarToggle').click(function () {
-                $('#sidebarMenu').toggleClass('active');
-            });
-
-            // Collapse sidebar when clicking outside
-            $(document).click(function (event) {
-                if (!$(event.target).closest('#sidebarMenu, #sidebarToggle').length) {
-                    $('#sidebarMenu').removeClass('active');
+                    utilitiesContainer.appendChild(newUtilityDiv);
+                    utilityCount++; // Increment the utility count
                 }
-            });
 
-            // Close other collapsibles when one is opened
-            $('.collapse').on('show.bs.collapse', function () {
-                // Collapse all other elements except the one being opened
-                $('.collapse').not(this).collapse('hide');
-            });
-        });
-    </script>
-
-    <script>
-        // Function to handle the addition of a new unit type
-        document.getElementById('unitTypeForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const newUnitType = document.getElementById('newUnitType').value;
-
-            // Add the new unit type to the table
-            const tableBody = document.getElementById('unitTypeTableBody');
-            const newRow = tableBody.insertRow();
-            const cell = newRow.insertCell(0);
-            cell.textContent = newUnitType;
-
-            // Clear the input field
-            document.getElementById('newUnitType').value = '';
-
-            // Close the modal
-            $('#addUnitTypeModal').modal('hide');
-        });
-    </script>
+                function removeUtility(button) {
+                    // Remove the parent utility item div
+                    button.parentElement.remove();
+                }
+            </script>
 
 
+            <!-- Control Sidebar -->
+            <aside class="control-sidebar control-sidebar-dark">
+                <!-- Control sidebar content goes here -->
+            </aside>
+            <!-- /.control-sidebar -->
+
+            <!-- Main Footer -->
+            <footer class="main-footer">
+                <strong>Copyright &copy; 2024-2025 <a href="https://leasecaptain.com/">Lease Captain</a></strong>
+                All rights reserved.
+                <div class="float-right d-none d-sm-inline-block">
+                    <b>Version</b> 1.0.2
+                </div>
+            </footer>
+        </div>
+        <!-- ./wrapper -->
+
+        <!-- REQUIRED SCRIPTS -->
+        <!-- jQuery -->
+        <script src="/plugins/jquery/jquery.min.js"></script>
+        <!-- Bootstrap -->
+        <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <!-- overlayScrollbars -->
+        <script src="/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+        <!-- AdminLTE App -->
+        <script src="/dist/js/adminlte2167.js?v=3.2.0"></script>
+
+        <!-- PAGE PLUGINS -->
+        <!-- jQuery Mapael -->
+        <script src="/plugins/jquery-mousewheel/jquery.mousewheel.js"></script>
+        <script src="/plugins/raphael/raphael.min.js"></script>
+        <script src="/plugins/jquery-mapael/jquery.mapael.min.js"></script>
+        <script src="/plugins/jquery-mapael/maps/usa_states.min.js"></script>
+        <!-- ChartJS -->
+        <script src="/plugins/chart.js/Chart.min.js"></script>
+
+        <!-- AdminLTE for demo purposes -->
+        <script src="/dist/js/demo.js"></script>
+        <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+        <script src="/dist/js/pages/dashboard2.js"></script>
 </body>
+
+<!-- Mirrored from adminlte.io/themes/v3/index2.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 29 Nov 2024 09:27:35 GMT -->
 
 </html>
