@@ -25,42 +25,19 @@ const http = require('http');
 const server = http.createServer(app);
 app.set('trust proxy', 1);
 
-const uri = "mongodb://Admin:Kefini360@lease-captain-shard-00-00.ryokh.mongodb.net:27017,lease-captain-shard-00-01.ryokh.mongodb.net:27017,lease-captain-shard-00-02.ryokh.mongodb.net:27017/LC-db?ssl=true&replicaSet=atlas-67tjyi-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Lease-Captain";
+const uri = "mongodb+srv://Admin:Kefini360@lease-captain.ryokh.mongodb.net/?retryWrites=true&w=majority&appName=Lease-Captain";
 
-
-
-async function createDatabaseAndCollections() {
-    try {
-        await mongoose.connect(uri);
-        console.log("Connected to MongoDB!");
-
-        const modelNames = mongoose.modelNames();
-
-        if (modelNames.length === 0) {
-            return;
-        }
-
-        const db = mongoose.connection.db;
-
-        for (const modelName of modelNames) {
-            const model = mongoose.model(modelName);
-
-            const collectionName = model.collection.collectionName;
-            const existingCollections = await db.listCollections({ name: collectionName }).toArray();
-
-            if (existingCollections.length > 0) {
-            } else {
-                await model.init();
-            }
-        }
-
-        console.log("Database and collections checked successfully!");
-    } catch (error) {
-        console.error("Error creating database and collections:", error);
-    }
+const clientOptions = { serverApi: { version: '1', strict: true, deprecationErrors: true } };
+async function run() {
+  try {
+    await mongoose.connect(uri, clientOptions);
+    await mongoose.connection.db.admin().command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  } finally {
+    await mongoose.disconnect();
+  }
 }
-
-createDatabaseAndCollections().catch(console.dir);
+run().catch(console.dir);
 
 
 // View engine setup
@@ -257,7 +234,7 @@ app.use((req, res) => {
 
 // Tenancy Manager specific middleware
 app.use('/tenancy-manager', (req, res, next) => {
-  req.isTenancyManager = true; // Flag to identify Tenancy Manager routes
+  req.isTenancyManager = true; 
   next();
 });
 
@@ -265,7 +242,7 @@ app.use((req, res, next) => {
   if (req.isTenancyManager) {
       return res.status(404).render('tenancyManager/404', { title: 'Page Not Found', currentUser: req.user || null });
   }
-  next(); // Pass to the next middleware if not Tenancy Manager
+  next(); 
 });
 
 // 500 Error handling
