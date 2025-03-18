@@ -25,19 +25,19 @@ const http = require('http');
 const server = http.createServer(app);
 app.set('trust proxy', 1);
 
-const uri = "mongodb+srv://Admin:Kefini360@lease-captain.ryokh.mongodb.net/?retryWrites=true&w=majority&appName=Lease-Captain";
+const uri = "mongodb://Admin:Kefini360@lease-captain.5ib26.mongodb.net/LC-db retryWrites=true&w=majority&appName=Lease-Captain";
 
-const clientOptions = { serverApi: { version: '1', strict: true, deprecationErrors: true } };
-async function run() {
+async function connectToDatabase() {
   try {
-    await mongoose.connect(uri, clientOptions);
-    await mongoose.connection.db.admin().command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    await mongoose.disconnect();
+    await mongoose.connect(uri);
+    console.log("Connected to MongoDB!");
+  } catch (error) {
+    console.error("Error connecting to MongoDB:", error);
+    process.exit(1);
   }
 }
-run().catch(console.dir);
+
+connectToDatabase();
 
 
 // View engine setup
