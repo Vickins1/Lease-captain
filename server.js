@@ -25,7 +25,7 @@ const http = require('http');
 const server = http.createServer(app);
 app.set('trust proxy', 1);
 
-const uri = "mongodb://Admin:Kefini360@lease-captain.5ib26.mongodb.net/LC-db retryWrites=true&w=majority&appName=Lease-Captain";
+const uri = "mongodb+srv://Admin:Kefini360@lease-captain.ryokh.mongodb.net/LC-db?retryWrites=true&w=majority&appName=Lease-Captain";
 
 async function connectToDatabase() {
   try {
@@ -38,7 +38,6 @@ async function connectToDatabase() {
 }
 
 connectToDatabase();
-
 
 // View engine setup
 app.set('view engine', 'ejs');
@@ -103,8 +102,6 @@ app.get('/contacts', (req, res) => {
 
   res.render('contacts', { successMessage, errorMessage });
 });
-
-
 
 // Configure Nodemailer
 const transporter = nodemailer.createTransport({
@@ -199,7 +196,6 @@ Message: ${message}`,
     return res.redirect('/contacts');
   }
 });
-
 
 app.get('/verify/:token', async (req, res) => {
     const { token } = req.params;
