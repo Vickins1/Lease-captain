@@ -1,396 +1,288 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lease Captain TenantPortal</title>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="icon" href="/images/icon.png" type="image/png">
-
-
+    <title>Lease Captain | Tenant Portal</title>
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/dist/css/adminlte.min2167.css?v=3.2.0">
+    <!-- Custom Styles -->
+    <link rel="icon" type="image/png" sizes="56x56" href="/assets/images/1.png">
     <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
-            font-size: 14px; /* Reduced base font size */
+        .terms-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
-    
-        .container {
-            padding: 15px;
-            padding-top: 30px;
-        }
-    
-        /* Sidebar with White Background */
-        .sidebar {
-            background-color: #ffffff;
-            color: #333333;
-            height: 100vh;
-            padding: 20px 10px; /* Reduced padding */
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 220px; /* Reduced width */
-            overflow-y: auto;
-            transition: all 0.3s ease;
-            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-        }
-    
-        /* Sidebar Title Styling */
-        .sidebar-title {
-            margin-bottom: 20px; /* Reduced margin */
-            color: #000000;
-            font-size: 1em; /* Reduced font size */
-            text-align: center;
-            font-weight: 700;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 8px; /* Reduced padding */
-        }
-    
-        /* Navigation Link Styles */
-        .sidebar .nav-link {
-            color: #333333;
-            padding: 10px 15px; /* Reduced padding */
-            margin: 8px 0; /* Reduced margin */
-            text-decoration: none;
-            font-size: 0.9em; /* Reduced font size */
-            display: flex;
-            align-items: center;
-            border-radius: 8px; /* Slightly smaller corners */
-            transition: background-color 0.3s, color 0.3s;
-        }
-    
-        .sidebar .nav-link i {
-            margin-right: 10px; /* Reduced margin */
-            color: #555555;
-        }
-    
-        /* Hover Effects */
-        .sidebar .nav-link:hover {
-            background-color: #f8f9fa;
+        .terms-box h5 {
             color: #003366;
-        }
-    
-        .sidebar .nav-link:hover i {
-            color: #003366;
-        }
-    
-        /* Active Link Styling */
-        .sidebar .nav-link.active {
-            background-color: #003366;
-            color: #ffffff;
             font-weight: bold;
         }
-    
-        .sidebar .nav-link.active i {
-            color: #ffffff;
+        .terms-box h6 {
+            color: #28a745;
+            margin-top: 15px;
+            font-weight: 600;
         }
-    
-        .sidebar .nav-link:hover {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transform: translateY(-2px);
+        .terms-box p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #333;
         }
-    
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 200px;
-                position: absolute;
-                top: 0;
-                left: -250px;
-                z-index: 2000;
-                transition: all 0.3s ease-in-out;
-            }
-    
-            .sidebar.active {
-                left: 0;
-            }
-    
-            .content.active {
-                margin-left: 200px;
-            }
-        }
-    
-        #sidebarToggle {
-            display: block;
-            background-color: #ffffff;
-            padding: 0.4rem 0.8rem; /* Reduced padding */
-            font-size: 0.9rem; /* Reduced font size */
-            border: 2px solid #ffffff;
+        .submit-btn {
+            background-color: #003366;
+            color: white;
+            padding: 10px 25px;
             border-radius: 5px;
-            z-index: 3000;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s, box-shadow 0.3s;
+            transition: background-color 0.3s;
         }
-    
-        .content {
-            padding: 15px; /* Reduced padding */
-            transition: margin-left 0.3s ease;
+        .submit-btn:hover {
+            background-color: #00509e;
         }
-    
-        .header {
-            background-color: #ffffff;
-            color: #000000;
-            padding: 8px 15px; /* Reduced padding */
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: fixed;
-            width: calc(100% - 220px);
-            top: 0;
-            left: 220px;
-            z-index: 1001;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: left 0.3s ease, width 0.3s ease;
+        .submit-btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
         }
-    
-        .header-right {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-        }
-    
-        @media (max-width: 968px) {
-            .header {
-                width: 100%;
-                left: 0;
-            }
-    
-            .header-right {
-                justify-content: flex-end;
-                width: 100%;
-            }
-    
-            .mobile-sidebar-btn {
-                margin-right: auto;
-            }
-        }
-    
-        footer {
-            position: fixed;
-            left: 0;
-            bottom: 0;
-            width: 100%;
-            color: rgb(0, 0, 0);
+        .card-header {
+            background: linear-gradient(135deg, #003366 0%, #28a745 100%);
+            color: white;
             text-align: center;
-            padding: 5px 0;
+            padding: 15px;
+        }
+        .legal-note {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            color: #856404;
+            font-size: 0.95rem;
         }
     </style>
-    
 </head>
-
-<body>
-    <div class="header">
-        <button class="btn mobile-sidebar-btn" id="sidebarToggle" style="background-color: #ffffff;">
-            <i class="fas fa-bars"></i>
-        </button>
-        <div class="header-right">
-            <div class="dropdown">
-                <button class="btn dropdown-toggle" style="background-color: #ffffff; color: #000000;" type="button"
-                    id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-user"></i>
-                    <% if (tenant) { %>
-                        Welcome, <%= tenant.name %>
-                            <% } else { %>
-                                Welcome, Guest
-                                <% } %>
-                </button>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
-                    <a class="dropdown-item" href="/tenantPortal/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                </div>
-            </div>
+<body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
+    <div class="wrapper">
+        <!-- Preloader -->
+        <div class="preloader flex-column justify-content-center align-items-center">
+            <img class="animation__wobble" src="/assets/images/2.png" alt="LeaseCaptainLogo" height="150" width="150">
         </div>
-    </div>
 
-
-
-    <div class="d-flex">
-        <nav class="sidebar fixed" id="sidebarMenu">
-            <h2 class="sidebar-title"><strong>Tenant Portal</strong></h2>
-            <ul class="nav flex-column">
-                <li><a class="nav-link" href="/tenantPortal/dashboard">
-                        <i class="fas fa-tachometer-alt"></i> <strong>Dashboard</strong>
-                    </a></li>
-                <li><a class="nav-link" href="/payments">
-                        <i class="fas fa-money-bill-wave"></i> <strong>Payments</strong>
-                    </a></li>
-                <li><a class="nav-link" href="/requestMaintenance">
-                        <i class="fas fa-wrench"></i> <strong>Maintenance</strong>
-                    </a></li>
-                <li><a class="nav-link" href="/lease">
-                        <i class="fas fa-file-contract"></i> <strong>Lease</strong>
-                    </a></li>
-                <li><a class="nav-link" href="/tenant/agreement">
-                        <i class="fas fa-hourglass-half"></i> <strong>Agreement</strong>
-                    </a></li>
-                <li><a class="nav-link" href="/tenant/profile">
-                        <i class="fas fa-user"></i> <strong>Profile</strong>
-                    </a></li>
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-light">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="far fa-user"></i>
+                        <% if (tenant) { %>
+                            Welcome, <%= tenant.name %>
+                        <% } else { %>
+                            Welcome, Guest
+                        <% } %>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                        <a href="/tenantPortal/logout" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                        </a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                    </a>
+                </li>
             </ul>
         </nav>
 
-
-   
-        <div class="container mt-5">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="mb-0">Tenancy Agreement</h2>
-                </div>
-                <div class="card-body">
-                    <div class="terms-box mb-4">
-                        <h5 class="text-center mb-3">Terms and Conditions</h5>
-                        <p>
-                            Welcome to the Lease Captain Tenant Portal. Please carefully read the following tenancy agreement. By
-                            agreeing to this document, you are entering into a legally binding contract between yourself (the
-                            Tenant) and the property management (the Landlord).
-                        </p>
-    
-                        <h6><strong>1. Rent Payment</strong></h6>
-                        <p>
-                            The tenant agrees to pay rent of Ksh. <strong><%= tenant.unit.unitPrice.toFixed(2) %></strong> by the
-                            <strong><%= tenant.property.paymentDay %>th</strong> of each month. Late payments may result in a penalty
-                            fee as specified in the tenancy agreement.
-                        </p>
-    
-                        <h6><strong>2. Deposit</strong></h6>
-                        <p>
-                            The tenant has provided a deposit of Ksh. <strong><%= tenant.deposit.toFixed(2) %></strong> which will be
-                            held as security against any damages or unpaid dues. The deposit will be returned after the tenant vacates the
-                            property, subject to inspection.
-                        </p>
-    
-                        <h6><strong>3. Maintenance</strong></h6>
-                        <p>
-                            Tenants must report any maintenance requests in a timely manner. The property management is responsible for
-                            addressing any requests within a reasonable time frame, excluding emergency situations.
-                        </p>
-    
-                        <h6><strong>4. Lease Term</strong></h6>
-                        <p>
-                            This agreement is valid for the lease term specified in the contract, which begins on <strong><%= tenant.leaseStartDate.toDateString() %></strong> and
-                            ends on <strong><%= tenant.leaseEndDate.toDateString() %></strong>. Early termination may result in penalties or loss of deposit, as outlined in the lease agreement.
-                        </p>
-    
-                        <h6><strong>5. Utilities</strong></h6>
-                        <p>
-                            The tenant is responsible for paying utilities as specified in the lease. The utility charges will be billed
-                            monthly along with rent and must be paid by the due date.
-                        </p>
-    
-                        <h6><strong>6. Other Conditions</strong></h6>
-                        <p>
-                            Any additional terms and conditions agreed upon will be listed in the official tenancy contract. Both parties
-                            are bound by these terms and failure to comply may result in legal action.
-                        </p>
-    
-                        <p>
-                            By checking the box below and submitting the form, the tenant agrees to the terms of this contract.
-                        </p>
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-light-primary elevation-4">
+            <a href="/tenantPortal/dashboard" class="brand-link">
+                <img src="/assets/images/2.png" alt="LeaseCaptain Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+                <h4 class="brand-text font-weight-bold"><strong>Tenant Portal</strong></h4>
+            </a>
+            <div class="sidebar">
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                    <div class="image">
+                        <img src="/dist/img/cap.png" class="img-circle elevation-2" alt="User Image">
                     </div>
-    
-                    <!-- Agreement Form -->
-                    <form id="agreementForm" action="/tenantPortal/submitAgreement" method="POST">
-                        <div class="form-group d-flex align-items-center">
-                            <input type="checkbox" id="agreeCheckbox" name="agree" required>
-                            <label for="agreeCheckbox">I, <strong><%= tenant.name %></strong>, agree to the terms and conditions
-                                of the tenancy agreement.</label>
+                    <div class="info">
+                        <a href="#" class="d-block">
+                            <strong>
+                                <% if (tenant) { %>
+                                    <%= tenant.name %>
+                                <% } else { %>
+                                    Guest
+                                <% } %>
+                            </strong>
+                        </a>
+                    </div>
+                </div>
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                        <li class="nav-item">
+                            <a href="/tenantPortal/dashboard" class="nav-link active" style="background-color: #003366; color: #ffffff;">
+                                <i class="nav-icon fas fa-tachometer-alt"></i>
+                                <p>Dashboard</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/payments" class="nav-link">
+                                <i class="nav-icon fas fa-money-bill-wave"></i>
+                                <p>Payments</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/requestMaintenance" class="nav-link">
+                                <i class="nav-icon fas fa-wrench"></i>
+                                <p>Maintenance</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/lease" class="nav-link">
+                                <i class="nav-icon fas fa-file-contract"></i>
+                                <p>Lease</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenant/agreement" class="nav-link">
+                                <i class="nav-icon fas fa-hourglass-half"></i>
+                                <p>Agreement</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenant/profile" class="nav-link">
+                                <i class="nav-icon fas fa-user"></i>
+                                <p>Profile</p>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Content Wrapper -->
+        <div class="content-wrapper">
+            <div class="container mt-5">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="mb-0">Tenancy Agreement</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="terms-box mb-4">
+                            <h5 class="text-center mb-3">Terms and Conditions</h5>
+                            <p>
+                                Welcome to the Lease Captain Tenant Portal. This tenancy agreement is a legally binding contract between you (the Tenant) and the property management (the Landlord), governed by Kenyan laws including the Landlord and Tenant Act and the Rent Restriction Act. Please review the terms below carefully.
+                            </p>
+
+                            <h6><strong>1. Rent Payment</strong></h6>
+                            <p>
+                                The tenant agrees to pay rent of Ksh. <strong><%= tenant.unit.unitPrice.toFixed(2) %></strong> by the <strong><%= tenant.property.paymentDay %>th</strong> of each month via the designated payment method (e.g., M-Pesa, bank transfer). A late payment penalty of Ksh. 400 per week applies after a 5-day grace period, as per common Kenyan practice.
+                            </p>
+
+                            <h6><strong>2. Security Deposit</strong></h6>
+                            <p>
+                                A refundable security deposit of Ksh. <strong><%= tenant.deposit.toFixed(2) %></strong> has been paid, equivalent to one month’s rent, to cover damages or unpaid dues. The deposit will be refunded within 30 days of lease termination, subject to a property inspection, per Kenyan tenancy norms.
+                            </p>
+
+                            <h6><strong>3. Lease Term and Notice Period</strong></h6>
+                            <p>
+                                The lease term begins on <strong><%= tenant.leaseStartDate.toDateString() %></strong> and ends on <strong><%= tenant.leaseEndDate.toDateString() %></strong>. Either party must provide a minimum of one month’s written notice to terminate, as required by the Landlord and Tenant Act, unless otherwise agreed.
+                            </p>
+
+                            <h6><strong>4. Maintenance and Repairs</strong></h6>
+                            <p>
+                                The tenant must report maintenance issues promptly via the portal. The landlord is responsible for structural repairs and essential services (e.g., water, electricity). Minor repairs (under Ksh. 1,000) are the tenant’s responsibility, aligning with Kenyan tenancy standards.
+                            </p>
+
+                            <h6><strong>5. Utilities and Service Charges</strong></h6>
+                            <p>
+                                The tenant is responsible for utilities (electricity, water, internet) unless specified otherwise. Service charges (e.g., garbage collection, security) are included in the utility, as per the lease agreement. Any changes will be communicated in advance.
+                            </p>
+
+                            <h6><strong>6. Property Use and Restrictions</strong></h6>
+                            <p>
+                                The property is for residential use only. Subletting, illegal activities, or alterations (e.g., painting, drilling) are prohibited without written landlord consent, as per Kenyan law. Pets are allowed only with prior approval and an additional deposit of Ksh. 2,000.
+                            </p>
+
+                            <h6><strong>7. Termination and Eviction</strong></h6>
+                            <p>
+                                Early termination by the tenant incurs a penalty of one month’s rent unless mutually agreed otherwise. The landlord may terminate for non-payment (after 2 months’ arrears) or breach of terms, following a tribunal process as per the Distress for Rent Act.
+                            </p>
+
+                            <h6><strong>8. Dispute Resolution</strong></h6>
+                            <p>
+                                Disputes will first be addressed through mediation. If unresolved, they will be referred to the Business Premises Rent Tribunal or a Kenyan court, per the Landlord and Tenant Act. Both parties agree to comply with legal outcomes.
+                            </p>
+
+                            <h6><strong>9. Rent Review</strong></h6>
+                            <p>
+                                Rent may be reviewed annually with a minimum 2-month written notice, capped at a 10% increase, aligning with Kenyan market practices and legal protections against arbitrary hikes.
+                            </p>
+
+                            <h6><strong>10. Inventory and Condition</strong></h6>
+                            <p>
+                                An inventory of fixtures and fittings will be provided upon move-in. The tenant must return the property in its original condition (normal wear and tear excepted). Any damages beyond wear and tear will be deducted from the deposit.
+                            </p>
+
+                            <div class="legal-note">
+                                <strong>Legal Note:</strong> This agreement complies with Kenyan tenancy laws, including the Landlord and Tenant Act and Rent Restriction Act (for rents below Ksh. 2,500). All disputes are subject to Kenyan jurisdiction.
+                            </div>
                         </div>
-                        <div class="text-center">
-                            <button type="submit" id="submitButton" class="btn submit-btn" disabled>Submit Agreement</button>
-                        </div>
-                    </form>
+
+                        <!-- Agreement Form -->
+                        <form id="agreementForm" action="/tenantPortal/submitAgreement" method="POST">
+                            <div class="form-group d-flex align-items-center">
+                                <input type="checkbox" id="agreeCheckbox" name="agree" required>
+                                <label for="agreeCheckbox">I, <strong><%= tenant.name %></strong>, agree to the terms and conditions of this tenancy agreement.</label>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" id="submitButton" class="btn submit-btn" disabled>Submit Agreement</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    
-        <script>
-            // Enable submit button only when checkbox is checked
-            $('#agreeCheckbox').on('change', function () {
-                $('#submitButton').prop('disabled', !this.checked);
-            });
-        </script>
 
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark"></aside>
 
-        <footer class="text-center py-0">
-            &copy; 2024 Lease Captain. All Rights Reserved || powered by
-            <a href="https://vickinstechnologies.com" target="_blank">Vickins Technologies</a>
+        <!-- Main Footer -->
+        <footer class="main-footer">
+            <strong>Copyright © 2024-2025 <a href="https://leasecaptain.com/">Lease Captain</a></strong>
+            All rights reserved.
+            <div class="float-right d-none d-sm-inline-block">
+                <b>Version</b> 1.0.2
+            </div>
         </footer>
+    </div>
 
-        <style>
-            footer {
-                font-size: 0.7rem;
-            }
-
-            @media (max-width: 768px) {
-                footer {
-                    font-size: 0.6rem;
-                    padding: 5px;
-                }
-            }
-
-            @media (max-width: 576px) {
-                footer {
-                    font-size: 0.5rem;
-                    padding: 2px;
-                }
-            }
-        </style>
-
-
-
-
-<!-- Bootstrap JS -->
-<script
-       src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-<script
-       src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<!-- jQuery for sidebar toggle -->
-<script>
-       $('#sidebarToggle').on('click', function () {
-              $('.sidebar').toggle();
-       });
-
-       
-</script>
-
-
-
+    <!-- REQUIRED SCRIPTS -->
+    <script src="/plugins/jquery/jquery.min.js"></script>
+    <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+    <script src="/dist/js/adminlte2167.js?v=3.2.0"></script>
+    <script src="/plugins/jquery-mousewheel/jquery.mousewheel.js"></script>
+    <script src="/plugins/raphael/raphael.min.js"></script>
+    <script src="/plugins/jquery-mapael/jquery.mapael.min.js"></script>
+    <script src="/plugins/jquery-mapael/maps/usa_states.min.js"></script>
+    <script src="/plugins/chart.js/Chart.min.js"></script>
+    <script src="/dist/js/demo.js"></script>
+    <script src="/dist/js/pages/dashboard2.js"></script>
     <script>
-       // Handle Rent Payment Form Submission
-       $('#rentPaymentForm').on('submit', function(event) {
-           event.preventDefault();
-           const amount = $('#rentAmount').val();
-           const paymentMethod = $('#rentPaymentMethod').val();
-
-           // AJAX request to submit rent payment
-           $.post('/tenant/rent/pay', { amount, paymentMethod }, function(response) {
-               // Handle success (e.g., refresh payment history or show a success message)
-               location.reload(); // Reloads the page to see the updated payment history
-           }).fail(function() {
-               alert('Error processing rent payment.');
-           });
-       });
-
-       // Handle Utility Payment Form Submission
-       $('#utilityPaymentForm').on('submit', function(event) {
-           event.preventDefault();
-           const amount = $('#utilityAmount').val();
-           const paymentMethod = $('#utilityPaymentMethod').val();
-
-           // AJAX request to submit utility payment
-           $.post('/tenant/utilities/pay', { amount, paymentMethod }, function(response) {
-               // Handle success (e.g., refresh payment history or show a success message)
-               location.reload(); // Reloads the page to see the updated payment history
-           }).fail(function() {
-               alert('Error processing utility payment.');
-           });
-       });
-   </script>
-
+        // Enable submit button only when checkbox is checked
+        $('#agreeCheckbox').on('change', function () {
+            $('#submitButton').prop('disabled', !this.checked);
+        });
+    </script>
 </body>
-
 </html>

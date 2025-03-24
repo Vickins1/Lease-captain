@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
 
 const paymentSchema = new Schema({
+    owner: { 
+        type: Schema.Types.ObjectId, 
+        ref: 'User', 
+        required: true 
+    },
     tenant: { 
         type: Schema.Types.ObjectId, 
         ref: 'Tenant', 
@@ -69,7 +74,7 @@ const paymentSchema = new Schema({
         type: String,
         required: true,
         unique: true
-    },
+    }
 }, {
     timestamps: true
 });
@@ -108,14 +113,14 @@ paymentSchema.pre('save', async function (next) {
         const Tenant = mongoose.model('Tenant');
         const Payment = mongoose.model('Payment');
         
-        const tenant = await Tenant.findById(this.tenant);
+        const tenant = await Tenant.findById(this.tenant).populate('unit');
         if (!tenant) throw new Error('Tenant not found');
 
-        // Determine if this payment is for rent or utility and update accordingly
+        // Update tenant's payment records based on paymentType
         if (this.paymentType === 'rent') {
-            tenant.rentPaid += this.amount || 0;  // Ensures no accidental NaN values
+            tenant.rentPaid = (tenant.rentPaid || 0) + (this.rentPaid || 0);
         } else if (this.paymentType === 'utility') {
-            tenant.utilityPaid += this.amount || 0;
+            tenant.utilityPaid = (tenant.utilityPaid || 0) + (this.utilityPaid || 0);
         }
 
         // Fetch all completed rent payments and sum them up
@@ -124,7 +129,7 @@ paymentSchema.pre('save', async function (next) {
             paymentType: 'rent', 
             status: 'completed' 
         });
-        const totalRentPaid = rentPayments.reduce((acc, payment) => acc + (payment.amount || 0), 0);
+        const totalRentPaid = rentPayments.reduce((acc, payment) => acc + (payment.rentPaid || 0), 0);
 
         // Fetch all completed utility payments and sum them up
         const utilityPayments = await Payment.find({ 
@@ -132,9 +137,9 @@ paymentSchema.pre('save', async function (next) {
             paymentType: 'utility', 
             status: 'completed' 
         });
-        const totalUtilityPaid = utilityPayments.reduce((acc, payment) => acc + (payment.amount || 0), 0);
+        const totalUtilityPaid = utilityPayments.reduce((acc, payment) => acc + (payment.utilityPaid || 0), 0);
 
-        // Handle cases where tenant's unit or utilities might not be defined
+        // Calculate total rent expected
         const unitPrice = tenant.unit?.unitPrice || 0;
         const leaseStartDate = new Date(tenant.leaseStartDate);
         const today = new Date();
@@ -142,17 +147,18 @@ paymentSchema.pre('save', async function (next) {
         const monthsDue = Math.max(totalMonths + 1, 0);
         const totalRentExpected = monthsDue * unitPrice;
 
-        // Handle cases where utilities might not exist for the unit
+        // Calculate total utility charges
         const unitUtilities = Array.isArray(tenant.unit?.utilities) ? tenant.unit.utilities : [];
         const totalUtilityCharges = unitUtilities.reduce((acc, utility) => acc + (utility.amount || 0), 0);
 
-        // Calculate the rent and utility due
-        tenant.rentDue = Math.max(totalRentExpected - (totalRentPaid || 0), 0);
-        tenant.utilityDue = Math.max(totalUtilityCharges - (totalUtilityPaid || 0), 0);
+        // Update tenant's due amounts
+        tenant.rentDue = Math.max(totalRentExpected - totalRentPaid, 0);
+        tenant.utilityDue = Math.max(totalUtilityCharges - totalUtilityPaid, 0);
 
         await tenant.save();
         next();
     } catch (error) {
+        console.error('Error in pre-save hook:', error);
         next(error);
     }
 });

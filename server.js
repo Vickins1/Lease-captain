@@ -48,7 +48,7 @@ app.use(methodOverride('_method'));
 app.use(express.static('public'));
 
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'secret',
+    secret: process.env.SESSION_SECRET || 'Lease',
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -110,6 +110,24 @@ const transporter = nodemailer.createTransport({
         user: 'vickinstechnologies@gmail.com',
         pass: 'vnueayfgjstaazxh'
     }
+});
+
+app.post('/api/user/complete-tour', async (req, res) => {
+  try {
+      if (!req.user) {
+          return res.status(401).json({ message: 'Unauthorized' });
+      }
+      const user = await User.findById(req.user._id);
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+      user.isNewUser = false;
+      await user.save();
+      res.json({ message: 'Tour completed', isNewUser: user.isNewUser });
+  } catch (error) {
+      console.error('Error completing tour:', error);
+      res.status(500).json({ message: 'Server error', error });
+  }
 });
 
 app.post('/support/submit', async (req, res) => {
@@ -449,7 +467,7 @@ const isReminderDay = (paymentDay, daysBefore) => {
   };
 
 // Cron job to send reminders
-cron.schedule('11 11 * * *', async () => {
+cron.schedule('08 00 * * *', async () => {
   console.log(`[${new Date().toISOString()}] Running rent and utility reminder cron job...`);
 
   try {
@@ -491,8 +509,6 @@ cron.schedule('11 11 * * *', async () => {
     console.error(`[${new Date().toISOString()}] Error during rent and utility reminders:`, error);
   }
 });
-
-  
 
 
 // Get local IP address for server

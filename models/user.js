@@ -72,6 +72,10 @@ const userSchema = new mongoose.Schema({
     type: Date,
   },
   loginActivity: [loginActivitySchema],
+  isNewUser: {  
+    type: Boolean,
+    default: true
+  }
 }, { timestamps: true });
 
 

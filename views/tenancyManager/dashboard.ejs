@@ -15,10 +15,88 @@
     <link rel="stylesheet" href="/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="/dist/css/adminlte.min2167.css?v=3.2.0">
+    <style>
+        .tour-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            display: none;
+        }
+
+        .tour-step {
+            position: absolute;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 350px;
+            font-family: Arial, sans-serif;
+            animation: fadeIn 0.5s ease-in-out;
+            z-index: 1060;
+        }
+
+        .tour-step h3 {
+            color: #003366;
+            margin-top: 0;
+        }
+
+        .tour-step button {
+            background-color: #003366;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .tour-step button:hover {
+            background-color: #0055a5;
+        }
+
+        .highlight {
+            position: relative;
+            z-index: 1001;
+            border: 2px solid #003366;
+            border-radius: 5px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 51, 102, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(0, 51, 102, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 51, 102, 0);
+            }
+        }
+    </style>
     <link rel="icon" type="image/png" sizes="56x56" href="/assets/images/1.png">
 </head>
 
-<body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
+<body data-is-new-user="<%= isNewUser ? 'true' : 'false' %>"
+    class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
     <div class="wrapper">
 
         <!-- Preloader -->
@@ -60,23 +138,11 @@
                     </div>
                 </li>
 
-                <!-- Messages Dropdown Menu -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link" data-toggle="dropdown" href="#">
-                        <i class="far fa-comments"></i>
-                        <span class="badge badge-danger navbar-badge">3</span>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
-                    </div>
-                </li>
                 <!-- Notifications Dropdown Menu -->
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
                         <i class="far fa-bell"></i>
-                        <span class="badge badge-warning navbar-badge">15</span>
+                        <span class="badge badge-warning navbar-badge"></span>
                     </a>
 
                 </li>
@@ -109,11 +175,11 @@
                 <!-- Sidebar user panel (optional) -->
                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                     <div class="image">
-                        <img src="/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+                        <img src="/dist/img/cap.png" class="img-circle elevation-2" alt="User Image">
                     </div>
                     <div class="info">
                         <a href="#" class="d-block" aria-haspopup="true" aria-expanded="false">
-                            <span>Welcome,</span>
+                            <span>Welcome back,</span>
                             <strong>
                                 <%= currentUser.username %>
                             </strong>
@@ -367,6 +433,7 @@
                 </nav>
 
 
+
             </div>
 
             <!-- /.sidebar -->
@@ -379,128 +446,179 @@
             <!-- Main content -->
             <section class="content">
                 <div class="container-fluid">
-                    <div class="row mt-4">
-                        <!-- Total Rent Collected Info Box -->
-                        <div class="col-12 col-sm-6 col-md-3">
-                            <div class="info-box">
-                                <span class="info-box-icon bg-success elevation-1">
-                                    <i class="fas fa-money-bill-wave"></i>
-                                </span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Total Rent Collected</span>
-                                    <span class="info-box-number">
-                                        Ksh.<%= totalRentCollected || 0 %> 
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+          
+<!-- Info Boxes (4 per row) -->
+<div class="row mt-4 g-4">
+    <!-- Total Rent Collected -->
+    <div class="col-12 col-sm-6 col-md-3 mb-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-header text-white">
+                <h5>Total Rent Collected</h5>
+            </div>
+            <div class="card-body bold-text">
+                <i class="fas fa-money-bill-wave mr-2"></i> Ksh. <%= Number(totalRentCollected || 0).toFixed(2) %>
+            </div>
+        </div>
+    </div>
 
-                        <!-- Utility Paid Info Box -->
-                        <div class="col-12 col-sm-6 col-md-3">
-                            <div class="info-box">
-                                <span class="info-box-icon bg-info elevation-1">
-                                    <i class="fas fa-money-bill-alt"></i>
-                                </span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Utility Paid</span>
-                                    <span class="info-box-number">
-                                        Ksh.<%= utilityCollected || 0 %> 
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+    <!-- Utility Paid -->
+    <div class="col-12 col-sm-6 col-md-3 mb-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-header text-white">
+                <h5>Utility Paid</h5>
+            </div>
+            <div class="card-body bold-text">
+                <i class="fas fa-money-bill-alt mr-2"></i> Ksh. <%= Number(utilityCollected || 0).toFixed(2) %>
+            </div>
+        </div>
+    </div>
 
-                        <!-- Total Rent Due Info Box -->
-                        <div class="col-12 col-sm-6 col-md-3">
-                            <div class="info-box">
-                                <span class="info-box-icon bg-warning elevation-1">
-                                    <i class="fas fa-calendar-times"></i>
-                                </span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Total Rent Due</span>
-                                    <span class="info-box-number">
-                                        Ksh.<%= totalRentDue || 0 %> 
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+    <!-- Total Rent Due -->
+    <div class="col-12 col-sm-6 col-md-3 mb-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-header text-white">
+                <h5>Total Rent Due</h5>
+            </div>
+            <div class="card-body bold-text">
+                <i class="fas fa-calendar-times mr-2"></i> Ksh. <%= Number(totalRentDue || 0).toFixed(2) %>
+            </div>
+        </div>
+    </div>
 
-                        <!-- Utility Due Info Box -->
-                        <div class="col-12 col-sm-6 col-md-3">
-                            <div class="info-box">
-                                <span class="info-box-icon bg-danger elevation-1">
-                                    <i class="fas fa-water"></i>
-                                </span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Utility Due</span>
-                                    <span class="info-box-number">
-                                        Ksh.<%= utilityDue || 0 %> 
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+    <!-- Utility Due -->
+    <div class="col-12 col-sm-6 col-md-3 mb-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-header text-white">
+                <h5>Utility Due</h5>
+            </div>
+            <div class="card-body bold-text">
+                <i class="fas fa-water mr-2"></i> Ksh. <%= Number(utilityDue || 0).toFixed(2) %>
+            </div>
+        </div>
+    </div>
 
-                        <!-- Total Properties Info Box -->
-                        <div class="col-12 col-sm-6 col-md-3">
-                            <div class="info-box">
-                                <span class="info-box-icon bg-primary elevation-1">
-                                    <i class="fas fa-home"></i>
-                                </span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Total Properties</span>
-                                    <span class="info-box-number">
-                                        <%= properties.length %>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+    <!-- Total Properties -->
+    <div class="col-12 col-sm-6 col-md-3 mb-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-header text-white">
+                <h5>Total Properties</h5>
+            </div>
+            <div class="card-body bold-text">
+                <i class="fas fa-home mr-2"></i> <%= properties.length %>
+            </div>
+        </div>
+    </div>
 
-                        <!-- Number of Property Units Info Box -->
-                        <div class="col-12 col-sm-6 col-md-3">
-                            <div class="info-box">
-                                <span class="info-box-icon bg-secondary elevation-1">
-                                    <i class="fas fa-building"></i>
-                                </span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Number of Units</span>
-                                    <span class="info-box-number">
-                                        <%=propertyUnits.unitCount %>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+    <!-- Number of Property Units -->
+    <div class="col-12 col-sm-6 col-md-3 mb-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-header text-white">
+                <h5>Units</h5>
+            </div>
+            <div class="card-body bold-text">
+                <i class="fas fa-building mr-2"></i> <%= propertyUnits.length %>
+            </div>
+        </div>
+    </div>
 
+    <!-- Number of Tenants -->
+    <div class="col-12 col-sm-6 col-md-3 mb-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-header text-white">
+                <h5>Tenants</h5>
+            </div>
+            <div class="card-body bold-text">
+                <i class="fas fa-users mr-2"></i> <%= numberOfTenants || 0 %>
+            </div>
+        </div>
+    </div>
 
-                        <!-- Number of Tenants Info Box -->
-                        <div class="col-12 col-sm-6 col-md-3">
-                            <div class="info-box">
-                                <span class="info-box-icon bg-info elevation-1">
-                                    <i class="fas fa-users"></i>
-                                </span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Number of Tenants</span>
-                                    <span class="info-box-number">
-                                        <%= numberOfTenants || 0 %>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+    <!-- Maintenance Requests -->
+    <div class="col-12 col-sm-6 col-md-3 mb-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-header text-white">
+                <h5>Maintenance Requests</h5>
+            </div>
+            <div class="card-body bold-text">
+                <i class="fas fa-tools mr-2"></i> <%= totalRequests || 0 %>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    /* Info Boxes Styling */
+.bold-text {
+    font-weight: bold;
+}
 
-                        <!-- Maintenance Requests Info Box -->
-                        <div class="col-12 col-sm-6 col-md-3">
-                            <div class="info-box">
-                                <span class="info-box-icon bg-danger elevation-1">
-                                    <i class="fas fa-tools"></i>
-                                </span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Maintenance Requests</span>
-                                    <span class="info-box-number">
-                                        <%= totalRequests || 0 %>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+/* Card Styling for Consistency */
+.card {
+    border-radius: 0.2rem;
+    transition: transform 0.2s;
+    min-height: 150px; /* Fixed minimum height for uniformity */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #fff; /* Ensure consistent background */
+    overflow: hidden; /* Prevent content overflow */
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    background-color: #003366; /* Matches your previous branding */
+    padding: 10px 15px;
+    border-top-left-radius: 0.2rem;
+    border-top-right-radius: 0.2rem;
+    flex-shrink: 0; /* Prevent header from shrinking */
+}
+
+.card-body {
+    padding: 15px;
+    font-size: 1.1rem;
+    color: #333;
+    flex-grow: 1; /* Allow body to fill remaining space */
+    display: flex;
+    align-items: center; /* Center content vertically */
+    justify-content: flex-start; /* Align content to start */
+}
+
+.fas {
+    color: #003366;
+    margin-right: 8px; /* Consistent spacing */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .col-md-3 {
+        flex: 0 0 50%; /* 2 cards per row */
+        max-width: 50%;
+    }
+    .card {
+        min-width: 0; /* Prevent overflow */
+        width: 100%; /* Full width within column */
+    }
+    .card-body {
+        font-size: 1rem; /* Slightly smaller but consistent */
+    }
+}
+
+@media (max-width: 576px) {
+    .col-md-3 {
+        flex: 0 0 50%; /* 2 cards per row on mobile */
+        max-width: 50%;
+    }
+    .card {
+        width: 100%; /* Full width within column */
+        min-height: 120px; /* Slightly shorter but uniform */
+    }
+    .card-body {
+        font-size: 0.9rem; /* Adjust font size */
+    }
+}
+</style>
 
                     <!-- Main row -->
                     <div class="row">
@@ -510,7 +628,7 @@
                             <!-- TABLE: LATEST PAYMENTS -->
                             <div class="card">
                                 <div class="card-header border-transparent">
-                                    <h3 class="card-title">Latest Payments</h3>
+                                    <h3 class="card-title text-white">Latest Payments</h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" data-card-widget="collapse">
                                             <i class="fas fa-minus"></i>
@@ -527,178 +645,73 @@
                                             <thead>
                                                 <tr>
                                                     <th>Payment ID</th>
-                                                    <th>Payment Type</th>
+                                                    <th>Tenant</th>
                                                     <th>Status</th>
                                                     <th>Amount</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <% payments.forEach(payment=> { %>
-                                                    <tr>
-                                                        <td><a href="/tenancy-manager/payments">
-                                                                <%= payment.paymentId %>
-                                                            </a></td>
-                                                        <td>
-                                                            <%= payment.paymentType %>
-                                                        </td>
-                                                        <td>
-                                                            <span
-                                                                class="badge <%= payment.status === 'Completed' ? 'badge-success' : 'badge-warning' %>">
-                                                                <%= payment.status %>
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            <div class="sparkbar"
-                                                                data-color="<%= payment.status === 'Completed' ? '#00a65a' : '#f39c12' %>"
-                                                                data-height="20">
-                                                                <%= payment.amount %>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                    <% }); %>
+                                                <% if (payments && payments.length> 0) { %>
+                                                    <% payments.forEach(payment=> { %>
+                                                        <tr>
+                                                            <td>
+                                                                <a href="/tenancy-manager/payments">
+                                                                    <%= payment.transactionId || 'N/A' %>
+                                                                </a>
+                                                            </td>
+                                                            <td>
+                                                                <%= payment.tenant ? payment.tenant.name : 'N/A' %>
+                                                                    (<%= payment.tenant && payment.tenant.property ?
+                                                                        payment.tenant.property.name : 'N/A' %> -
+                                                                        <%= payment.tenant && payment.tenant.unit ?
+                                                                            payment.tenant.unit.name : 'N/A' %>)
+                                                            </td>
+                                                            <td>
+                                                                <span class="<%= payment.status === 'completed' ? 'text-success' : 
+                                        payment.status === 'pending' ? 'text-warning' : 
+                                        payment.status === 'failed' ? 'text-danger' : 'text-secondary' %>">
+                                                                    <i class="fas <%= payment.status === 'completed' ? 'fa-check-circle' : 
+                                            payment.status === 'pending' ? 'fa-hourglass-half' : 
+                                            payment.status === 'failed' ? 'fa-times-circle' : 'fa-question-circle' %>">
+                                                                    </i>
+                                                                    <%= payment.status ?
+                                                                        payment.status.charAt(0).toUpperCase() +
+                                                                        payment.status.slice(1) : 'N/A' %>
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <div class="sparkbar"
+                                                                    data-color="<%= payment.status === 'completed' ? '#00a65a' : '#f39c12' %>"
+                                                                    data-height="20">
+                                                                    Ksh. <%= payment.amount ? payment.amount.toFixed(2)
+                                                                        : '0.00' %>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <% }); %>
+                                                            <% } else { %>
+                                                                <tr>
+                                                                    <td colspan="4" class="text-center text-muted">No
+                                                                        recent payments found.</td>
+                                                                </tr>
+                                                                <% } %>
                                             </tbody>
                                         </table>
                                     </div>
                                     <!-- /.table-responsive -->
                                 </div>
+
+
                                 <!-- /.card-body -->
                                 <div class="card-footer clearfix">
-                                     <!-- Button to Trigger Modal -->
- <button type="button" class="btn btn-sm btn-info w-30" data-bs-toggle="modal" data-bs-target="#addPaymentModal">
-    Add New Payment
-</button>
 
-<div class="modal fade" id="addPaymentModal" tabindex="-1" aria-labelledby="addPaymentModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addPaymentModalLabel">Add Payment</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">X</button>
-            </div>
-            <form action="/payments/add" method="POST">
-                <div class="modal-body">
-                    <div class="container">
-                        <div class="row g-3">
-
-                            <!-- Tenant Dropdown -->
-                            <div class="col-md-12">
-                                <label for="tenant" class="form-label">Tenant</label>
-                                <select id="tenant" name="tenant" class="form-select bg-light border-secondary rounded" required>
-                                    <option selected disabled>Select a tenant</option>
-                                    <% tenants.forEach(tenant => { %>
-                                        <option value="<%= tenant._id %>"><%= tenant.name %></option>
-                                    <% }) %>
-                                </select>
-                            </div>
-
-                            <!-- Tenant Name -->
-                            <div class="col-md-12">
-                                <label for="tenantName" class="form-label">Tenant Name</label>
-                                <input type="text" id="tenantName" name="tenantName" class="form-control" required>
-                            </div>
-
-                            <!-- Property -->
-                            <div class="col-md-6">
-                                <label for="property" class="form-label">Property</label>
-                                <input type="text" id="property" name="property" class="form-control" readonly>
-                            </div>
-
-                            <!-- Unit Type -->
-                            <div class="col-md-6">
-                                <label for="unitType" class="form-label">Unit Type</label>
-                                <input type="text" id="unitType" name="unitType" class="form-control" readonly>
-                            </div>
-
-                            <!-- Door Number -->
-                            <div class="col-md-6">
-                                <label for="doorNumber" class="form-label">Door Number</label>
-                                <input type="text" id="doorNumber" name="doorNumber" class="form-control" readonly>
-                            </div>
-
-                            <!-- Amount -->
-                            <div class="col-md-6">
-                                <label for="amount" class="form-label">Amount</label>
-                                <input type="number" id="amount" name="amount" class="form-control" required min="0">
-                            </div>
-
-                            <!-- Total Paid -->
-                            <div class="col-md-6">
-                                <label for="totalPaid" class="form-label">Total Paid</label>
-                                <input type="number" id="totalPaid" name="totalPaid" class="form-control" required min="0">
-                            </div>
-
-                            <!-- Rent Paid -->
-                            <div class="col-md-6">
-                                <label for="rentPaid" class="form-label">Rent Paid</label>
-                                <input type="number" id="rentPaid" name="rentPaid" class="form-control" min="0" value="0">
-                            </div>
-
-                            <!-- Utility Paid -->
-                            <div class="col-md-6">
-                                <label for="utilityPaid" class="form-label">Utility Paid</label>
-                                <input type="number" id="utilityPaid" name="utilityPaid" class="form-control" min="0" value="0">
-                            </div>
-
-                            <!-- Payment Method -->
-                            <div class="col-md-6">
-                                <label for="method" class="form-label">Payment Method</label>
-                                <select id="method" name="method" class="form-select bg-light border-secondary rounded" required>
-                                    <option selected disabled>Select a payment method</option>
-                                    <option value="cash">💵 Cash</option>
-                                    <option value="card">💳 Credit/Debit Card</option>
-                                    <option value="bankTransfer">🏦 Bank Transfer</option>
-                                    <option value="mobilePayment">📱 Mobile Payment</option>
-                                </select>
-                            </div>
-
-                            <!-- Status -->
-                            <div class="col-md-6">
-                                <label for="status" class="form-label">Status</label>
-                                <select id="status" name="status" class="form-select bg-light border-secondary rounded" required>
-                                    <option value="pending">Pending</option>
-                                    <option value="completed">Completed</option>
-                                    <option value="failed">Failed</option>
-                                </select>
-                            </div>
-
-                            <!-- Payment Type -->
-                            <div class="col-md-6">
-                                <label for="paymentType" class="form-label">Payment Type</label>
-                                <select id="paymentType" name="paymentType" class="form-select bg-light border-secondary rounded" required>
-                                    <option value="rent">Rent</option>
-                                    <option value="utility">Utility</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-
-                            <!-- Transaction ID -->
-                            <div class="col-md-12">
-                                <label for="transactionId" class="form-label">Transaction ID</label>
-                                <input type="text" id="transactionId" name="transactionId" class="form-control" required>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save Payment</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-
-
-
-
-                                    <a href="/tenancy-manager/payments" class="btn btn-sm btn-secondary float-right">View All
+                                    <a href="/tenancy-manager/payments" class="btn btn-sm btn-info float-right">View All
                                         Payments</a>
                                 </div>
                                 <!-- /.card-footer -->
                             </div>
                             <!-- /.card -->
+
                         </div>
                         <!-- /.col -->
                     </div>
@@ -706,122 +719,246 @@
 
 
 
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="card-title">Monthly Recap Report</h5>
-
-                                    <div class="card-tools">
-                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                            <i class="fas fa-minus"></i>
-                                        </button>
-                                        <div class="btn-group">
-                                            <button type="button" class="btn btn-tool dropdown-toggle"
-                                                data-toggle="dropdown">
-                                                <i class="fas fa-wrench"></i>
-                                            </button>
-                                            <div class="dropdown-menu dropdown-menu-right" role="menu">
-                                                <a href="#" class="dropdown-item">Action</a>
-                                                <a href="#" class="dropdown-item">Another action</a>
-                                                <a href="#" class="dropdown-item">Something else here</a>
-                                                <div class="dropdown-divider"></div>
-                                                <a href="#" class="dropdown-item">Separated link</a>
-                                            </div>
-                                        </div>
-                                        <button type="button" class="btn btn-tool" data-card-widget="remove">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <!-- /.card-header -->
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <p class="text-center">
-                                                <strong>Performance: 1 Jan, <%= new Date().getFullYear() %> - 31 Dec,
-                                                        <%= new Date().getFullYear() %></strong>
-                                            </p>
-
-                                            <div class="chart">
-                                                <!-- Sales Chart Canvas -->
-                                                <canvas id="leaseChart" height="100" style="height: 100px;"></canvas>
-                                            </div>
-                                            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                                            <script>
-                                                // Get rent data passed from the backend
-                                                const rentDataArray = <%- JSON.stringify(rentDataArray) %>;  
-                                            
-                                                // Extract data for the chart
-                                                const months = rentDataArray.map(data => data.month);  // Months (e.g., 'Jan', 'Feb', etc.)
-                                                const collected = rentDataArray.map(data => data.collected);  // Total rent collected per month
-                                                const due = rentDataArray.map(data => data.due);  // Total rent due per month
-                                            
-                                                // Select the chart canvas
-                                                const ctx = document.getElementById('leaseChart').getContext('2d');
-                                            
-                                                // Create the Chart
-                                                new Chart(ctx, {
-                                                    type: 'bar',  // Use a bar chart
-                                                    data: {
-                                                        labels: months,  // All months (even if no data, we show them)
-                                                        datasets: [
-                                                            {
-                                                                label: 'Rent Collected (Ksh)',
-                                                                data: collected,
-                                                                backgroundColor: 'rgba(75, 192, 192, 0.6)',  // Light blue color
-                                                                borderColor: 'rgba(75, 192, 192, 1)',  // Dark blue border
-                                                                borderWidth: 1,
-                                                            },
-                                                            {
-                                                                label: 'Rent Due (Ksh)',
-                                                                data: due,
-                                                                backgroundColor: 'rgba(255, 99, 132, 0.6)',  // Light red color
-                                                                borderColor: 'rgba(255, 99, 132, 1)',  // Dark red border
-                                                                borderWidth: 1,
-                                                            },
-                                                        ],
-                                                    },
-                                                    options: {
-                                                        responsive: true,
-                                                        plugins: {
-                                                            legend: { position: 'top' },
-                                                            tooltip: { enabled: true },
-                                                        },
-                                                        scales: {
-                                                            y: {
-                                                                beginAtZero: true,  // Ensure the y-axis starts from 0
-                                                                title: {
-                                                                    display: true,
-                                                                    text: 'Amount (Ksh)',  // Label for the y-axis
-                                                                },
-                                                            },
-                                                            x: {
-                                                                title: {
-                                                                    display: true,
-                                                                    text: 'Month',  // Label for the x-axis
-                                                                },
-                                                            },
-                                                        },
-                                                    },
-                                                });
-                                            </script>
-                                            
-                                            
-                                        </div>
-                                    </div>
-                                    <!-- /.row -->
-                                </div>
-                               <!-- ./card-body -->
-
-                            </div>
-                            <!-- /.card -->
+<!-- Monthly Recap Report -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card shadow-lg">
+            <div class="card-header border-transparent bg-dark text-white">
+                <h5 class="card-title">Monthly Recap Report</h5>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+                            <i class="fas fa-wrench"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right" role="menu">
+                            <a href="#" class="dropdown-item">Action</a>
+                            <a href="#" class="dropdown-item">Another action</a>
+                            <a href="#" class="dropdown-item">Something else here</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item">Separated link</a>
                         </div>
                     </div>
-                    <!-- /.row -->
+                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <p class="text-center">
+                            <strong>Performance: 1 Jan, <%= new Date().getFullYear() %> - 31 Dec, <%= new Date().getFullYear() %></strong>
+                        </p>
+                        <div class="chart-container">
+                            <canvas id="leaseChart" data-rent="<%= JSON.stringify(rentDataArray) %>"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.row -->
+            </div>
+            <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+    </div>
+</div>
+<!-- /.row -->
+
+<style>
+    /* Monthly Recap Report Styling */
+.card {
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    border: none;
+    background-color: #fff;
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.card-header.bg-dark {
+    background-color: #003366 !important; /* Matches your branding */
+    padding: 15px 20px;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.card-tools .btn-tool {
+    color: #fff;
+    font-size: 1rem;
+    padding: 5px;
+    transition: opacity 0.2s;
+}
+
+.card-tools .btn-tool:hover {
+    opacity: 0.8;
+}
+
+.card-body {
+    padding: 25px;
+    background: #f8f9fa; /* Subtle background for contrast */
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    height: 100%; /* Ensure it takes full height */
+    display: flex;
+    flex-direction: column;
+}
+
+.text-center strong {
+    font-size: 1.2rem;
+    color: #333;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 15px; /* Space below title */
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    flex-grow: 1; /* Allows container to expand to fill remaining space */
+    min-height: 200px; /* Minimum height for visibility */
+    background: #fff;
+    border-radius: 0.3rem;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    overflow: hidden; /* Prevent overflow */
+}
+
+#leaseChart {
+    width: 100% !important; /* Force full width */
+    height: 100% !important; /* Force full height */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .card-header {
+        padding: 12px 15px;
+    }
+    .card-title {
+        font-size: 1.15rem;
+    }
+    .card-body {
+        padding: 20px;
+    }
+    .chart-container {
+        min-height: 150px;
+    }
+    .text-center strong {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .card-header {
+        padding: 10px 12px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .card-tools {
+        margin-top: 10px;
+    }
+    .card-title {
+        font-size: 1rem;
+    }
+    .card-body {
+        padding: 15px;
+    }
+    .chart-container {
+        min-height: 200px;
+    }
+    .text-center strong {
+        font-size: 1rem;
+    }
+}
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('leaseChart');
+    const rentDataArray = JSON.parse(canvas.dataset.rent);
+
+    const months = rentDataArray.map(data => data.month);
+    const collected = rentDataArray.map(data => data.collected);
+    const due = rentDataArray.map(data => data.due);
+
+    const ctx = canvas.getContext('2d');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [
+                {
+                    label: 'Rent Collected (Ksh)',
+                    data: collected,
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                },
+                {
+                    label: 'Rent Due (Ksh)',
+                    data: due,
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1,
+                },
+            ],
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                tooltip: { enabled: true },
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Amount (Ksh)',
+                    },
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Month',
+                    },
+                },
+            },
+        },
+    });
+});
+</script>
+
+<!-- External Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- External Custom Script -->
+<script src="/js/lease-chart.js" defer></script>
+<!-- External Styles -->
+<link rel="stylesheet" href="/css/monthly-recap.css">
+
+<!-- External Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- External Custom Script -->
+<script src="/js/lease-chart.js" defer></script>
 
 
-                </div><!--/. container-fluid -->
+                </div>
+                <!--/. container-fluid -->
             </section>
             <!-- /.content -->
 
@@ -844,10 +981,172 @@
         </footer>
     </div>
     <!-- ./wrapper -->
+    <!-- Tour script -->
+    <script>
+        async function startNewUserTour() {
+            const overlay = document.createElement('div');
+            overlay.className = 'tour-overlay';
+            document.body.appendChild(overlay);
+
+            // Define all steps with their prerequisites and dynamic checks
+            const steps = [
+                {
+                    target: '.nav-link[href="/tenancy-manager/properties"]',
+                    title: 'Step 1: Add Your First Property',
+                    content: 'Welcome aboard! Let’s get started by adding your first property. Please add a property to continue.',
+                    position: { top: '50px', left: '250px' },
+                    check: async () => {
+                        const response = await fetch('/api/user/progress', { credentials: 'include' });
+                        const progress = await response.json();
+                        return progress.hasProperties;
+                    }
+                },
+                {
+                    target: '.nav-link[href="/tenancy-manager/property/units"]',
+                    title: 'Step 2: Add Property Units',
+                    content: 'Next, add units to your property. Please add at least one unit to proceed.',
+                    position: { top: '100px', left: '250px' },
+                    check: async () => {
+                        const response = await fetch('/api/user/progress', { credentials: 'include' });
+                        const progress = await response.json();
+                        return progress.hasPropertyUnits;
+                    }
+                },
+                {
+                    target: '.nav-link[href="/tenancy-manager/tenants"]',
+                    title: 'Step 3: Add Tenants',
+                    content: 'Time to bring in your tenants! Please add a tenant to continue.',
+                    position: { top: '200px', left: '250px' },
+                    check: async () => {
+                        const response = await fetch('/api/user/progress', { credentials: 'include' });
+                        const progress = await response.json();
+                        return progress.hasTenants;
+                    }
+                },
+                {
+                    target: '.nav-link[href="/connect"]',
+                    title: 'Step 4: Connect Your UmsPay Account',
+                    content: 'Let’s set up payments! Connect your UmsPay account to proceed.',
+                    position: { top: '500px', left: '250px' },
+                    check: async () => {
+                        const response = await fetch('/api/user/progress', { credentials: 'include' });
+                        const progress = await response.json();
+                        return progress.hasPaymentConnected;
+                    }
+                },
+                {
+                    target: '.nav-link[href="/tenancy-manager/propertyListing"]',
+                    title: 'Step 5: List Your Properties',
+                    content: 'Finally, showcase your properties! Complete this step to finish the tour.',
+                    position: { top: '150px', left: '250px' },
+                    check: () => Promise.resolve(true)
+                }
+            ];
+
+            // Find the first incomplete step to start from
+            let currentStep = 0;
+
+            async function findFirstIncompleteStep() {
+                for (let i = 0; i < steps.length; i++) {
+                    const isComplete = await steps[i].check();
+                    if (!isComplete) {
+                        currentStep = i;
+                        return;
+                    }
+                }
+                currentStep = steps.length - 1; // All steps complete, go to the last one
+            }
+
+            async function showStep(stepIndex) {
+                if (stepIndex >= steps.length) {
+                    await endTour();
+                    return;
+                }
+                const step = steps[stepIndex];
+                const targetElement = document.querySelector(step.target);
+                if (!targetElement) {
+                    console.warn(`Target element for step ${stepIndex + 1} not found: ${step.target}`);
+                    await nextStep();
+                    return;
+                }
+
+                document.querySelectorAll('.tour-step').forEach(el => el.remove());
+                document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
+                targetElement.classList.add('highlight');
+
+                const stepDiv = document.createElement('div');
+                stepDiv.className = 'tour-step';
+                stepDiv.style.top = step.position.top;
+                stepDiv.style.left = step.position.left;
+
+                const isStepComplete = await step.check();
+                stepDiv.innerHTML = `
+                <h3>${step.title}</h3>
+                <p>${step.content}</p>
+                <button id="next-btn" ${!isStepComplete ? 'disabled' : ''}>
+                    ${stepIndex === steps.length - 1 ? 'Finish' : 'Next'}
+                </button>
+                <p>${!isStepComplete ? 'Please complete this step before proceeding.' : ''}</p>
+            `;
+                document.body.appendChild(stepDiv);
+                overlay.style.display = 'block';
+
+                // Add event listener to the Next/Finish button
+                document.getElementById('next-btn').addEventListener('click', nextStep);
+
+                // Periodically check if the step becomes complete
+                if (!isStepComplete) {
+                    const interval = setInterval(async () => {
+                        if (await step.check()) {
+                            document.getElementById('next-btn').disabled = false;
+                            stepDiv.querySelector('p:last-child').textContent = '';
+                            clearInterval(interval);
+                        }
+                    }, 2000); // Check every 2 seconds
+                }
+            }
+
+            async function endTour() {
+                overlay.remove();
+                document.querySelectorAll('.tour-step').forEach(el => el.remove());
+                document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
+
+                try {
+                    const response = await fetch('/api/user/complete-tour', {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    if (!response.ok) throw new Error('Failed to complete tour');
+                    alert('Congrats! You’re all set to manage your properties like a pro!');
+                } catch (error) {
+                    console.error('Error completing tour:', error);
+                    alert('Tour completed, but there was an issue saving your progress. Please try again.');
+                }
+            }
+
+            async function nextStep() {
+                if (await steps[currentStep].check()) {
+                    currentStep++;
+                    await showStep(currentStep);
+                }
+            }
+
+            // Start the tour at the first incomplete step
+            await findFirstIncompleteStep();
+            await showStep(currentStep);
+            window.nextStep = nextStep;
+        }
+
+        // Start the tour if the user is new
+        if (window.isNewUser) {
+            startNewUserTour();
+        }
+    </script>
 
     <!-- REQUIRED SCRIPTS -->
-     <!-- Bootstrap JS (including Popper.js) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS (including Popper.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- jQuery -->
     <script src="/plugins/jquery/jquery.min.js"></script>
     <!-- Bootstrap -->

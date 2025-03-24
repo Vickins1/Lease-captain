@@ -202,8 +202,6 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
         }
 
         const expectedAmount = planAmounts[req.user.plan];
-
-        // Check if user has paid or if they are on the Basic plan
         const hasPaid = (req.user.plan === 'Basic') ||
             (req.user.paymentStatus &&
                 req.user.paymentStatus.status === 'completed' &&
@@ -212,142 +210,156 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
         if (!hasPaid) {
             if (req.user.plan === 'Basic') {
                 req.flash('error', 'As a Basic plan user, you have limited access.');
-                return res.redirect('/tenancy-manager/dashboard');
             } else {
                 req.flash('error', 'Please complete your subscription payment to access our services.');
                 return res.redirect('/subscription');
             }
         }
 
-// Fetch properties, units, tenants, and payments
-const properties = await Property.find({ owner: req.user._id }).populate('tenants');
-const propertyUnits = await PropertyUnit.find({ owner: req.user._id }).populate('tenant'); // Fetch property units
-const tenants = await Tenant.find({ owner: req.user._id }); // Fetch tenants
-const payments = await Payment.find({ owner: req.user._id }).sort({ createdAt: -1 }).limit(5);
+        // Fetch properties and update their metrics
+        let properties = await Property.find({ owner: req.user._id }).populate('tenants');
+        properties = await Promise.all(properties.map(p => p.updateRentUtilitiesAndTenants()));
 
-        // Get current month
-        const currentMonth = new Date().getMonth();
+        // Fetch property units
+        const propertyIds = properties.map(p => p._id);
+        const propertyUnits = await PropertyUnit.find({ propertyId: { $in: propertyIds } }).populate('tenants');
+
+        // Fetch tenants with populated unit
+        const tenants = await Tenant.find({ owner: req.user._id }).populate('property unit');
+
+        // Fetch recent payments (5 latest) with population
+        const payments = await Payment.find({ owner: req.user._id })
+            .populate({
+                path: 'tenant',
+                populate: [
+                    { path: 'property', select: 'name' },
+                    { path: 'unit', select: 'name' }
+                ]
+            })
+            .populate('property', 'name')
+            .populate('unit', 'name')
+            .limit(5)
+            .sort({ datePaid: -1 })
+            .lean();
+
+        // Get current year
         const currentYear = new Date().getFullYear();
+        const today = new Date();
 
-        // Monthly metrics
+        // Calculate total rent and utility metrics
         let totalRentCollected = 0;
         let totalRentDue = 0;
         let utilityCollected = 0;
         let utilityDue = 0;
 
+        for (const tenant of tenants) {
+            const totalRentPaid = tenant.rentPaid || 0;
+            const totalUtilityPaid = tenant.utilityPaid || 0;
 
-        tenants.forEach(tenant => {
-            const rentPaid = tenant.rentPaid || 0;
-            const totalRent = tenant.totalRent || 0;
+            const unitPrice = tenant.unit?.unitPrice || 0;
+            const leaseStartDate = new Date(tenant.leaseStartDate);
+            const monthsSinceLeaseStart = Math.max(
+                (today.getFullYear() - leaseStartDate.getFullYear()) * 12 +
+                (today.getMonth() - leaseStartDate.getMonth()) + 1,
+                0
+            );
+            const expectedRent = monthsSinceLeaseStart * unitPrice;
 
-            // Check if the current month's rent is included
-            const currentMonthPaid = tenant.currentMonthPaid || false;
+            const unitUtilities = Array.isArray(tenant.unit?.utilities) ? tenant.unit.utilities : [];
+            const totalUtilityChargesPerMonth = unitUtilities.reduce((acc, utility) => acc + (utility.amount || 0), 0);
+            const expectedUtility = monthsSinceLeaseStart * totalUtilityChargesPerMonth;
 
-            // Add current month's rent to rent due if it is not paid
-            const rentDue = currentMonthPaid ? Math.max(0, totalRent - rentPaid) : Math.max(0, totalRent - rentPaid + tenant.monthlyRent || 0);
+            const rentDueForTenant = Math.max(expectedRent - totalRentPaid, 0);
+            const utilityDueForTenant = Math.max(expectedUtility - totalUtilityPaid, 0);
 
-            const utilityPaid = tenant.utilityPaid || 0;
-            const utilityDueForTenant = Math.max(0, (tenant.totalUtility || 0) - utilityPaid);
+            tenant.rentDue = rentDueForTenant;
+            tenant.utilityDue = utilityDueForTenant;
+            await tenant.save();
 
-            totalRentCollected += rentPaid;
-            totalRentDue += rentDue;
-
-            utilityCollected += utilityPaid;
+            totalRentCollected += totalRentPaid;
+            totalRentDue += rentDueForTenant;
+            utilityCollected += totalUtilityPaid;
             utilityDue += utilityDueForTenant;
+        }
+
+        // Fetch all payments for the current year to build chart data
+        const allPayments = await Payment.find({
+            owner: req.user._id,
+            datePaid: {
+                $gte: new Date(currentYear, 0, 1), // Start of year
+                $lte: new Date(currentYear, 11, 31) // End of year
+            }
+        }).lean();
+
+        // Initialize rent data for all months
+        const allMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const rentDataArray = allMonths.map(month => ({
+            month,
+            collected: 0,
+            due: 0
+        }));
+
+        // Aggregate payment data by month
+        allPayments.forEach(payment => {
+            const paymentMonth = new Date(payment.datePaid).getMonth(); // 0-11
+            const monthName = allMonths[paymentMonth];
+            const monthIndex = allMonths.indexOf(monthName);
+            if (monthIndex !== -1) {
+                rentDataArray[monthIndex].collected += payment.amount || 0;
+            }
         });
 
-        const monthlyRentData = tenants.reduce((acc, tenant) => {
-            const leaseMonth = new Date(tenant.leaseEndDate).getMonth();
-            const leaseYear = new Date(tenant.leaseEndDate).getFullYear();
+        // Calculate monthly due based on tenant expectations
+        tenants.forEach(tenant => {
+            const unitPrice = tenant.unit?.unitPrice || 0;
+            const leaseStartDate = new Date(tenant.leaseStartDate);
+            const leaseEndDate = new Date(tenant.leaseEndDate);
+            const startMonth = leaseStartDate.getMonth();
+            const endMonth = leaseEndDate.getMonth() > today.getMonth() && leaseEndDate.getFullYear() === currentYear
+                ? today.getMonth()
+                : leaseEndDate.getMonth();
 
-            if (leaseYear === currentYear) {
-                if (!acc[leaseMonth]) {
-                    acc[leaseMonth] = { collected: 0, due: 0 };
-                }
-                acc[leaseMonth].collected += tenant.rentPaid || 0;
-                acc[leaseMonth].due += Math.max(0, (tenant.totalRent || 0) - (tenant.rentPaid || 0));
+            for (let i = startMonth; i <= endMonth && leaseStartDate.getFullYear() === currentYear; i++) {
+                const expectedRentForMonth = unitPrice;
+                const collectedForMonth = rentDataArray[i].collected;
+                const dueForMonth = Math.max(expectedRentForMonth - (tenant.rentPaid || 0) / (endMonth - startMonth + 1), 0);
+                rentDataArray[i].due += dueForMonth;
             }
-            return acc;
-        }, {});
-
-        // Monthly metrics for the current month
-        const monthlyData = monthlyRentData[currentMonth] || { collected: 0, due: 0 };
-        const monthlyCollected = monthlyData.collected;
-        const monthlyDue = monthlyData.due;
+        });
 
         // Additional key metrics
-        const totalExpectedRent = tenants.reduce((sum, tenant) => sum + (tenant.totalRent || 0), 0);
+        const totalExpectedRent = totalRentCollected + totalRentDue;
         const tenantRetention = (tenants.filter(t => t.status === 'occupied').length / tenants.length) * 100 || 0;
 
-
-        // Fetch all expenses for the owner 
         const expenses = await Expense.aggregate([
             { $match: { owner: req.user._id } },
             { $group: { _id: null, total: { $sum: '$amount' } } }
         ]);
-
-        // Total expenses (if no expenses found, default to 0)
         const totalExpenses = expenses[0]?.total || 0;
 
-
         const totalProfit = totalRentCollected - totalExpenses;
-        const totalUtility = tenants.reduce((sum, tenant) => sum + (tenant.totalUtility || 0), 0);
-
-// Prepare all months and rent collection data
-const allMonths = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-];
-
-// Initialize rent collection data for all months
-const rentCollectionData = {};
-allMonths.forEach(month => {
-    rentCollectionData[month] = { collected: 0, due: 0 };
-});
-
-// Aggregate rent data by the month of payment
-tenants.forEach(tenant => {
-    const rentPaid = tenant.rentPaid || 0; // Total rent collected from this tenant
-    const rentDue = (tenant.totalRent || 0) - rentPaid; // Total rent due from this tenant
-
-    const month = new Date(tenant.leaseStartDate).toLocaleString('default', { month: 'short' });
-
-    if (rentCollectionData[month]) {
-        rentCollectionData[month].collected += rentPaid;
-        rentCollectionData[month].due += rentDue;
-    }
-});
-
-// Convert rent data into an array for rendering
-const rentDataArray = allMonths.map(month => ({
-    month,
-    collected: rentCollectionData[month].collected,
-    due: rentCollectionData[month].due,
-}));
-
-// Pass rentDataArray to the frontend
-
-
-
-        // Calculate occupied tenants
-        const occupiedTenants = tenants.filter(tenant => tenant.status === 'occupied').length;
-
-        // Calculate percentages
-        const rentCollectedPercentage = (totalRentCollected / totalExpectedRent) * 100;
-        const expensesPercentage = (totalExpenses / totalExpectedRent) * 100;
-        const profitPercentage = (totalProfit / totalExpectedRent) * 100;
-        const tenantPercentage = (occupiedTenants / tenants.length) * 100;
-
-        const userProgress = {
-            hasProperties: properties.length > 0,
-            hasPropertyUnits: tenants.length > 0,
-            hasTenants: tenants.length > 0
-        };
-
-        // Count maintenance requests associated with the user's tenants
+        const totalUtility = utilityCollected + utilityDue;
         const totalRequests = await MaintenanceRequest.countDocuments({
             tenantId: { $in: tenants.map(tenant => tenant._id) }
         });
+
+        const occupiedTenants = tenants.filter(tenant => tenant.status === 'occupied').length;
+        const rentCollectedPercentage = totalExpectedRent ? (totalRentCollected / totalExpectedRent) * 100 : 0;
+        const expensesPercentage = totalExpectedRent ? (totalExpenses / totalExpectedRent) * 100 : 0;
+        const profitPercentage = totalExpectedRent ? (totalProfit / totalExpectedRent) * 100 : 0;
+        const tenantPercentage = tenants.length ? (occupiedTenants / tenants.length) * 100 : 0;
+
+        const propertyIdsWithUnits = new Set(propertyUnits.map(unit => unit.propertyId.toString()));
+        const hasPropertyUnits = properties.some(property => propertyIdsWithUnits.has(property._id.toString()));
+
+        const userProgress = {
+            hasProperties: properties.length > 0,
+            hasPropertyUnits: hasPropertyUnits,
+            hasTenants: properties.some(property => property.numberOfTenants > 0),
+            hasPaymentConnected: hasPaid
+        };
+
+        const isNewUser = req.user.isNewUser || false;
 
         // Render the dashboard
         res.render('tenancyManager/dashboard', {
@@ -356,8 +368,6 @@ const rentDataArray = allMonths.map(month => ({
             tenants,
             totalTenants: tenants.length,
             payments,
-            monthlyCollected,
-            monthlyDue,
             totalExpectedRent,
             tenantRetention,
             totalProfit,
@@ -368,30 +378,25 @@ const rentDataArray = allMonths.map(month => ({
             totalUtility,
             totalExpenses,
             totalRequests,
-            rentDataArray,
+            rentDataArray, // Single, corrected rentDataArray
             rentCollectedPercentage,
             expensesPercentage,
             profitPercentage,
             tenantPercentage,
-
             numberOfTenants: tenants.length,
-            occupiedUnitsCount: tenants.filter(t => t.status === 'occupied').length,
+            occupiedUnitsCount: occupiedTenants,
             userProgress,
-            rentDataArray: Object.keys(monthlyRentData).map(month => ({
-                month: new Date(currentYear, month).toLocaleString('default', { month: 'short' }),
-                collected: monthlyRentData[month].collected,
-                due: monthlyRentData[month].due
-            })),
-            currentUser: req.user
+            currentUser: req.user,
+            isNewUser,
+            success: req.flash('success'),
+            error: req.flash('error')
         });
     } catch (err) {
-        console.error('Error fetching dashboard data:', err);
+        console.error('Error fetching dashboard data:', err.message, err.stack);
         req.flash('error', 'Error fetching dashboard data.');
         res.redirect('/login');
     }
 });
-
-
 
 router.get('/subscription', async (req, res) => {
     try {
@@ -919,7 +924,6 @@ router.post('/tenancy-manager/profile/:id', isTenancyManager, async (req, res) =
     }
 });
 
-
 const getMaxTenants = (plan) => {
     const tenantsLimit = {
         Basic: 5,
@@ -1190,7 +1194,6 @@ const sendWelcomeSMS = async (tenant) => {
     }
 };
 
-
 // Route to resend the welcome email to a tenant
 router.post('/tenancy-manager/tenant/resend-email/:tenantId', async (req, res) => {
     try {
@@ -1277,6 +1280,65 @@ router.get('/tenancy-manager/payments', isTenancyManager, async (req, res) => {
         console.error("Error fetching payments:", error);
         req.flash('error', 'Internal Server Error while fetching payments.');
         res.redirect('/tenancy-manager/payments');
+    }
+});
+
+// POST: Add a new payment
+router.post('/add', async (req, res) => {
+    try {
+        const { tenant, tenantName, property, unitType, doorNumber, amount, totalPaid, rentPaid, utilityPaid, method, status, paymentType, transactionId } = req.body;
+
+        // Validate required fields
+        if (!tenant || !tenantName || !property || !doorNumber || !amount || !totalPaid || !method || !status || !paymentType || !transactionId) {
+            req.flash('error', 'All required fields must be filled.');
+            return res.redirect('/tenancy-manager/dashboard');
+        }
+
+        // Validate amounts
+        const amountNum = parseFloat(amount);
+        const totalPaidNum = parseFloat(totalPaid);
+        if (totalPaidNum > amountNum) {
+            req.flash('error', 'Total Paid cannot exceed the Amount.');
+            return res.redirect('/tenancy-manager/dashboard');
+        }
+
+        // Fetch tenant to get property and unit details
+        const tenantDoc = await Tenant.findById(tenant).populate('property unit');
+        if (!tenantDoc) {
+            req.flash('error', 'Tenant not found.');
+            return res.redirect('/tenancy-manager/dashboard');
+        }
+
+        // Calculate due amount
+        const due = amountNum - totalPaidNum;
+
+        // Create new payment
+        const payment = new Payment({
+            owner: req.user._id,
+            tenant,
+            tenantName,
+            property: tenantDoc.property._id,
+            unit: tenantDoc.unit ? tenantDoc.unit._id : null,
+            doorNumber,
+            amount: amountNum,
+            totalPaid: totalPaidNum,
+            rentPaid: parseFloat(rentPaid) || 0,
+            utilityPaid: parseFloat(utilityPaid) || 0,
+            method,
+            status,
+            paymentType,
+            transactionId,
+            due,
+            datePaid: new Date()
+        });
+
+        await payment.save();
+        req.flash('success', 'Payment added successfully.');
+        res.redirect('/tenancy-manager/dashboard');
+    } catch (err) {
+        console.error('Error adding payment:', err.message, err.stack);
+        req.flash('error', 'Error adding payment: ' + err.message);
+        res.redirect('/tenancy-manager/dashboard');
     }
 });
 
