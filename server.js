@@ -112,24 +112,7 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-app.post('/api/user/complete-tour', async (req, res) => {
-  try {
-      if (!req.user) {
-          return res.status(401).json({ message: 'Unauthorized' });
-      }
-      const user = await User.findById(req.user._id);
-      if (!user) {
-          return res.status(404).json({ message: 'User not found' });
-      }
-      user.isNewUser = false;
-      await user.save();
-      res.json({ message: 'Tour completed', isNewUser: user.isNewUser });
-  } catch (error) {
-      console.error('Error completing tour:', error);
-      res.status(500).json({ message: 'Server error', error });
-  }
-});
-
+// Support form submission
 app.post('/support/submit', async (req, res) => {
   console.log('Form Data:', req.body);
   const { name, email, number, address, message, reviewcheck } = req.body;

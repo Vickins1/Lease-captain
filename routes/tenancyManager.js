@@ -17,9 +17,10 @@ const Account = require('../models/account');
 const Topups = require('../models/topups');
 const Reminder = require('../models/reminder');
 const crypto = require('crypto');
-const Permission = require('../models/permissions');
 const axios = require('axios')
 const SupportMessage = require('../models/supportMessage');
+const PropertyList = require('../models/propertyList');
+const path = require('path');
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -1972,5 +1973,50 @@ router.post('/reset-password', async (req, res) => {
         return res.redirect('/reset-password');
     }
 });
+
+
+
+// Authentication middleware
+const ensureAuthenticated = (req, res, next) => {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect('/login');
+};
+
+// GET: Property Listing
+router.get('/tenancy-manager/propertyListing', ensureAuthenticated, async (req, res) => {
+    try {
+        // Fetch properties from MongoDB, filtered by the authenticated user's ID
+        const properties = await PropertyList.find({ owner: req.user._id }).lean();
+        res.render('tenancyManager/list', {
+            currentUser: req.user,
+            isNewUser: req.user.isNewUser || false,
+            properties: properties || []
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
+// GET: View Property Details
+router.get('/tenancy-manager/propertyListing/:id', ensureAuthenticated, async (req, res) => {
+    try {
+        const property = await PropertyList.findOne({ _id: req.params.id, owner: req.user._id }).lean();
+        if (!property) {
+            return res.status(404).send('Property not found');
+        }
+        res.render('propertyDetails', {
+            currentUser: req.user,
+            isNewUser: req.user.isNewUser || false,
+            property: property
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
 
 module.exports = router;

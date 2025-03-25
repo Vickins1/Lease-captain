@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lease Captain | Property Listing</title>
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/dist/css/adminlte.min2167.css?v=3.2.0">
+    <link rel="icon" type="image/png" sizes="56x56" href="/assets/images/1.png">
+</head>
+
+<body data-is-new-user="<%= isNewUser ? 'true' : 'false' %>"
+    class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
+    <div class="wrapper">
+
+        <!-- Preloader -->
+        <div class="preloader flex-column justify-content-center align-items-center">
+            <img class="animation__wobble" src="/assets/images/2.png" alt="AdminLTELogo" height="150" width="150">
+        </div>
+
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-light">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="navbar-search" href="#" role="button">
+                        <i class="fas fa-search"></i>
+                    </a>
+                    <div class="navbar-search-block">
+                        <form class="form-inline">
+                            <div class="input-group input-group-sm">
+                                <input class="form-control form-control-navbar" type="search" placeholder="Search"
+                                    aria-label="Search">
+                                <div class="input-group-append">
+                                    <button class="btn btn-navbar" type="submit">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                    <button class="btn btn-navbar" type="button" data-widget="navbar-search">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="far fa-bell"></i>
+                        <span class="badge badge-warning navbar-badge"></span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/logout" class="nav-link" role="button">
+                        <i class="nav-icon fas fa-sign-out-alt"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-light-primary elevation-4">
+            <a href="/" class="brand-link">
+                <img src="/assets/images/2.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+                    style="opacity: .8">
+                <h4 class="brand-text font-weight-bold"><strong>Lease Captain</strong></h4>
+            </a>
+            <div class="sidebar">
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                    <div class="image">
+                        <img src="/dist/img/cap.png" class="img-circle elevation-2" alt="User Image">
+                    </div>
+                    <div class="info">
+                        <a href="#" class="d-block" aria-haspopup="true" aria-expanded="false">
+                            <span>Welcome back,</span>
+                            <strong><%= currentUser.username %></strong>
+                        </a>
+                    </div>
+                </div>
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/dashboard" class="nav-link">
+                                <i class="nav-icon fas fa-tachometer-alt"></i>
+                                <p>Dashboard</p>
+                            </a>
+                        </li>
+                        <li class="nav-header"><strong>PROPERTY MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/properties" class="nav-link">
+                                <i class="nav-icon fas fa-building"></i>
+                                <p>Properties</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/property/units" class="nav-link">
+                                <i class="nav-icon fas fa-cogs"></i>
+                                <p>Property Units</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/propertyListing" class="nav-link active" style="background-color: #003366; color: #ffffff;">
+                                <i class="nav-icon fas fa-list-alt"></i>
+                                <p>List Properties</p>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Content Wrapper -->
+        <div class="content-wrapper">
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0">Property Listings</h1>
+                        </div>
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item"><a href="/tenancy-manager/dashboard">Home</a></li>
+                                <li class="breadcrumb-item active">Property Listings</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section class="content">
+                <div class="container-fluid">
+                    <!-- Filter and Search Bar -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card p-3" style="background: linear-gradient(135deg, #003366, #00b4db); color: #fff;">
+                                <div class="row align-items-center">
+                                    <div class="col-md-4 mb-2 mb-md-0">
+                                        <input type="text" class="form-control" placeholder="Search properties..." style="border-radius: 20px;">
+                                    </div>
+                                    <div class="col-md-6 mb-2 mb-md-0">
+                                        <select class="form-control" style="border-radius: 20px;">
+                                            <option value="">Filter by Status</option>
+                                            <option value="available">Available</option>
+                                            <option value="rented">Rented</option>
+                                            <option value="maintenance">Under Maintenance</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 text-md-right">
+                                        <button class="btn btn-success btn-block" data-toggle="modal" data-target="#addPropertyModal" style="border-radius: 20px;">
+                                            <i class="fas fa-plus"></i> Add Property
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Property Listings -->
+                    <div class="row">
+                        <% if (properties && properties.length > 0) { %>
+                            <% properties.forEach(property => { %>
+                                <div class="col-md-4 col-sm-6 mb-4">
+                                    <div class="card property-card h-100 shadow-lg">
+                                        <img src="<%= property.image || '/assets/images/default-property.jpg' %>" class="card-img-top" alt="<%= property.name %>">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-primary font-weight-bold"><%= property.name || 'Unnamed Property' %></h5>
+                                            <p class="card-text text-muted">
+                                                <i class="fas fa-map-marker-alt"></i> <%= property.location || 'N/A' %>
+                                            </p>
+                                            <p class="card-text">
+                                                <strong>Status:</strong> 
+                                                <span class="<%= property.status === 'available' ? 'text-success' : 
+                                                    property.status === 'rented' ? 'text-warning' : 'text-danger' %>">
+                                                    <%= property.status ? property.status.charAt(0).toUpperCase() + property.status.slice(1) : 'N/A' %>
+                                                </span>
+                                            </p>
+                                            <p class="card-text"><strong>Price:</strong> Ksh. <%= property.price ? Number(property.price).toFixed(2) : '0.00' %>/mo</p>
+                                        </div>
+                                        <div class="card-footer text-center">
+                                            <a href="/tenancy-manager/propertyListing/<%= property.id %>" class="btn btn-sm btn-info">View Details</a>
+                                            <button class="btn btn-sm btn-warning edit-property-btn" 
+                                                    data-toggle="modal" 
+                                                    data-target="#editPropertyModal"
+                                                    data-id="<%= property.id %>"
+                                                    data-name="<%= property.name %>"
+                                                    data-location="<%= property.location %>"
+                                                    data-status="<%= property.status %>"
+                                                    data-price="<%= property.price %>"
+                                                    data-image="<%= property.image %>">
+                                                Edit
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="col-12 text-center">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i> No properties listed yet. Click "Add Property" to get started!
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Add Property Modal -->
+                <div class="modal fade" id="addPropertyModal" tabindex="-1" role="dialog" aria-labelledby="addPropertyModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header" style="background-color: #003366; color: #fff;">
+                                <h5 class="modal-title" id="addPropertyModalLabel">Add New Property</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                            <form id="addPropertyForm" action="/tenancy-manager/propertyListing/add" method="POST" enctype="multipart/form-data">
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label>Name</label>
+                                        <input type="text" name="name" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Location</label>
+                                        <input type="text" name="location" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Status</label>
+                                        <select name="status" class="form-control">
+                                            <option value="available">Available</option>
+                                            <option value="rented">Rented</option>
+                                            <option value="maintenance">Under Maintenance</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Price (Ksh/month)</label>
+                                        <input type="number" name="price" class="form-control" step="0.01" required>
+                                    </div>
+                                    <div class="form-group">
+                                          <label for="description">Description</label>
+                                          <textarea class="form-control" name="description" rows="3"></textarea>
+                                      </div>
+                                    <div class="form-group">
+                                        <label>Property Image</label>
+                                        <input type="file" name="image" id="addImageInput" class="form-control-file" accept="image/*" required>
+                                        <img id="addImagePreview" class="img-fluid mt-2" style="max-height: 200px; display: none;" alt="Image Preview">
+                                        <small class="form-text text-muted">Minimum resolution: 800x600px</small>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-success">Add Property</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edit Property Modal -->
+                <div class="modal fade" id="editPropertyModal" tabindex="-1" role="dialog" aria-labelledby="editPropertyModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header" style="background-color: #003366; color: #fff;">
+                                <h5 class="modal-title" id="editPropertyModalLabel">Edit Property</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                            <form id="editPropertyForm" method="POST" enctype="multipart/form-data">
+                                <div class="modal-body">
+                                    <input type="hidden" name="id" id="editPropertyId">
+                                    <div class="form-group">
+                                        <label>Name</label>
+                                        <input type="text" name="name" id="editPropertyName" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Location</label>
+                                        <input type="text" name="location" id="editPropertyLocation" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Status</label>
+                                        <select name="status" id="editPropertyStatus" class="form-control">
+                                            <option value="available">Available</option>
+                                            <option value="rented">Rented</option>
+                                            <option value="maintenance">Under Maintenance</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Price (Ksh/month)</label>
+                                        <input type="number" name="price" id="editPropertyPrice" class="form-control" step="0.01" required>
+                                    </div>
+                                    <div class="form-group">
+                                          <label for="description">Description</label>
+                                          <textarea class="form-control" name="description" rows="3"></textarea>
+                                      </div>
+                                    <div class="form-group">
+                                        <label>Property Image</label>
+                                        <input type="file" name="image" id="editImageInput" class="form-control-file" accept="image/*">
+                                        <img id="editImagePreview" class="img-fluid mt-2" style="max-height: 200px;" alt="Current Image">
+                                        <small class="form-text text-muted">Minimum resolution: 800x600px (leave blank to keep current image)</small>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-warning">Update Property</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark"></aside>
+
+        <!-- Main Footer -->
+        <footer class="main-footer">
+            <strong>Copyright © 2024-2025 <a href="https://leasecaptain.com/">Lease Captain</a></strong>
+            All rights reserved.
+            <div class="float-right d-none d-sm-inline-block">
+                <b>Version</b> 1.0.2
+            </div>
+        </footer>
+    </div>
+
+    <!-- REQUIRED SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/plugins/jquery/jquery.min.js"></script>
+    <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+    <script src="/dist/js/adminlte2167.js?v=3.2.0"></script>
+    <script src="/plugins/jquery-mousewheel/jquery.mousewheel.js"></script>
+    <script src="/plugins/raphael/raphael.min.js"></script>
+    <script src="/plugins/jquery-mapael/jquery.mapael.min.js"></script>
+    <script src="/plugins/jquery-mapael/maps/usa_states.min.js"></script>
+    <script src="/plugins/chart.js/Chart.min.js"></script>
+    <script src="/dist/js/demo.js"></script>
+    <script src="/dist/js/pages/dashboard2.js"></script>
+
+    <!-- Custom Styles -->
+    <style>
+        .property-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .property-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .property-card .card-img-top {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .property-card .card-body {
+            padding: 15px;
+        }
+
+        .property-card .card-title {
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+        }
+
+        .property-card .card-text {
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .property-card .card-footer {
+            background: #f8f9fa;
+            padding: 10px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .btn {
+            border-radius: 20px;
+            padding: 6px 12px;
+        }
+
+        .content-header h1 {
+            color: #003366;
+            font-weight: bold;
+        }
+
+        .breadcrumb-item a {
+            color: #00b4db;
+        }
+
+        .alert-info {
+            border-radius: 10px;
+            padding: 20px;
+            font-size: 1.1rem;
+        }
+
+        .modal-content {
+            border-radius: 10px;
+        }
+
+        .modal-header {
+            border-bottom: none;
+        }
+
+        @media (max-width: 767.98px) {
+            .property-card .card-img-top {
+                height: 150px;
+            }
+
+            .property-card .card-title {
+                font-size: 1.1rem;
+            }
+
+            .property-card .card-text {
+                font-size: 0.9rem;
+            }
+
+            .btn {
+                padding: 5px 10px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+
+    <!-- Custom JavaScript -->
+    <script>
+        $(document).ready(function() {
+            // Edit Modal Population
+            $('.edit-property-btn').on('click', function() {
+                const id = $(this).data('id');
+                const name = $(this).data('name');
+                const location = $(this).data('location');
+                const status = $(this).data('status');
+                const price = $(this).data('price');
+                const image = $(this).data('image');
+
+                $('#editPropertyId').val(id);
+                $('#editPropertyName').val(name);
+                $('#editPropertyLocation').val(location);
+                $('#editPropertyStatus').val(status);
+                $('#editPropertyPrice').val(price);
+                $('#editImagePreview').attr('src', image || '/assets/images/default-property.jpg');
+                $('#editPropertyForm').attr('action', `/tenancy-manager/propertyListing/edit/${id}`);
+            });
+
+            // Image Preview and Quality Check for Add Modal
+            $('#addImageInput').on('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const img = new Image();
+                    img.onload = function() {
+                        if (img.width < 800 || img.height < 600) {
+                            alert('Image must be at least 800x600 pixels for quality.');
+                            $('#addImageInput').val('');
+                            $('#addImagePreview').hide();
+                        } else {
+                            $('#addImagePreview').attr('src', URL.createObjectURL(file)).show();
+                        }
+                    };
+                    img.src = URL.createObjectURL(file);
+                }
+            });
+
+            // Image Preview and Quality Check for Edit Modal
+            $('#editImageInput').on('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const img = new Image();
+                    img.onload = function() {
+                        if (img.width < 800 || img.height < 600) {
+                            alert('Image must be at least 800x600 pixels for quality.');
+                            $('#editImageInput').val('');
+                        } else {
+                            $('#editImagePreview').attr('src', URL.createObjectURL(file));
+                        }
+                    };
+                    img.src = URL.createObjectURL(file);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

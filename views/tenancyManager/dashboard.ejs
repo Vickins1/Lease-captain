@@ -353,625 +353,635 @@
     </ul>
 </nav>
 
-<script>
-class TourManager {
-    constructor() {
-        this.overlay = this.createOverlay();
-        this.currentStep = 0;
-        this.isTourActive = false;
-        this.sidebar = document.querySelector('.main-sidebar');
-        this.navContainer = document.querySelector('.nav-sidebar');
-
-        this.steps = [
-            {
-                target: '.nav-link[href="/tenancy-manager/properties"]',
-                title: 'Step 1: Add Your First Property',
-                content: 'Adding a property is the foundation of your rental management. It lets you organize all your units, tenants, and payments in one place.'
-            },
-            {
-                target: '.nav-link[href="/tenancy-manager/property/units"]',
-                title: 'Step 2: Add Property Units',
-                content: 'Units help you break down your property into manageable parts. This makes it easier to assign tenants and track rent for each space.'
-            },
-            {
-                target: '.nav-link[href="/tenancy-manager/tenants"]',
-                title: 'Step 3: Add Tenants',
-                content: 'Tenants are the heart of your business. Adding them here lets you monitor leases, payments, and maintenance requests efficiently.'
-            },
-            {
-                target: '.nav-link[href="/connect"]',
-                title: 'Step 4: Connect Payment Gateway',
-                content: 'Connecting a payment gateway streamlines rent collection. It saves time, reduces errors, and ensures you get paid securely.'
-            },
-            {
-                target: '.nav-link[href="/tenancy-manager/propertyListing"]',
-                title: 'Step 5: List Your Properties',
-                content: 'Listing your properties attracts new tenants. It’s your chance to showcase your rentals and fill vacancies faster.'
-            }
-        ];
-    }
-
-    createOverlay() {
-        const overlay = document.createElement('div');
-        overlay.className = 'tour-overlay';
-        document.body.appendChild(overlay);
-        return overlay;
-    }
-
-    async showStep(stepIndex) {
-        if (!this.isTourActive || stepIndex >= this.steps.length) {
-            await this.endTour();
-            return;
-        }
-
-        const step = this.steps[stepIndex];
-        const targetElement = document.querySelector(step.target);
-
-        if (!targetElement) {
-            console.warn(`Target element not found: ${step.target}`);
-            this.nextStep();
-            return;
-        }
-
-        // Expand parent treeview if target is in a submenu
-        const parentTreeview = targetElement.closest('.nav-treeview');
-        if (parentTreeview) {
-            const parentLink = parentTreeview.previousElementSibling;
-            if (parentLink && !parentLink.parentElement.classList.contains('menu-open')) {
-                parentLink.click(); // Trigger AdminLTE treeview expand
-            }
-        }
-
-        // Scroll the sidebar to the target
-        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-        document.querySelectorAll('.tour-step').forEach(el => el.remove());
-        document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
-
-        targetElement.classList.add('highlight');
-
-        const stepDiv = document.createElement('div');
-        stepDiv.className = 'tour-step';
-        // Position at the right edge of the sidebar
-        const sidebarRect = this.sidebar.getBoundingClientRect();
-        stepDiv.style.position = 'fixed';
-        stepDiv.style.top = '20px'; // Fixed at top of viewport
-        stepDiv.style.left = `${sidebarRect.right + 10}px`; // Right edge of sidebar + 10px offset
-        stepDiv.style.width = '300px'; // Fixed width for consistency
-        stepDiv.style.zIndex = '2010';
-
-        stepDiv.innerHTML = `
-            <div class="tour-progress">Step ${stepIndex + 1} of ${this.steps.length}</div>
-            <h3>${step.title}</h3>
-            <p>${step.content}</p>
-            <div class="tour-buttons">
-                <button class="skip-btn">Skip Tour</button>
-                <button id="next-btn">
-                    ${stepIndex === this.steps.length - 1 ? 'Finish' : 'Next'}
-                </button>
             </div>
-        `;
-
-        document.body.appendChild(stepDiv); // Append to body for fixed positioning
-        this.overlay.style.display = 'block';
-        this.overlay.style.zIndex = '1000';
-
-        const nextBtn = stepDiv.querySelector('#next-btn');
-        const skipBtn = stepDiv.querySelector('.skip-btn');
-        nextBtn.addEventListener('click', () => this.nextStep(), { once: true });
-        skipBtn.addEventListener('click', () => this.endTour(), { once: true });
-    }
-
-    nextStep() {
-        this.currentStep++;
-        this.showStep(this.currentStep);
-    }
-
-    async endTour() {
-        this.isTourActive = false;
-        this.overlay.style.display = 'none';
-        document.querySelectorAll('.tour-step').forEach(el => el.remove());
-        document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
-
-        try {
-            const response = await fetch('/api/user/complete-tour', {
-                method: 'POST',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json' }
-            });
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            this.showCompletionMessage(true);
-        } catch (error) {
-            console.error('Tour completion error:', error);
-            this.showCompletionMessage(false);
-        }
-    }
-
-    showCompletionMessage(success) {
-        const message = success
-            ? 'Welcome aboard! You’re ready to manage your properties like a pro!'
-            : 'Tour ended, but we couldn’t save your progress. Contact support if needed.';
-        const alertDiv = document.createElement('div');
-        alertDiv.className = 'tour-alert';
-        alertDiv.textContent = message;
-        document.body.appendChild(alertDiv);
-        setTimeout(() => alertDiv.remove(), 5000);
-    }
-
-    async start() {
-        if (this.isTourActive) return;
-        this.isTourActive = true;
-
-        if (this.sidebar.classList.contains('sidebar-collapse')) {
-            document.querySelector('[data-widget="pushmenu"]').click();
-        }
-
-        this.showStep(this.currentStep);
-
-        window.addEventListener('resize', () => {
-            if (this.isTourActive) {
-                const stepDiv = document.querySelector('.tour-step');
-                if (stepDiv) {
-                    const sidebarRect = this.sidebar.getBoundingClientRect();
-                    stepDiv.style.left = `${sidebarRect.right + 10}px`; // Adjust on resize
-                }
-            }
-        });
-    }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    const isNewUser = document.body.dataset.isNewUser === 'true';
-    if (isNewUser) {
-        const tour = new TourManager();
-        tour.start();
-    }
-});
-</script>
-
-<style>
-.tour-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    display: none;
-    transition: opacity 0.3s ease;
-}
-
-.tour-step {
-    background: #ffffff;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    font-family: 'Source Sans Pro', sans-serif;
-    animation: fadeIn 0.5s ease-in-out;
-    border: 1px solid #003366;
-}
-
-.tour-progress {
-    font-size: 0.9em;
-    color: #666;
-    margin-bottom: 10px;
-}
-
-.tour-step h3 {
-    color: #003366;
-    margin: 0 0 10px 0;
-    font-size: 1.2em;
-    font-weight: 600;
-}
-
-.tour-step p {
-    margin: 0 0 12px 0;
-    color: #333;
-    line-height: 1.4;
-    font-size: 0.95em;
-}
-
-.tour-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    margin-top: 12px;
-}
-
-.tour-step button {
-    padding: 6px 16px;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-    font-size: 0.9em;
-    transition: all 0.3s ease;
-}
-
-.tour-step #next-btn {
-    background-color: #003366;
-    color: #fff;
-}
-
-.tour-step #next-btn:hover {
-    background-color: #0055a5;
-    transform: translateY(-2px);
-}
-
-.tour-step .skip-btn {
-    background-color: #f5f5f5;
-    color: #333;
-    border: 1px solid #ddd;
-}
-
-.tour-step .skip-btn:hover {
-    background-color: #e0e0e0;
-    transform: translateY(-2px);
-}
-
-.highlight {
-    position: relative;
-    z-index: 2005;
-    border: 3px solid #003366;
-    border-radius: 5px;
-    background: rgba(0, 51, 102, 0.1);
-    animation: pulse 1.5s infinite;
-    box-shadow: 0 0 10px rgba(0, 51, 102, 0.5);
-}
-
-.tour-alert {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: #003366;
-    color: #fff;
-    padding: 15px 25px;
-    border-radius: 5px;
-    z-index: 2020;
-    animation: slideIn 0.5s ease-in-out;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(0, 51, 102, 0.7); }
-    70% { box-shadow: 0 0 0 15px rgba(0, 51, 102, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(0, 51, 102, 0); }
-}
-
-@keyframes slideIn {
-    from { opacity: 0; transform: translateX(100%); }
-    to { opacity: 1; transform: translateX(0); }
-}
-
-@media (max-width: 991px) {
-    .tour-step {
-        padding: 10px;
-        font-size: 0.9em;
-        width: 250px;
-    }
-    .tour-step h3 {
-        font-size: 1.1em;
-    }
-    .tour-step button {
-        padding: 5px 12px;
-        font-size: 0.85em;
-    }
-}
-
-@media (max-width: 576px) {
-    .tour-step {
-        top: 10px !important;
-        left: 10px !important; /* Fallback to left edge on small screens */
-        width: calc(100% - 20px) !important;
-        padding: 8px;
-    }
-    .tour-buttons {
-        flex-direction: column;
-        gap: 8px;
-    }
-    .tour-step button {
-        width: 100%;
-    }
-}
-</style>
-            </div>
-
-            <!-- /.sidebar -->
-
         </aside>
 
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
-
-            <!-- Main content -->
-            <section class="content">
-                <div class="container-fluid">
-          
-<!-- Info Boxes (4 per row) -->
-<div class="row mt-4 g-4">
-    <!-- Total Rent Collected -->
-    <div class="col-12 col-sm-6 col-md-3 mb-4">
-        <div class="card shadow-lg border-0">
-            <div class="card-header text-white">
-                <h5>Total Rent Collected</h5>
+            <script>
+                class TourManager {
+                    constructor() {
+                        this.overlay = this.createOverlay();
+                        this.currentStep = 0;
+                        this.isTourActive = false;
+                        this.sidebar = document.querySelector('.main-sidebar');
+                        this.navContainer = document.querySelector('.nav-sidebar');
+                
+                        this.steps = [
+                            {
+                                target: '.nav-link[href="/tenancy-manager/properties"]',
+                                title: 'Step 1: Add Your First Property',
+                                content: 'Adding a property is the foundation of your rental management. It lets you organize all your units, tenants, and payments in one place.'
+                            },
+                            {
+                                target: '.nav-link[href="/tenancy-manager/property/units"]',
+                                title: 'Step 2: Add Property Units',
+                                content: 'Units help you break down your property into manageable parts. This makes it easier to assign tenants and track rent for each space.'
+                            },
+                            {
+                                target: '.nav-link[href="/tenancy-manager/tenants"]',
+                                title: 'Step 3: Add Tenants',
+                                content: 'Tenants are the heart of your business. Adding them here lets you monitor leases, payments, and maintenance requests efficiently.'
+                            },
+                            {
+                                target: '.nav-link[href="/connect"]',
+                                title: 'Step 4: Connect Payment Gateway',
+                                content: 'Connecting a payment gateway streamlines rent collection. It saves time, reduces errors, and ensures you get paid securely.'
+                            },
+                            {
+                                target: '.nav-link[href="/tenancy-manager/propertyListing"]',
+                                title: 'Step 5: List Your Properties',
+                                content: 'Listing your properties attracts new tenants. It’s your chance to showcase your rentals and fill vacancies faster.'
+                            }
+                        ];
+                    }
+                
+                    createOverlay() {
+                        const overlay = document.createElement('div');
+                        overlay.className = 'tour-overlay';
+                        document.body.appendChild(overlay);
+                        return overlay;
+                    }
+                
+                    async showStep(stepIndex) {
+                        if (!this.isTourActive || stepIndex >= this.steps.length) {
+                            await this.endTour();
+                            return;
+                        }
+                
+                        const step = this.steps[stepIndex];
+                        const targetElement = document.querySelector(step.target);
+                
+                        if (!targetElement) {
+                            console.warn(`Target element not found: ${step.target}`);
+                            this.nextStep();
+                            return;
+                        }
+                
+                        // Expand parent treeview if target is in a submenu
+                        const parentTreeview = targetElement.closest('.nav-treeview');
+                        if (parentTreeview) {
+                            const parentLink = parentTreeview.previousElementSibling;
+                            if (parentLink && !parentLink.parentElement.classList.contains('menu-open')) {
+                                parentLink.click(); // Trigger AdminLTE treeview expand
+                            }
+                        }
+                
+                        // Scroll the sidebar to the target
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                        document.querySelectorAll('.tour-step').forEach(el => el.remove());
+                        document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
+                
+                        targetElement.classList.add('highlight');
+                
+                        const stepDiv = document.createElement('div');
+                        stepDiv.className = 'tour-step';
+                        // Position at the right edge of the sidebar
+                        const sidebarRect = this.sidebar.getBoundingClientRect();
+                        stepDiv.style.position = 'fixed';
+                        stepDiv.style.top = '20px'; // Fixed at top of viewport
+                        stepDiv.style.left = `${sidebarRect.right + 10}px`; // Right edge of sidebar + 10px offset
+                        stepDiv.style.width = '300px'; // Fixed width for consistency
+                        stepDiv.style.zIndex = '2010';
+                
+                        stepDiv.innerHTML = `
+                            <div class="tour-progress">Step ${stepIndex + 1} of ${this.steps.length}</div>
+                            <h3>${step.title}</h3>
+                            <p>${step.content}</p>
+                            <div class="tour-buttons">
+                                <button class="skip-btn">Skip Tour</button>
+                                <button id="next-btn">
+                                    ${stepIndex === this.steps.length - 1 ? 'Finish' : 'Next'}
+                                </button>
+                            </div>
+                        `;
+                
+                        document.body.appendChild(stepDiv); // Append to body for fixed positioning
+                        this.overlay.style.display = 'block';
+                        this.overlay.style.zIndex = '1000';
+                
+                        const nextBtn = stepDiv.querySelector('#next-btn');
+                        const skipBtn = stepDiv.querySelector('.skip-btn');
+                        nextBtn.addEventListener('click', () => this.nextStep(), { once: true });
+                        skipBtn.addEventListener('click', () => this.endTour(), { once: true });
+                    }
+                
+                    nextStep() {
+                        this.currentStep++;
+                        this.showStep(this.currentStep);
+                    }
+                
+                    async endTour() {
+                        this.isTourActive = false;
+                        this.overlay.style.display = 'none';
+                        document.querySelectorAll('.tour-step').forEach(el => el.remove());
+                        document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
+                
+                        try {
+                            const response = await fetch('/api/user/complete-tour', {
+                                method: 'POST',
+                                credentials: 'include',
+                                headers: { 'Content-Type': 'application/json' }
+                            });
+                            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                            this.showCompletionMessage(true);
+                        } catch (error) {
+                            console.error('Tour completion error:', error);
+                            this.showCompletionMessage(false);
+                        }
+                    }
+                
+                    showCompletionMessage(success) {
+                        const message = success
+                            ? 'Welcome aboard! You’re ready to manage your properties like a pro!'
+                            : 'Tour ended, but we couldn’t save your progress. Contact support if needed.';
+                        const alertDiv = document.createElement('div');
+                        alertDiv.className = 'tour-alert';
+                        alertDiv.textContent = message;
+                        document.body.appendChild(alertDiv);
+                        setTimeout(() => alertDiv.remove(), 5000);
+                    }
+                
+                    async start() {
+                        if (this.isTourActive) return;
+                        this.isTourActive = true;
+                
+                        if (this.sidebar.classList.contains('sidebar-collapse')) {
+                            document.querySelector('[data-widget="pushmenu"]').click();
+                        }
+                
+                        this.showStep(this.currentStep);
+                
+                        window.addEventListener('resize', () => {
+                            if (this.isTourActive) {
+                                const stepDiv = document.querySelector('.tour-step');
+                                if (stepDiv) {
+                                    const sidebarRect = this.sidebar.getBoundingClientRect();
+                                    stepDiv.style.left = `${sidebarRect.right + 10}px`; // Adjust on resize
+                                }
+                            }
+                        });
+                    }
+                }
+                
+                document.addEventListener('DOMContentLoaded', () => {
+                    const isNewUser = document.body.dataset.isNewUser === 'true';
+                    if (isNewUser) {
+                        const tour = new TourManager();
+                        tour.start();
+                    }
+                });
+                </script>
+                
+                <style>
+                .tour-overlay {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.5);
+                    z-index: 1000;
+                    display: none;
+                    transition: opacity 0.3s ease;
+                }
+                
+                .tour-step {
+                    background: #ffffff;
+                    padding: 15px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+                    font-family: 'Source Sans Pro', sans-serif;
+                    animation: fadeIn 0.5s ease-in-out;
+                    border: 1px solid #003366;
+                }
+                
+                .tour-progress {
+                    font-size: 0.9em;
+                    color: #666;
+                    margin-bottom: 10px;
+                }
+                
+                .tour-step h3 {
+                    color: #003366;
+                    margin: 0 0 10px 0;
+                    font-size: 1.2em;
+                    font-weight: 600;
+                }
+                
+                .tour-step p {
+                    margin: 0 0 12px 0;
+                    color: #333;
+                    line-height: 1.4;
+                    font-size: 0.95em;
+                }
+                
+                .tour-buttons {
+                    display: flex;
+                    gap: 10px;
+                    justify-content: flex-end;
+                    margin-top: 12px;
+                }
+                
+                .tour-step button {
+                    padding: 6px 16px;
+                    border-radius: 5px;
+                    border: none;
+                    cursor: pointer;
+                    font-size: 0.9em;
+                    transition: all 0.3s ease;
+                }
+                
+                .tour-step #next-btn {
+                    background-color: #003366;
+                    color: #fff;
+                }
+                
+                .tour-step #next-btn:hover {
+                    background-color: #0055a5;
+                    transform: translateY(-2px);
+                }
+                
+                .tour-step .skip-btn {
+                    background-color: #f5f5f5;
+                    color: #333;
+                    border: 1px solid #ddd;
+                }
+                
+                .tour-step .skip-btn:hover {
+                    background-color: #e0e0e0;
+                    transform: translateY(-2px);
+                }
+                
+                .highlight {
+                    position: relative;
+                    z-index: 2005;
+                    border: 3px solid #003366;
+                    border-radius: 5px;
+                    background: rgba(0, 51, 102, 0.1);
+                    animation: pulse 1.5s infinite;
+                    box-shadow: 0 0 10px rgba(0, 51, 102, 0.5);
+                }
+                
+                .tour-alert {
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    background: #003366;
+                    color: #fff;
+                    padding: 15px 25px;
+                    border-radius: 5px;
+                    z-index: 2020;
+                    animation: slideIn 0.5s ease-in-out;
+                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+                }
+                
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(-20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                
+                @keyframes pulse {
+                    0% { box-shadow: 0 0 0 0 rgba(0, 51, 102, 0.7); }
+                    70% { box-shadow: 0 0 0 15px rgba(0, 51, 102, 0); }
+                    100% { box-shadow: 0 0 0 0 rgba(0, 51, 102, 0); }
+                }
+                
+                @keyframes slideIn {
+                    from { opacity: 0; transform: translateX(100%); }
+                    to { opacity: 1; transform: translateX(0); }
+                }
+                
+                @media (max-width: 991px) {
+                    .tour-step {
+                        padding: 10px;
+                        font-size: 0.9em;
+                        width: 250px;
+                    }
+                    .tour-step h3 {
+                        font-size: 1.1em;
+                    }
+                    .tour-step button {
+                        padding: 5px 12px;
+                        font-size: 0.85em;
+                    }
+                }
+                
+                @media (max-width: 576px) {
+                    .tour-step {
+                        top: 10px !important;
+                        left: 10px !important; /* Fallback to left edge on small screens */
+                        width: calc(100% - 20px) !important;
+                        padding: 8px;
+                    }
+                    .tour-buttons {
+                        flex-direction: column;
+                        gap: 8px;
+                    }
+                    .tour-step button {
+                        width: 100%;
+                    }
+                }
+                </style>
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <!-- Info Boxes (4 per row) -->
+        <div class="row mt-4 g-4">
+            <!-- Total Rent Collected -->
+            <div class="col-6 col-md-3 mb-4">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header text-white">
+                        <h5>Total Rent Collected</h5>
+                    </div>
+                    <div class="card-body bold-text">
+                        <i class="fas fa-money-bill-wave mr-2"></i> Ksh. <%= Number(totalRentCollected || 0).toFixed(2) %>
+                    </div>
+                </div>
             </div>
-            <div class="card-body bold-text">
-                <i class="fas fa-money-bill-wave mr-2"></i> Ksh. <%= Number(totalRentCollected || 0).toFixed(2) %>
+
+            <!-- Utility Paid -->
+            <div class="col-6 col-md-3 mb-4">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header text-white">
+                        <h5>Utility Paid</h5>
+                    </div>
+                    <div class="card-body bold-text">
+                        <i class="fas fa-money-bill-alt mr-2"></i> Ksh. <%= Number(utilityCollected || 0).toFixed(2) %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Rent Due -->
+            <div class="col-6 col-md-3 mb-4">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header text-white">
+                        <h5>Total Rent Due</h5>
+                    </div>
+                    <div class="card-body bold-text">
+                        <i class="fas fa-calendar-times mr-2"></i> Ksh. <%= Number(totalRentDue || 0).toFixed(2) %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Utility Due -->
+            <div class="col-6 col-md-3 mb-4">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header text-white">
+                        <h5>Utility Due</h5>
+                    </div>
+                    <div class="card-body bold-text">
+                        <i class="fas fa-water mr-2"></i> Ksh. <%= Number(utilityDue || 0).toFixed(2) %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Properties -->
+            <div class="col-6 col-md-3 mb-4">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header text-white">
+                        <h5>Total Properties</h5>
+                    </div>
+                    <div class="card-body bold-text">
+                        <i class="fas fa-home mr-2"></i> <%= properties?.length || 0 %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Number of Property Units -->
+            <div class="col-6 col-md-3 mb-4">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header text-white">
+                        <h5>Units</h5>
+                    </div>
+                    <div class="card-body bold-text">
+                        <i class="fas fa-building mr-2"></i> <%= propertyUnits?.length || 0 %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Number of Tenants -->
+            <div class="col-6 col-md-3 mb-4">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header text-white">
+                        <h5>Tenants</h5>
+                    </div>
+                    <div class="card-body bold-text">
+                        <i class="fas fa-users mr-2"></i> <%= numberOfTenants || 0 %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Maintenance Requests -->
+            <div class="col-6 col-md-3 mb-4">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header text-white">
+                        <h5>Maintenance Requests</h5>
+                    </div>
+                    <div class="card-body bold-text">
+                        <i class="fas fa-tools mr-2"></i> <%= totalRequests || 0 %>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Utility Paid -->
-    <div class="col-12 col-sm-6 col-md-3 mb-4">
-        <div class="card shadow-lg border-0">
-            <div class="card-header text-white">
-                <h5>Utility Paid</h5>
-            </div>
-            <div class="card-body bold-text">
-                <i class="fas fa-money-bill-alt mr-2"></i> Ksh. <%= Number(utilityCollected || 0).toFixed(2) %>
-            </div>
-        </div>
-    </div>
+        <style>
+            /* Info Boxes Styling */
+            .bold-text {
+                font-weight: bold;
+            }
 
-    <!-- Total Rent Due -->
-    <div class="col-12 col-sm-6 col-md-3 mb-4">
-        <div class="card shadow-lg border-0">
-            <div class="card-header text-white">
-                <h5>Total Rent Due</h5>
-            </div>
-            <div class="card-body bold-text">
-                <i class="fas fa-calendar-times mr-2"></i> Ksh. <%= Number(totalRentDue || 0).toFixed(2) %>
-            </div>
-        </div>
-    </div>
+            .card {
+                border-radius: 0.2rem;
+                transition: transform 0.2s ease;
+                height: 150px;
+                width: 100%;
+                background-color: #fff;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                box-sizing: border-box;
+            }
 
-    <!-- Utility Due -->
-    <div class="col-12 col-sm-6 col-md-3 mb-4">
-        <div class="card shadow-lg border-0">
-            <div class="card-header text-white">
-                <h5>Utility Due</h5>
-            </div>
-            <div class="card-body bold-text">
-                <i class="fas fa-water mr-2"></i> Ksh. <%= Number(utilityDue || 0).toFixed(2) %>
-            </div>
-        </div>
-    </div>
+            .card:hover {
+                transform: translateY(-5px);
+            }
 
-    <!-- Total Properties -->
-    <div class="col-12 col-sm-6 col-md-3 mb-4">
-        <div class="card shadow-lg border-0">
-            <div class="card-header text-white">
-                <h5>Total Properties</h5>
-            </div>
-            <div class="card-body bold-text">
-                <i class="fas fa-home mr-2"></i> <%= properties.length %>
-            </div>
-        </div>
-    </div>
+            .card-header {
+                background-color: #003366;
+                padding: 12px 15px;
+                border-top-left-radius: 0.2rem;
+                border-top-right-radius: 0.2rem;
+                height: 50px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
 
-    <!-- Number of Property Units -->
-    <div class="col-12 col-sm-6 col-md-3 mb-4">
-        <div class="card shadow-lg border-0">
-            <div class="card-header text-white">
-                <h5>Units</h5>
-            </div>
-            <div class="card-body bold-text">
-                <i class="fas fa-building mr-2"></i> <%= propertyUnits.length %>
-            </div>
-        </div>
-    </div>
+            .card-header h5 {
+                margin: 0;
+                font-size: 1rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%;
+            }
 
-    <!-- Number of Tenants -->
-    <div class="col-12 col-sm-6 col-md-3 mb-4">
-        <div class="card shadow-lg border-0">
-            <div class="card-header text-white">
-                <h5>Tenants</h5>
-            </div>
-            <div class="card-body bold-text">
-                <i class="fas fa-users mr-2"></i> <%= numberOfTenants || 0 %>
-            </div>
-        </div>
-    </div>
+            .card-body {
+                padding: 15px;
+                font-size: 1.1rem;
+                color: #333;
+                flex-grow: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
 
-    <!-- Maintenance Requests -->
-    <div class="col-12 col-sm-6 col-md-3 mb-4">
-        <div class="card shadow-lg border-0">
-            <div class="card-header text-white">
-                <h5>Maintenance Requests</h5>
+            .fas {
+                color: #003366;
+                margin-right: 10px;
+                font-size: 1.2rem;
+            }
+
+            @media (min-width: 768px) {
+                .col-md-3 {
+                    flex: 0 0 25%;
+                    max-width: 25%;
+                }
+            }
+
+            @media (max-width: 767.98px) {
+                .col-6 {
+                    flex: 0 0 50%;
+                    max-width: 50%;
+                }
+                .card {
+                    height: 140px;
+                }
+                .card-header {
+                    height: 45px;
+                }
+                .card-header h5 {
+                    font-size: 0.95rem;
+                }
+                .card-body {
+                    font-size: 1rem;
+                }
+                .fas {
+                    font-size: 1.1rem;
+                }
+            }
+
+            @media (max-width: 400px) {
+                .col-6 {
+                    flex: 0 0 50%; /* Fixed: Keep 2-per-row, not 100% */
+                    max-width: 50%;
+                }
+                .card {
+                    height: 130px;
+                }
+                .card-header {
+                    height: 40px;
+                }
+                .card-header h5 {
+                    font-size: 0.9rem;
+                }
+                .card-body {
+                    font-size: 0.95rem;
+                }
+                .fas {
+                    font-size: 1rem;
+                }
+            }
+        </style>
+
+<!-- Main row -->
+<div class="row">
+    <div class="col-md-12">
+        <!-- TABLE: LATEST PAYMENTS -->
+        <div class="latest-payments">
+            <div class="header text-white" style="background-color: #003366;">
+                <h3 class="title">Latest Payments</h3>
+                <div class="tools">
+                    <button type="button" class="btn btn-tool" data-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-widget="remove">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
             </div>
-            <div class="card-body bold-text">
-                <i class="fas fa-tools mr-2"></i> <%= totalRequests || 0 %>
+            <div class="body p-0">
+                <div class="table-responsive">
+                    <table class="table m-0">
+                        <thead>
+                            <tr>
+                                <th>Payment ID</th>
+                                <th>Tenant</th>
+                                <th>Status</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (payments && payments.length > 0) { %>
+                                <% payments.forEach(payment => { %>
+                                    <tr>
+                                        <td>
+                                            <a href="/tenancy-manager/payments" class="payment-id">
+                                                <%= payment.transactionId || 'N/A' %>
+                                            </a>
+                                        </td>
+                                        <td class="tenant-info">
+                                            <%= payment.tenant?.name || 'N/A' %>
+                                            (<%= payment.tenant?.property?.name || 'N/A' %> -
+                                            <%= payment.tenant?.unit?.name || 'N/A' %>)
+                                        </td>
+                                        <td>
+                                            <span class="<%= payment.status === 'completed' ? 'text-success' : 
+                                            payment.status === 'pending' ? 'text-warning' : 
+                                            payment.status === 'failed' ? 'text-danger' : 'text-secondary' %>">
+                                                <i class="fas <%= payment.status === 'completed' ? 'fa-check-circle' : 
+                                                payment.status === 'pending' ? 'fa-hourglass-half' : 
+                                                payment.status === 'failed' ? 'fa-times-circle' : 'fa-question-circle' %>"></i>
+                                                <%= payment.status ? payment.status.charAt(0).toUpperCase() + payment.status.slice(1) : 'N/A' %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="sparkbar" data-color="<%= payment.status === 'completed' ? '#00a65a' : '#f39c12' %>" data-height="20">
+                                                Ksh. <%= payment.amount ? Number(payment.amount).toFixed(2) : '0.00' %>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">No recent payments found.</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="footer clearfix">
+                <a href="/tenancy-manager/payments" class="btn btn-sm btn-info float-right">View All Payments</a>
             </div>
         </div>
     </div>
 </div>
-<style>
-    /* Info Boxes Styling */
-.bold-text {
-    font-weight: bold;
-}
-
-/* Card Styling for Consistency */
-.card {
-    border-radius: 0.2rem;
-    transition: transform 0.2s;
-    min-height: 150px; /* Fixed minimum height for uniformity */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    background-color: #fff; /* Ensure consistent background */
-    overflow: hidden; /* Prevent content overflow */
-}
-
-.card:hover {
-    transform: translateY(-5px);
-}
-
-.card-header {
-    background-color: #003366; /* Matches your previous branding */
-    padding: 10px 15px;
-    border-top-left-radius: 0.2rem;
-    border-top-right-radius: 0.2rem;
-    flex-shrink: 0; /* Prevent header from shrinking */
-}
-
-.card-body {
-    padding: 15px;
-    font-size: 1.1rem;
-    color: #333;
-    flex-grow: 1; /* Allow body to fill remaining space */
-    display: flex;
-    align-items: center; /* Center content vertically */
-    justify-content: flex-start; /* Align content to start */
-}
-
-.fas {
-    color: #003366;
-    margin-right: 8px; /* Consistent spacing */
-}
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    .col-md-3 {
-        flex: 0 0 50%; /* 2 cards per row */
-        max-width: 50%;
-    }
-    .card {
-        min-width: 0; /* Prevent overflow */
-        width: 100%; /* Full width within column */
-    }
-    .card-body {
-        font-size: 1rem; /* Slightly smaller but consistent */
-    }
-}
-
-@media (max-width: 576px) {
-    .col-md-3 {
-        flex: 0 0 50%; /* 2 cards per row on mobile */
-        max-width: 50%;
-    }
-    .card {
-        width: 100%; /* Full width within column */
-        min-height: 120px; /* Slightly shorter but uniform */
-    }
-    .card-body {
-        font-size: 0.9rem; /* Adjust font size */
-    }
-}
-</style>
-
-                    <!-- Main row -->
-                    <div class="row">
-                        <!-- Left col -->
-                        <div class="col-md-12">
-
-                            <!-- TABLE: LATEST PAYMENTS -->
-                            <div class="card">
-                                <div class="card-header border-transparent">
-                                    <h3 class="card-title text-white">Latest Payments</h3>
-                                    <div class="card-tools">
-                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                            <i class="fas fa-minus"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-tool" data-card-widget="remove">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <!-- /.card-header -->
-                                <div class="card-body p-0">
-                                    <div class="table-responsive">
-                                        <table class="table m-0">
-                                            <thead>
-                                                <tr>
-                                                    <th>Payment ID</th>
-                                                    <th>Tenant</th>
-                                                    <th>Status</th>
-                                                    <th>Amount</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <% if (payments && payments.length> 0) { %>
-                                                    <% payments.forEach(payment=> { %>
-                                                        <tr>
-                                                            <td>
-                                                                <a href="/tenancy-manager/payments">
-                                                                    <%= payment.transactionId || 'N/A' %>
-                                                                </a>
-                                                            </td>
-                                                            <td>
-                                                                <%= payment.tenant ? payment.tenant.name : 'N/A' %>
-                                                                    (<%= payment.tenant && payment.tenant.property ?
-                                                                        payment.tenant.property.name : 'N/A' %> -
-                                                                        <%= payment.tenant && payment.tenant.unit ?
-                                                                            payment.tenant.unit.name : 'N/A' %>)
-                                                            </td>
-                                                            <td>
-                                                                <span class="<%= payment.status === 'completed' ? 'text-success' : 
-                                        payment.status === 'pending' ? 'text-warning' : 
-                                        payment.status === 'failed' ? 'text-danger' : 'text-secondary' %>">
-                                                                    <i class="fas <%= payment.status === 'completed' ? 'fa-check-circle' : 
-                                            payment.status === 'pending' ? 'fa-hourglass-half' : 
-                                            payment.status === 'failed' ? 'fa-times-circle' : 'fa-question-circle' %>">
-                                                                    </i>
-                                                                    <%= payment.status ?
-                                                                        payment.status.charAt(0).toUpperCase() +
-                                                                        payment.status.slice(1) : 'N/A' %>
-                                                                </span>
-                                                            </td>
-                                                            <td>
-                                                                <div class="sparkbar"
-                                                                    data-color="<%= payment.status === 'completed' ? '#00a65a' : '#f39c12' %>"
-                                                                    data-height="20">
-                                                                    Ksh. <%= payment.amount ? payment.amount.toFixed(2)
-                                                                        : '0.00' %>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <% }); %>
-                                                            <% } else { %>
-                                                                <tr>
-                                                                    <td colspan="4" class="text-center text-muted">No
-                                                                        recent payments found.</td>
-                                                                </tr>
-                                                                <% } %>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <!-- /.table-responsive -->
-                                </div>
-
-
-                                <!-- /.card-body -->
-                                <div class="card-footer clearfix">
-
-                                    <a href="/tenancy-manager/payments" class="btn btn-sm btn-info float-right">View All
-                                        Payments</a>
-                                </div>
-                                <!-- /.card-footer -->
-                            </div>
-                            <!-- /.card -->
-
-                        </div>
-                        <!-- /.col -->
-                    </div>
-                    <!-- /.row -->
-
-
 
 <!-- Monthly Recap Report -->
 <div class="row">
     <div class="col-md-12">
-        <div class="card shadow-lg">
-            <div class="card-header border-transparent bg-dark text-white">
-                <h5 class="card-title">Monthly Recap Report</h5>
-                <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+        <div class="monthly-recap shadow-lg">
+            <div class="header text-white" style="background-color: #003366;">
+                <h5 class="title">Monthly Recap Report</h5>
+                <div class="tools">
+                    <button type="button" class="btn btn-tool" data-widget="collapse">
                         <i class="fas fa-minus"></i>
                     </button>
                     <div class="btn-group">
@@ -979,233 +989,233 @@ document.addEventListener('DOMContentLoaded', () => {
                             <i class="fas fa-wrench"></i>
                         </button>
                         <div class="dropdown-menu dropdown-menu-right" role="menu">
-                            <a href="#" class="dropdown-item">Action</a>
-                            <a href="#" class="dropdown-item">Another action</a>
-                            <a href="#" class="dropdown-item">Something else here</a>
+                            <a href="#" class="dropdown-item">Export to PDF</a>
+                            <a href="#" class="dropdown-item">Export to CSV</a>
+                            <a href="#" class="dropdown-item">View Detailed Report</a>
                             <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item">Separated link</a>
+                            <a href="#" class="dropdown-item">Refresh Data</a>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <button type="button" class="btn btn-tool" data-widget="remove">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
             </div>
-            <!-- /.card-header -->
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <p class="text-center">
-                            <strong>Performance: 1 Jan, <%= new Date().getFullYear() %> - 31 Dec, <%= new Date().getFullYear() %></strong>
-                        </p>
-                        <div class="chart-container">
-                            <canvas id="leaseChart" data-rent="<%= JSON.stringify(rentDataArray) %>"></canvas>
-                        </div>
-                    </div>
+            <div class="body p-0">
+                <p class="text-center performance-text m-3">
+                    <strong>Performance: 1 Jan, <%= new Date().getFullYear() %> - 31 Dec, <%= new Date().getFullYear() %></strong>
+                </p>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover m-0">
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Rent Collected (Ksh)</th>
+                                <th>Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (rentDataArray && rentDataArray.length > 0) { %>
+                                <% rentDataArray.forEach((data, index) => { %>
+                                    <tr>
+                                        <td><%= data.month || 'N/A' %></td>
+                                        <td><%= data.value ? Number(data.value).toFixed(2) : '0.00' %></td>
+                                        <td>
+                                            <canvas class="trend-chart" id="trendChart<%= index %>" 
+                                                    data-values="<%= JSON.stringify(rentDataArray.map(d => d.value || 0)) %>"
+                                                    data-current="<%= data.value || 0 %>"
+                                                    width="100" height="40"></canvas>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted">No data available for this year.</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
                 </div>
-                <!-- /.row -->
             </div>
-            <!-- /.card-body -->
         </div>
-        <!-- /.card -->
     </div>
 </div>
-<!-- /.row -->
 
-<style>
-    /* Monthly Recap Report Styling */
-.card {
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    border: none;
-    background-color: #fff;
-    transition: box-shadow 0.3s ease;
-}
-
-.card:hover {
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-}
-
-.card-header.bg-dark {
-    background-color: #003366 !important; /* Matches your branding */
-    padding: 15px 20px;
-    border-top-left-radius: 0.5rem;
-    border-top-right-radius: 0.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.card-title {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #fff;
-}
-
-.card-tools .btn-tool {
-    color: #fff;
-    font-size: 1rem;
-    padding: 5px;
-    transition: opacity 0.2s;
-}
-
-.card-tools .btn-tool:hover {
-    opacity: 0.8;
-}
-
-.card-body {
-    padding: 25px;
-    background: #f8f9fa; /* Subtle background for contrast */
-    border-bottom-left-radius: 0.5rem;
-    border-bottom-right-radius: 0.5rem;
-    height: 100%; /* Ensure it takes full height */
-    display: flex;
-    flex-direction: column;
-}
-
-.text-center strong {
-    font-size: 1.2rem;
-    color: #333;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    margin-bottom: 15px; /* Space below title */
-}
-
-.chart-container {
-    position: relative;
-    width: 100%;
-    flex-grow: 1; /* Allows container to expand to fill remaining space */
-    min-height: 200px; /* Minimum height for visibility */
-    background: #fff;
-    border-radius: 0.3rem;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
-    overflow: hidden; /* Prevent overflow */
-}
-
-#leaseChart {
-    width: 100% !important; /* Force full width */
-    height: 100% !important; /* Force full height */
-}
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    .card-header {
-        padding: 12px 15px;
-    }
-    .card-title {
-        font-size: 1.15rem;
-    }
-    .card-body {
-        padding: 20px;
-    }
-    .chart-container {
-        min-height: 150px;
-    }
-    .text-center strong {
-        font-size: 1.1rem;
-    }
-}
-
-@media (max-width: 576px) {
-    .card-header {
-        padding: 10px 12px;
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    .card-tools {
-        margin-top: 10px;
-    }
-    .card-title {
-        font-size: 1rem;
-    }
-    .card-body {
-        padding: 15px;
-    }
-    .chart-container {
-        min-height: 200px;
-    }
-    .text-center strong {
-        font-size: 1rem;
-    }
-}
-</style>
-
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-    const canvas = document.getElementById('leaseChart');
-    const rentDataArray = JSON.parse(canvas.dataset.rent);
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.trend-chart').forEach(canvas => {
+            const ctx = canvas.getContext('2d');
+            const values = JSON.parse(canvas.dataset.values); // Full year data
+            const currentValue = parseFloat(canvas.dataset.current); // Current month's value
 
-    const months = rentDataArray.map(data => data.month);
-    const collected = rentDataArray.map(data => data.collected);
-    const due = rentDataArray.map(data => data.due);
-
-    const ctx = canvas.getContext('2d');
-
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: months,
-            datasets: [
-                {
-                    label: 'Rent Collected (Ksh)',
-                    data: collected,
-                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1,
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Trend'],
+                    datasets: [{
+                        label: 'Rent Collected',
+                        data: [currentValue], // Only show current month's value
+                        backgroundColor: values.indexOf(currentValue) < values.length / 2 ? '#00b4db' : '#003366', // Gradient effect
+                        borderColor: '#fff',
+                        borderWidth: 1
+                    }]
                 },
-                {
-                    label: 'Rent Due (Ksh)',
-                    data: due,
-                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1,
-                },
-            ],
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'top' },
-                tooltip: { enabled: true },
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Amount (Ksh)',
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { display: false }, // Hide x-axis labels
+                        y: { 
+                            beginAtZero: true,
+                            display: false // Hide y-axis for simplicity
+                        }
                     },
-                },
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Month',
-                    },
-                },
-            },
-        },
+                    plugins: {
+                        legend: { display: false }, // Hide legend
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Ksh. ${context.raw.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
     });
-});
 </script>
 
-<!-- External Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<!-- External Custom Script -->
-<script src="/js/lease-chart.js" defer></script>
-<!-- External Styles -->
-<link rel="stylesheet" href="/css/monthly-recap.css">
+<style>
+    /* General Container Styling */
+    .monthly-recap {
+        border-radius: 0.25rem;
+        overflow: hidden;
+        background: #fff;
+    }
 
-<!-- External Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<!-- External Custom Script -->
-<script src="/js/lease-chart.js" defer></script>
+    .header {
+        padding: 10px 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #003366;
+    }
 
+    .title {
+        margin: 0;
+        font-size: 1.25rem;
+    }
 
-                </div>
-                <!--/. container-fluid -->
-            </section>
-            <!-- /.content -->
+    .tools .btn-tool {
+        color: #fff;
+        padding: 5px;
+    }
+
+    .body {
+        padding: 0;
+    }
+
+    /* Table Styling */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table {
+        width: 100%;
+        margin-bottom: 0;
+    }
+
+    .table th, .table td {
+        padding: 12px;
+        vertical-align: middle;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .table th {
+        background-color: #f8f9fa;
+        color: #333;
+    }
+
+    .performance-text {
+        font-size: 1.1rem;
+        color: #333;
+    }
+
+    /* Trend Chart Styling */
+    .trend-chart {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .title {
+            font-size: 1.1rem;
+        }
+
+        .table th, .table td {
+            padding: 8px;
+            font-size: 0.9rem;
+        }
+
+        .performance-text {
+            font-size: 1rem;
+        }
+
+        .trend-chart {
+            width: 80px !important;
+            height: 35px !important;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .header {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 8px 10px;
+        }
+
+        .title {
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .tools {
+            flex-direction: row;
+            justify-content: flex-end;
+            width: 100%;
+            gap: 5px;
+        }
+
+        .table th, .table td {
+            padding: 6px;
+            font-size: 0.85rem;
+        }
+
+        .performance-text {
+            font-size: 0.9rem;
+        }
+
+        .trend-chart {
+            width: 60px !important;
+            height: 30px !important;
+        }
+
+        .btn-group .dropdown-menu {
+            min-width: 120px;
+            font-size: 0.85rem;
+        }
+    }
+</style>
+
+    </div>
+</section>
 
         </div>
         <!-- /.content-wrapper -->
@@ -1216,14 +1226,15 @@ document.addEventListener('DOMContentLoaded', () => {
         </aside>
         <!-- /.control-sidebar -->
 
-        <!-- Main Footer -->
-        <footer class="main-footer">
-            <strong>Copyright &copy; 2024-2025 <a href="https://leasecaptain.com/">Lease Captain</a></strong>
-            All rights reserved.
-            <div class="float-right d-none d-sm-inline-block">
-                <b>Version</b> 1.0.2
-            </div>
-        </footer>
+<!-- Main Footer -->
+  <footer class="main-footer">
+    <strong>Copyright &copy; 2024-2025 <a href="https://leasecaptain.com/">Lease Captain</a></strong>
+    All rights reserved.
+    <div class="float-right d-none d-sm-inline-block">
+      <b>Version</b> 1.0.2
+    </div>
+  </footer>
+
     </div>
     <!-- ./wrapper -->
 
@@ -1250,12 +1261,8 @@ document.addEventListener('DOMContentLoaded', () => {
     <!-- ChartJS -->
     <script src="/plugins/chart.js/Chart.min.js"></script>
 
-    <!-- AdminLTE for demo purposes -->
     <script src="/dist/js/demo.js"></script>
-    <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
     <script src="/dist/js/pages/dashboard2.js"></script>
 </body>
-
-<!-- Mirrored from adminlte.io/themes/v3/index2.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 29 Nov 2024 09:27:35 GMT -->
 
 </html>
