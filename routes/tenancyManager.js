@@ -189,45 +189,37 @@ const planAmounts = {
 
 router.get('/tenancy-manager/dashboard', async (req, res) => {
     try {
-        // Check if user is authenticated
         if (!req.user) {
-            req.flash('error', 'User not authenticated.');
+            req.flash('error', 'Please log in to access the dashboard');
             return res.redirect('/login');
         }
 
-        // Check if user is verified
         if (!req.user.isVerified) {
-            req.flash('error', 'Please verify your account to access the dashboard.');
+            req.flash('error', 'Please verify your account first');
             return res.redirect('/verification');
         }
 
         const expectedAmount = planAmounts[req.user.plan];
         const hasPaid = (req.user.plan === 'Basic') ||
-            (req.user.paymentStatus &&
-                req.user.paymentStatus.status === 'completed' &&
-                req.user.paymentStatus.amount === expectedAmount);
+            (req.user.paymentStatus?.status === 'completed' && 
+             req.user.paymentStatus?.amount === expectedAmount);
 
-        if (!hasPaid) {
-            if (req.user.plan === 'Basic') {
-                req.flash('error', 'As a Basic plan user, you have limited access.');
-            } else {
-                req.flash('error', 'Please complete your subscription payment to access our services.');
-                return res.redirect('/subscription');
-            }
+        if (!hasPaid && req.user.plan !== 'Basic') {
+            req.flash('error', 'Please complete your subscription payment');
+            return res.redirect('/subscription');
         }
 
-        // Fetch properties and update their metrics
+        // Fetch dashboard data
         let properties = await Property.find({ owner: req.user._id }).populate('tenants');
         properties = await Promise.all(properties.map(p => p.updateRentUtilitiesAndTenants()));
 
-        // Fetch property units
         const propertyIds = properties.map(p => p._id);
-        const propertyUnits = await PropertyUnit.find({ propertyId: { $in: propertyIds } }).populate('tenants');
+        const propertyUnits = await PropertyUnit.find({ propertyId: { $in: propertyIds } })
+            .populate('tenants');
 
-        // Fetch tenants with populated unit
-        const tenants = await Tenant.find({ owner: req.user._id }).populate('property unit');
+        const tenants = await Tenant.find({ owner: req.user._id })
+            .populate('property unit');
 
-        // Fetch recent payments (5 latest) with population
         const payments = await Payment.find({ owner: req.user._id })
             .populate({
                 path: 'tenant',
@@ -242,20 +234,14 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
             .sort({ datePaid: -1 })
             .lean();
 
-        // Get current year
+        // Calculate metrics
         const currentYear = new Date().getFullYear();
         const today = new Date();
-
-        // Calculate total rent and utility metrics
-        let totalRentCollected = 0;
-        let totalRentDue = 0;
-        let utilityCollected = 0;
-        let utilityDue = 0;
+        let totalRentCollected = 0, totalRentDue = 0, utilityCollected = 0, utilityDue = 0;
 
         for (const tenant of tenants) {
             const totalRentPaid = tenant.rentPaid || 0;
             const totalUtilityPaid = tenant.utilityPaid || 0;
-
             const unitPrice = tenant.unit?.unitPrice || 0;
             const leaseStartDate = new Date(tenant.leaseStartDate);
             const monthsSinceLeaseStart = Math.max(
@@ -264,52 +250,33 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
                 0
             );
             const expectedRent = monthsSinceLeaseStart * unitPrice;
-
             const unitUtilities = Array.isArray(tenant.unit?.utilities) ? tenant.unit.utilities : [];
             const totalUtilityChargesPerMonth = unitUtilities.reduce((acc, utility) => acc + (utility.amount || 0), 0);
             const expectedUtility = monthsSinceLeaseStart * totalUtilityChargesPerMonth;
 
-            const rentDueForTenant = Math.max(expectedRent - totalRentPaid, 0);
-            const utilityDueForTenant = Math.max(expectedUtility - totalUtilityPaid, 0);
-
-            tenant.rentDue = rentDueForTenant;
-            tenant.utilityDue = utilityDueForTenant;
+            tenant.rentDue = Math.max(expectedRent - totalRentPaid, 0);
+            tenant.utilityDue = Math.max(expectedUtility - totalUtilityPaid, 0);
             await tenant.save();
 
             totalRentCollected += totalRentPaid;
-            totalRentDue += rentDueForTenant;
+            totalRentDue += tenant.rentDue;
             utilityCollected += totalUtilityPaid;
-            utilityDue += utilityDueForTenant;
+            utilityDue += tenant.utilityDue;
         }
 
-        // Fetch all payments for the current year to build chart data
         const allPayments = await Payment.find({
             owner: req.user._id,
-            datePaid: {
-                $gte: new Date(currentYear, 0, 1), // Start of year
-                $lte: new Date(currentYear, 11, 31) // End of year
-            }
+            datePaid: { $gte: new Date(currentYear, 0, 1), $lte: new Date(currentYear, 11, 31) }
         }).lean();
 
-        // Initialize rent data for all months
         const allMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        const rentDataArray = allMonths.map(month => ({
-            month,
-            collected: 0,
-            due: 0
-        }));
+        const rentDataArray = allMonths.map(month => ({ month, collected: 0, due: 0 }));
 
-        // Aggregate payment data by month
         allPayments.forEach(payment => {
-            const paymentMonth = new Date(payment.datePaid).getMonth(); // 0-11
-            const monthName = allMonths[paymentMonth];
-            const monthIndex = allMonths.indexOf(monthName);
-            if (monthIndex !== -1) {
-                rentDataArray[monthIndex].collected += payment.amount || 0;
-            }
+            const monthIndex = new Date(payment.datePaid).getMonth();
+            rentDataArray[monthIndex].collected += payment.amount || 0;
         });
 
-        // Calculate monthly due based on tenant expectations
         tenants.forEach(tenant => {
             const unitPrice = tenant.unit?.unitPrice || 0;
             const leaseStartDate = new Date(tenant.leaseStartDate);
@@ -321,22 +288,18 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
 
             for (let i = startMonth; i <= endMonth && leaseStartDate.getFullYear() === currentYear; i++) {
                 const expectedRentForMonth = unitPrice;
-                const collectedForMonth = rentDataArray[i].collected;
                 const dueForMonth = Math.max(expectedRentForMonth - (tenant.rentPaid || 0) / (endMonth - startMonth + 1), 0);
                 rentDataArray[i].due += dueForMonth;
             }
         });
 
-        // Additional key metrics
         const totalExpectedRent = totalRentCollected + totalRentDue;
         const tenantRetention = (tenants.filter(t => t.status === 'occupied').length / tenants.length) * 100 || 0;
-
         const expenses = await Expense.aggregate([
             { $match: { owner: req.user._id } },
             { $group: { _id: null, total: { $sum: '$amount' } } }
         ]);
         const totalExpenses = expenses[0]?.total || 0;
-
         const totalProfit = totalRentCollected - totalExpenses;
         const totalUtility = utilityCollected + utilityDue;
         const totalRequests = await MaintenanceRequest.countDocuments({
@@ -344,24 +307,27 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
         });
 
         const occupiedTenants = tenants.filter(tenant => tenant.status === 'occupied').length;
-        const rentCollectedPercentage = totalExpectedRent ? (totalRentCollected / totalExpectedRent) * 100 : 0;
-        const expensesPercentage = totalExpectedRent ? (totalExpenses / totalExpectedRent) * 100 : 0;
-        const profitPercentage = totalExpectedRent ? (totalProfit / totalExpectedRent) * 100 : 0;
-        const tenantPercentage = tenants.length ? (occupiedTenants / tenants.length) * 100 : 0;
 
-        const propertyIdsWithUnits = new Set(propertyUnits.map(unit => unit.propertyId.toString()));
-        const hasPropertyUnits = properties.some(property => propertyIdsWithUnits.has(property._id.toString()));
-
+        // Define userProgress here
         const userProgress = {
             hasProperties: properties.length > 0,
-            hasPropertyUnits: hasPropertyUnits,
-            hasTenants: properties.some(property => property.numberOfTenants > 0),
+            hasPropertyUnits: propertyUnits.length > 0, // Simplified check as discussed
+            hasTenants: tenants.length > 0,
             hasPaymentConnected: hasPaid
         };
 
-        const isNewUser = req.user.isNewUser || false;
+        // Check if user is new (first login or hasn't completed tour)
+        const isNewUser = !req.user.tourCompleted && (
+            req.user.loginActivity.length <= 1 || // First or second login
+            !userProgress.hasProperties // No properties yet
+        );
 
-        // Render the dashboard
+        if (isNewUser && req.user.loginActivity.length > 1) {
+            // Mark as not new after first meaningful interaction
+            await User.findByIdAndUpdate(req.user._id, { isNewUser: false });
+        }
+
+        // Render dashboard
         res.render('tenancyManager/dashboard', {
             properties,
             propertyUnits,
@@ -378,26 +344,70 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
             totalUtility,
             totalExpenses,
             totalRequests,
-            rentDataArray, // Single, corrected rentDataArray
-            rentCollectedPercentage,
-            expensesPercentage,
-            profitPercentage,
-            tenantPercentage,
+            rentDataArray,
+            rentCollectedPercentage: totalExpectedRent ? (totalRentCollected / totalExpectedRent) * 100 : 0,
+            expensesPercentage: totalExpectedRent ? (totalExpenses / totalExpectedRent) * 100 : 0,
+            profitPercentage: totalExpectedRent ? (totalProfit / totalExpectedRent) * 100 : 0,
+            tenantPercentage: tenants.length ? (occupiedTenants / tenants.length) * 100 : 0,
             numberOfTenants: tenants.length,
             occupiedUnitsCount: occupiedTenants,
-            userProgress,
+            userProgress, // Now defined
             currentUser: req.user,
             isNewUser,
             success: req.flash('success'),
             error: req.flash('error')
         });
     } catch (err) {
-        console.error('Error fetching dashboard data:', err.message, err.stack);
-        req.flash('error', 'Error fetching dashboard data.');
+        console.error('Dashboard error:', err.message, err.stack);
+        req.flash('error', 'Unable to load dashboard. Please try again.');
         res.redirect('/login');
     }
 });
 
+// Keep your other endpoints as they are
+router.get('/api/user/progress', async (req, res) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+        const properties = await Property.find({ owner: req.user._id });
+        const propertyIds = properties.map(p => p._id);
+        const propertyUnits = await PropertyUnit.find({ propertyId: { $in: propertyIds } });
+        const tenants = await Tenant.find({ owner: req.user._id });
+        const hasPaid = req.user.plan === 'Basic' || 
+            (req.user.paymentStatus?.status === 'completed' && 
+             req.user.paymentStatus?.amount === planAmounts[req.user.plan]);
+        
+        const progress = {
+            hasProperties: properties.length > 0,
+            hasPropertyUnits: propertyUnits.length > 0,
+            hasTenants: tenants.length > 0,
+            hasPaymentConnected: hasPaid
+        };
+
+        res.json(progress);
+    } catch (err) {
+        console.error('Progress API error:', err);
+        res.status(500).json({ error: 'Failed to fetch progress' });
+    }
+});
+
+router.post('/api/user/complete-tour', async (req, res) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+
+        await User.findByIdAndUpdate(req.user._id, { 
+            tourCompleted: true,
+            isNewUser: false 
+        });
+        res.status(200).json({ success: true });
+    } catch (err) {
+        console.error('Tour completion error:', err);
+        res.status(500).json({ error: 'Failed to complete tour' });
+    }
+});
 router.get('/subscription', async (req, res) => {
     try {
         if (!req.user) {
@@ -1283,65 +1293,6 @@ router.get('/tenancy-manager/payments', isTenancyManager, async (req, res) => {
     }
 });
 
-// POST: Add a new payment
-router.post('/add', async (req, res) => {
-    try {
-        const { tenant, tenantName, property, unitType, doorNumber, amount, totalPaid, rentPaid, utilityPaid, method, status, paymentType, transactionId } = req.body;
-
-        // Validate required fields
-        if (!tenant || !tenantName || !property || !doorNumber || !amount || !totalPaid || !method || !status || !paymentType || !transactionId) {
-            req.flash('error', 'All required fields must be filled.');
-            return res.redirect('/tenancy-manager/dashboard');
-        }
-
-        // Validate amounts
-        const amountNum = parseFloat(amount);
-        const totalPaidNum = parseFloat(totalPaid);
-        if (totalPaidNum > amountNum) {
-            req.flash('error', 'Total Paid cannot exceed the Amount.');
-            return res.redirect('/tenancy-manager/dashboard');
-        }
-
-        // Fetch tenant to get property and unit details
-        const tenantDoc = await Tenant.findById(tenant).populate('property unit');
-        if (!tenantDoc) {
-            req.flash('error', 'Tenant not found.');
-            return res.redirect('/tenancy-manager/dashboard');
-        }
-
-        // Calculate due amount
-        const due = amountNum - totalPaidNum;
-
-        // Create new payment
-        const payment = new Payment({
-            owner: req.user._id,
-            tenant,
-            tenantName,
-            property: tenantDoc.property._id,
-            unit: tenantDoc.unit ? tenantDoc.unit._id : null,
-            doorNumber,
-            amount: amountNum,
-            totalPaid: totalPaidNum,
-            rentPaid: parseFloat(rentPaid) || 0,
-            utilityPaid: parseFloat(utilityPaid) || 0,
-            method,
-            status,
-            paymentType,
-            transactionId,
-            due,
-            datePaid: new Date()
-        });
-
-        await payment.save();
-        req.flash('success', 'Payment added successfully.');
-        res.redirect('/tenancy-manager/dashboard');
-    } catch (err) {
-        console.error('Error adding payment:', err.message, err.stack);
-        req.flash('error', 'Error adding payment: ' + err.message);
-        res.redirect('/tenancy-manager/dashboard');
-    }
-});
-
 router.get('/api/tenants/:id', async (req, res) => {
     const tenantId = req.params.id;
     try {
@@ -1481,28 +1432,6 @@ router.post('/expenses', async (req, res) => {
     }
 });
 
-// Pass the predefined permissions to the view
-router.get('/roles', isTenancyManager, async (req, res) => {
-    try {
-        const roles = await Role.find();
-        const permissions = await Permission.find();
-
-        res.render('tenancyManager/roles', {
-            roles,
-            currentUser: req.user,
-            permissions,
-            error: null,
-            success: null
-        });
-    } catch (err) {
-        res.render('tenancyManager/roles', {
-            roles: [],
-            permissions: [],
-            error: 'Error fetching roles or permissions.',
-            success: null
-        });
-    }
-});
 
 // Users route
 router.get('/users', isTenancyManager, async (req, res) => {
@@ -1535,84 +1464,6 @@ router.get('/users', isTenancyManager, async (req, res) => {
             error: 'Error fetching users or roles. Please try again later.',
             success: null
         });
-    }
-});
-
-// Route to create a new user with multiple roles using passport-local-mongoose
-router.post('/users/create', async (req, res) => {
-    try {
-        const { username, email, password, roleIds } = req.body;
-
-        if (!roleIds || roleIds.length === 0) {
-            req.flash('error', 'Please select at least one role.');
-            return res.redirect('/users/create');
-        }
-
-        // Find the roles based on roleIds
-        const roles = await Role.find({ _id: { $in: roleIds } });
-
-        if (roles.length === 0) {
-            req.flash('error', 'No valid roles found.');
-            return res.redirect('/users/create');
-        }
-
-        const newUser = new User({
-            username,
-            email,
-            roles: roles.map(role => role._id),
-            createdBy: req.user._id,
-            accountId: req.user.accountId || req.user._id
-        });
-
-        User.register(newUser, password, function (err, user) {
-            if (err) {
-                console.error('Error registering user:', err);
-                req.flash('error', 'Error creating user.');
-                return res.redirect('/users/create');
-            }
-
-            req.flash('success', 'User created successfully.');
-            res.redirect('/users');
-        });
-    } catch (err) {
-        console.error('Error creating user:', err);
-        req.flash('error', 'Error creating user.');
-        res.redirect('/users/create');
-    }
-});
-
-// Route to assign a role to a user
-router.post('/users/:id/assign-role', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { roleId } = req.body;
-
-        // Find the user by ID
-        const user = await User.findById(id);
-
-        if (!user) {
-            req.flash('error', 'User not found.');
-            return res.redirect('/users');
-        }
-
-        // Find the role by ID
-        const role = await Role.findById(roleId);
-
-        if (!role) {
-            req.flash('error', 'Role not found.');
-            return res.redirect('/users');
-        }
-
-        // Assign the role to the user
-        user.role = role._id;
-        await user.save();
-
-        req.flash('success', 'Role assigned successfully.');
-        res.redirect('/users');
-    } catch (err) {
-        console.error('Error assigning role to user:', err);
-        req.flash('error', 'Error assigning role to user.');
-        res.redirect('/users');
     }
 });
 
@@ -1822,25 +1673,6 @@ router.post('/delete/:id', async (req, res) => {
 });
 
 
-// Get top-up page
-router.get('/top-up', isTenancyManager, async (req, res) => {
-    try {
-        const topups = await Topups.find({ createdBy: req.user._id });
-        res.render('tenancyManager/topups', {
-            topups,
-            currentUser: req.user,
-            error: null,
-            success: null
-        });
-    } catch (err) {
-        res.render('tenancyManager/topups', {
-            topups: [],
-            currentUser: req.user,
-            error: 'Error fetching top-ups.',
-            success: null
-        });
-    }
-});
 
 //GET sms&email
 router.get('/sms&email', isTenancyManager, async (req, res) => {
@@ -1994,40 +1826,47 @@ router.post('/reminders/delete/:id', isTenancyManager, async (req, res) => {
 
 
 
+// POST /forgot-password
 router.post('/forgot-password', async (req, res) => {
     try {
         const { email } = req.body;
-        const user = await User.findOne({ email });
 
-        if (!user) {
-            req.flash('errorMessage', 'No user found with that email address.');
+        // Validate email
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            req.flash('error', 'Please provide a valid email address.');
             return res.redirect('/login');
         }
 
-        // Generate a reset token and set expiration time
-        const resetToken = crypto.randomBytes(20).toString('hex');
-        user.resetPasswordToken = resetToken;
+        const user = await User.findOne({ email });
+        if (!user) {
+            req.flash('error', 'No user found with that email address.');
+            return res.redirect('/login');
+        }
+
+        // Generate a 6-digit reset code
+        const resetCode = Math.floor(100000 + Math.random() * 900000).toString(); // 100000-999999
+        user.resetPasswordCode = resetCode;
         user.resetPasswordExpires = Date.now() + 3600000; // 1-hour expiration
         await user.save();
 
-        // HTML email template
+        // HTML email template with 6-digit code
         const mailOptions = {
             to: user.email,
             from: `"Lease Captain" <${process.env.EMAIL_USERNAME}>`,
-            subject: 'Lease Captain Password Reset',
+            subject: 'Lease Captain Password Reset Code',
             html: `
                 <!DOCTYPE html>
                 <html lang="en">
                 <head>
                     <meta charset="UTF-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Password Reset</title>
+                    <title>Password Reset Code</title>
                     <style>
                         body { font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 0; }
                         .container { max-width: 600px; margin: 0 auto; background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
                         .header { background-color: #003366; color: #ffffff; padding: 20px; text-align: center; font-size: 24px; font-weight: bold; }
                         .content { padding: 20px; line-height: 1.6; }
-                        .button { display: inline-block; padding: 10px 20px; margin-top: 20px; background-color: #003366; color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold; }
+                        .code { display: inline-block; padding: 10px 20px; margin: 20px 0; background-color: #003366; color: #ffffff; font-size: 24px; font-weight: bold; border-radius: 5px; letter-spacing: 2px; }
                         .footer { margin-top: 20px; font-size: 0.8em; color: #777; text-align: center; }
                     </style>
                 </head>
@@ -2035,13 +1874,14 @@ router.post('/forgot-password', async (req, res) => {
                     <div class="container">
                         <div class="header">Lease Captain Password Reset</div>
                         <div class="content">
-                            <p>Hello,</p>
+                            <p>Hello ${user.username || 'User'},</p>
                             <p>You are receiving this email because a password reset request was made for your account on Lease Captain.</p>
-                            <p>To reset your password, please click the button below:</p>
-                            <a href="https://leasecaptain.com/reset-password/${resetToken}" class="button">Reset Your Password</a>
-                            <p>If you didn’t request a password reset, you can safely ignore this email, and your password will remain unchanged.</p>
+                            <p>Your reset code is:</p>
+                            <div class="code">${resetCode}</div>
+                            <p>Please enter this code on the reset password page. It will expire in 1 hour.</p>
+                            <p>If you didn’t request a password reset, please ignore this email, and your password will remain unchanged.</p>
                         </div>
-                        <div class="footer">&copy; ${new Date().getFullYear()} Lease Captain. All rights reserved.</div>
+                        <div class="footer">© ${new Date().getFullYear()} Lease Captain. All rights reserved.</div>
                     </div>
                 </body>
                 </html>
@@ -2051,81 +1891,86 @@ router.post('/forgot-password', async (req, res) => {
         // Send email
         await transporter.sendMail(mailOptions);
 
-        req.flash('successMessage', 'A password reset link has been sent to your email.');
-        res.redirect('/login');
+        req.flash('success', 'A password reset code has been sent to your email or spam.');
+        res.redirect('/reset-password'); // Redirect to a page to enter the code
     } catch (error) {
-        console.error('Error in forgot-password route:', error);
-        req.flash('errorMessage', 'There was an error sending the password reset email. Please try again.');
+        console.error('Error in forgot-password route:', error.message, error.stack);
+        req.flash('error', 'Failed to send password reset code. Please try again later.');
         res.redirect('/login');
     }
 });
 
-
-// GET /reset-password/:token
-router.get('/reset-password/:token', async (req, res) => {
-    try {
-        const user = await User.findOne({
-            resetPasswordToken: req.params.token,
-            resetPasswordExpires: { $gt: Date.now() },
-        });
-
-        if (!user) {
-            req.flash('error', 'Password reset token is invalid or has expired.');
-            return res.redirect('/login');
-        }
-
-        res.render('reset-password', { token: req.params.token }); // Render a reset password form
-    } catch (err) {
-        console.error(err);
-        req.flash('error', 'An error occurred. Please try again.');
-        res.redirect('/login');
-    }
+// GET /reset-password
+router.get('/reset-password', (req, res) => {
+    res.render('reset-password');
 });
 
-
-
-// POST /reset-password/:token
-router.post('/reset-password/:token', async (req, res) => {
+// POST /reset-password
+router.post('/reset-password', async (req, res) => {
     try {
-        const { password, confirmPassword } = req.body;
+        const { email, resetCode, password } = req.body;
 
-        if (password !== confirmPassword) {
-            req.flash('error', 'Passwords do not match.');
-            return res.redirect(`/reset-password/${req.params.token}`);
+        // Validate inputs
+        if (!email || !resetCode || !password) {
+            const missingFields = [];
+            if (!email) missingFields.push('email');
+            if (!resetCode) missingFields.push('reset code');
+            if (!password) missingFields.push('password');
+            req.flash('error', `Please provide all required fields: ${missingFields.join(', ')}.`);
+            return res.redirect('/reset-password');
         }
 
-        // Check password strength
+        // Additional validation
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            req.flash('error', 'Please provide a valid email address.');
+            return res.redirect('/reset-password');
+        }
+        if (!/^\d{6}$/.test(resetCode)) {
+            req.flash('error', 'Reset code must be a 6-digit number.');
+            return res.redirect('/reset-password');
+        }
         if (password.length < 8) {
             req.flash('error', 'Password must be at least 8 characters long.');
-            return res.redirect(`/reset-password/${req.params.token}`);
+            return res.redirect('/reset-password');
         }
 
+        // Find user with valid reset code
         const user = await User.findOne({
-            resetPasswordToken: req.params.token,
+            email,
+            resetPasswordCode: resetCode,
             resetPasswordExpires: { $gt: Date.now() },
         });
 
         if (!user) {
-            req.flash('error', 'Password reset token is invalid or has expired.');
-            return res.redirect('/login');
+            const expiredUser = await User.findOne({ email, resetPasswordCode: resetCode });
+            if (expiredUser && expiredUser.resetPasswordExpires <= Date.now()) {
+                req.flash('error', 'Your reset code has expired. Please request a new one.');
+            } else {
+                req.flash('error', 'Invalid reset code.');
+            }
+            return res.redirect('/reset-password');
         }
 
-        // Hash the new password and update the user
-        user.password = await bcrypt.hash(password, 10);
-        user.resetPasswordToken = undefined;
-        user.resetPasswordExpires = undefined;
+        // Check if new password differs from old (optional, requires storing old password hash)
+        const isSamePassword = await bcrypt.compare(password, user.password);
+        if (isSamePassword) {
+            req.flash('error', 'New password must differ from the old password.');
+            return res.redirect('/reset-password');
+        }
 
+        // Update password and clear reset fields
+        user.password = await bcrypt.hash(password, 10);
+        user.resetPasswordCode = undefined;
+        user.resetPasswordExpires = undefined;
         await user.save();
 
-        req.flash('success', 'Password successfully updated. Please log in.');
-        res.redirect('/login');
-    } catch (err) {
-        console.error('Error resetting password:', err);
-        req.flash('error', 'Error resetting password. Please try again.');
-        res.redirect('/reset-password');
+        req.flash('success', 'Password reset successfully. Please log in.');
+        return res.redirect('/login');
+    } catch (error) {
+        console.error('Error in reset-password POST:', error.message, error.stack);
+        req.flash('error', 'An unexpected error occurred while resetting your password. Please try again.');
+        return res.redirect('/reset-password');
     }
 });
-
-
 
 module.exports = router;

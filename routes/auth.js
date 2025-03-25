@@ -11,6 +11,13 @@ const crypto = require('crypto');
 // Google OAuth Routes
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
+router.get('/auth/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  (req, res) => {
+    res.redirect('/dashboard');
+  }
+);
+
 router.get('/tenancyManager/dashboard', 
   passport.authenticate('google', {
     failureRedirect: '/login', 
@@ -27,55 +34,164 @@ router.get('/signup', (req, res) => {
 
 router.post('/signup', async (req, res) => {
   const { username, email, password, phone, plan } = req.body;
-  // Input validation
-  if (!username || !email || !password || !phone || !plan) {
-      req.flash('error', 'All fields are required. Please fill in all fields.');
-      return res.redirect('/signup');
-  }
+
   try {
-      const existingUser = await User.findOne({ $or: [{ email }, { phone }] });
-      if (existingUser) {
-          req.flash('error', 'Email or phone number already exists. Please choose another.');
-          return res.redirect('/signup');
-      }
-      const tenantsLimit = getTenantsCount(plan);
-      const planAmount = planRates[plan];
-      const user = new User({
-          username,
-          email,
-          phone,
-          password,
-          plan,
-          tenantsLimit,
-          isVerified: false,
-          verificationToken: crypto.randomBytes(32).toString('hex'), 
-          paymentStatus: {
-            transactionId: null,
-            amount: planAmount,
-        }
-      });
-      await User.register(user, password)
-          .then(async () => {
-              await sendWelcomeEmail(email, username, user.verificationToken);
+    // Detailed input validation
+    const errors = [];
 
-              req.flash('success', 'Successfully signed up! Please check your email to verify your account and log in.');
-              res.redirect('/login');
-          })
-          .catch(err => {
-              req.flash('error', 'Sign up failed: ' + err.message);
-              res.redirect('/signup');
-          });
-  } catch (err) {
-      let errorMessage;
+    // Username validation
+    if (!username) {
+      errors.push('Username is required');
+    } else if (username.length < 3 || username.length > 20) {
+      errors.push('Username must be between 3 and 20 characters');
+    } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+      errors.push('Username can only contain letters, numbers, and underscores');
+    }
 
-      if (err.code === 11000) {
-          errorMessage = 'Username, email, or phone number already exists. Please choose another.';
+    // Email validation
+    if (!email) {
+      errors.push('Email is required');
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.push('Please enter a valid email address');
+    }
+
+    // Password validation
+    if (!password) {
+      errors.push('Password is required');
+    } else if (password.length < 8) {
+      errors.push('Password must be at least 8 characters long');
+    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/.test(password)) {
+      errors.push('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character');
+    }
+
+    // Phone validation
+    if (!phone) {
+      errors.push('Phone number is required');
+    } else if (!/^\+?[1-9]\d{1,14}$/.test(phone)) {
+      errors.push('Please enter a valid phone number');
+    }
+
+    // Plan validation
+    const validPlans = Object.keys(planRates); // Assuming planRates is defined elsewhere
+    if (!plan) {
+      errors.push('Plan selection is required');
+    } else if (!validPlans.includes(plan)) {
+      errors.push('Invalid plan selected');
+    }
+
+    // If any validation errors exist, return them all
+    if (errors.length > 0) {
+      req.flash('error', errors.join('. '));
+      return res.redirect('/signup');
+    }
+
+    // Check for existing user
+    const existingUser = await User.findOne({ $or: [{ email }, { phone }, { username }] });
+    if (existingUser) {
+      if (existingUser.email === email) {
+        req.flash('error', 'Email already registered');
+      } else if (existingUser.phone === phone) {
+        req.flash('error', 'Phone number already registered');
       } else {
-          errorMessage = 'Sign up failed: ' + err.message;
+        req.flash('error', 'Username already taken');
       }
-      console.log('Error during signup:', err.message);
-      req.flash('error', errorMessage);
-      res.redirect('/signup');
+      return res.redirect('/signup');
+    }
+
+    // Basic bot detection (you might want to add more sophisticated checks)
+    const signupTimestamp = Date.now();
+    if (req.session.lastSignupAttempt && 
+        (signupTimestamp - req.session.lastSignupAttempt < 10000)) { // 5 second cooldown
+      req.flash('error', 'Please wait a few minutes before trying again');
+      return res.redirect('/signup');
+    }
+    req.session.lastSignupAttempt = signupTimestamp;
+
+  // Verify email domain exists with improved handling
+  const emailDomain = email.split('@')[1];
+  if (!emailDomain) {
+    req.flash('error', 'Invalid email format');
+    return res.redirect('/signup');
+  }
+
+  try {
+    const mxRecords = await dns.promises.resolveMx(emailDomain);
+    if (!mxRecords || mxRecords.length === 0) {
+      req.flash('error', 'Email domain does not have valid mail servers. Please use a valid email provider.');
+      return res.redirect('/signup');
+    }
+  } catch (dnsErr) {
+    // Handle specific DNS errors
+    if (dnsErr.code === 'ENOTFOUND' || dnsErr.code === 'ENODATA') {
+      req.flash('error', 'Email domain does not exist or has no mail servers.');
+      return res.redirect('/signup');
+    } else if (dnsErr.code === 'ETIMEOUT') {
+      // Log timeout but allow signup to proceed (optional leniency)
+      console.warn(`DNS MX lookup timed out for ${emailDomain}: ${dnsErr.message}`);
+    } else {
+      // Log unexpected errors but proceed (optional)
+      console.error(`DNS MX lookup failed for ${emailDomain}: ${dnsErr.message}`);
+    }
+  }
+
+    const tenantsLimit = getTenantsCount(plan);
+    const planAmount = planRates[plan];
+    
+    // Create user with additional security fields
+    const user = new User({
+      username,
+      email: email.toLowerCase(),
+      phone,
+      password,
+      plan,
+      tenantsLimit,
+      isVerified: false,
+      verificationToken: crypto.randomBytes(32).toString('hex'),
+      paymentStatus: {
+        transactionId: null,
+        amount: planAmount,
+      },
+      signupIp: req.ip,
+      signupTimestamp: new Date(),
+      failedAttempts: 0
+    });
+
+    await User.register(user, password)
+      .then(async () => {
+        try {
+          await sendWelcomeEmail(email, username, user.verificationToken);
+          req.flash('success', 'Successfully signed up! Please check your email or spam to verify your account.');
+          res.redirect('/login');
+        } catch (emailErr) {
+          // Handle email sending failure but still allow signup
+          console.error('Email sending failed:', emailErr);
+          req.flash('success', 'Successfully signed up! Verification email failed to send, please contact support.');
+          res.redirect('/login');
+        }
+      })
+      .catch(err => {
+        throw new Error('Registration failed: ' + err.message);
+      });
+
+  } catch (err) {
+    let errorMessage;
+    
+    switch (err.code) {
+      case 11000:
+        errorMessage = 'Duplicate entry detected. Please use a unique username, email, and phone number.';
+        break;
+      case 'ECONNREFUSED':
+        errorMessage = 'Database connection failed. Please try again later.';
+        break;
+      default:
+        errorMessage = err.message.includes('Registration failed') 
+          ? err.message 
+          : 'An unexpected error occurred. Please try again.';
+    }
+
+    console.error('Signup error:', err);
+    req.flash('error', errorMessage);
+    res.redirect('/signup');
   }
 });
 
@@ -241,47 +357,97 @@ router.get('/login', (req, res) => {
   res.render('tenancyManager/login', { errors: { error: error.length > 0 ? error[0] : null } });
 });
 
-// Handle login form submission
 router.post('/login', (req, res, next) => {
-  passport.authenticate('local', (err, user, info) => {
+  const { username, password } = req.body;
+
+  // Rate limiting to prevent brute force using session
+  const loginKey = `login_attempts_${req.ip}`;
+  const MAX_ATTEMPTS = 5;
+  const LOCKOUT_TIME = 15 * 60 * 1000;
+
+  // Initialize session attempts if not present
+  if (!req.session[loginKey]) {
+    req.session[loginKey] = {
+      attempts: 0,
+      lockoutUntil: null
+    };
+  }
+
+  const sessionData = req.session[loginKey];
+
+  // Check if user is locked out
+  if (sessionData.lockoutUntil && Date.now() < sessionData.lockoutUntil) {
+    const minutesLeft = Math.ceil((sessionData.lockoutUntil - Date.now()) / 60000);
+    req.flash('error', `Too many login attempts. Please try again in ${minutesLeft} minute(s).`);
+    return res.redirect('/login');
+  }
+
+  // Reset attempts if lockout period has expired
+  if (sessionData.lockoutUntil && Date.now() >= sessionData.lockoutUntil) {
+    sessionData.attempts = 0;
+    sessionData.lockoutUntil = null;
+  }
+
+  // Check attempt limit before authentication
+  if (sessionData.attempts >= MAX_ATTEMPTS) {
+    sessionData.lockoutUntil = Date.now() + LOCKOUT_TIME;
+    req.flash('error', 'Too many login attempts. Please try again in 15 minutes.');
+    return res.redirect('/login');
+  }
+
+  // Authenticate using passport-local-mongoose
+  passport.authenticate('local', { session: true }, async (err, user, info) => {
     if (err) {
-      console.error("Authentication error:", err);
-      return next(err);
+      console.error('Authentication error:', err);
+      req.flash('error', 'An unexpected error occurred during login.');
+      return res.redirect('/login');
     }
+
     if (!user) {
-      console.warn("Authentication failed: Invalid username or password");
-      req.flash('error', 'Invalid username or password');
-      return res.redirect('/login'); // Handle incorrect credentials
+      // Increment attempts on failure
+      sessionData.attempts += 1;
+      req.flash('error', info ? info.message : 'Invalid login credentials.');
+      return res.redirect('/login');
     }
+
+    // Check if user is verified
+    if (!user.isVerified) {
+      req.flash('error', 'Please verify your email before logging in.');
+      return res.redirect('/login');
+    }
+
+    // Successful login
     req.logIn(user, async (loginErr) => {
       if (loginErr) {
-        console.error("Error during login session:", loginErr);
-        return next(loginErr);
+        console.error('Login error:', loginErr);
+        req.flash('error', 'Failed to log you in. Please try again.');
+        return res.redirect('/login');
       }
-      // Capture the login activity
-      const agent = useragent.parse(req.headers['user-agent']);
-      const loginActivity = {
-        loginTime: new Date(),
-        ipAddress: req.ip,
-        device: agent.toString()
-      };
+
       try {
-        // Push the latest login activity and keep the last 5 entries
-        await User.findByIdAndUpdate(user._id, {
-          $push: { loginActivity: { $each: [loginActivity], $slice: -5 } }
+        // Record login activity
+        const device = req.headers['user-agent'] || 'Unknown device';
+        user.loginActivity.push({
+          loginTime: new Date(),
+          ipAddress: req.ip,
+          device: device
         });
 
-        console.log(`User ${user.username} logged in successfully at ${new Date()}`);
-        return res.redirect('/tenancy-manager/dashboard'); // Redirect to dashboard on successful login
-      } catch (error) {
-        console.error('Error logging login activity:', error);
-        req.flash('error', 'An error occurred during login. Please try again.');
-        return res.redirect('/login');
+        // Reset new user flag and attempts on successful login
+        user.isNewUser = false;
+        sessionData.attempts = 0;
+        sessionData.lockoutUntil = null;
+
+        await user.save();
+        return res.redirect('/tenancy-manager/dashboard'); // Adjusted path
+      } catch (saveErr) {
+        console.error('Error saving login activity:', saveErr);
+        req.flash('error', 'Login successful, but an error occurred. Contact support.');
+        return res.redirect('/tenancy-manager/dashboard');
       }
     });
   })(req, res, next);
 });
-
 
 // Logout route
 router.get('/logout', isAuthenticated, (req, res, next) => {

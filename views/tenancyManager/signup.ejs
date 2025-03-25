@@ -15,17 +15,26 @@
       font-family: 'Arial', sans-serif;
       margin: 0;
       padding: 0;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
       flex-direction: column;
+    }
+
+    .signup-container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 5px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
     }
 
     h1 {
       color: #003366;
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
       font-size: 24px;
     }
 
@@ -34,57 +43,59 @@
       color: #003366;
       margin-bottom: 5px;
       font-size: small;
+      display: block;
     }
 
     .form-group {
       margin-bottom: 20px;
-      width: 500px;
+      width: 100%;
       font-size: small;
     }
 
-    input[type="password"], input[type="text"], input[type="email"], input[type="tel"], select {
+    input[type="password"],
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    select {
       width: 100%;
-      padding: 5px;
+      padding: 8px;
       border: 1px solid #ccc;
       border-radius: 5px;
       box-sizing: border-box;
       font-size: small;
     }
 
-    input[type="password"]:focus, input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus, select:focus {
+    input[type="password"]:focus,
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="tel"]:focus,
+    select:focus {
       outline: none;
       border-color: #003366;
-      font-size: small;
+      box-shadow: 0 0 5px rgba(0, 51, 102, 0.3);
     }
 
     .btn-submit {
       background-color: #003366;
       color: white;
       border: none;
-      padding: 5px;
+      padding: 10px;
       width: 100%;
       border-radius: 5px;
       font-weight: bold;
       cursor: pointer;
       text-align: center;
       font-size: small;
+      transition: background-color 0.3s;
     }
 
     .btn-submit:hover {
       background-color: #005bb5;
     }
 
-    .forgot-password {
-      text-align: right;
-    }
-
-    .forgot-password a {
-      color: #003366;
-      text-decoration: none;
-    }
-
-    .forgot-password a:hover {
-      text-decoration: underline;
+    .btn-submit:disabled {
+      background-color: #6c757d;
+      cursor: not-allowed;
     }
 
     .sign-up-link {
@@ -111,8 +122,26 @@
       width: 200px;
     }
 
-    /* Responsive design */
+    .alert {
+      font-size: 0.7rem;
+      margin-bottom: 20px;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    small.error {
+      color: red;
+      display: block;
+      margin-top: 5px;
+    }
+
+    /* Responsive Design */
     @media (max-width: 768px) {
+      .signup-container {
+        padding: 20px;
+        max-width: 400px;
+      }
+
       h1 {
         font-size: 20px;
       }
@@ -120,23 +149,37 @@
       .logo img {
         width: 150px;
       }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .btn-submit {
+        padding: 8px;
+      }
     }
 
     @media (max-width: 576px) {
+      .signup-container {
+        padding: 15px;
+        max-width: 350px;
+      }
+
       h1 {
-        font-size: 23px;
+        font-size: 18px;
       }
 
       .form-group {
-        max-width: 350px;
+        margin-bottom: 12px;
       }
 
       .btn-submit {
         font-size: 0.9rem;
+        padding: 8px;
       }
 
       .logo img {
-        width: 150px;
+        width: 120px;
       }
     }
   </style>
@@ -145,105 +188,178 @@
 <body>
   <div class="signup-container">
     <div class="logo"><a href="/"><img src="/images/logo2.png" alt="Lease Captain Logo"></a></div>
-    <h5><strong>Fill in your details to create account</strong></h5>
+    <h1><strong>Fill in your details to create an account</strong></h1>
 
     <!-- Error Message -->
     <% if (error && error.length > 0) { %>
-      <div class="alert alert-danger" style="color: red; font-size: 0.7rem;">
+      <div class="alert alert-danger">
         <%= error %>
       </div>
     <% } %>
 
     <!-- Success Message -->
     <% if (success && success.length > 0) { %>
-      <div class="alert alert-success" style="color: green; font-size: 0.7rem;">
+      <div class="alert alert-success">
         <%= success %>
       </div>
     <% } %>
 
-    <form id="signupForm" action="/signup" method="POST">
+    <form id="signupForm" action="/signup" method="POST" novalidate>
       <div class="form-group">
-        <label for="email"><i class="fas fa-envelope"></i> Email</label>
-        <input type="email" name="email" id="email" placeholder="e.g example@domain.com" required>
+        <label for="username"><i class="fas fa-user"></i> Username</label>
+        <input type="text" name="username" id="username" placeholder="e.g John123" 
+               value="<%= typeof username !== 'undefined' ? username : '' %>"
+               pattern="^[a-zA-Z0-9_]{3,20}$" 
+               title="Username must be 3-20 characters and contain only letters, numbers, or underscores" 
+               required>
+        <small class="error" id="usernameError"></small>
       </div>
 
       <div class="form-group">
-        <label for="username"><i class="fas fa-user"></i> Username</label>
-        <input type="text" name="username" id="username" placeholder="e.g John" required>
+        <label for="email"><i class="fas fa-envelope"></i> Email</label>
+        <input type="email" name="email" id="email" placeholder="e.g example@domain.com" 
+               value="<%= typeof email !== 'undefined' ? email : '' %>"
+               pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$" 
+               title="Enter a valid email address" 
+               required>
+        <small class="error" id="emailError"></small>
       </div>
 
       <div class="form-group">
         <label for="phone"><i class="fas fa-phone"></i> Phone Number</label>
-        <input type="tel" name="phone" id="phone" placeholder="0768****69" required>
+        <input type="tel" name="phone" id="phone" placeholder="e.g +254768123456" 
+               value="<%= typeof phone !== 'undefined' ? phone : '' %>"
+               pattern="^\+?[1-9]\d{1,14}$" 
+               title="Enter a valid phone number (e.g., +254768123456)" 
+               required>
+        <small class="error" id="phoneError"></small>
       </div>
 
-      <!-- Password -->
       <div class="form-group">
         <label for="password"><i class="fas fa-lock"></i> Password</label>
-        <input type="password" name="password" id="password" placeholder="Create your password" required>
+        <input type="password" name="password" id="password" placeholder="Create your password" 
+               pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}" 
+               title="Password must be at least 8 characters and include an uppercase letter, lowercase letter, number, and special character" 
+               required>
+        <small class="error" id="passwordError"></small>
       </div>
 
       <div class="form-group">
         <label for="confirm-password"><i class="fas fa-lock"></i> Confirm Password</label>
         <input type="password" name="confirm-password" id="confirm-password" placeholder="Confirm password" required>
-        <small id="passwordHelp" style="color: red; display: none;">Passwords do not match.</small>
+        <small class="error" id="confirmPasswordError"></small>
       </div>
-
-      <script>
-        const password = document.getElementById('password');
-        const confirmPassword = document.getElementById('confirm-password');
-        const passwordHelp = document.getElementById('passwordHelp');
-
-        confirmPassword.addEventListener('input', () => {
-          if (password.value !== confirmPassword.value) {
-            passwordHelp.style.display = 'block';
-          } else {
-            passwordHelp.style.display = 'none';
-          }
-        });
-
-        document.querySelector('form').addEventListener('submit', (e) => {
-          if (password.value !== confirmPassword.value) {
-            e.preventDefault();
-            alert('Passwords do not match!');
-          }
-        });
-      </script>
 
       <div class="form-group">
         <label for="plan"><i class="fas fa-layer-group"></i> Select Your Plan</label>
         <select name="plan" id="plan" class="form-control" required>
-          <option value="Basic">Demo</option>
-          <option value="Standard">Standard (Up to 20 Units) - Ksh. 1,499/month</option>
-          <option value="Pro">Pro (Up to 50 Units) - Ksh. 2,999/month</option>
-          <option value="Advanced">Advanced (Up to 100 Units) - Ksh. 4,499/month</option>
-          <option value="Enterprise">Enterprise (Up to 150 Units) - Ksh. 6,999/month</option>
-          <option value="Premium">Custom (Unlimited Units) - Contact Us</option>
+          <option value="Basic" <%= typeof plan !== 'undefined' && plan === 'Basic' ? 'selected' : '' %>>Demo</option>
+          <option value="Standard" <%= typeof plan !== 'undefined' && plan === 'Standard' ? 'selected' : '' %>>Standard (Up to 20 Units) - Ksh. 1,499/month</option>
+          <option value="Pro" <%= typeof plan !== 'undefined' && plan === 'Pro' ? 'selected' : '' %>>Pro (Up to 50 Units) - Ksh. 2,999/month</option>
+          <option value="Advanced" <%= typeof plan !== 'undefined' && plan === 'Advanced' ? 'selected' : '' %>>Advanced (Up to 100 Units) - Ksh. 4,499/month</option>
+          <option value="Enterprise" <%= typeof plan !== 'undefined' && plan === 'Enterprise' ? 'selected' : '' %>>Enterprise (Up to 150 Units) - Ksh. 6,999/month</option>
+          <option value="Premium" <%= typeof plan !== 'undefined' && plan === 'Premium' ? 'selected' : '' %>>Custom (Unlimited Units) - Contact Us</option>
         </select>
-      </div>     
-      <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const selectedPlan = urlParams.get('plan');
-        if (selectedPlan) {
-          document.getElementById('plan').value = selectedPlan;
-        }
-      </script>
+      </div>
 
       <button type="submit" id="signupButton" class="btn-submit">
         <i class="fas fa-user-plus"></i> Sign Up
       </button>
     </form>
+
+    <div class="sign-up-link">
+      <p>Already have an account? <a href="/login"><i class="fas fa-sign-in-alt"></i> <strong>Login</strong></a></p>
+    </div>
   </div>
-  <p>Already have an account? <a href="/login"><i class="fas fa-sign-in-alt"></i><strong>Login</strong></a></p>
+
   <script>
-    // Show/Hide Password Functionality
-    document.getElementById('showPassword').addEventListener('change', function () {
-      const passwordField = document.getElementById('password');
-      const confirmPasswordField = document.getElementById('confirm-password');
-      const fieldType = this.checked ? 'text' : 'password';
-      passwordField.type = fieldType;
-      confirmPasswordField.type = fieldType;
+    const signupForm = document.getElementById('signupForm');
+    const signupButton = document.getElementById('signupButton');
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirm-password');
+
+    // Real-time validation
+    const validateField = (field, regex, errorElement, errorMessage) => {
+      field.addEventListener('input', () => {
+        if (!regex.test(field.value)) {
+          errorElement.textContent = errorMessage;
+        } else {
+          errorElement.textContent = '';
+        }
+      });
+    };
+
+    validateField(
+      document.getElementById('username'),
+      /^[a-zA-Z0-9_]{3,20}$/,
+      document.getElementById('usernameError'),
+      'Username must be 3-20 characters and contain only letters, numbers, or underscores'
+    );
+
+    validateField(
+      document.getElementById('email'),
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      document.getElementById('emailError'),
+      'Enter a valid email address'
+    );
+
+    validateField(
+      document.getElementById('phone'),
+      /^\+?[1-9]\d{1,14}$/,
+      document.getElementById('phoneError'),
+      'Enter a valid phone number (e.g., +254768123456)'
+    );
+
+    validateField(
+      password,
+      /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}/,
+      document.getElementById('passwordError'),
+      'Password must be 8+ characters with an uppercase, lowercase, number, and special character'
+    );
+
+    confirmPassword.addEventListener('input', () => {
+      const errorElement = document.getElementById('confirmPasswordError');
+      if (password.value !== confirmPassword.value) {
+        errorElement.textContent = 'Passwords do not match';
+      } else {
+        errorElement.textContent = '';
+      }
     });
+
+    // Form submission handling
+    signupForm.addEventListener('submit', (e) => {
+      const errors = [];
+      if (!/^[a-zA-Z0-9_]{3,20}$/.test(document.getElementById('username').value)) {
+        errors.push('Invalid username');
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(document.getElementById('email').value)) {
+        errors.push('Invalid email');
+      }
+      if (!/^\+?[1-9]\d{1,14}$/.test(document.getElementById('phone').value)) {
+        errors.push('Invalid phone number');
+      }
+      if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}/.test(password.value)) {
+        errors.push('Invalid password');
+      }
+      if (password.value !== confirmPassword.value) {
+        errors.push('Passwords do not match');
+      }
+
+      if (errors.length > 0) {
+        e.preventDefault();
+        alert(errors.join('. '));
+      } else {
+        signupButton.disabled = true;
+        signupButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+      }
+    });
+
+    // Preselect plan from URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedPlan = urlParams.get('plan');
+    if (selectedPlan) {
+      document.getElementById('plan').value = selectedPlan;
+    }
   </script>
 </body>
 

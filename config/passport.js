@@ -1,57 +1,36 @@
 const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const bcrypt = require('bcrypt');
-const User = require('../models/user'); // Adjust path to your User model
-
-// Local Strategy for username/password authentication
-passport.use('user-local', new LocalStrategy(
-  {
-    usernameField: 'username',
-    passwordField: 'password'
-  },
-  async (username, password, done) => {
-    try {
-      // Find the user by username
-      const user = await User.findOne({ username });
-      if (!user) {
-        return done(null, false, { message: 'Incorrect username.' });
-      }
-
-      // Check the password
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        return done(null, false, { message: 'Incorrect password.' });
-      }
-
-      // Successful authentication
-      return done(null, user);
-    } catch (error) {
-      return done(error);
-    }
-  }
-));
+const User = require('../models/user');
 
 // Google OAuth Strategy
 passport.use(new GoogleStrategy({
     clientID: '293701662889-4sb5fc2ld4ljdpvpgu7f2ep9v6kalakg.apps.googleusercontent.com',
-    clientSecret: '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',  
-    callbackURL: "https://leasecaptain.com/tenancy-manager/dashboard" 
+    clientSecret: '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',
+    callbackURL: 'https://leasecaptain.com/auth/google/callback'
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
       let user = await User.findOne({ googleId: profile.id });
       if (!user) {
-        user = new User({
-          googleId: profile.id,
-          username: profile.displayName,
-          email: profile.emails[0].value, 
-        });
-        await user.save();
+        user = await User.findOne({ email: profile.emails[0].value });
+        if (!user) {
+          user = new User({
+            googleId: profile.id,
+            username: profile.displayName.replace(/\s+/g, '').toLowerCase(),
+            email: profile.emails[0].value,
+            plan: 'Basic', // Default plan for Google users
+            phone: '',     // Required field, set a default or handle in UI
+            password: undefined // No password for OAuth users
+          });
+          await user.save();
+        } else {
+          user.googleId = profile.id;
+          await user.save();
+        }
       }
-      done(null, user);
+      return done(null, user);
     } catch (error) {
-      done(error, null);
+      return done(error);
     }
   }
 ));

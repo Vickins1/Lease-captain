@@ -15,83 +15,6 @@
     <link rel="stylesheet" href="/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="/dist/css/adminlte.min2167.css?v=3.2.0">
-    <style>
-        .tour-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 1000;
-            display: none;
-        }
-
-        .tour-step {
-            position: absolute;
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            max-width: 350px;
-            font-family: Arial, sans-serif;
-            animation: fadeIn 0.5s ease-in-out;
-            z-index: 1060;
-        }
-
-        .tour-step h3 {
-            color: #003366;
-            margin-top: 0;
-        }
-
-        .tour-step button {
-            background-color: #003366;
-            color: #ffffff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .tour-step button:hover {
-            background-color: #0055a5;
-        }
-
-        .highlight {
-            position: relative;
-            z-index: 1001;
-            border: 2px solid #003366;
-            border-radius: 5px;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(0, 51, 102, 0.7);
-            }
-
-            70% {
-                box-shadow: 0 0 0 10px rgba(0, 51, 102, 0);
-            }
-
-            100% {
-                box-shadow: 0 0 0 0 rgba(0, 51, 102, 0);
-            }
-        }
-    </style>
     <link rel="icon" type="image/png" sizes="56x56" href="/assets/images/1.png">
 </head>
 
@@ -187,253 +110,575 @@
                     </div>
                 </div>
 
-                <!-- Sidebar Menu -->
-                <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
-                        data-accordion="false">
-                        <!-- Dashboard -->
-                        <li class="nav-item">
-                            <a href="/tenancy-manager/dashboard" class="nav-link active"
-                                style="background-color: #003366; color: #ffffff;">
-                                <i class="nav-icon fas fa-tachometer-alt"></i>
-                                <p>Dashboard</p>
-                            </a>
-                        </li>
+<!-- Sidebar Menu -->
+<nav class="mt-2">
+    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        <!-- Dashboard -->
+        <li class="nav-item">
+            <a href="/tenancy-manager/dashboard" class="nav-link active" style="background-color: #003366; color: #ffffff;">
+                <i class="nav-icon fas fa-tachometer-alt"></i>
+                <p>Dashboard</p>
+            </a>
+        </li>
 
-                        <!-- Property Management -->
-                        <li class="nav-header"><strong>PROPERTY MANAGEMENT</strong></li>
-                        <li class="nav-item">
-                            <a href="/tenancy-manager/properties" class="nav-link">
-                                <i class="nav-icon fas fa-building"></i>
-                                <p>Properties</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/tenancy-manager/property/units" class="nav-link">
-                                <i class="nav-icon fas fa-cogs"></i>
-                                <p>Property Units</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/tenancy-manager/propertyListing" class="nav-link">
-                                <i class="nav-icon fas fa-list-alt"></i>
-                                <p>List Properties</p>
-                            </a>
-                        </li>
+        <!-- Property Management -->
+        <li class="nav-header"><strong>PROPERTY MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/properties" class="nav-link">
+                <i class="nav-icon fas fa-building"></i>
+                <p>Properties</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/property/units" class="nav-link">
+                <i class="nav-icon fas fa-cogs"></i>
+                <p>Property Units</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/propertyListing" class="nav-link">
+                <i class="nav-icon fas fa-list-alt"></i>
+                <p>List Properties</p>
+            </a>
+        </li>
 
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-chart-line"></i>
-                                <p>
-                                    Tenant Management
-                                    <i class="right fas fa-angle-left"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="/tenancy-manager/tenants" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Tenants</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="/maintenance-requests" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Maintenance Requests</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="/tenancy-manager/tenant-reports" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Tenant Reports</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="/tenancy-manager/rental-analytics" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Rental Analytics</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="/tenancy-manager/vacancy-status" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Vacancy Status</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-chart-line"></i>
+                <p>
+                    Tenant Management
+                    <i class="right fas fa-angle-left"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="/tenancy-manager/tenants" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Tenants</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/maintenance-requests" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Maintenance Requests</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/tenancy-manager/tenant-reports" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Tenant Reports</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/tenancy-manager/rental-analytics" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Rental Analytics</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/tenancy-manager/vacancy-status" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Vacancy Status</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
 
-                        <!-- Land Management -->
-                        <li class="nav-header"><strong>LAND MANAGEMENT</strong></li>
-                        <li class="nav-item">
-                            <a href="/tenancy-manager/lands" class="nav-link">
-                                <i class="nav-icon fas fa-map"></i>
-                                <p>Registered Lands</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/tenancy-manager/land-parcels" class="nav-link">
-                                <i class="nav-icon fas fa-th-large"></i>
-                                <p>Land Parcels</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/tenancy-manager/land-reports" class="nav-link">
-                                <i class="nav-icon fas fa-chart-area"></i>
-                                <p>Land Reports</p>
-                            </a>
-                        </li>
+        <!-- Land Management -->
+        <li class="nav-header"><strong>LAND MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/lands" class="nav-link">
+                <i class="nav-icon fas fa-map"></i>
+                <p>Registered Lands</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/land-parcels" class="nav-link">
+                <i class="nav-icon fas fa-th-large"></i>
+                <p>Land Parcels</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/land-reports" class="nav-link">
+                <i class="nav-icon fas fa-chart-area"></i>
+                <p>Land Reports</p>
+            </a>
+        </li>
 
-                        <!-- Lease Management -->
-                        <li class="nav-header"><strong>LEASE MANAGEMENT</strong></li>
-                        <li class="nav-item">
-                            <a href="/tenancy-manager/leases" class="nav-link">
-                                <i class="nav-icon fas fa-file-contract"></i>
-                                <p>Leases</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/tenancy-manager/lease-templates" class="nav-link">
-                                <i class="nav-icon fas fa-file-alt"></i>
-                                <p>Lease Templates</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/tenancy-manager/lease-reports" class="nav-link">
-                                <i class="nav-icon fas fa-chart-bar"></i>
-                                <p>Lease Reports</p>
-                            </a>
-                        </li>
+        <!-- Lease Management -->
+        <li class="nav-header"><strong>LEASE MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/leases" class="nav-link">
+                <i class="nav-icon fas fa-file-contract"></i>
+                <p>Leases</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/lease-templates" class="nav-link">
+                <i class="nav-icon fas fa-file-alt"></i>
+                <p>Lease Templates</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/lease-reports" class="nav-link">
+                <i class="nav-icon fas fa-chart-bar"></i>
+                <p>Lease Reports</p>
+            </a>
+        </li>
 
-                        <!-- Vehicle Management -->
-                        <li class="nav-header"><strong>VEHICLE MANAGEMENT</strong></li>
-                        <li class="nav-item">
-                            <a href="/tenancy-manager/vehicles" class="nav-link">
-                                <i class="nav-icon fas fa-car"></i>
-                                <p>Registered Vehicles</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/tenancy-manager/vehicle-parking" class="nav-link">
-                                <i class="nav-icon fas fa-parking"></i>
-                                <p>Parking Spaces</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/tenancy-manager/vehicle-reports" class="nav-link">
-                                <i class="nav-icon fas fa-clipboard-list"></i>
-                                <p>Vehicle Reports</p>
-                            </a>
-                        </li>
+        <!-- Vehicle Management -->
+        <li class="nav-header"><strong>VEHICLE MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/vehicles" class="nav-link">
+                <i class="nav-icon fas fa-car"></i>
+                <p>Registered Vehicles</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/vehicle-parking" class="nav-link">
+                <i class="nav-icon fas fa-parking"></i>
+                <p>Parking Spaces</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/vehicle-reports" class="nav-link">
+                <i class="nav-icon fas fa-clipboard-list"></i>
+                <p>Vehicle Reports</p>
+            </a>
+        </li>
 
-                        <!-- Finance -->
-                        <li class="nav-header"><strong>FINANCE MANAGEMENT</strong></li>
-                        <li class="nav-item">
-                            <a href="/tenancy-manager/payments" class="nav-link">
-                                <i class="nav-icon fas fa-money-bill-wave"></i>
-                                <p>Payment Transactions</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/reports-invoices" class="nav-link">
-                                <i class="nav-icon fas fa-file-invoice"></i>
-                                <p>Reports & Invoices</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/expenses" class="nav-link">
-                                <i class="nav-icon fas fa-wallet"></i>
-                                <p>Expense Tracking</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/budget-planning" class="nav-link">
-                                <i class="nav-icon fas fa-chart-pie"></i>
-                                <p>Budget Planning</p>
-                            </a>
-                        </li>
+        <!-- Finance -->
+        <li class="nav-header"><strong>FINANCE MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/payments" class="nav-link">
+                <i class="nav-icon fas fa-money-bill-wave"></i>
+                <p>Payment Transactions</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/reports-invoices" class="nav-link">
+                <i class="nav-icon fas fa-file-invoice"></i>
+                <p>Reports & Invoices</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/expenses" class="nav-link">
+                <i class="nav-icon fas fa-wallet"></i>
+                <p>Expense Tracking</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/budget-planning" class="nav-link">
+                <i class="nav-icon fas fa-chart-pie"></i>
+                <p>Budget Planning</p>
+            </a>
+        </li>
 
-                        <!-- Notifications -->
-                        <li class="nav-header"><strong>NOTIFICATION MANAGEMENT</strong></li>
-                        <li class="nav-item">
-                            <a href="/sms&email" class="nav-link">
-                                <i class="nav-icon fas fa-sms"></i>
-                                <p>SMS & Email</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/sms&email" class="nav-link">
-                                <i class="nav-icon fas fa-credit-card"></i>
-                                <p>Credit Top-up</p>
-                            </a>
-                        </li>
+        <!-- Notifications -->
+        <li class="nav-header"><strong>NOTIFICATION MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/sms&email" class="nav-link">
+                <i class="nav-icon fas fa-sms"></i>
+                <p>SMS & Email</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/sms&email" class="nav-link">
+                <i class="nav-icon fas fa-credit-card"></i>
+                <p>Credit Top-up</p>
+            </a>
+        </li>
 
-                        <!-- Staff Management -->
-                        <li class="nav-header"><strong>STAFF MANAGEMENT</strong></li>
-                        <li class="nav-item">
-                            <a href="/staff-directory" class="nav-link">
-                                <i class="nav-icon fas fa-user-tie"></i>
-                                <p>Staff Directory</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/staff-attendance" class="nav-link">
-                                <i class="nav-icon fas fa-calendar-check"></i>
-                                <p>Attendance</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/staff-payroll" class="nav-link">
-                                <i class="nav-icon fas fa-file-invoice-dollar"></i>
-                                <p>Payroll</p>
-                            </a>
-                        </li>
+        <!-- Staff Management -->
+        <li class="nav-header"><strong>STAFF MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/staff-directory" class="nav-link">
+                <i class="nav-icon fas fa-user-tie"></i>
+                <p>Staff Directory</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/staff-attendance" class="nav-link">
+                <i class="nav-icon fas fa-calendar-check"></i>
+                <p>Attendance</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/staff-payroll" class="nav-link">
+                <i class="nav-icon fas fa-file-invoice-dollar"></i>
+                <p>Payroll</p>
+            </a>
+        </li>
 
-                        <!-- Account Management -->
-                        <li class="nav-header"><strong>ACCOUNT MANAGEMENT</strong></li>
-                        <li class="nav-item">
-                            <a href="/tenancy-manager/profile" class="nav-link">
-                                <i class="nav-icon fas fa-user"></i>
-                                <p>Profile Settings</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/tenancy-manager/security" class="nav-link">
-                                <i class="nav-icon fas fa-lock"></i>
-                                <p>Security Settings</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/connect" class="nav-link">
-                                <i class="nav-icon fas fa-link"></i>
-                                <p>Payment Gateway</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/users" class="nav-link">
-                                <i class="nav-icon fas fa-users"></i>
-                                <p>User Accounts</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/upgrade-subscription" class="nav-link">
-                                <i class="nav-icon fas fa-arrow-circle-up"></i>
-                                <p>Upgrade Subscription</p>
-                            </a>
-                        </li>
-                        <!-- Support -->
-                        <li class="nav-item mt-auto">
-                            <a href="/contacts" class="nav-link d-flex align-items-center justify-content-center"
-                                style="background-color: #003366; color: #ffffff; border-radius: 5px; margin: 10px;">
-                                <i class="fas fa-headset mr-2"></i>
-                                <p>Support</p>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
+        <!-- Account Management -->
+        <li class="nav-header"><strong>ACCOUNT MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/profile" class="nav-link">
+                <i class="nav-icon fas fa-user"></i>
+                <p>Profile Settings</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/security" class="nav-link">
+                <i class="nav-icon fas fa-lock"></i>
+                <p>Security Settings</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/connect" class="nav-link">
+                <i class="nav-icon fas fa-link"></i>
+                <p>Payment Gateway</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/users" class="nav-link">
+                <i class="nav-icon fas fa-users"></i>
+                <p>User Accounts</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/upgrade-subscription" class="nav-link">
+                <i class="nav-icon fas fa-arrow-circle-up"></i>
+                <p>Upgrade Subscription</p>
+            </a>
+        </li>
+        <!-- Support -->
+        <li class="nav-item mt-auto">
+            <a href="/contacts" class="nav-link d-flex align-items-center justify-content-center"
+                style="background-color: #003366; color: #ffffff; border-radius: 5px; margin: 10px;">
+                <i class="fas fa-headset mr-2"></i>
+                <p>Support</p>
+            </a>
+        </li>
+    </ul>
+</nav>
 
+<script>
+class TourManager {
+    constructor() {
+        this.overlay = this.createOverlay();
+        this.currentStep = 0;
+        this.isTourActive = false;
+        this.sidebar = document.querySelector('.main-sidebar');
+        this.navContainer = document.querySelector('.nav-sidebar');
 
+        this.steps = [
+            {
+                target: '.nav-link[href="/tenancy-manager/properties"]',
+                title: 'Step 1: Add Your First Property',
+                content: 'Adding a property is the foundation of your rental management. It lets you organize all your units, tenants, and payments in one place.'
+            },
+            {
+                target: '.nav-link[href="/tenancy-manager/property/units"]',
+                title: 'Step 2: Add Property Units',
+                content: 'Units help you break down your property into manageable parts. This makes it easier to assign tenants and track rent for each space.'
+            },
+            {
+                target: '.nav-link[href="/tenancy-manager/tenants"]',
+                title: 'Step 3: Add Tenants',
+                content: 'Tenants are the heart of your business. Adding them here lets you monitor leases, payments, and maintenance requests efficiently.'
+            },
+            {
+                target: '.nav-link[href="/connect"]',
+                title: 'Step 4: Connect Payment Gateway',
+                content: 'Connecting a payment gateway streamlines rent collection. It saves time, reduces errors, and ensures you get paid securely.'
+            },
+            {
+                target: '.nav-link[href="/tenancy-manager/propertyListing"]',
+                title: 'Step 5: List Your Properties',
+                content: 'Listing your properties attracts new tenants. It’s your chance to showcase your rentals and fill vacancies faster.'
+            }
+        ];
+    }
 
+    createOverlay() {
+        const overlay = document.createElement('div');
+        overlay.className = 'tour-overlay';
+        document.body.appendChild(overlay);
+        return overlay;
+    }
+
+    async showStep(stepIndex) {
+        if (!this.isTourActive || stepIndex >= this.steps.length) {
+            await this.endTour();
+            return;
+        }
+
+        const step = this.steps[stepIndex];
+        const targetElement = document.querySelector(step.target);
+
+        if (!targetElement) {
+            console.warn(`Target element not found: ${step.target}`);
+            this.nextStep();
+            return;
+        }
+
+        // Expand parent treeview if target is in a submenu
+        const parentTreeview = targetElement.closest('.nav-treeview');
+        if (parentTreeview) {
+            const parentLink = parentTreeview.previousElementSibling;
+            if (parentLink && !parentLink.parentElement.classList.contains('menu-open')) {
+                parentLink.click(); // Trigger AdminLTE treeview expand
+            }
+        }
+
+        // Scroll the sidebar to the target
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        document.querySelectorAll('.tour-step').forEach(el => el.remove());
+        document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
+
+        targetElement.classList.add('highlight');
+
+        const stepDiv = document.createElement('div');
+        stepDiv.className = 'tour-step';
+        // Position at the right edge of the sidebar
+        const sidebarRect = this.sidebar.getBoundingClientRect();
+        stepDiv.style.position = 'fixed';
+        stepDiv.style.top = '20px'; // Fixed at top of viewport
+        stepDiv.style.left = `${sidebarRect.right + 10}px`; // Right edge of sidebar + 10px offset
+        stepDiv.style.width = '300px'; // Fixed width for consistency
+        stepDiv.style.zIndex = '2010';
+
+        stepDiv.innerHTML = `
+            <div class="tour-progress">Step ${stepIndex + 1} of ${this.steps.length}</div>
+            <h3>${step.title}</h3>
+            <p>${step.content}</p>
+            <div class="tour-buttons">
+                <button class="skip-btn">Skip Tour</button>
+                <button id="next-btn">
+                    ${stepIndex === this.steps.length - 1 ? 'Finish' : 'Next'}
+                </button>
+            </div>
+        `;
+
+        document.body.appendChild(stepDiv); // Append to body for fixed positioning
+        this.overlay.style.display = 'block';
+        this.overlay.style.zIndex = '1000';
+
+        const nextBtn = stepDiv.querySelector('#next-btn');
+        const skipBtn = stepDiv.querySelector('.skip-btn');
+        nextBtn.addEventListener('click', () => this.nextStep(), { once: true });
+        skipBtn.addEventListener('click', () => this.endTour(), { once: true });
+    }
+
+    nextStep() {
+        this.currentStep++;
+        this.showStep(this.currentStep);
+    }
+
+    async endTour() {
+        this.isTourActive = false;
+        this.overlay.style.display = 'none';
+        document.querySelectorAll('.tour-step').forEach(el => el.remove());
+        document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
+
+        try {
+            const response = await fetch('/api/user/complete-tour', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            this.showCompletionMessage(true);
+        } catch (error) {
+            console.error('Tour completion error:', error);
+            this.showCompletionMessage(false);
+        }
+    }
+
+    showCompletionMessage(success) {
+        const message = success
+            ? 'Welcome aboard! You’re ready to manage your properties like a pro!'
+            : 'Tour ended, but we couldn’t save your progress. Contact support if needed.';
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'tour-alert';
+        alertDiv.textContent = message;
+        document.body.appendChild(alertDiv);
+        setTimeout(() => alertDiv.remove(), 5000);
+    }
+
+    async start() {
+        if (this.isTourActive) return;
+        this.isTourActive = true;
+
+        if (this.sidebar.classList.contains('sidebar-collapse')) {
+            document.querySelector('[data-widget="pushmenu"]').click();
+        }
+
+        this.showStep(this.currentStep);
+
+        window.addEventListener('resize', () => {
+            if (this.isTourActive) {
+                const stepDiv = document.querySelector('.tour-step');
+                if (stepDiv) {
+                    const sidebarRect = this.sidebar.getBoundingClientRect();
+                    stepDiv.style.left = `${sidebarRect.right + 10}px`; // Adjust on resize
+                }
+            }
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const isNewUser = document.body.dataset.isNewUser === 'true';
+    if (isNewUser) {
+        const tour = new TourManager();
+        tour.start();
+    }
+});
+</script>
+
+<style>
+.tour-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: none;
+    transition: opacity 0.3s ease;
+}
+
+.tour-step {
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    font-family: 'Source Sans Pro', sans-serif;
+    animation: fadeIn 0.5s ease-in-out;
+    border: 1px solid #003366;
+}
+
+.tour-progress {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.tour-step h3 {
+    color: #003366;
+    margin: 0 0 10px 0;
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+.tour-step p {
+    margin: 0 0 12px 0;
+    color: #333;
+    line-height: 1.4;
+    font-size: 0.95em;
+}
+
+.tour-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 12px;
+}
+
+.tour-step button {
+    padding: 6px 16px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+}
+
+.tour-step #next-btn {
+    background-color: #003366;
+    color: #fff;
+}
+
+.tour-step #next-btn:hover {
+    background-color: #0055a5;
+    transform: translateY(-2px);
+}
+
+.tour-step .skip-btn {
+    background-color: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.tour-step .skip-btn:hover {
+    background-color: #e0e0e0;
+    transform: translateY(-2px);
+}
+
+.highlight {
+    position: relative;
+    z-index: 2005;
+    border: 3px solid #003366;
+    border-radius: 5px;
+    background: rgba(0, 51, 102, 0.1);
+    animation: pulse 1.5s infinite;
+    box-shadow: 0 0 10px rgba(0, 51, 102, 0.5);
+}
+
+.tour-alert {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #003366;
+    color: #fff;
+    padding: 15px 25px;
+    border-radius: 5px;
+    z-index: 2020;
+    animation: slideIn 0.5s ease-in-out;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(0, 51, 102, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(0, 51, 102, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 51, 102, 0); }
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(100%); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@media (max-width: 991px) {
+    .tour-step {
+        padding: 10px;
+        font-size: 0.9em;
+        width: 250px;
+    }
+    .tour-step h3 {
+        font-size: 1.1em;
+    }
+    .tour-step button {
+        padding: 5px 12px;
+        font-size: 0.85em;
+    }
+}
+
+@media (max-width: 576px) {
+    .tour-step {
+        top: 10px !important;
+        left: 10px !important; /* Fallback to left edge on small screens */
+        width: calc(100% - 20px) !important;
+        padding: 8px;
+    }
+    .tour-buttons {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .tour-step button {
+        width: 100%;
+    }
+}
+</style>
             </div>
 
             <!-- /.sidebar -->
@@ -981,168 +1226,8 @@
         </footer>
     </div>
     <!-- ./wrapper -->
-    <!-- Tour script -->
-    <script>
-        async function startNewUserTour() {
-            const overlay = document.createElement('div');
-            overlay.className = 'tour-overlay';
-            document.body.appendChild(overlay);
 
-            // Define all steps with their prerequisites and dynamic checks
-            const steps = [
-                {
-                    target: '.nav-link[href="/tenancy-manager/properties"]',
-                    title: 'Step 1: Add Your First Property',
-                    content: 'Welcome aboard! Let’s get started by adding your first property. Please add a property to continue.',
-                    position: { top: '50px', left: '250px' },
-                    check: async () => {
-                        const response = await fetch('/api/user/progress', { credentials: 'include' });
-                        const progress = await response.json();
-                        return progress.hasProperties;
-                    }
-                },
-                {
-                    target: '.nav-link[href="/tenancy-manager/property/units"]',
-                    title: 'Step 2: Add Property Units',
-                    content: 'Next, add units to your property. Please add at least one unit to proceed.',
-                    position: { top: '100px', left: '250px' },
-                    check: async () => {
-                        const response = await fetch('/api/user/progress', { credentials: 'include' });
-                        const progress = await response.json();
-                        return progress.hasPropertyUnits;
-                    }
-                },
-                {
-                    target: '.nav-link[href="/tenancy-manager/tenants"]',
-                    title: 'Step 3: Add Tenants',
-                    content: 'Time to bring in your tenants! Please add a tenant to continue.',
-                    position: { top: '200px', left: '250px' },
-                    check: async () => {
-                        const response = await fetch('/api/user/progress', { credentials: 'include' });
-                        const progress = await response.json();
-                        return progress.hasTenants;
-                    }
-                },
-                {
-                    target: '.nav-link[href="/connect"]',
-                    title: 'Step 4: Connect Your UmsPay Account',
-                    content: 'Let’s set up payments! Connect your UmsPay account to proceed.',
-                    position: { top: '500px', left: '250px' },
-                    check: async () => {
-                        const response = await fetch('/api/user/progress', { credentials: 'include' });
-                        const progress = await response.json();
-                        return progress.hasPaymentConnected;
-                    }
-                },
-                {
-                    target: '.nav-link[href="/tenancy-manager/propertyListing"]',
-                    title: 'Step 5: List Your Properties',
-                    content: 'Finally, showcase your properties! Complete this step to finish the tour.',
-                    position: { top: '150px', left: '250px' },
-                    check: () => Promise.resolve(true)
-                }
-            ];
 
-            // Find the first incomplete step to start from
-            let currentStep = 0;
-
-            async function findFirstIncompleteStep() {
-                for (let i = 0; i < steps.length; i++) {
-                    const isComplete = await steps[i].check();
-                    if (!isComplete) {
-                        currentStep = i;
-                        return;
-                    }
-                }
-                currentStep = steps.length - 1; // All steps complete, go to the last one
-            }
-
-            async function showStep(stepIndex) {
-                if (stepIndex >= steps.length) {
-                    await endTour();
-                    return;
-                }
-                const step = steps[stepIndex];
-                const targetElement = document.querySelector(step.target);
-                if (!targetElement) {
-                    console.warn(`Target element for step ${stepIndex + 1} not found: ${step.target}`);
-                    await nextStep();
-                    return;
-                }
-
-                document.querySelectorAll('.tour-step').forEach(el => el.remove());
-                document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
-                targetElement.classList.add('highlight');
-
-                const stepDiv = document.createElement('div');
-                stepDiv.className = 'tour-step';
-                stepDiv.style.top = step.position.top;
-                stepDiv.style.left = step.position.left;
-
-                const isStepComplete = await step.check();
-                stepDiv.innerHTML = `
-                <h3>${step.title}</h3>
-                <p>${step.content}</p>
-                <button id="next-btn" ${!isStepComplete ? 'disabled' : ''}>
-                    ${stepIndex === steps.length - 1 ? 'Finish' : 'Next'}
-                </button>
-                <p>${!isStepComplete ? 'Please complete this step before proceeding.' : ''}</p>
-            `;
-                document.body.appendChild(stepDiv);
-                overlay.style.display = 'block';
-
-                // Add event listener to the Next/Finish button
-                document.getElementById('next-btn').addEventListener('click', nextStep);
-
-                // Periodically check if the step becomes complete
-                if (!isStepComplete) {
-                    const interval = setInterval(async () => {
-                        if (await step.check()) {
-                            document.getElementById('next-btn').disabled = false;
-                            stepDiv.querySelector('p:last-child').textContent = '';
-                            clearInterval(interval);
-                        }
-                    }, 2000); // Check every 2 seconds
-                }
-            }
-
-            async function endTour() {
-                overlay.remove();
-                document.querySelectorAll('.tour-step').forEach(el => el.remove());
-                document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
-
-                try {
-                    const response = await fetch('/api/user/complete-tour', {
-                        method: 'POST',
-                        credentials: 'include',
-                        headers: { 'Content-Type': 'application/json' }
-                    });
-                    if (!response.ok) throw new Error('Failed to complete tour');
-                    alert('Congrats! You’re all set to manage your properties like a pro!');
-                } catch (error) {
-                    console.error('Error completing tour:', error);
-                    alert('Tour completed, but there was an issue saving your progress. Please try again.');
-                }
-            }
-
-            async function nextStep() {
-                if (await steps[currentStep].check()) {
-                    currentStep++;
-                    await showStep(currentStep);
-                }
-            }
-
-            // Start the tour at the first incomplete step
-            await findFirstIncompleteStep();
-            await showStep(currentStep);
-            window.nextStep = nextStep;
-        }
-
-        // Start the tour if the user is new
-        if (window.isNewUser) {
-            startNewUserTour();
-        }
-    </script>
 
     <!-- REQUIRED SCRIPTS -->
     <!-- Bootstrap JS (including Popper.js) -->

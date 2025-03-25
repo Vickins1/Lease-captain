@@ -265,58 +265,6 @@ app.use((err, req, res, next) => {
     res.status(500).render('500');
 });
 
-app.post('/callback', async (req, res) => {
-    const stkCallbackResponse = req.body;
-    const logFile = 'UmsPayMpesastkresponse.json';
-
-    // Log the callback response to a file
-    fs.appendFile(logFile, JSON.stringify(stkCallbackResponse, null, 2), (err) => {
-        if (err) {
-            console.error('Error writing to log file:', err.message);
-            return res.status(500).json({ status: 'error', message: 'Could not write to log file' });
-        }
-        console.log('Callback data received and logged:', stkCallbackResponse);
-    });
-
-    // Extract the transactionId and ResultCode 
-    const { transactionId, ResultCode, status } = stkCallbackResponse;
-
-    try {
-        // Update the payment based on the transaction ID and callback response
-        if (transactionId && (ResultCode !== undefined || status)) {
-            let updatedStatus;
-
-            // Map ResultCode or status to payment status
-            if (ResultCode === '0' || status === 'Success') {
-                updatedStatus = 'completed';
-            } else if (ResultCode !== '0' || status === 'Failed') {
-                updatedStatus = 'failed';
-            } else {
-                updatedStatus = 'pending';
-            }
-
-            // Find and update the payment record
-            const payment = await Payment.findOneAndUpdate(
-                { transactionId },
-                { status: updatedStatus },
-                { new: true }
-            );
-
-            if (payment) {
-                console.log(`Payment status updated for transaction ID ${transactionId}:`, updatedStatus);
-                res.status(200).json({ status: 'success', message: 'Payment status updated' });
-            } else {
-                console.log(`Payment not found for transaction ID: ${transactionId}`);
-                res.status(404).json({ status: 'error', message: 'Payment not found' });
-            }
-        } else {
-            res.status(400).json({ status: 'error', message: 'Invalid callback data' });
-        }
-    } catch (error) {
-        console.error('Error processing callback data:', error.message);
-        res.status(500).json({ status: 'error', message: 'Error processing callback data' });
-    }
-});
 
 // Utility function to check reminder days
 const isReminderDay = (paymentDay, daysBefore) => {

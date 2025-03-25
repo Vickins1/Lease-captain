@@ -71,13 +71,18 @@ const userSchema = new mongoose.Schema({
   verificationExpires: {
     type: Date,
   },
+  resetPasswordCode: {
+    type: String,
+  },
+  resetPasswordExpires: {
+    type: Date,
+  },
   loginActivity: [loginActivitySchema],
   isNewUser: {  
     type: Boolean,
     default: true
   }
 }, { timestamps: true });
-
 
 userSchema.methods.getPaymentStatus = async function() {
   return {
