@@ -7,6 +7,7 @@ const methodOverride = require('method-override');
 const User = require('./models/user');
 const Payment = require('./models/payment');
 const Tenant = require('./models/tenant');
+const PropertyList = require('./models/propertyList');
 const tenancyManagerRoutes = require('./routes/tenancyManager');
 const propertyRoutes = require('./routes/properties');
 const tenantRoutes = require('./routes/tenant');
@@ -23,8 +24,8 @@ require('dotenv').config();
 const app = express();
 const http = require('http');
 const server = http.createServer(app);
+const path = require('path');
 app.set('trust proxy', 1);
-
 const uri = "mongodb+srv://Admin:Kefini360@lease-captain.ryokh.mongodb.net/LC-db?retryWrites=true&w=majority&appName=Lease-Captain";
 
 async function connectToDatabase() {
@@ -41,12 +42,15 @@ connectToDatabase();
 
 // View engine setup
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
+// Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(methodOverride('_method'));
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
+// Session setup
 app.use(session({
     secret: process.env.SESSION_SECRET || 'Lease',
     resave: false,
@@ -90,9 +94,71 @@ app.use('/', tenantPortalRoutes);
 app.use('/', paymentGatewayRoutes);
 app.use('/', sendRemindersRoutes);
 
-// Landing page
-app.get('/', (req, res) => {
-    res.render('landingPage');
+
+// GET: Landing Page with Search
+app.get('/', async (req, res) => {
+  try {
+      const { propertyType, category, city, min_price, max_price, bedrooms, bathrooms } = req.query;
+      let query = { status: 'available' };
+
+      // Apply filters only if provided and valid
+      if (propertyType && propertyType !== '') query.propertyType = propertyType;
+      if (category && category !== '') query.category = category;
+      if (city && city !== '') query.location = new RegExp(city, 'i'); // Case-insensitive search
+      if (min_price && !isNaN(parseFloat(min_price))) {
+          query.price = { ...query.price, $gte: parseFloat(min_price) };
+      }
+      if (max_price && !isNaN(parseFloat(max_price))) {
+          query.price = { ...query.price, $lte: parseFloat(max_price) };
+      }
+      if (bedrooms && !isNaN(parseInt(bedrooms))) {
+          query.bedrooms = parseInt(bedrooms);
+      }
+      if (bathrooms && !isNaN(parseInt(bathrooms))) {
+          query.bathrooms = parseInt(bathrooms);
+      }
+
+      const properties = await PropertyList.find(query).lean();
+      res.render('landingPage', { 
+          properties, 
+          query: req.query 
+      });
+  } catch (err) {
+      console.error('Error fetching properties:', err);
+      res.render('landingPage', { 
+          properties: [], 
+          query: req.query 
+      });
+  }
+});
+
+app.get('/properties', async (req, res) => {
+  try {
+      const properties = await PropertyList.find({ status: 'available' })
+          .sort({ _id: -1 })
+          .populate('owner', 'phone email');
+
+      res.render('properties', { properties });
+  } catch (err) {
+      console.error('Error fetching properties:', err);
+      res.status(500).send('Server Error');
+  }
+});
+
+
+// Property Detail Route
+app.get('/property/:id', async (req, res) => {
+  try {
+      const property = await PropertyList.findById(req.params.id)
+          .populate('owner', 'phone email'); // Populate owner details (optional)
+      if (!property) {
+          return res.status(404).send('Property not found');
+      }
+      res.render('property-details', { property }); // Assuming a detail page exists
+  } catch (err) {
+      console.error('Error fetching property:', err);
+      res.status(500).send('Server Error');
+  }
 });
 
 // Landing page
@@ -228,6 +294,9 @@ app.use((req, res) => {
   res.status(404).render('404', { currentUser: req.user || null });
 });
 
+app.use((req, res) => {
+  res.status(500).render('500', { currentUser: req.user || null });
+});
 
 // Tenancy Manager specific middleware
 app.use('/tenancy-manager', (req, res, next) => {
@@ -240,12 +309,6 @@ app.use((req, res, next) => {
       return res.status(404).render('tenancyManager/404', { title: 'Page Not Found', currentUser: req.user || null });
   }
   next(); 
-});
-
-// 500 Error handling
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).render('500');
 });
 
 

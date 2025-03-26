@@ -1,0 +1,334 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GFB5LRVMW6"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-GFB5LRVMW6');
+    </script>
+
+    <!-- Meta Tags -->
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="View detailed information about this property on Lease Captain, your trusted property management platform.">
+    <meta name="author" content="Lease Captain Team">
+    <meta name="robots" content="index, follow">
+    <title>Lease Captain - Property Details</title>
+    
+    <!-- Open Graph and Twitter Tags -->
+    <meta property="og:title" content="Lease Captain - Property Details">
+    <meta property="og:description" content="Explore this stunning property on Lease Captain.">
+    <meta property="og:image" content="<%= property.images && property.images.length > 0 ? property.images[0] : 'https://leasecaptain.com/images/banner1.jpeg' %>">
+    <meta property="og:url" content="https://leasecaptain.com/property/<%= property._id %>">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Lease Captain - Property Details">
+    <meta name="twitter:description" content="Explore this stunning property on Lease Captain.">
+    <meta name="twitter:image" content="<%= property.images && property.images.length > 0 ? property.images[0] : 'https://leasecaptain.com/images/banner1.jpeg' %>">
+
+    <link rel="canonical" href="https://leasecaptain.com/property/<%= property._id %>">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" sizes="56x56" href="/assets/images/1.png">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css" type="text/css" media="all">
+    <link rel="stylesheet" href="/assets/css/owl.carousel.min.css" type="text/css" media="all">
+    <link rel="stylesheet" href="/assets/css/animate.css" type="text/css" media="all">
+    <link rel="stylesheet" href="/assets/css/all.min.css" type="text/css" media="all">
+    <link rel="stylesheet" href="/assets/css/flaticon.css" type="text/css" media="all">
+    <link rel="stylesheet" href="/assets/css/theme-default.css" type="text/css" media="all">
+    <link rel="stylesheet" href="/assets/css/meanmenu.min.css" type="text/css" media="all">
+    <link rel="stylesheet" href="/assets/css/owl.transitions.css" type="text/css" media="all">
+    <link rel="stylesheet" href="/venobox/venobox.css" type="text/css" media="all">
+    <link rel="stylesheet" href="/assets/css/bootstrap-icons.css" type="text/css" media="all">
+    <link rel="stylesheet" href="/assets/slick/slick.css" type="text/css" media="all">
+    <link rel="stylesheet" href="/assets/slick/slick-theme.css" type="text/css" media="all">
+    <link rel="stylesheet" href="/assets/css/style.css" type="text/css" media="all">
+    <link rel="stylesheet" href="/assets/css/dropdown.css" type="text/css" media="all">
+    <link rel="stylesheet" href="/assets/css/responsive.css" type="text/css" media="all">
+    <link rel="stylesheet" href="/assets/css/rangeslider.css" type="text/css" media="all">
+
+    <!-- Custom Styles -->
+    <style>
+        .property-hero {
+            background: linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('<%= property.images && property.images.length > 0 ? property.images[0] : "/assets/images/service/default.png" %>');
+            background-size: cover;
+            background-position: center;
+            height: 400px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 40px;
+        }
+        .property-details-card {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .gallery img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+        .gallery img:hover {
+            transform: scale(1.05);
+        }
+        .owner-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .btn-contact {
+            background: #1685b6;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            transition: background 0.3s ease;
+        }
+        .btn-contact:hover {
+            background: #0056b3;
+            color: white;
+            text-decoration: none;
+        }
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+    </style>
+
+    <script src="/assets/js/vendor/modernizr-3.5.0.min.js"></script>
+</head>
+
+<body>
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="circles">
+            <div class="circle1"></div><div class="circle2"></div><div class="circle3"></div><div class="circle4"></div>
+            <div class="circle5"></div><div class="circle6"></div><div class="circle7"></div><div class="circle8"></div>
+            <div class="circle9"></div><div class="circle10"></div><div class="circle11"></div><div class="circle12"></div>
+            <div class="circle13"></div><div class="circle14"></div><div class="circle15"></div>
+        </div>
+    </div>
+
+    <!-- Header Area -->
+    <header class="header-area" id="sticky-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-3">
+                    <div class="logo">
+                        <a href="/"><img src="/assets/images/2.png" style="height: 70px; width: 80px;" alt=""></a>
+                    </div>
+                </div>
+                <div class="col-lg-9">
+                    <div class="header-menu">
+                        <ul>
+                            <li><a href="/">Home</a></li>
+                            <li><a href="#">Blog <i class="bi bi-chevron-down"></i></a>
+                                <div class="sub-menu">
+                                    <ul>
+                                        <li><a href="/blog">Blog</a></li>
+                                        <li><a href="/blog-details">Blog Details</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li><a href="/contacts">Contacts</a></li>
+                        </ul>
+                        <div class="hamilton-btn slider">
+                            <a href="/login">Sign-in</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu-area sticky-menu" id="navbar">
+        <div class="mobile-menu">
+            <div class="mobile-logo">
+                <a href="/"><img src="/assets/images/2.png" style="height: 65px; width: 80px;" alt=""></a>
+            </div>
+            <div class="side-menu-info">
+                <div class="sidebar-menu">
+                    <a class="navSidebar-button" href="/"><i class="bi bi-justify-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Property Details Area -->
+    <div class="property-details-area py-5">
+        <div class="container">
+            <!-- Hero Section -->
+            <div class="property-hero">
+                <div>
+                    <h1 class="mb-2"><%= property.name || 'Unnamed Property' %></h1>
+                    <p><i class="bi bi-geo-alt"></i> <%= property.location || 'N/A' %></p>
+                </div>
+            </div>
+
+            <!-- Main Details -->
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="property-details-card">
+                        <h3 class="mb-3">Property Overview</h3>
+                        <p class="lead"><%= property.description || 'No description available.' %></p>
+                        <div class="row mt-4">
+                            <div class="col-md-4">
+                                <p><strong>Price:</strong> KSh <%= property.price.toFixed(2) %>/month</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p><strong>Bedrooms:</strong> <%= property.bedrooms %></p>
+                            </div>
+                            <div class="col-md-4">
+                                <p><strong>Bathrooms:</strong> <%= property.bathrooms %></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Image Gallery -->
+<div class="property-details-card">
+       <h3 class="mb-3">Gallery</h3>
+       <div class="row gallery">
+           <% if (property.images && property.images.length > 0) { %>
+               <% property.images.forEach((image, index) => { %>
+                   <div class="col-md-4 mb-3">
+                       <img src="<%= image %>" alt="Property Image" class="img-fluid gallery-img" data-bs-toggle="modal" data-bs-target="#imageModal" data-bs-src="<%= image %>">
+                   </div>
+               <% }); %>
+           <% } else { %>
+               <div class="col-12 text-center">
+                   <p class="text-muted">No images available.</p>
+               </div>
+           <% } %>
+       </div>
+   </div>
+   
+   <!-- Modal for Fullscreen Image -->
+   <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+       <div class="modal-dialog modal-dialog-centered">
+           <div class="modal-content">
+               <div class="modal-header">
+                   <h5 class="modal-title">Property Image</h5>
+                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+               </div>
+               <div class="modal-body text-center">
+                   <img id="fullImage" src="" class="img-fluid">
+               </div>
+           </div>
+       </div>
+   </div>
+   
+   <!-- JavaScript to Handle Image Click -->
+   <script>
+       document.addEventListener("DOMContentLoaded", function () {
+           const galleryImages = document.querySelectorAll(".gallery-img");
+           const fullImage = document.getElementById("fullImage");
+   
+           galleryImages.forEach(img => {
+               img.addEventListener("click", function () {
+                   fullImage.src = this.getAttribute("data-bs-src");
+               });
+           });
+       });
+   </script>
+   
+
+                    <!-- Features -->
+                    <div class="property-details-card">
+                        <h3 class="mb-3">Features & Amenities</h3>
+                        <ul class="feature-list list-unstyled">
+                            <% if (property.facilities && property.facilities.length > 0) { %>
+                                <% property.facilities.forEach(facility => { %>
+                                    <li><i class="bi bi-check-circle text-success"></i> <%= facility %></li>
+                                <% }); %>
+                            <% } else { %>
+                                <li>No additional features listed.</li>
+                            <% } %>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Sidebar with Owner Info and Contact -->
+                <div class="col-lg-4">
+                    <div class="property-details-card sticky-top" style="top: 20px;">
+                        <h3 class="mb-3">Quick Info</h3>
+                        <p><strong>Status:</strong> <%= property.status || 'Available' %></p>
+                        <p><strong>Added On:</strong> <%= new Date(property.createdAt).toLocaleDateString() %></p>
+                        <a href="/properties" class="btn btn-outline-primary w-100 mb-3">Back to Properties</a>
+
+                        <div class="owner-info">
+                            <h4 class="mb-3">Owner Information</h4>
+                            <p><strong>Phone:</strong> 
+                                   <% if (property.owner && property.owner.phone) { %>
+                                     <a href="tel:<%= property.owner.phone %>"><%= property.owner.phone %></a>
+                                   <% } else { %>
+                                     N/A
+                                   <% } %>
+                                 </p>
+                                 
+                            <p><strong>Email:</strong> <%= property.owner ? property.owner.email : 'N/A' %></p>
+                            <a href="mailto:<%= property.owner ? property.owner.email : '#' %>" class="btn btn-contact w-100">Contact Owner</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Footer -->
+    <div class="footer-area style-two">
+        <div class="container">
+            <div class="row align-items-center mb-5 py-1">
+                <div class="col-lg-9">
+                    <div class="footer-content">
+                        <h2 class="mb-3">Find Your Dream Property in Kenya</h2>
+                        <p>Explore our curated selection of premium properties across Kenya with Lease Captain.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row border-top pt-4">
+                <div class="col-lg-12">
+                    <div class="copyright-text text-center">
+                        <p>Copyright © <a href="#">Lease Captain</a> All Rights Reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="/assets/js/vendor/jquery-3.6.2.min.js"></script>
+    <script src="/assets/js/popper.min.js"></script>
+    <script src="/assets/js/bootstrap.min.js"></script>
+    <script src="/assets/js/owl.carousel.min.js"></script>
+    <script src="/assets/js/jquery.counterup.min.js"></script>
+    <script src="/assets/js/waypoints.min.js"></script>
+    <script src="/assets/js/wow.min.js"></script>
+    <script src="/assets/js/imagesloaded.pkgd.min.js"></script>
+    <script src="/venobox/venobox.js"></script>
+    <script src="/assets/js/animated-text.js"></script>
+    <script src="/venobox/venobox.min.js"></script>
+    <script src="/assets/js/isotope.pkgd.min.js"></script>
+    <script src="/assets/js/jquery.meanmenu.js"></script>
+    <script src="/assets/js/jquery.scrollUp.js"></script>
+    <script src="/assets/js/slick/slick.min.js"></script>
+    <script src="/assets/js/jquery.barfiller.js"></script>
+    <script src="/assets/js/rangeslider.js"></script>
+    <script src="/assets/js/mixitup.min.js"></script>
+    <script src="/assets/js/theme.js"></script>
+    <script src="/assets/js/script.js"></script>
+</body>
+</html>

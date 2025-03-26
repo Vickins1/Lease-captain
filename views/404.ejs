@@ -3,137 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Lease Captain - 404 Error</title>
-    <meta name="description" content="Oops! It looks like we’ve sailed off course. Let’s get you back on track with Lease Captain.">
+    <title>Lease Captain - 404: Property Not Found</title>
+    <meta name="description" content="Oops! It looks like this page wandered off. Return to Lease Captain to manage your properties effortlessly!">
     <meta name="author" content="Lease Captain Team">
-    <meta name="robots" content="index, follow">
-    <meta property="og:title" content="Lease Captain - 404 Error">
-    <meta property="og:description" content="Oops! It looks like we’ve sailed off course. Let’s get you back on track with Lease Captain.">
-    <meta property="og:image" content="https://leasecaptain.com/images/404-hero.png">
+    <meta name="robots" content="noindex, follow"> <!-- Prevent indexing of 404 page -->
+    <meta property="og:title" content="Lease Captain - 404: Property Not Found">
+    <meta property="og:description" content="This page is missing, but Lease Captain can help you find and manage your properties. Try our free demo!">
+    <meta property="og:image" content="https://leasecaptain.com/assets/images/404-banner.jpg">
     <meta property="og:url" content="https://leasecaptain.com/404">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Lease Captain - 404 Error">
-    <meta name="twitter:description" content="Oops! It looks like we’ve sailed off course. Let’s get you back on track with Lease Captain.">
-    <meta name="twitter:image" content="https://leasecaptain.com/images/404-hero.png">
+    <meta name="twitter:title" content="Lease Captain - 404: Property Not Found">
+    <meta name="twitter:description" content="This page is missing, but Lease Captain can help you find and manage your properties. Try our free demo!">
+    <meta name="twitter:image" content="https://leasecaptain.com/assets/images/404-banner.jpg">
     <link rel="canonical" href="https://leasecaptain.com/404">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="56x56" href="assets/images/1.png">
+    <link rel="icon" type="image/png" sizes="56x56" href="/assets/images/1.png">
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css" type="text/css" media="all">
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css" type="text/css" media="all">
+    <!-- Carousel CSS -->
+    <link rel="stylesheet" href="/assets/css/owl.carousel.min.css" type="text/css" media="all">
+    <!-- Animate CSS -->
+    <link rel="stylesheet" href="/assets/css/animate.css" type="text/css" media="all">
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="/assets/css/all.min.css" type="text/css" media="all">
+    <!-- Flaticon CSS -->
+    <link rel="stylesheet" href="/assets/css/flaticon.css" type="text/css" media="all">
+    <!-- Theme Default CSS -->
+    <link rel="stylesheet" href="/assets/css/theme-default.css" type="text/css" media="all">
+    <!-- Meanmenu CSS -->
+    <link rel="stylesheet" href="/assets/css/meanmenu.min.css" type="text/css" media="all">
+    <!-- Transitions CSS -->
+    <link rel="stylesheet" href="/assets/css/owl.transitions.css" type="text/css" media="all">
+    <!-- Venobox CSS -->
+    <link rel="stylesheet" href="/venobox/venobox.css" type="text/css" media="all">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="/assets/css/bootstrap-icons.css" type="text/css" media="all">
+    <!-- Slick Slider -->
+    <link rel="stylesheet" type="/text/css" href="assets/slick/slick.css">
+    <link rel="stylesheet" type="/text/css" href="assets/slick/slick-theme.css">
+    <!-- Main Style CSS -->
+    <link rel="stylesheet" href="/assets/css/style.css" type="text/css" media="all">
+    <!-- Dropdown CSS -->
+    <link rel="stylesheet" href="/assets/css/dropdown.css" type="text/css" media="all">
+    <!-- Responsive CSS -->
+    <link rel="stylesheet" href="/assets/css/responsive.css" type="text/css" media="all">
+    <!-- Rangeslider CSS -->
+    <link rel="stylesheet" href="/assets/css/rangeslider.css" type="text/css" media="all">
+    <!-- Modernizr JS -->
+    <script src="/assets/js/vendor/modernizr-3.5.0.min.js"></script>
+
+    <!-- Custom 404 Styles -->
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #004aad 0%, #007bff 100%);
-            color: #ffffff;
-            overflow-x: hidden;
-        }
-        .header-area {
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 15px 0;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-        }
-        .error-404 {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 100px 0 50px;
+        .error-area {
             text-align: center;
+            padding: 100px 0;
+            background: linear-gradient(135deg, #003366, #00b4db);
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        .error-area .faq-thumb img {
+            max-width: 400px;
+            animation: float 3s ease-in-out infinite;
         }
         .error-title {
-            font-size: 150px;
-            font-weight: 700;
-            color: #ffffff;
-            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            animation: fadeInDown 1s ease-in-out;
-        }
-        .error-subtitle {
-            font-size: 36px;
-            font-weight: 600;
+            font-size: 48px;
+            font-weight: bold;
             margin: 20px 0;
-            color: #e0e7ff;
-            animation: fadeInUp 1s ease-in-out;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
-        .error-description {
+        .error-text {
             font-size: 18px;
             max-width: 600px;
             margin: 0 auto 30px;
-            color: #d1e0ff;
-            animation: fadeInUp 1.2s ease-in-out;
         }
-        .btn-primary {
-            background-color: #ffffff;
-            color: #004aad;
+        .hamilton-btn.error a {
+            background: #fff;
+            color: #003366;
             padding: 12px 30px;
-            font-size: 16px;
-            font-weight: 600;
-            border: none;
-            border-radius: 50px;
+            font-weight: bold;
+            border-radius: 25px;
             transition: all 0.3s ease;
-            animation: fadeInUp 1.4s ease-in-out;
         }
-        .btn-primary:hover {
-            background-color: #004aad;
-            color: #ffffff;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        .hamilton-btn.error a:hover {
+            background: #00b4db;
+            color: #fff;
+            transform: scale(1.05);
         }
-        .footer-area {
-            background-color: #003087;
-            padding: 40px 0 20px;
-            font-size: 14px;
+        .search-bar {
+            margin-top: 40px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
         }
-        .footer-widget a:hover {
-            color: #00c4ff;
-            transition: color 0.3s ease;
+        .search-bar input {
+            border-radius: 20px 0 0 20px;
+            padding: 10px 20px;
+            border: none;
+            width: 70%;
         }
-        /* Animations */
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-50px); }
-            to { opacity: 1; transform: translateY(0); }
+        .search-bar button {
+            border-radius: 0 20px 20px 0;
+            padding: 10px 20px;
+            background: #fff;
+            color: #003366;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
         }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(50px); }
-            to { opacity: 1; transform: translateY(0); }
+        .search-bar button:hover {
+            background: #00b4db;
+            color: #fff;
         }
-        @media (max-width: 768px) {
-            .error-title { font-size: 100px; }
-            .error-subtitle { font-size: 28px; }
-            .error-description { font-size: 16px; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        @media (max-width: 767px) {
+            .error-title { font-size: 32px; }
+            .error-text { font-size: 16px; }
+            .faq-thumb img { max-width: 300px; }
         }
     </style>
 </head>
 
 <body>
-    <!-- Header Area -->
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="circles">
+            <div class="circle1"></div><div class="circle2"></div><div class="circle3"></div>
+            <div class="circle4"></div><div class="circle5"></div><div class="circle6"></div>
+            <div class="circle7"></div><div class="circle8"></div><div class="circle9"></div>
+            <div class="circle10"></div><div class="circle11"></div><div class="circle12"></div>
+            <div class="circle13"></div><div class="circle14"></div><div class="circle15"></div>
+        </div>
+    </div>
+    <!--==================================================-->
+    <!-- Start Header Area -->
+    <!--==================================================-->
     <header class="header-area" id="sticky-header">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-3">
                     <div class="logo">
-                        <a href="/"><img src="assets/images/2.png" style="height: 70px; width: 80px;" alt="Lease Captain Logo"></a>
+                        <a href="/"><img src="/assets/images/2.png" style="height: 70px; width: 80px;" alt=""></a>
                     </div>
                 </div>
                 <div class="col-lg-9">
                     <div class="header-menu">
                         <ul>
-                            <li><a href="/">Home</a></li>
+                            <li><a href="/">Home
+
+                                </a>
+
+                            </li>
                             <li><a href="#about">About</a></li>
-                            <li><a href="#pricing-section">Pricing</a></li>
+                            <li><a href="#pricing">Pricing</a></li>
                             <li><a href="/services">Services <i class="bi bi-chevron-down"></i></a>
                                 <div class="sub-menu">
                                     <ul>
                                         <li><a href="/service">Service</a></li>
-                                        <li><a href="/service-details">Service Details</a></li>
+                                        <li><a href="/service-details">Service
+                                                Details</a></li>
                                     </ul>
                                 </div>
                             </li>
@@ -141,11 +174,12 @@
                                 <div class="sub-menu">
                                     <ul>
                                         <li><a href="/blog">Blog</a></li>
-                                        <li><a href="/blog-details">Blog Details</a></li>
+                                        <li><a href="/blog-details">Blog Details</a>
+                                        </li>
                                     </ul>
                                 </div>
                             </li>
-                            <li><a href="/contacts">Contacts</a></li>
+                            <li><a href="/contacts">contacts</a></li>
                         </ul>
                         <div class="hamilton-btn slider">
                             <a href="/login">Sign-in</a>
@@ -156,93 +190,270 @@
         </div>
     </header>
 
-    <!-- 404 Content Area -->
-    <section class="error-404">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <h1 class="error-title">404</h1>
-                    <h2 class="error-subtitle">Oops! Page Not Found</h2>
-                    <p class="error-description">It looks like we’ve sailed off course. Don’t worry, our crew at Lease Captain is here to steer you back to smooth waters.</p>
-                    <a href="/" class="btn btn-primary">Return to Home</a>
+
+    <!-- Mobile Menu Area -->
+    <div class="mobile-menu-area sticky-menu" id="navbar">
+        <div class="mobile-menu">
+            <div class="mobile-logo">
+                <a href="/"><img src="/assets/images/2.png" style="height: 80px; width: 80px;" alt="Lease Captain Logo"></a>
+            </div>
+            <div class="side-menu-info">
+                <div class="sidebar-menu">
+                    <a class="navSidebar-button" href="#"><i class="bi bi-justify-right"></i></a>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- Footer Area -->
-    <div class="footer-area">
+    <!-- Breadcrumb Area -->
+    <div class="breatcome-area">
         <div class="container">
             <div class="row">
-                <!-- Company Info -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="footer-widget">
-                        <div class="footer-widget-logo">
-                            <a href="/"><img src="assets/images/1.png" alt="Lease Captain Logo"></a>
+                <div class="col-lg-12 col-md-12">
+                    <div class="breatcome-content">
+                        <div class="breatcome-title">
+                            <h1><strong>404 Error</strong></h1>
                         </div>
-                        <div class="footer-widget-text">
-                            <p>Lease Captain offers cutting-edge rental management solutions for landlords and tenants.</p>
-                        </div>
-                        <div class="footer-social-title">
-                            <h4>Follow Us</h4>
-                        </div>
-                        <div class="footer-social">
-                            <ul style="display: flex; gap: 15px; padding: 0; list-style: none;">
-                                <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
-                                <li><a href="#"><i class="fab fa-twitter"></i></a></li>
-                                <li><a href="#"><i class="fab fa-instagram"></i></a></li>
-                                <li><a href="#"><i class="fab fa-linkedin-in"></i></a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <!-- Navigation Links -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="footer-widget">
-                        <div class="footer-widget-title">
-                            <h4>Quick Links</h4>
-                        </div>
-                        <div class="footer-widget-menu">
-                            <ul style="list-style: none; padding: 0;">
-                                <li><a href="#"><i class="fas fa-angle-right"></i> Home</a></li>
-                                <li><a href="#"><i class="fas fa-angle-right"></i> About Us</a></li>
-                                <li><a href="#"><i class="fas fa-angle-right"></i> Services</a></li>
-                                <li><a href="#"><i class="fas fa-angle-right"></i> Contact</a></li>
-                                <li><a href="#"><i class="fas fa-angle-right"></i> FAQ</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <!-- Services -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="footer-widget">
-                        <div class="footer-widget-title">
-                            <h4>Our Services</h4>
-                        </div>
-                        <div class="footer-widget-menu">
-                            <ul style="list-style: none; padding: 0;">
-                                <li><a href="#"><i class="fas fa-angle-right"></i> Seamless Payments</a></li>
-                                <li><a href="#"><i class="fas fa-angle-right"></i> Tenant Records</a></li>
-                                <li><a href="#"><i class="fas fa-angle-right"></i> Invoice Management</a></li>
-                                <li><a href="#"><i class="fas fa-angle-right"></i> Communication Tools</a></li>
-                                <li><a href="#"><i class="fas fa-angle-right"></i> Task Automation</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <!-- Footer Bottom -->
-                <div class="row mt-4">
-                    <div class="col-lg-12 text-center">
-                        <p>© 2024 Lease Captain. All Rights Reserved | Powered by <a href="http://3.10.212.109" target="_blank" style="color: #00c4ff; text-decoration: underline;">Vickins Technologies</a></p>
+                       
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="assets/js/vendor/jquery-3.6.2.min.js"></script>
-    <script src="assets/js/bootstrap.min.js"></script>
-    <script src="assets/js/theme.js"></script>
+    <!-- Error Area -->
+    <div class="error-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="faq-thumb">
+                        <img src="/assets/images/resource/404.png" alt="404 Ship Lost">
+                    </div>
+                    <h2 class="error-title">Oops! This Page Sailed Away</h2>
+                    <p class="error-text">It seems this property has drifted off course. Don’t worry—Lease Captain can steer you back to managing your rentals with ease!</p>
+                    <div class="hamilton-btn error">
+                        <a href="/">Return to Harbor</a>
+                    </div>
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Area -->
+    <div class="footer-area style-two">
+        <div class="container">
+            <div class="row align-items-center mb-100">
+                <div class="col-lg-9 col-md-12">
+                    <div class="footer-content">
+                        <h2>Navigate Your Property Management with Ease</h2>
+                        <p>Lease Captain offers the ultimate solution for tenant tracking, payments, and more. Get started today!</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-btn">
+                        <div class="hamilton-btn about2">
+                            <a href="/signup">Try Free Demo</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-wiget">
+                        <div class="footer-wiget-log">
+                            <a href="/"><img src="/assets/images/1.png" alt="Lease Captain Footer Logo"></a>
+                        </div>
+                        <div class="footer-wiget-text">
+                            <h4>Streamline your rental business with Lease Captain’s advanced tools.</h4>
+                        </div>
+                        <div class="footer-socilal-title">
+                            <h4>Follow Us</h4>
+                        </div>
+                        <div class="footer-social">
+                            <ul>
+                                <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                                <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+                                <li><a href="#"><i class="fab fa-linkedin-in"></i></a></li>
+                                <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-wiget">
+                        <div class="footer-wiget-title">
+                            <h4>Quick Links</h4>
+                        </div>
+                        <div class="footer-wiget-menu">
+                            <ul>
+                                <li><a href="/"><i class="bi bi-chevron-double-right"></i> Home</a></li>
+                                <li><a href="#about"><i class="bi bi-chevron-double-right"></i> About</a></li>
+                                <li><a href="#pricing"><i class="bi bi-chevron-double-right"></i> Pricing</a></li>
+                                <li><a href="/services"><i class="bi bi-chevron-double-right"></i> Services</a></li>
+                                <li><a href="/contacts"><i class="bi bi-chevron-double-right"></i> Contact</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-wiget">
+                        <div class="footer-wiget-title">
+                            <h4>Our Features</h4>
+                        </div>
+                        <div class="footer-wiget-menu">
+                            <ul>
+                                <li><a href="#"><i class="bi bi-chevron-double-right"></i> Tenant Management</a></li>
+                                <li><a href="#"><i class="bi bi-chevron-double-right"></i> Payment Tracking</a></li>
+                                <li><a href="#"><i class="bi bi-chevron-double-right"></i> Property Listings</a></li>
+                                <li><a href="#"><i class="bi bi-chevron-double-right"></i> Real-Time Reports</a></li>
+                                <li><a href="#"><i class="bi bi-chevron-double-right"></i> Mobile Access</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 pr-0">
+                    <div class="footer-wiget">
+                        <div class="footer-wiget-title">
+                            <h4>Newsletter</h4>
+                        </div>
+                        <div class="footer-widget-discription">
+                            <p>Stay updated with the latest property management tips and updates.</p>
+                        </div>
+                        <form action="https://formspree.io/f/myyleorq" method="post" id="ttime">
+                            <div class="form-field">
+                                <input type="email" name="EMAIL" placeholder="Email Address" required>
+                                <button class="newsletter-button" type="submit"><i class="bi bi-chevron-double-right"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="row line mt-90">
+                <div class="col-lg-12 col-md-12">
+                    <div class="copyright-text">
+                        <p>Copyright © 2024-2025 <a href="https://leasecaptain.com">Lease Captain</a>. All Rights Reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Area (unchanged) -->
+    <div class="sidebar-group info-group">
+        <div class="sidebar-widget">
+            <div class="sidebar-widget-container">
+                <div class="widget-heading">
+                    <a href="#" class="close-side-widget"><i class="bi bi-x-lg"></i></a>
+                </div>
+                <div class="sidebar-textwidget">
+                    <div class="sidebar-info-contents">
+                        <div class="content-inner">
+                            <div class="sidebar-logo">
+                                <a href="/"><img src="/assets/images/1.png" alt="Lease Captain Sidebar Logo"></a>
+                            </div>
+                            <div class="sidebar-widget-menu">
+                                <ul>
+                                    <li class="dropdown"><a href="#" data-toggle="dropdown">Home <i class="icon-arrow"></i></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="/">Home</a></li>
+                                          
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown"><a href="/login" data-toggle="dropdown">Sign In</a></li>
+                                    <li class="dropdown"><a href="#" data-toggle="dropdown">Service <i class="icon-arrow"></i></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="/services">Services</a></li>
+                                            <li><a href="/service-details">Services Details</a></li>
+                                        </ul>
+                                    </li>
+                                    
+                                    <li class="dropdown"><a href="#" data-toggle="dropdown">Blog <i class="icon-arrow"></i></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="/blog">Blog</a></li>
+                                            <li><a href="/blog-details">Blog Details</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown"><a href="/contacts" data-toggle="dropdown">Contact</a></li>
+                                </ul>
+                            </div>
+                          <ul class="social-box">
+                                <li class="facebook"><a href="#" class="fab fa-facebook-f"></a></li>
+                                <li class="twitter"><a href="#" class="fab fa-instagram"></a></li>
+                                <li class="linkedin"><a href="#" class="fab fa-twitter"></a></li>
+                                <li class="instagram"><a href="#" class="fab fa-pinterest-p"></a></li>
+                                <li class="youtube"><a href="#" class="fab fa-linkedin-in"></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Popup Area (unchanged) -->
+    <div class="search-popup">
+        <button class="close-search style-two"><span class="flaticon-multiply"><i class="far fa-times-circle"></i></span></button>
+        <button class="close-search"><i class="fas fa-arrow-up"></i></button>
+        <form method="post" action="#">
+            <div class="form-group">
+                <input type="search" name="search-field" value="" placeholder="Search Here" required="">
+                <button type="submit"><i class="fa fa-search"></i></button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Scrollup Section (unchanged) -->
+    <div class="prgoress_scrollup">
+        <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
+            <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" />
+        </svg>
+    </div>
+
+    <!-- Scripts (unchanged except for custom 404 script) -->
+    <script src="/assets/js/vendor/jquery-3.6.2.min.js"></script>
+    <script src="/assets/js/popper.min.js"></script>
+    <script src="/assets/js/bootstrap.min.js"></script>
+    <script src="/assets/js/owl.carousel.min.js"></script>
+    <script src="/assets/js/jquery.counterup.min.js"></script>
+    <script src="/assets/js/waypoints.min.js"></script>
+    <script src="/assets/js/wow.min.js"></script>
+    <script src="/assets/js/imagesloaded.pkgd.min.js"></script>
+    <script src="/venobox/venobox.js"></script>
+    <script src="/assets/js/animated-text.js"></script>
+    <script src="/venobox/venobox.min.js"></script>
+    <script src="/assets/js/isotope.pkgd.min.js"></script>
+    <script src="/assets/js/jquery.meanmenu.js"></script>
+    <script src="/assets/js/jquery.scrollUp.js"></script>
+    <script src="/assets/slick/slick.min.js"></script>
+    <script src="/assets/js/jquery.barfiller.js"></script>
+    <script src="/assets/js/rangeslider.js"></script>
+    <script src="/assets/js/mixitup.min.js"></script>
+    <script src="/assets/js/theme.js"></script>
+    <script src="/assets/js/script.js"></script>
+
+    <!-- Custom 404 Script -->
+    <script>
+        $(document).ready(function() {
+            // Animate error message on load
+            $('.error-title').addClass('wow fadeInDown');
+            $('.error-text').addClass('wow fadeInUp');
+            new WOW().init();
+
+            // Random fun message on button hover
+            const messages = [
+                "Sail back to safety!",
+                "Find your property now!",
+                "Chart a new course!",
+                "Captain your rentals!"
+            ];
+            $('.hamilton-btn.error a').hover(function() {
+                const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+                $(this).text(randomMsg);
+            }, function() {
+                $(this).text("Return to Harbor");
+            });
+        });
+    </script>
 </body>
 </html>

@@ -1,13 +1,14 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../models/user');
+require('dotenv').config();
 
 // Google OAuth Strategy
 passport.use(new GoogleStrategy({
-    clientID: '293701662889-4sb5fc2ld4ljdpvpgu7f2ep9v6kalakg.apps.googleusercontent.com',
-    clientSecret: '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',
-    callbackURL: 'https://leasecaptain.com/auth/google/callback'
-  },
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  callbackURL: process.env.GOOGLE_CALLBACK_URL
+},
   async (accessToken, refreshToken, profile, done) => {
     try {
       let user = await User.findOne({ googleId: profile.id });

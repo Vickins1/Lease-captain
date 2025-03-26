@@ -110,15 +110,7 @@
                             </li>
                             <li><a href="#about">About</a></li>
                             <li><a href="#pricing">Pricing</a></li>
-                            <li><a href="/services">Services <i class="bi bi-chevron-down"></i></a>
-                                <div class="sub-menu">
-                                    <ul>
-                                        <li><a href="/service">Service</a></li>
-                                        <li><a href="/service-details">Service
-                                                Details</a></li>
-                                    </ul>
-                                </div>
-                            </li>
+                            
                             <li><a href="#">Blog <i class="bi bi-chevron-down"></i></a>
                                 <div class="sub-menu">
                                     <ul>
@@ -156,231 +148,417 @@
     <!-- End Header Area -->
     <!--==================================================-->
 
-    <!--==================================================-->
-    <!-- Start Banner Area -->
-    <!--==================================================-->
-    <section class="banner-section">
-        <div class="banner-carousel owl-carousel">
-            <div class="slide-item one">
-                <div class="image-layer" style="background-image: url('assets/images/slider/slider1.jpg');">
+  
+<!--==================================================-->
+<!-- Start Banner Area -->
+<!--==================================================-->
+<section class="banner-section">
+    <div class="banner-carousel owl-carousel">
+        <div class="slide-item one">
+            <div class="image-layer" style="background-image: url('assets/images/slider/slider1.jpg');"></div>
+            <div class="container">
+                <div class="row align-items-center">
+                    <!-- Content Column -->
+                    <div class="col-12 col-lg-6 order-2 order-lg-1">
+                        <div class="slider-content py-4 py-lg-0">
+                            <div class="slider-title-shape">
+                                <img src="assets/images/slider/title-shape.png" alt="Title Decoration">
+                            </div>
+                            <div class="slider-sub-title">
+                                <h4>Your Dream Home Awaits – Let's Make It a Reality</h4>
+                            </div>
+                            <div class="slider-main-title">
+                                <h1>The Safest and Secure Way to Lease, Rent and Manage your properties!</h1>
+                            </div>
+                            <div class="slider-discripton">
+                                <p>Discover a seamless and secure way to rent, manage, and invest in properties. At Lease Captain, we're here to help you every step of the way, providing expert services and unmatched support.</p>
+                            </div>
+                            <div class="slider-button">
+                                <div class="hamilton-btn slider">
+                                    <a href="/signup">Enroll now!</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-6 col-md-12">
-                            <div class="slider-content">
-                                <div class="slider-title-shape">
-                                    <img src="assets/images/slider/title-shape.png" alt="Title Decoration">
-                                </div>
-                                <div class="slider-sub-title">
-                                    <h4>Your Dream Home Awaits – Let's Make It a Reality</h4>
-                                </div>
-                                <div class="slider-main-title">
-                                    <h1>The Safest and Secure Way
-                                        to Lease, Rent and Manage your properties!</h1>
-                                </div>
-                                <div class="slider-discripton">
-                                    <p>Discover a seamless and secure way to rent, manage,
-                                        and invest in properties. At Lease Captain, we're
-                                        here to help you every step of the way, providing
-                                        expert services and unmatched support.</p>
-                                </div>
-                                <div class="slider-button">
-                                    <div class="hamilton-btn slider">
-                                        <a href="/signup">Enroll now!</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--==================================================-->
+<!-- End Banner Area -->
+<!--==================================================-->
 
-                        <div class="col-lg-6 col-md-12">
-                            <div class="banner-search-box shadow-lg ">
-                                <div class="banner-search-box-title text-center mb-4">
-                                    <h3 class="section-title text-center">Find Your Perfect Rental Home</h3>
-                                    <p class="text-muted">Discover accessible properties across Kenya</p>
-                                </div>
-                                <div class="search-contents p-3">
-                                    <form method="GET" class="row g-3">
-                                        <!-- Property Type -->
-                                        <div class="col-12 col-md-6">
-                                            <div class="form-group">
-                                                <label class="form-label text-secondary">Property Type</label>
-                                                <select class="form-select selectpicker border-secondary" name="PropertyType" data-size="5">
-                                                    <option>Any Type</option>
-                                                    <option>Apartment</option>
-                                                    <option>Bungalow</option>
-                                                    <option>Maisonette</option>
-                                                    <option>Townhouse</option>
-                                                    <option>Single Family Home</option>
-                                                    <option>Farmhouse</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                        
-                                        <!-- Category -->
-                                        <div class="col-12 col-md-6">
-                                            <div class="form-group">
-                                                <label class="form-label text-secondary">Category</label>
-                                                <select class="form-select selectpicker border-secondary" name="Category">
-                                                    <option>All Categories</option>
-                                                    <option>Residential</option>
-                                                    <option>Commercial</option>
-                                                    <option>Agricultural</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                        
-                                        <!-- City Selector with Autocomplete -->
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <label class="form-label text-secondary">Location</label>
-                                                <input type="text" 
-                                                       class="form-control border-secondary" 
-                                                       id="cityInput"
-                                                       name="City"
-                                                       placeholder="Start typing your city..."
-                                                       list="citySuggestions"
-                                                       autocomplete="off">
-                                                <datalist id="citySuggestions">
-                                                    <!-- All Kenyan cities and towns -->
-                                                    <option>Nairobi</option>
-                                                    <option>Mombasa</option>
-                                                    <option>Kisumu</option>
-                                                    <option>Thika</option>
-                                                    <option>Nakuru</option>
-                                                    <option>Eldoret</option>
-                                                    <option>Meru</option>
-                                                    <option>Kiambu</option>
-                                                    <option>Voi</option>
-                                                    <option>Nyeri</option>
-                                                    <option>Bomet</option>
-                                                    <option>Bungoma</option>
-                                                    <option>Busia</option>
-                                                    <option>Elgeyo Marakwet</option>
-                                                    <option>Embu</option>
-                                                    <option>Garissa</option>
-                                                    <option>Homa Bay</option>
-                                                    <option>Isiolo</option>
-                                                    <option>Kajiado</option>
-                                                    <option>Kakamega</option>
-                                                    <option>Kapsabet</option>
-                                                    <option>Kericho</option>
-                                                    <option>Kisii</option>
-                                                    <option>Kitui</option>
-                                                    <option>Kuria</option>
-                                                    <option>Laikipia</option>
-                                                    <option>Lamu</option>
-                                                    <option>Machakos</option>
-                                                    <option>Makueni</option>
-                                                    <option>Mandera</option>
-                                                    <option>Migori</option>
-                                                    <option>Murang'a</option>
-                                                    <option>Narok</option>
-                                                    <option>Nandi</option>
-                                                    <option>Nyamira</option>
-                                                    <option>Nyandarua</option>
-                                                    <option>West Pokot</option>
-                                                    <option>Wajir</option>
-                                                    <option>Trans Nzoia</option>
-                                                    <option>Samburu</option>
-                                                    <option>Siaya</option>
-                                                    <option>Tanariver</option>
-                                                    <option>Taita Taveta</option>
-                                                    <option>Tharaka Nithi</option>
-                                                    <option>Uasin Gishu</option>
-                                                    <option>Vihiga</option>
-                                                </datalist>
-                                            </div>
-                                        </div>
-                        
-                                        <!-- Price Range -->
-                                        <div class="col-12">
-                                            <div class="row g-3">
-                                                <div class="col-12 col-sm-6">
-                                                    <label class="form-label text-secondary">Min Price (Ksh)</label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text bg-light border-secondary">Ksh</span>
-                                                        <input type="number" class="form-control border-secondary" 
-                                                               id="min-price" name="min_price" 
-                                                               min="0" max="5000000" step="1000"
-                                                               placeholder="Minimum">
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 col-sm-6">
-                                                    <label class="form-label text-secondary">Max Price (Ksh)</label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text bg-light border-secondary">Ksh</span>
-                                                        <input type="number" class="form-control border-secondary" 
-                                                               id="max-price" name="max_price" 
-                                                               min="0" max="5000000" step="1000"
-                                                               placeholder="Maximum">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                        
-                                        <!-- Search Button -->
-<div class="col-12 mt-4">
-    <button class="hamilton-btn w-100 py-3 fw-bold" type="button" id="searchButton">
-        <i class="fas fa-search me-2"></i>Search Properties
-    </button>
-</div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <script>
-                        $(document).ready(function() {
-                            $('.selectpicker').selectpicker();
-                            
-                            // Enhanced price validation
-                            const priceInputs = $('#min-price, #max-price');
-                            priceInputs.on('input', function() {
-                                const minVal = parseInt($('#min-price').val()) || 0;
-                                const maxVal = parseInt($('#max-price').val()) || 5000000;
-                                
-                                if (minVal > maxVal) {
-                                    $(this).val($(this).attr('id') === 'min-price' ? maxVal : minVal);
-                                }
-                            });
-                        
-                            // City input enhancement
-                            const cityInput = document.getElementById('cityInput');
-                            const citySuggestions = document.getElementById('citySuggestions');
-                        
-                            // Enable fuzzy search
-                            cityInput.addEventListener('input', function(e) {
-                                const searchTerm = e.target.value.toLowerCase();
-                                const options = Array.from(citySuggestions.options);
-                                
-                                // Clear previous suggestions
-                                citySuggestions.innerHTML = '';
-                        
-                                // Fuzzy match and repopulate
-                                options.forEach(option => {
-                                    if (option.value.toLowerCase().includes(searchTerm)) {
-                                        const newOption = document.createElement('option');
-                                        newOption.value = option.value;
-                                        citySuggestions.appendChild(newOption);
-                                    }
-                                });
-                            });
-                        });
-                        </script>
 
-                        </div>
+
+<!-- Service Area -->
+<div class="service-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-title text-center">
+                    <div class="section-main-title">
+                        <h2>Discover Properties in Kenya</h2>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
-    <!--==================================================-->
-    <!-- End Banner Area -->
-    <!--==================================================-->
+        <div class="row">
+            <div class="service_list owl-carousel">
+                <% if (properties && properties.length > 0) { %>
+                    <% 
+                        // Sort by latest (assuming createdAt exists) and take first 4
+                        const latestProperties = properties
+                            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                            .slice(0, 4); 
+                    %>
+                    <% latestProperties.forEach(property => { %>
+                        <div class="service-single-box">
+                            <div class="service-thumb">
+                                <img src="<%= property.images && property.images.length > 0 ? property.images[0] : '/assets/images/service/default.png' %>" alt="<%= property.name || 'Property Image' %>">
+                                <div class="service-rate">
+                                    <h4>KSh <%= property.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %><span>/Month</span></h4>
+                                </div>
+                            </div>
+                            <div class="service-content">
+                                <div class="service-title">
+                                    <h4><a href="/property/<%= property._id %>"><%= property.name || 'Unnamed Property' %></a></h4>
+                                </div>
+                                <div class="service-description">
+                                    <p><%= property.description && property.description.length > 100 ? property.description.substring(0, 100) + '...' : property.description || 'No description available.' %></p>
+                                </div>
+                                <div class="service-facilities">
+                                    <ul>
+                                        <li>
+                                            <div class="service-icon-thumb">
+                                                <img src="/assets/images/service/service-icon1.png" alt="Bedroom Icon">
+                                            </div>
+                                            <span><%= property.bedrooms || 0 %> Bedrooms</span>
+                                        </li>
+                                        <li>
+                                            <div class="service-icon-thumb">
+                                                <img src="/assets/images/service/service-icon2.png" alt="Bathroom Icon">
+                                            </div>
+                                            <span><%= property.bathrooms || 0 %> Bathrooms</span>
+                                        </li>
+                                        <% if (property.facilities && property.facilities.length > 0) { %>
+                                            <li>
+                                                <div class="service-icon-thumb">
+                                                    <img src="/assets/images/service/service-icon3.png" alt="Facility Icon">
+                                                </div>
+                                                <span><%= property.facilities[0] %></span>
+                                            </li>
+                                        <% } %>
+                                    </ul>
+                                </div>
+                                <div class="service-address">
+                                    <div class="service-location">
+                                        <span><i class="bi bi-geo-alt"></i> <%= property.location || 'N/A' %></span>
+                                    </div>
+                                    <div class="service-icon">
+                                        <span><i class="bi bi-heart"></i></span>
+                                        <span><a href="/property/<%= property._id %>"><i class="bi bi-arrow-right"></i></a></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <div class="col-lg-12 text-center">
+                        <p>No properties found matching your criteria.</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+        <!-- Creative View More Button -->
+        <div class="row">
+            <div class="col-lg-12 text-center mt-4">
+                <a href="/properties" class="view-more-btn">
+                    <span class="btn-text">Explore More Properties</span>
+                    <span class="btn-icon">
+                        <i class="bi bi-arrow-right-circle"></i>
+                    </span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 
+<style>
+.service-single-box {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Ensures uniform height within carousel */
+}
 
+.service-thumb {
+    position: relative;
+    height: 250px; /* Fixed height for uniformity */
+    overflow: hidden;
+}
 
+.service-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures images scale uniformly */
+}
 
+.service-rate {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0, 61, 77, 0.8);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.service-rate h4 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.service-rate span {
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.service-content {
+    padding: 20px;
+    flex-grow: 1; /* Allows content to expand uniformly */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.service-title h4 {
+    font-size: 22px;
+    margin: 0 0 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.service-title h4 a {
+    color: #003d4d;
+    text-decoration: none;
+}
+
+.service-title h4 a:hover {
+    color: #1685b6;
+}
+
+.service-description p {
+    font-size: 15px;
+    color: #666;
+    margin: 0 0 15px;
+    line-height: 1.5;
+    max-height: 45px; /* Limits description to 2-3 lines */
+    overflow: hidden;
+}
+
+.service-facilities ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.service-facilities li {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #555;
+}
+
+.service-icon-thumb {
+    margin-right: 8px;
+}
+
+.service-icon-thumb img {
+    width: 20px;
+    height: 20px;
+}
+
+.service-address {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.service-location {
+    font-size: 14px;
+    color: #777;
+}
+
+.service-location i {
+    margin-right: 5px;
+}
+
+.service-icon span {
+    margin-left: 10px;
+    font-size: 18px;
+    color: #003d4d;
+    cursor: pointer;
+}
+
+.service-icon span:hover {
+    color: #1685b6;
+}
+
+.no-properties {
+    padding: 20px;
+    width: 100%;
+}
+
+/* Responsive Adjustments */
+
+/* Large Desktop: 1200px+ */
+@media (min-width: 1200px) {
+    .service_list .owl-stage {
+        display: flex;
+        align-items: stretch; /* Ensures uniform height in carousel */
+    }
+    .service-single-box {
+        width: 100%;
+    }
+}
+
+/* Tablet: 768px - 991px */
+@media (min-width: 768px) and (max-width: 991px) {
+    .service-area {
+        padding: 70px 0;
+    }
+    .service-thumb {
+        height: 200px; /* Slightly smaller */
+    }
+    .service-title h4 {
+        font-size: 20px;
+    }
+    .service-description p {
+        font-size: 14px;
+    }
+    .service-rate h4 {
+        font-size: 16px;
+    }
+    .service-facilities {
+        display: block; /* Show facilities unless hidden elsewhere */
+    }
+}
+
+/* Small Tablet: 600px - 767px */
+@media (min-width: 600px) and (max-width: 767px) {
+    .service-area {
+        padding: 70px 0;
+    }
+    .service-thumb {
+        height: 180px;
+    }
+    .service-title h4 {
+        font-size: 18px;
+    }
+    .service-description p {
+        font-size: 13px;
+        max-height: 40px;
+    }
+    .service-rate h4 {
+        font-size: 16px;
+    }
+    .service-facilities li {
+        font-size: 13px;
+    }
+    .service-icon-thumb img {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+/* Mobile: Below 599px */
+@media (max-width: 599px) {
+    .service-area {
+        padding: 50px 0;
+    }
+    .service-thumb {
+        height: 150px;
+    }
+    .service-title h4 {
+        font-size: 16px;
+    }
+    .service-description p {
+        font-size: 12px;
+        max-height: 36px;
+    }
+    .service-rate h4 {
+        font-size: 14px;
+    }
+    .service-rate span {
+        font-size: 12px;
+    }
+    .service-facilities ul {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .service-facilities li {
+        font-size: 12px;
+    }
+    .service-icon-thumb img {
+        width: 16px;
+        height: 16px;
+    }
+    .service-address {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .service-icon span {
+        font-size: 16px;
+    }
+}
+    .view-more-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 25px;
+    background: linear-gradient(90deg,rgb(21, 165, 255), #1685b6); /* Vibrant gradient */
+    color: #fff;
+    text-decoration: none;
+    border-radius: 50px; /* Rounded edges */
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+}
+
+.view-more-btn .btn-text {
+    margin-right: 10px; /* Space between text and icon */
+}
+
+.view-more-btn .btn-icon {
+    font-size: 20px; /* Slightly larger icon */
+    transition: transform 0.3s ease;
+}
+
+.view-more-btn:hover {
+    background: linear-gradient(90deg, #003366, rgb(21, 165, 255));
+    color: #fff;
+    transform: translateY(-3px); /* Slight lift effect */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.view-more-btn:hover .btn-icon {
+    transform: translateX(5px); /* Icon slides right on hover */
+}
+</style>
 
     
     <!--==================================================-->
@@ -391,7 +569,9 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="section-title text-center">
-                        <h2><strong>Lease Captain Core Features</strong></h2>
+                        <div class="section-main-title">
+                            <h2>Lease Captain Core Features</h2>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -425,7 +605,7 @@
                                 vacant for long.</p>
                         </div>
                         <div class="feature-btn">
-                            <a href="/propertyListing">Get Started <i class="bi bi-arrow-right"></i></a>
+                            <a href="/login">Get Started <i class="bi bi-arrow-right"></i></a>
                         </div>
                     </div>
                 </div>
@@ -537,11 +717,42 @@
     <!-- End Feature Area -->
     <!--==================================================-->
 
+    <!-- Portals Section -->
+<section id="portals" class="py-5" style="background: #fff;">
+    <div class="container">
+        <h3 class="text-center mb-5" style="color: #001b36; font-size: 2.25rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+            <i class="fas fa-laptop mr-2" style="color: #003366;"></i> Explore Our Portals
+        </h3>
+        <p class="text-center mb-5" style="font-size: 1rem; color: #666;">Powerful tools for property managers and tenants alike.</p>
 
+        <div class="row justify-content-center">
+            <!-- LeaseCaptain Portal -->
+            <div class="col-md-6 mb-4" data-aos="fade-right" data-aos-duration="1000">
+                <div class="portal-card text-center" style="padding: 20px;">
+                    <h4 class="mb-3" style="color: #003366; font-size: 1.5rem; font-weight: 600;">LeaseCaptain Portal</h4>
+                    <div class="laptop-container" style="position: relative; width: 100%; max-width: 600px; margin: 0 auto; padding-bottom: 75%; overflow: hidden;">
+                        <div class="laptop-frame" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://www.transparenttextures.com/patterns/clean-gray-paper.png') repeat, url('https://i.imgur.com/5eXz9jM.png') no-repeat center; background-size: auto, contain; z-index: 1;"></div>
+                        <img src="/images/image.png" alt="LeaseCaptain Dashboard" class="dashboard-screenshot" style="position: absolute; top: 3%; left: 8.5%; width: 83%; height: 60%; object-fit: cover; border-radius: 5px 5px 0 0; z-index: 0; box-shadow: inset 0 0 10px rgba(0,0,0,0.2);" onerror="this.src='https://via.placeholder.com/800x450?text=LeaseCaptain+Dashboard'">
+                    </div>
+                    <p class="mt-4" style="font-size: 1rem; color: #555;">A comprehensive dashboard for property managers to oversee units, listings, and tenant interactions with ease.</p>
+                </div>
+            </div>
 
-    <!--==================================================-->
+            <!-- Tenant Portal -->
+            <div class="col-md-6 mb-4" data-aos="fade-left" data-aos-duration="1000">
+                <div class="portal-card text-center" style="padding: 20px;">
+                    <h4 class="mb-3" style="color: #003366; font-size: 1.5rem; font-weight: 600;">Tenant Portal</h4>
+                    <div class="laptop-container" style="position: relative; width: 100%; max-width: 600px; margin: 0 auto; padding-bottom: 75%; overflow: hidden;">
+                        <div class="laptop-frame" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://www.transparenttextures.com/patterns/clean-gray-paper.png') repeat, url('https://i.imgur.com/5eXz9jM.png') no-repeat center; background-size: auto, contain; z-index: 1;"></div>
+                        <img src="/images/tenant-dashboard.png" alt="Tenant Dashboard" class="dashboard-screenshot" style="position: absolute; top: 3%; left: 8.5%; width: 83%; height: 60%; object-fit: cover; border-radius: 5px 5px 0 0; z-index: 0; box-shadow: inset 0 0 10px rgba(0,0,0,0.2);" onerror="this.src='https://via.placeholder.com/800x450?text=Tenant+Dashboard'">
+                    </div>
+                    <p class="mt-4" style="font-size: 1rem; color: #555;">A user-friendly interface for tenants to view listings, pay rent, and communicate with property managers.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
     <!-- Start Choose Us Area -->
-    <!--==================================================-->
     <div class="choose-us-area">
         <div class="container-fluid pl-0 pr-50">
             <div class="row align-items-center">
@@ -664,191 +875,8 @@
             </div>
         </div>
     </div>
-    <!--==================================================-->
     <!-- End Choose Us Area -->
-    <!--==================================================-->
 
-    <!--==================================================-->
-    <!-- Start Service Area -->
-    <!--==================================================-->
-    <div class="service-area">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="section-title text-center">
-                        <div class="section-main-title">
-                            <h2>Discover Popular Properties in Kenya</h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="service_list owl-carousel">
-                    <!-- Property 1 -->
-                    <div class="col-lg-12">
-                        <div class="service-single-box">
-                            <div class="service-thumb">
-                                <img src="/assets/images/service/service1.png" alt="">
-                                <div class="service-rate">
-                                    <h4>KSh 100,000<span>/Month</span></h4>
-                                </div>
-                            </div>
-                            <div class="service-content">
-                                <div class="service-title">
-                                    <h4><a href="#">Modern Apartment with Scenic Views</a>
-                                    </h4>
-                                </div>
-                                <div class="service-description">
-                                    <p>Beautiful apartment located in the heart of Nairobi
-                                        with breathtaking views of the city.</p>
-                                </div>
-                                <div class="service-facilities">
-                                    <ul>
-                                        <li>
-                                            <div class="service-icon-thumb">
-                                                <img src="/assets/images/service/service-icon1.png" alt="">
-                                            </div>
-                                            <span>3 Bedrooms</span>
-                                        </li>
-                                        <li>
-                                            <div class="service-icon-thumb">
-                                                <img src="/assets/images/service/service-icon2.png" alt="">
-                                            </div>
-                                            <span>2 Bathrooms</span>
-                                        </li>
-                                        <li>
-                                            <div class="service-icon-thumb">
-                                                <img src="/assets/images/service/service-icon3.png" alt="">
-                                            </div>
-                                            <span>Parking</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="service-address">
-                                    <div class="service-location">
-                                        <span><i class="bi bi-geo-alt"></i> Lavington,
-                                            Nairobi</span>
-                                    </div>
-                                    <div class="service-icon">
-                                        <span><i class="bi bi-heart"></i></span>
-                                        <span><i class="bi bi-arrow-right"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Property 2 -->
-                    <div class="col-lg-12">
-                        <div class="service-single-box">
-                            <div class="service-thumb">
-                                <img src="assets/images/service/service2.png" alt="">
-                                <div class="service-rate">
-                                    <h4>KSh 80,000<span>/Month</span></h4>
-                                </div>
-                            </div>
-                            <div class="service-content">
-                                <div class="service-title">
-                                    <h4><a href="#">Spacious Single Family Home</a></h4>
-                                </div>
-                                <div class="service-description">
-                                    <p>A cozy family home located in the serene area of
-                                        Karen, perfect for your family.</p>
-                                </div>
-                                <div class="service-facilities">
-                                    <ul>
-                                        <li>
-                                            <div class="service-icon-thumb">
-                                                <img src="assets/images/service/service-icon1.png" alt="">
-                                            </div>
-                                            <span>4 Bedrooms</span>
-                                        </li>
-                                        <li>
-                                            <div class="service-icon-thumb">
-                                                <img src="assets/images/service/service-icon2.png" alt="">
-                                            </div>
-                                            <span>3 Bathrooms</span>
-                                        </li>
-                                        <li>
-                                            <div class="service-icon-thumb">
-                                                <img src="assets/images/service/service-icon3.png" alt="">
-                                            </div>
-                                            <span>Garage</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="service-address">
-                                    <div class="service-location">
-                                        <span><i class="bi bi-geo-alt"></i> Karen,
-                                            Nairobi</span>
-                                    </div>
-                                    <div class="service-icon">
-                                        <span><i class="bi bi-heart"></i></span>
-                                        <span><i class="bi bi-arrow-right"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Property 3 -->
-                    <div class="col-lg-12">
-                        <div class="service-single-box">
-                            <div class="service-thumb">
-                                <img src="/assets/images/service/service3.png" alt="">
-                                <div class="service-rate">
-                                    <h4>KSh 120,000<span>/Month</span></h4>
-                                </div>
-                            </div>
-                            <div class="service-content">
-                                <div class="service-title">
-                                    <h4><a href="#">Luxury Family Home with Pool</a></h4>
-                                </div>
-                                <div class="service-description">
-                                    <p>This luxurious family home in Gigiri comes with a pool
-                                        and spacious garden for relaxation.</p>
-                                </div>
-                                <div class="service-facilities">
-                                    <ul>
-                                        <li>
-                                            <div class="service-icon-thumb">
-                                                <img src="/assets/images/service/service-icon1.png" alt="">
-                                            </div>
-                                            <span>5 Bedrooms</span>
-                                        </li>
-                                        <li>
-                                            <div class="service-icon-thumb">
-                                                <img src="assets/images/service/service-icon2.png" alt="">
-                                            </div>
-                                            <span>4 Bathrooms</span>
-                                        </li>
-                                        <li>
-                                            <div class="service-icon-thumb">
-                                                <img src="/assets/images/service/service-icon3.png" alt="">
-                                            </div>
-                                            <span>Swimming Pool</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="service-address">
-                                    <div class="service-location">
-                                        <span><i class="bi bi-geo-alt"></i> Gigiri,
-                                            Nairobi</span>
-                                    </div>
-                                    <div class="service-icon">
-                                        <span><i class="bi bi-heart"></i></span>
-                                        <span><i class="bi bi-arrow-right"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Add more properties as needed... -->
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--==================================================-->
-    <!-- End Service Area -->
-    <!--==================================================-->
 
 
     <!--==================================================-->
@@ -934,135 +962,187 @@
     <!--==================================================-->
 
 
-    <!-- Pricing Section -->
-    <section id="pricing" class="py-5 bg-light">
-        <div class="container">
-            <h3 class="text-center mb-5" style="color: #001b36; font-size: 1.75rem;">
-                <i class="fas fa-tags mr-2"></i> <strong>Our Pricing Plans</strong>
-            </h3>
-            <p style="font-size: smaller;">Slide to view</p>
+<!-- Pricing Section -->
+<section id="pricing" class="py-5" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+    <div class="container">
+        <h3 class="text-center mb-5" style="color: #001b36; font-size: 2.25rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+            <i class="fas fa-tags mr-2" style="color: #003366;"></i> Our Pricing Plans
+        </h3>
+        <p class="text-center mb-4" style="font-size: 1rem; color: #000000;"><strong>Save more with yearly plans! Slide to view all options.</strong></p>
+        <div class="text-center mb-4" style="font-size: 1.1rem; font-weight: 500; color: #003366;">
+            <i class="fas fa-check-circle mr-2"></i> All plans include full features, including unlimited property listings!
+        </div>
 
-            <!-- Row for Pricing Cards with Responsive Layout -->
-            <div class="row flex-nowrap overflow-auto text-center">
-
-                <!-- Standard Plan -->
-                <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
-                    <div class="card h-100 shadow border-0">
-                        <div class="card-body text-center">
-                            <div class="feature-icon mb-3" style="font-size: 1.75rem; color: #003366;">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <h3 class="card-title" style="color: #003366; font-size: 1.5rem;">
-                                Standard</h3>
-                            <p class="lead" style="font-size: 1.1rem;">Up to 20 Units</p>
-                            <p class="font-weight-bold" style="font-size: 1.25rem;">
-                                Ksh.1,499 <span class="text-muted" style="font-size: 0.6rem; vertical-align: super;">/
-                                    month</span>
-                            </p>
-                            <p style="font-size: 0.8rem;">Designed for small property managers
-                                looking to streamline unit management.</p>
-                            <div class="hamilton-btn slider mt-3">
-                                <a href="/signup?plan=Standard">Get Started!</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Pro Plan -->
-                <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <div class="feature-icon mb-3" style="font-size: 1.75rem; color: #003366;">
-                                <i class="fas fa-building"></i>
-                            </div>
-                            <h3 class="card-title" style="color: #003366; font-size: 1.5rem;">Pro
-                            </h3>
-                            <p class="lead" style="font-size: 1.1rem;">Up to 50 Units</p>
-                            <p class="font-weight-bold" style="font-size: 1.25rem;">
-                                Ksh.2,999 <span class="text-muted" style="font-size: 0.8rem; vertical-align: super;">/
-                                    month</span>
-                            </p>
-                            <p style="font-size: 0.8rem;">Ideal for medium-sized portfolios seeking
-                                comprehensive management tools.</p>
-                            <div class="hamilton-btn slider mt-3">
-                                <a href="/signup?plan=Pro">Get Started!</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Advanced Plan -->
-                <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <div class="feature-icon mb-3" style="font-size: 1.75rem; color: #003366;">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <h3 class="card-title" style="color: #003366; font-size: 1.5rem;">
-                                Advanced</h3>
-                            <p class="lead" style="font-size: 1.1rem;">Up to 100 Units</p>
-                            <p class="font-weight-bold" style="font-size: 1.25rem;">
-                                Ksh.4,499 <span class="text-muted" style="font-size: 0.8rem; vertical-align: super;">/
-                                    month</span>
-                            </p>
-                            <p style="font-size: 0.8rem;">Perfect for larger portfolios, equipped
-                                with all essential features.</p>
-                            <div class="hamilton-btn slider mt-3">
-                                <a href="/signup?plan=Advanced">Get Started!</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Enterprise Plan -->
-                <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <div class="feature-icon mb-3" style="font-size: 1.75rem; color: #003366;">
-                                <i class="fas fa-city"></i>
-                            </div>
-                            <h3 class="card-title" style="color: #003366; font-size: 1.5rem;">
-                                Enterprise</h3>
-                            <p class="lead" style="font-size: 1.1rem;">Up to 150 Units</p>
-                            <p class="font-weight-bold" style="font-size: 1.25rem;">
-                                Ksh.6,999 <span class="text-muted" style="font-size: 0.8rem; vertical-align: super;">/
-                                    month</span>
-                            </p>
-                            <p style="font-size: 0.8rem;">Designed for substantial portfolios,
-                                offering complete management flexibility.</p>
-                            <div class="hamilton-btn slider mt-3">
-                                <a href="/signup?plan=Enterprise">Get Started!</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Custom Plan -->
-                <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-duration="1000">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <div class="feature-icon mb-3" style="font-size: 1.75rem; color: #003366;">
-                                <i class="fas fa-briefcase"></i>
-                            </div>
-                            <h3 class="card-title" style="color: #003366; font-size: 1.5rem;">
-                                Premium</h3>
-                            <p class="lead" style="font-size: 1.1rem;">Unlimited Units</p>
-                            <p class="font-weight-bold" style="font-size: 1.5rem;">Custom</p>
-                            <p style="font-size: 0.8rem;">Contact us for a personalized plan
-                                tailored to your portfolio’s specific needs.</p>
-                            <div class="hamilton-btn slider mt-3">
-                                <a href="/signup?plan=Custom">Get Started!</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+        <!-- Billing Toggle -->
+        <div class="d-flex justify-content-center mb-5">
+            <div class="toggle-wrapper" style="background: #fff; border-radius: 50px; padding: 5px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: inline-flex;">
+                <button type="button" class="btn toggle-btn active" id="monthlyToggle" style="border-radius: 50px; padding: 10px 25px; font-weight: 600; color: #003366; background: #e6f0fa; border: none; transition: all 0.3s ease;">
+                    Monthly
+                </button>
+                <button type="button" class="btn toggle-btn" id="yearlyToggle" style="border-radius: 50px; padding: 10px 25px; font-weight: 600; color: #666; background: transparent; border: none; transition: all 0.3s ease;">
+                    Yearly <span class="discount-tag" style="font-size: 0.75rem; color: #fff; background: #28a745; padding: 2px 8px; border-radius: 10px; margin-left: 5px;">Save 20%</span>
+                </button>
             </div>
         </div>
-    </section>
+
+        <!-- Row for Pricing Cards with Responsive Layout -->
+        <div class="row flex-nowrap overflow-auto text-center" id="pricingCards">
+
+            <!-- Standard Plan -->
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="zoom-in" data-aos-duration="1000">
+                <div class="card h-100 shadow-lg border-0" style="border-radius: 15px; transition: transform 0.3s;">
+                    <div class="card-body p-4">
+                        <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3 class="card-title" style="color: #003366; font-size: 1.75rem; font-weight: 600;">Standard</h3>
+                        <p class="lead" style="font-size: 1.2rem;">Up to 20 Units</p>
+                        <p class="font-weight-bold monthly-price" style="font-size: 1.5rem;">
+                           <strong> Ksh.1,499</strong> <span class="text-muted" style="font-size: 0.7rem; vertical-align: super;">/month</span>
+                        </p>
+                        <p class="font-weight-bold yearly-price d-none" style="font-size: 1.5rem;">
+                            <strong>Ksh.14,390</strong> <span class="text-muted" style="font-size: 0.7rem; vertical-align: super;">/year</span>
+                            <span class="badge badge-success ml-2">Save 20%</span>
+                        </p>
+                        <p style="font-size: 0.9rem; color: #555;">All features for small property managers, including unlimited listings.</p>
+                        <div class="hamilton-btn slider mt-4">
+                            <a href="/signup?plan=Standard" class="btn btn-primary btn-lg" style="border-radius: 25px; padding: 10px 25px;">Get Started</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pro Plan -->
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="zoom-in" data-aos-duration="1000">
+                <div class="card h-100 shadow-lg border-0" style="border-radius: 15px; transition: transform 0.3s;">
+                    <div class="card-body p-4">
+                        <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <h3 class="card-title" style="color: #003366; font-size: 1.75rem; font-weight: 600;">Pro</h3>
+                        <p class="lead" style="font-size: 1.2rem;">Up to 50 Units</p>
+                        <p class="font-weight-bold monthly-price" style="font-size: 1.5rem;">
+                            <strong>Ksh.2,999</strong> <span class="text-muted" style="font-size: 0.7rem; vertical-align: super;">/month</span>
+                        </p>
+                        <p class="font-weight-bold yearly-price d-none" style="font-size: 1.5rem;">
+                            <strong>Ksh.28,790</strong> <span class="text-muted" style="font-size: 0.7rem; vertical-align: super;">/year</span>
+                            <span class="badge badge-success ml-2">Save 20%</span>
+                        </p>
+                        <p style="font-size: 0.9rem; color: #555;">Full access for growing portfolios, with unlimited listings.</p>
+                        <div class="hamilton-btn slider mt-4">
+                            <a href="/signup?plan=Pro" class="btn btn-primary btn-lg" style="border-radius: 25px; padding: 10px 25px;">Get Started</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Plan -->
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="zoom-in" data-aos-duration="1000">
+                <div class="card h-100 shadow-lg border-0" style="border-radius: 15px; transition: transform 0.3s;">
+                    <div class="card-body p-4">
+                        <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="card-title" style="color: #003366; font-size: 1.75rem; font-weight: 600;">Advanced</h3>
+                        <p class="lead" style="font-size: 1.2rem;">Up to 100 Units</p>
+                        <p class="font-weight-bold monthly-price" style="font-size: 1.5rem;">
+                            <strong>Ksh.4,499</strong> <span class="text-muted" style="font-size: 0.7rem; vertical-align: super;">/month</span>
+                        </p>
+                        <p class="font-weight-bold yearly-price d-none" style="font-size: 1.5rem;">
+                            <strong>Ksh.43,190</strong> <span class="text-muted" style="font-size: 0.7rem; vertical-align: super;">/year</span>
+                            <span class="badge badge-success ml-2">Save 20%</span>
+                        </p>
+                        <p style="font-size: 0.9rem; color: #555;">Complete tools for large portfolios, unlimited listings included.</p>
+                        <div class="hamilton-btn slider mt-4">
+                            <a href="/signup?plan=Advanced" class="btn btn-primary btn-lg" style="border-radius: 25px; padding: 10px 25px;">Get Started</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enterprise Plan -->
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="zoom-in" data-aos-duration="1000">
+                <div class="card h-100 shadow-lg border-0" style="border-radius: 15px; transition: transform 0.3s;">
+                    <div class="card-body p-4">
+                        <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
+                            <i class="fas fa-city"></i>
+                        </div>
+                        <h3 class="card-title" style="color: #003366; font-size: 1.75rem; font-weight: 600;">Enterprise</h3>
+                        <p class="lead" style="font-size: 1.2rem;">Up to 150 Units</p>
+                        <p class="font-weight-bold monthly-price" style="font-size: 1.5rem;">
+                            <strong>Ksh.6,999</strong> <span class="text-muted" style="font-size: 0.7rem; vertical-align: super;">/month</span>
+                        </p>
+                        <p class="font-weight-bold yearly-price d-none" style="font-size: 1.5rem;">
+                            <strong></strong> <span class="text-muted" style="font-size: 0.7rem; vertical-align: super;">/year</span>
+                            <span class="badge badge-success ml-2">Save 20%</span>
+                        </p>
+                        <p style="font-size: 0.9rem; color: #555;">All features for extensive portfolios, unlimited listings.</p>
+                        <div class="hamilton-btn slider mt-4">
+                            <a href="/signup?plan=Enterprise" class="btn btn-primary btn-lg" style="border-radius: 25px; padding: 10px 25px;">Get Started</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Premium Plan -->
+            <div class="col-md-6 col-lg-3 mb-4" data-aos="zoom-in" data-aos-duration="1000">
+                <div class="card h-100 shadow-lg border-0" style="border-radius: 15px; transition: transform 0.3s; background: linear-gradient(135deg, #003366 0%, #0066cc 100%); color: white;">
+                    <div class="card-body p-4">
+                        <div class="feature-icon mb-3" style="font-size: 2rem; color: #fff;">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <h3 class="card-title" style="color: #fff; font-size: 1.75rem; font-weight: 600;">Premium</h3>
+                        <p class="lead" style="font-size: 1.2rem; color: #fff;">Unlimited Units</p>
+                        <p class="font-weight-bold" style="font-size: 1.75rem; color: #fff;">Custom Pricing</p>
+                        <p style="font-size: 0.9rem; color: #ddd;">Full features with unlimited listings, tailored to you.</p>
+                        <div class="hamilton-btn slider mt-4">
+                            <a href="/signup?plan=Premium" class="btn btn-light btn-lg" style="border-radius: 25px; padding: 10px 25px; color: #003366;">Contact Us</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- JavaScript for Toggle -->
+    <script>
+        const monthlyToggle = document.getElementById('monthlyToggle');
+        const yearlyToggle = document.getElementById('yearlyToggle');
+        const monthlyPrices = document.querySelectorAll('.monthly-price');
+        const yearlyPrices = document.querySelectorAll('.yearly-price');
+
+        monthlyToggle.addEventListener('click', function() {
+            this.classList.add('active');
+            this.style.background = '#e6f0fa';
+            this.style.color = '#003366';
+            yearlyToggle.classList.remove('active');
+            yearlyToggle.style.background = 'transparent';
+            yearlyToggle.style.color = '#666';
+            monthlyPrices.forEach(el => el.classList.remove('d-none'));
+            yearlyPrices.forEach(el => el.classList.add('d-none'));
+        });
+
+        yearlyToggle.addEventListener('click', function() {
+            this.classList.add('active');
+            this.style.background = '#e6f0fa';
+            this.style.color = '#003366';
+            monthlyToggle.classList.remove('active');
+            monthlyToggle.style.background = 'transparent';
+            monthlyToggle.style.color = '#666';
+            monthlyPrices.forEach(el => el.classList.add('d-none'));
+            yearlyPrices.forEach(el => el.classList.remove('d-none'));
+        });
+
+        // Card hover effect
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseenter', () => card.style.transform = 'scale(1.05)');
+            card.addEventListener('mouseleave', () => card.style.transform = 'scale(1)');
+        });
+    </script>
+</section>
 
 
-    <!--==================================================-->
 
 
     <!--==================================================-->

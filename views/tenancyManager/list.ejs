@@ -5,21 +5,17 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Lease Captain | Property Listing</title>
-
-    <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
-    <!-- overlayScrollbars -->
     <link rel="stylesheet" href="/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
-    <!-- Theme style -->
     <link rel="stylesheet" href="/dist/css/adminlte.min2167.css?v=3.2.0">
     <link rel="icon" type="image/png" sizes="56x56" href="/assets/images/1.png">
+    <!-- Add Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body data-is-new-user="<%= isNewUser ? 'true' : 'false' %>"
-    class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
+    class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
     <div class="wrapper">
 
         <!-- Preloader -->
@@ -45,32 +41,24 @@
                                 <input class="form-control form-control-navbar" type="search" placeholder="Search"
                                     aria-label="Search">
                                 <div class="input-group-append">
-                                    <button class="btn btn-navbar" type="submit">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                    <button class="btn btn-navbar" type="button" data-widget="navbar-search">
-                                        <i class="fas fa-times"></i>
-                                    </button>
+                                    <button class="btn btn-navbar" type="submit"><i class="fas fa-search"></i></button>
+                                    <button class="btn btn-navbar" type="button" data-widget="navbar-search"><i
+                                            class="fas fa-times"></i></button>
                                 </div>
                             </div>
                         </form>
                     </div>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link" data-toggle="dropdown" href="#">
-                        <i class="far fa-bell"></i>
-                        <span class="badge badge-warning navbar-badge"></span>
-                    </a>
+                    <a class="nav-link" data-bs-toggle="dropdown" href="#"><i class="far fa-bell"></i><span
+                            class="badge badge-warning navbar-badge"></span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-widget="fullscreen" href="#" role="button">
-                        <i class="fas fa-expand-arrows-alt"></i>
-                    </a>
+                    <a class="nav-link" data-widget="fullscreen" href="#" role="button"><i
+                            class="fas fa-expand-arrows-alt"></i></a>
                 </li>
                 <li class="nav-item">
-                    <a href="/logout" class="nav-link" role="button">
-                        <i class="nav-icon fas fa-sign-out-alt"></i>
-                    </a>
+                    <a href="/logout" class="nav-link" role="button"><i class="nav-icon fas fa-sign-out-alt"></i></a>
                 </li>
             </ul>
         </nav>
@@ -94,35 +82,248 @@
                         </a>
                     </div>
                 </div>
-                <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                        <li class="nav-item">
-                            <a href="/tenancy-manager/dashboard" class="nav-link">
-                                <i class="nav-icon fas fa-tachometer-alt"></i>
-                                <p>Dashboard</p>
-                            </a>
-                        </li>
-                        <li class="nav-header"><strong>PROPERTY MANAGEMENT</strong></li>
-                        <li class="nav-item">
-                            <a href="/tenancy-manager/properties" class="nav-link">
-                                <i class="nav-icon fas fa-building"></i>
-                                <p>Properties</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/tenancy-manager/property/units" class="nav-link">
-                                <i class="nav-icon fas fa-cogs"></i>
-                                <p>Property Units</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/tenancy-manager/propertyListing" class="nav-link active" style="background-color: #003366; color: #ffffff;">
-                                <i class="nav-icon fas fa-list-alt"></i>
-                                <p>List Properties</p>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
+                <!-- Sidebar Menu -->
+<nav class="mt-2">
+    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        <!-- Dashboard -->
+        <li class="nav-item">
+            <a href="/tenancy-manager/dashboard" class="nav-link active" style="background-color: #003366; color: #ffffff;">
+                <i class="nav-icon fas fa-tachometer-alt"></i>
+                <p>Dashboard</p>
+            </a>
+        </li>
+
+        <!-- Property Management -->
+        <li class="nav-header"><strong>PROPERTY MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/properties" class="nav-link">
+                <i class="nav-icon fas fa-building"></i>
+                <p>Properties</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/property/units" class="nav-link">
+                <i class="nav-icon fas fa-cogs"></i>
+                <p>Property Units</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/propertyListing" class="nav-link">
+                <i class="nav-icon fas fa-list-alt"></i>
+                <p>List Properties</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-chart-line"></i>
+                <p>
+                    Tenant Management
+                    <i class="right fas fa-angle-left"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="/tenancy-manager/tenants" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Tenants</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/maintenance-requests" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Maintenance Requests</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/tenancy-manager/tenant-reports" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Tenant Reports</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/tenancy-manager/rental-analytics" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Rental Analytics</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/tenancy-manager/vacancy-status" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Vacancy Status</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Land Management -->
+        <li class="nav-header"><strong>LAND MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/lands" class="nav-link">
+                <i class="nav-icon fas fa-map"></i>
+                <p>Registered Lands</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/land-parcels" class="nav-link">
+                <i class="nav-icon fas fa-th-large"></i>
+                <p>Land Parcels</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/land-reports" class="nav-link">
+                <i class="nav-icon fas fa-chart-area"></i>
+                <p>Land Reports</p>
+            </a>
+        </li>
+
+        <!-- Lease Management -->
+        <li class="nav-header"><strong>LEASE MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/leases" class="nav-link">
+                <i class="nav-icon fas fa-file-contract"></i>
+                <p>Leases</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/lease-templates" class="nav-link">
+                <i class="nav-icon fas fa-file-alt"></i>
+                <p>Lease Templates</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/lease-reports" class="nav-link">
+                <i class="nav-icon fas fa-chart-bar"></i>
+                <p>Lease Reports</p>
+            </a>
+        </li>
+
+        <!-- Vehicle Management -->
+        <li class="nav-header"><strong>VEHICLE MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/vehicles" class="nav-link">
+                <i class="nav-icon fas fa-car"></i>
+                <p>Registered Vehicles</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/vehicle-parking" class="nav-link">
+                <i class="nav-icon fas fa-parking"></i>
+                <p>Parking Spaces</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/vehicle-reports" class="nav-link">
+                <i class="nav-icon fas fa-clipboard-list"></i>
+                <p>Vehicle Reports</p>
+            </a>
+        </li>
+
+        <!-- Finance -->
+        <li class="nav-header"><strong>FINANCE MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/payments" class="nav-link">
+                <i class="nav-icon fas fa-money-bill-wave"></i>
+                <p>Payment Transactions</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/reports-invoices" class="nav-link">
+                <i class="nav-icon fas fa-file-invoice"></i>
+                <p>Reports & Invoices</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/expenses" class="nav-link">
+                <i class="nav-icon fas fa-wallet"></i>
+                <p>Expense Tracking</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/budget-planning" class="nav-link">
+                <i class="nav-icon fas fa-chart-pie"></i>
+                <p>Budget Planning</p>
+            </a>
+        </li>
+
+        <!-- Notifications -->
+        <li class="nav-header"><strong>NOTIFICATION MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/sms&email" class="nav-link">
+                <i class="nav-icon fas fa-sms"></i>
+                <p>SMS & Email</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/sms&email" class="nav-link">
+                <i class="nav-icon fas fa-credit-card"></i>
+                <p>Credit Top-up</p>
+            </a>
+        </li>
+
+        <!-- Staff Management -->
+        <li class="nav-header"><strong>STAFF MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/staff-directory" class="nav-link">
+                <i class="nav-icon fas fa-user-tie"></i>
+                <p>Staff Directory</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/staff-attendance" class="nav-link">
+                <i class="nav-icon fas fa-calendar-check"></i>
+                <p>Attendance</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/staff-payroll" class="nav-link">
+                <i class="nav-icon fas fa-file-invoice-dollar"></i>
+                <p>Payroll</p>
+            </a>
+        </li>
+
+        <!-- Account Management -->
+        <li class="nav-header"><strong>ACCOUNT MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/profile" class="nav-link">
+                <i class="nav-icon fas fa-user"></i>
+                <p>Profile Settings</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/security" class="nav-link">
+                <i class="nav-icon fas fa-lock"></i>
+                <p>Security Settings</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/connect" class="nav-link">
+                <i class="nav-icon fas fa-link"></i>
+                <p>Payment Gateway</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/users" class="nav-link">
+                <i class="nav-icon fas fa-users"></i>
+                <p>User Accounts</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/upgrade-subscription" class="nav-link">
+                <i class="nav-icon fas fa-arrow-circle-up"></i>
+                <p>Upgrade Subscription</p>
+            </a>
+        </li>
+        <!-- Support -->
+        <li class="nav-item mt-auto">
+            <a href="/contacts" class="nav-link d-flex align-items-center justify-content-center"
+                style="background-color: #003366; color: #ffffff; border-radius: 5px; margin: 10px;">
+                <i class="fas fa-headset mr-2"></i>
+                <p>Support</p>
+            </a>
+        </li>
+    </ul>
+</nav>
             </div>
         </aside>
 
@@ -149,10 +350,11 @@
                     <!-- Filter and Search Bar -->
                     <div class="row mb-4">
                         <div class="col-12">
-                            <div class="card p-3" style="background: linear-gradient(135deg, #003366, #00b4db); color: #fff;">
+                            <div class="card p-3" style="background: linear-gradient(135deg, #003366); color: #fff;">
                                 <div class="row align-items-center">
                                     <div class="col-md-4 mb-2 mb-md-0">
-                                        <input type="text" class="form-control" placeholder="Search properties..." style="border-radius: 20px;">
+                                        <input type="text" class="form-control" placeholder="Search properties..."
+                                            style="border-radius: 20px;">
                                     </div>
                                     <div class="col-md-6 mb-2 mb-md-0">
                                         <select class="form-control" style="border-radius: 20px;">
@@ -163,7 +365,8 @@
                                         </select>
                                     </div>
                                     <div class="col-md-2 text-md-right">
-                                        <button class="btn btn-success btn-block" data-toggle="modal" data-target="#addPropertyModal" style="border-radius: 20px;">
+                                        <button class="btn btn-info btn-block" data-bs-toggle="modal"
+                                            data-bs-target="#addPropertyModal" style="border-radius: 20px;">
                                             <i class="fas fa-plus"></i> Add Property
                                         </button>
                                     </div>
@@ -172,43 +375,248 @@
                         </div>
                     </div>
 
+                    <!-- Flash Messages -->
+                    <% if (error && error.length > 0) { %>
+                        <div class="alert alert-danger text-center" role="alert"><%= error %></div>
+                    <% } %>
+                    <% if (success && success.length > 0) { %>
+                        <div class="alert alert-success text-center" role="alert"><%= success %></div>
+                    <% } %>
+
                     <!-- Property Listings -->
                     <div class="row">
                         <% if (properties && properties.length > 0) { %>
                             <% properties.forEach(property => { %>
                                 <div class="col-md-4 col-sm-6 mb-4">
                                     <div class="card property-card h-100 shadow-lg">
-                                        <img src="<%= property.image || '/assets/images/default-property.jpg' %>" class="card-img-top" alt="<%= property.name %>">
+                                        <img src="<%= property.images && property.images.length > 0 ? property.images[0] : '/assets/images/default-property.jpg' %>"
+                                            class="card-img-top" alt="<%= property.name %>">
                                         <div class="card-body">
-                                            <h5 class="card-title text-primary font-weight-bold"><%= property.name || 'Unnamed Property' %></h5>
+                                            <h5 class="card-title text-primary font-weight-bold">
+                                                <%= property.name || 'Unnamed Property' %>
+                                            </h5>
                                             <p class="card-text text-muted">
-                                                <i class="fas fa-map-marker-alt"></i> <%= property.location || 'N/A' %>
+                                                <i class="fas fa-map-marker-alt"></i>
+                                                <%= property.location || 'N/A' %>
                                             </p>
                                             <p class="card-text">
-                                                <strong>Status:</strong> 
+                                                <strong>Status:</strong>
                                                 <span class="<%= property.status === 'available' ? 'text-success' : 
                                                     property.status === 'rented' ? 'text-warning' : 'text-danger' %>">
-                                                    <%= property.status ? property.status.charAt(0).toUpperCase() + property.status.slice(1) : 'N/A' %>
+                                                    <%= property.status ? 
+                                                        property.status.charAt(0).toUpperCase() + property.status.slice(1) : 'N/A' %>
                                                 </span>
                                             </p>
-                                            <p class="card-text"><strong>Price:</strong> Ksh. <%= property.price ? Number(property.price).toFixed(2) : '0.00' %>/mo</p>
+                                            <p class="card-text">
+                                                <strong>Price:</strong> Ksh. <%= property.price ? Number(property.price).toFixed(2) : '0.00' %>/month
+                                            </p>
                                         </div>
                                         <div class="card-footer text-center">
-                                            <a href="/tenancy-manager/propertyListing/<%= property.id %>" class="btn btn-sm btn-info">View Details</a>
-                                            <button class="btn btn-sm btn-warning edit-property-btn" 
-                                                    data-toggle="modal" 
-                                                    data-target="#editPropertyModal"
-                                                    data-id="<%= property.id %>"
-                                                    data-name="<%= property.name %>"
-                                                    data-location="<%= property.location %>"
-                                                    data-status="<%= property.status %>"
-                                                    data-price="<%= property.price %>"
-                                                    data-image="<%= property.image %>">
+                                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal" 
+                                                data-bs-target="#editPropertyModal_<%= property._id %>">
                                                 Edit
                                             </button>
+                                            <form action="/tenancy-manager/propertyListing/delete" method="POST" class="d-inline">
+                                                <input type="hidden" name="id" value="<%= property._id %>">
+                                                <button type="submit" class="btn btn-sm btn-danger" 
+                                                    onclick="return confirm('Are you sure you want to delete this property?');">
+                                                    Delete
+                                                </button>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
+
+<!-- Edit Property Modal -->
+<div class="modal fade" id="editPropertyModal_<%= property._id %>" tabindex="-1" 
+    aria-labelledby="editPropertyModalLabel_<%= property._id %>" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #003366; color: #fff;">
+                <h5 class="modal-title" id="editPropertyModalLabel_<%= property._id %>">
+                    Edit Property: <%= property.name || 'Unnamed' %>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" 
+                    aria-label="Close"></button>
+            </div>
+            <form id="editForm_<%= property._id %>" 
+                action="/tenancy-manager/propertyListing/edit/<%= property._id %>" 
+                method="POST" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="form-group mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" name="name" class="form-control" 
+                            value="<%= property.name || '' %>" required 
+                            minlength="2" maxlength="100">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label">Location</label>
+                        <input type="text" name="location" class="form-control" 
+                            value="<%= property.location || '' %>" required 
+                            minlength="2" maxlength="100">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label">Status</label>
+                        <select name="status" class="form-control" required>
+                            <option value="available" <%= property.status === 'available' ? 'selected' : '' %>>Available</option>
+                            <option value="rented" <%= property.status === 'rented' ? 'selected' : '' %>>Rented</option>
+                            <option value="maintenance" <%= property.status === 'maintenance' ? 'selected' : '' %>>Under Maintenance</option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label">Property Type</label>
+                        <select name="propertyType" class="form-control">
+                            <option value="">Any Type</option>
+                            <option value="Apartment" <%= property.propertyType === 'Apartment' ? 'selected' : '' %>>Apartment</option>
+                            <option value="Bungalow" <%= property.propertyType === 'Bungalow' ? 'selected' : '' %>>Bungalow</option>
+                            <option value="Maisonette" <%= property.propertyType === 'Maisonette' ? 'selected' : '' %>>Maisonette</option>
+                            <option value="Townhouse" <%= property.propertyType === 'Townhouse' ? 'selected' : '' %>>Townhouse</option>
+                            <option value="Single Family Home" <%= property.propertyType === 'Single Family Home' ? 'selected' : '' %>>Single Family Home</option>
+                            <option value="Farmhouse" <%= property.propertyType === 'Farmhouse' ? 'selected' : '' %>>Farmhouse</option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label">Category</label>
+                        <select name="category" class="form-control">
+                            <option value="">All Categories</option>
+                            <option value="Residential" <%= property.category === 'Residential' ? 'selected' : '' %>>Residential</option>
+                            <option value="Commercial" <%= property.category === 'Commercial' ? 'selected' : '' %>>Commercial</option>
+                            <option value="Agricultural" <%= property.category === 'Agricultural' ? 'selected' : '' %>>Agricultural</option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label">Price (Ksh/month)</label>
+                        <input type="number" name="price" class="form-control" step="0.01" 
+                            value="<%= property.price || '0.00' %>" required 
+                            min="0" max="99999999">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label">Bedrooms</label>
+                        <input type="number" name="bedrooms" class="form-control" 
+                            value="<%= property.bedrooms || 0 %>" required 
+                            min="0" max="50">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label">Bathrooms</label>
+                        <input type="number" name="bathrooms" class="form-control" 
+                            value="<%= property.bathrooms || 0 %>" required 
+                            min="0" max="50">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label">Facilities (select all that apply)</label>
+                        <div class="form-check">
+                            <input type="checkbox" name="facilities[]" value="Parking" 
+                                class="form-check-input" <%= property.facilities && property.facilities.includes('Parking') ? 'checked' : '' %> 
+                                id="parking_<%= property._id %>">
+                            <label class="form-check-label" for="parking_<%= property._id %>">Parking</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" name="facilities[]" value="Swimming Pool" 
+                                class="form-check-input" <%= property.facilities && property.facilities.includes('Swimming Pool') ? 'checked' : '' %> 
+                                id="pool_<%= property._id %>">
+                            <label class="form-check-label" for="pool_<%= property._id %>">Swimming Pool</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" name="facilities[]" value="Garage" 
+                                class="form-check-input" <%= property.facilities && property.facilities.includes('Garage') ? 'checked' : '' %> 
+                                id="garage_<%= property._id %>">
+                            <label class="form-check-label" for="garage_<%= property._id %>">Garage</label>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label" for="description_<%= property._id %>">Description</label>
+                        <textarea class="form-control" name="description" id="description_<%= property._id %>" 
+                            rows="3" maxlength="1000"><%= property.description || '' %></textarea>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label">Current Images</label>
+                        <div class="mt-2" id="imageContainer_<%= property._id %>">
+                            <% if (property.images && property.images.length > 0) { %>
+                                <% property.images.forEach((image, index) => { %>
+                                    <div class="d-inline-block position-relative me-2 mb-2 image-wrapper">
+                                        <img src="<%= image %>" class="img-fluid" style="max-height: 100px;" 
+                                            alt="Property Image">
+                                        <input type="checkbox" name="deleteImages[]" value="<%= image %>" 
+                                            id="deleteImage_<%= index %>_<%= property._id %>"
+                                            class="delete-checkbox position-absolute" style="top: 5px; right: 5px;">
+                                        <label for="deleteImage_<%= index %>_<%= property._id %>" 
+                                            class="btn btn-danger btn-sm position-absolute delete-btn" 
+                                            style="top: 0; right: 0;">X</label>
+                                    </div>
+                                <% }); %>
+                                <div class="mt-2">
+                                    <small class="form-text text-muted">Check boxes to mark images for deletion</small>
+                                    <button type="button" class="btn btn-sm btn-secondary ms-2" 
+                                        id="cancelDelete_<%= property._id %>">Cancel Deletions</button>
+                                </div>
+                            <% } else { %>
+                                <p>No images uploaded yet.</p>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label">Add New Images (up to 5 more)</label>
+                        <input type="file" name="images" class="form-control" accept="image/*" multiple>
+                        <small class="form-text text-muted">Minimum resolution: 800x600px. Max 5 images.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-warning" id="updateBtn_<%= property._id %>">
+                        Update Property
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Client-side validation and image deletion management
+    document.getElementById('editForm_<%= property._id %>').addEventListener('submit', function(e) {
+        const price = parseFloat(this.querySelector('[name="price"]').value);
+        const bedrooms = parseInt(this.querySelector('[name="bedrooms"]').value);
+        const bathrooms = parseInt(this.querySelector('[name="bathrooms"]').value);
+        
+        if (isNaN(price) || price < 0) {
+            e.preventDefault();
+            alert('Price must be a positive number');
+            return;
+        }
+        if (isNaN(bedrooms) || bedrooms < 0) {
+            e.preventDefault();
+            alert('Bedrooms must be a positive number');
+            return;
+        }
+        if (isNaN(bathrooms) || bathrooms < 0) {
+            e.preventDefault();
+            alert('Bathrooms must be a positive number');
+            return;
+        }
+    });
+
+    // Cancel image deletions
+    document.getElementById('cancelDelete_<%= property._id %>')?.addEventListener('click', function() {
+        const checkboxes = document.querySelectorAll('#imageContainer_<%= property._id %> .delete-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = false;
+        });
+    });
+
+    // Visual feedback for image deletion selection
+    document.querySelectorAll('#imageContainer_<%= property._id %> .delete-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const wrapper = this.closest('.image-wrapper');
+            if (this.checked) {
+                wrapper.style.opacity = '0.5';
+                wrapper.style.border = '2px solid red';
+            } else {
+                wrapper.style.opacity = '1';
+                wrapper.style.border = 'none';
+            }
+        });
+    });
+</script>
                             <% }); %>
                         <% } else { %>
                             <div class="col-12 text-center">
@@ -218,109 +626,102 @@
                             </div>
                         <% } %>
                     </div>
-                </div>
 
-                <!-- Add Property Modal -->
-                <div class="modal fade" id="addPropertyModal" tabindex="-1" role="dialog" aria-labelledby="addPropertyModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header" style="background-color: #003366; color: #fff;">
-                                <h5 class="modal-title" id="addPropertyModalLabel">Add New Property</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">×</span>
-                                </button>
+                    <!-- Add Property Modal -->
+                    <div class="modal fade" id="addPropertyModal" tabindex="-1" aria-labelledby="addPropertyModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header" style="background-color: #003366; color: #fff;">
+                                    <h5 class="modal-title" id="addPropertyModalLabel">Add New Property</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form action="/tenancy-manager/propertyListing/add" method="POST" enctype="multipart/form-data">
+                                    <div class="modal-body">
+                                        <div class="form-group mb-3">
+                                            <label>Name</label>
+                                            <input type="text" name="name" class="form-control" required>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label>Location</label>
+                                            <input type="text" name="location" class="form-control" required>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label>Status</label>
+                                            <select name="status" class="form-control">
+                                                <option value="available">Available</option>
+                                                <option value="rented">Rented</option>
+                                                <option value="maintenance">Under Maintenance</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label>Property Type</label>
+                                            <select name="propertyType" class="form-control">
+                                                <option value="">Any Type</option>
+                                                <option value="Apartment">Apartment</option>
+                                                <option value="Bungalow">Bungalow</option>
+                                                <option value="Maisonette">Maisonette</option>
+                                                <option value="Townhouse">Townhouse</option>
+                                                <option value="Single Family Home">Single Family Home</option>
+                                                <option value="Farmhouse">Farmhouse</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label>Category</label>
+                                            <select name="category" class="form-control">
+                                                <option value="">All Categories</option>
+                                                <option value="Residential">Residential</option>
+                                                <option value="Commercial">Commercial</option>
+                                                <option value="Agricultural">Agricultural</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label>Price (Ksh/month)</label>
+                                            <input type="number" name="price" class="form-control" step="0.01" required>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label>Bedrooms</label>
+                                            <input type="number" name="bedrooms" class="form-control" min="0" required>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label>Bathrooms</label>
+                                            <input type="number" name="bathrooms" class="form-control" min="0" required>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label>Facilities (select all that apply)</label>
+                                            <div>
+                                                <input type="checkbox" name="facilities[]" value="Parking"> Parking<br>
+                                                <input type="checkbox" name="facilities[]" value="Swimming Pool"> Swimming Pool<br>
+                                                <input type="checkbox" name="facilities[]" value="Garage"> Garage<br>
+                                                <input type="checkbox" name="facilities[]" value="Garden"> Garden<br>
+                                                <input type="checkbox" name="facilities[]" value="Security"> 24/7 Security<br>
+                                                <input type="checkbox" name="facilities[]" value="Gym"> Gym<br>
+                                                <input type="checkbox" name="facilities[]" value="Elevator"> Elevator<br>
+                                                <input type="checkbox" name="facilities[]" value="WiFi"> WiFi<br>
+                                                <input type="checkbox" name="facilities[]" value="Air Conditioning"> Air Conditioning<br>
+                                                <input type="checkbox" name="facilities[]" value="Balcony"> Balcony<br>
+                                                <input type="checkbox" name="facilities[]" value="CCTV"> CCTV Surveillance<br>
+                                                <input type="checkbox" name="facilities[]" value="Water Supply"> Backup Water Supply<br>
+                                                <input type="checkbox" name="facilities[]" value="Power Backup"> Power Backup<br>
+                                                <input type="checkbox" name="facilities[]" value="Terrace"> Terrace<br>
+                                                <input type="checkbox" name="facilities[]" value="Laundry"> Laundry Room
+                                            </div>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label for="description">Description</label>
+                                            <textarea class="form-control" name="description" rows="3"></textarea>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label>Property Images (up to 5)</label>
+                                            <input type="file" name="images" class="form-control" accept="image/*" multiple required>
+                                            <small class="form-text text-muted">Minimum resolution: 800x600px.</small>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-success">Add Property</button>
+                                    </div>
+                                </form>
                             </div>
-                            <form id="addPropertyForm" action="/tenancy-manager/propertyListing/add" method="POST" enctype="multipart/form-data">
-                                <div class="modal-body">
-                                    <div class="form-group">
-                                        <label>Name</label>
-                                        <input type="text" name="name" class="form-control" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Location</label>
-                                        <input type="text" name="location" class="form-control" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Status</label>
-                                        <select name="status" class="form-control">
-                                            <option value="available">Available</option>
-                                            <option value="rented">Rented</option>
-                                            <option value="maintenance">Under Maintenance</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Price (Ksh/month)</label>
-                                        <input type="number" name="price" class="form-control" step="0.01" required>
-                                    </div>
-                                    <div class="form-group">
-                                          <label for="description">Description</label>
-                                          <textarea class="form-control" name="description" rows="3"></textarea>
-                                      </div>
-                                    <div class="form-group">
-                                        <label>Property Image</label>
-                                        <input type="file" name="image" id="addImageInput" class="form-control-file" accept="image/*" required>
-                                        <img id="addImagePreview" class="img-fluid mt-2" style="max-height: 200px; display: none;" alt="Image Preview">
-                                        <small class="form-text text-muted">Minimum resolution: 800x600px</small>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-success">Add Property</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Edit Property Modal -->
-                <div class="modal fade" id="editPropertyModal" tabindex="-1" role="dialog" aria-labelledby="editPropertyModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header" style="background-color: #003366; color: #fff;">
-                                <h5 class="modal-title" id="editPropertyModalLabel">Edit Property</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">×</span>
-                                </button>
-                            </div>
-                            <form id="editPropertyForm" method="POST" enctype="multipart/form-data">
-                                <div class="modal-body">
-                                    <input type="hidden" name="id" id="editPropertyId">
-                                    <div class="form-group">
-                                        <label>Name</label>
-                                        <input type="text" name="name" id="editPropertyName" class="form-control" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Location</label>
-                                        <input type="text" name="location" id="editPropertyLocation" class="form-control" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Status</label>
-                                        <select name="status" id="editPropertyStatus" class="form-control">
-                                            <option value="available">Available</option>
-                                            <option value="rented">Rented</option>
-                                            <option value="maintenance">Under Maintenance</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Price (Ksh/month)</label>
-                                        <input type="number" name="price" id="editPropertyPrice" class="form-control" step="0.01" required>
-                                    </div>
-                                    <div class="form-group">
-                                          <label for="description">Description</label>
-                                          <textarea class="form-control" name="description" rows="3"></textarea>
-                                      </div>
-                                    <div class="form-group">
-                                        <label>Property Image</label>
-                                        <input type="file" name="image" id="editImageInput" class="form-control-file" accept="image/*">
-                                        <img id="editImagePreview" class="img-fluid mt-2" style="max-height: 200px;" alt="Current Image">
-                                        <small class="form-text text-muted">Minimum resolution: 800x600px (leave blank to keep current image)</small>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-warning">Update Property</button>
-                                </div>
-                            </form>
                         </div>
                     </div>
                 </div>
@@ -341,20 +742,12 @@
     </div>
 
     <!-- REQUIRED SCRIPTS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/plugins/jquery/jquery.min.js"></script>
-    <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
     <script src="/dist/js/adminlte2167.js?v=3.2.0"></script>
-    <script src="/plugins/jquery-mousewheel/jquery.mousewheel.js"></script>
-    <script src="/plugins/raphael/raphael.min.js"></script>
-    <script src="/plugins/jquery-mapael/jquery.mapael.min.js"></script>
-    <script src="/plugins/jquery-mapael/maps/usa_states.min.js"></script>
-    <script src="/plugins/chart.js/Chart.min.js"></script>
-    <script src="/dist/js/demo.js"></script>
-    <script src="/dist/js/pages/dashboard2.js"></script>
+    <script src="https://kit.fontawesome.com/your-kit-id.js" crossorigin="anonymous"></script>
 
-    <!-- Custom Styles -->
     <style>
         .property-card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -441,64 +834,6 @@
             }
         }
     </style>
-
-    <!-- Custom JavaScript -->
-    <script>
-        $(document).ready(function() {
-            // Edit Modal Population
-            $('.edit-property-btn').on('click', function() {
-                const id = $(this).data('id');
-                const name = $(this).data('name');
-                const location = $(this).data('location');
-                const status = $(this).data('status');
-                const price = $(this).data('price');
-                const image = $(this).data('image');
-
-                $('#editPropertyId').val(id);
-                $('#editPropertyName').val(name);
-                $('#editPropertyLocation').val(location);
-                $('#editPropertyStatus').val(status);
-                $('#editPropertyPrice').val(price);
-                $('#editImagePreview').attr('src', image || '/assets/images/default-property.jpg');
-                $('#editPropertyForm').attr('action', `/tenancy-manager/propertyListing/edit/${id}`);
-            });
-
-            // Image Preview and Quality Check for Add Modal
-            $('#addImageInput').on('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const img = new Image();
-                    img.onload = function() {
-                        if (img.width < 800 || img.height < 600) {
-                            alert('Image must be at least 800x600 pixels for quality.');
-                            $('#addImageInput').val('');
-                            $('#addImagePreview').hide();
-                        } else {
-                            $('#addImagePreview').attr('src', URL.createObjectURL(file)).show();
-                        }
-                    };
-                    img.src = URL.createObjectURL(file);
-                }
-            });
-
-            // Image Preview and Quality Check for Edit Modal
-            $('#editImageInput').on('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const img = new Image();
-                    img.onload = function() {
-                        if (img.width < 800 || img.height < 600) {
-                            alert('Image must be at least 800x600 pixels for quality.');
-                            $('#editImageInput').val('');
-                        } else {
-                            $('#editImagePreview').attr('src', URL.createObjectURL(file));
-                        }
-                    };
-                    img.src = URL.createObjectURL(file);
-                }
-            });
-        });
-    </script>
 </body>
 
 </html>

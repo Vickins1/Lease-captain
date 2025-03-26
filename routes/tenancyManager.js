@@ -21,30 +21,14 @@ const axios = require('axios')
 const SupportMessage = require('../models/supportMessage');
 const PropertyList = require('../models/propertyList');
 const path = require('path');
-
+const fs = require('fs');
+const multer = require('multer');
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: 'vickinstechnologies@gmail.com',
         pass: 'vnueayfgjstaazxh'
     }
-});
-
-// Route to render the verification page
-router.get('/verification', (req, res) => {
-    // Check if the user is logged in
-    if (!req.user) {
-        req.flash('error', 'You need to be logged in to access this page.');
-        return res.redirect('/login'); // Redirect to login if not authenticated
-    }
-
-    // Check if the user is already verified
-    if (req.user.isVerified) {
-        return res.redirect('/tenancy-manager/dashboard');
-    }
-
-    // Render the verification page if the user is not verified
-    res.render('verification', { user: req.user });
 });
 
 // Route to send verification email
@@ -58,7 +42,7 @@ router.get('/verify/:token', async (req, res) => {
 
         // Verify the user
         user.isVerified = true;
-        user.verificationToken = undefined; // Clear the verification token
+        user.verificationToken = undefined;
         await user.save();
 
         req.flash('success', 'Your email has been verified! You can now log in.');
@@ -145,14 +129,14 @@ const sendWelcomeEmail = async (email, username, verificationToken) => {
                         display: inline-block;
                         padding: 12px 20px;
                         background-color: #003366;
-                        color: white;
+                        color: #ffffff;
                         text-decoration: none;
                         border-radius: 5px;
                         margin-top: 10px;
                         text-align: center;
                     }
                     .cta-button:hover {
-                        background-color: #00509E;
+                        background-color:rgb(0, 85, 171);
                     }
                 </style>
         </head>
@@ -1974,8 +1958,6 @@ router.post('/reset-password', async (req, res) => {
     }
 });
 
-
-
 // Authentication middleware
 const ensureAuthenticated = (req, res, next) => {
     if (req.isAuthenticated()) {
@@ -1984,15 +1966,40 @@ const ensureAuthenticated = (req, res, next) => {
     res.redirect('/login');
 };
 
+// Ensure uploads directory exists
+const uploadDir = path.join(__dirname, '../public/uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Multer configuration
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, uploadDir),
+    filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
+});
+
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 },
+    fileFilter: (req, file, cb) => {
+        const filetypes = /jpeg|jpg|png/;
+        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+        const mimetype = filetypes.test(file.mimetype);
+        if (extname && mimetype) cb(null, true);
+        else cb(new Error('Only images (jpeg, jpg, png) are allowed!'));
+    }
+});
+
 // GET: Property Listing
 router.get('/tenancy-manager/propertyListing', ensureAuthenticated, async (req, res) => {
     try {
-        // Fetch properties from MongoDB, filtered by the authenticated user's ID
         const properties = await PropertyList.find({ owner: req.user._id }).lean();
         res.render('tenancyManager/list', {
             currentUser: req.user,
             isNewUser: req.user.isNewUser || false,
-            properties: properties || []
+            properties: properties || [],
+            success_msg: req.flash('success_msg'),
+            error_msg: req.flash('error_msg')
         });
     } catch (err) {
         console.error(err);
@@ -2000,21 +2007,182 @@ router.get('/tenancy-manager/propertyListing', ensureAuthenticated, async (req, 
     }
 });
 
-// GET: View Property Details
-router.get('/tenancy-manager/propertyListing/:id', ensureAuthenticated, async (req, res) => {
+// POST: Add Property
+router.post('/tenancy-manager/propertyListing/add', ensureAuthenticated, upload.array('images', 5), async (req, res) => {
     try {
-        const property = await PropertyList.findOne({ _id: req.params.id, owner: req.user._id }).lean();
-        if (!property) {
-            return res.status(404).send('Property not found');
-        }
-        res.render('propertyDetails', {
-            currentUser: req.user,
-            isNewUser: req.user.isNewUser || false,
-            property: property
+        const { name, location, status, price, description, bedrooms, bathrooms, facilities, propertyType, category } = req.body;
+        const imagePaths = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
+        const newProperty = new PropertyList({
+            name,
+            location,
+            status,
+            price,
+            description,
+            bedrooms: parseInt(bedrooms),
+            bathrooms: parseInt(bathrooms),
+            facilities: Array.isArray(facilities) ? facilities : facilities ? [facilities] : [],
+            propertyType,
+            category,
+            images: imagePaths,
+            owner: req.user._id
         });
+        await newProperty.save();
+        req.flash('success', 'Property added successfully');
+        res.redirect('/tenancy-manager/propertyListing');
     } catch (err) {
         console.error(err);
-        res.status(500).send('Server Error');
+        req.flash('error', 'Failed to add property');
+        res.redirect('/tenancy-manager/propertyListing');
+    }
+});
+
+router.post('/tenancy-manager/propertyListing/edit/:id', ensureAuthenticated, upload.array('images', 5), async (req, res) => {
+    try {
+        const propertyId = req.params.id;
+        const property = await PropertyList.findById(propertyId);
+        
+        if (!property) {
+            req.flash('error', 'Property not found');
+            return res.redirect('/tenancy-manager/propertyListing');
+        }
+
+        // Check if user is the owner
+        if (property.owner.toString() !== req.user._id.toString()) {
+            req.flash('error', 'Unauthorized to edit this property');
+            return res.redirect('/tenancy-manager/propertyListing');
+        }
+
+        // Prepare update object with type coercion and validation
+        const updateData = {
+            name: req.body.name?.trim(),
+            location: req.body.location?.trim(),
+            status: req.body.status,
+            price: parseFloat(req.body.price) || 0,
+            description: req.body.description?.trim(),
+            bedrooms: parseInt(req.body.bedrooms) || 0,
+            bathrooms: parseInt(req.body.bathrooms) || 0,
+            facilities: Array.isArray(req.body.facilities) ? req.body.facilities : 
+                       req.body.facilities ? [req.body.facilities] : [],
+            propertyType: req.body.propertyType,
+            category: req.body.category
+        };
+
+        // Handle image deletions
+        let imagesToKeep = property.images || [];
+        if (req.body.deleteImages) {
+            const deleteImages = Array.isArray(req.body.deleteImages) ? 
+                req.body.deleteImages : [req.body.deleteImages];
+            
+            // Remove selected images and delete files from server
+            deleteImages.forEach(imagePath => {
+                imagesToKeep = imagesToKeep.filter(img => img !== imagePath);
+                const filePath = path.join(__dirname, '../public', imagePath);
+                if (fs.existsSync(filePath)) {
+                    try {
+                        fs.unlinkSync(filePath);
+                    } catch (fileError) {
+                        console.error(`Failed to delete file ${imagePath}:`, fileError);
+                    }
+                }
+            });
+        }
+
+        // Handle new images if uploaded
+        if (req.files && req.files.length > 0) {
+            const newImages = req.files.map(file => `/uploads/${file.filename}`);
+            updateData.images = [...imagesToKeep, ...newImages];
+            
+            // Validate total image count
+            if (updateData.images.length > 10) {
+                throw new Error('Maximum of 10 images allowed');
+            }
+        } else {
+            updateData.images = imagesToKeep; // Preserve remaining images
+        }
+
+        // Additional validation
+        if (!updateData.name || updateData.name.length < 2) {
+            throw new Error('Name must be at least 2 characters');
+        }
+        if (!updateData.location || updateData.location.length < 2) {
+            throw new Error('Location must be at least 2 characters');
+        }
+        if (!['available', 'rented', 'maintenance'].includes(updateData.status)) {
+            throw new Error('Invalid status value');
+        }
+        if (updateData.price < 0) {
+            throw new Error('Price cannot be negative');
+        }
+        if (updateData.bedrooms < 0) {
+            throw new Error('Bedrooms cannot be negative');
+        }
+        if (updateData.bathrooms < 0) {
+            throw new Error('Bathrooms cannot be negative');
+        }
+
+        // Update property
+        const updatedProperty = await PropertyList.findByIdAndUpdate(
+            propertyId,
+            { $set: updateData },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedProperty) {
+            throw new Error('Update operation failed');
+        }
+
+        req.flash('success', 'Property updated successfully');
+        res.redirect('/tenancy-manager/propertyListing');
+    } catch (error) {
+        console.error('Error updating property:', error);
+        req.flash('error', 'Error updating property: ' + error.message);
+        
+        // Clean up uploaded files if update fails
+        if (req.files && req.files.length > 0) {
+            req.files.forEach(file => {
+                const filePath = path.join(__dirname, '../public/uploads', file.filename);
+                if (fs.existsSync(filePath)) {
+                    try {
+                        fs.unlinkSync(filePath);
+                    } catch (fileError) {
+                        console.error(`Failed to clean up file ${filePath}:`, fileError);
+                    }
+                }
+            });
+        }
+        
+        res.redirect('/tenancy-manager/propertyListing');
+    }
+});
+
+// POST: Delete Property
+router.post('/tenancy-manager/propertyListing/delete', ensureAuthenticated, async (req, res) => {
+    try {
+        const { id } = req.body;
+        const property = await PropertyList.findById(id);
+        
+        if (!property || property.owner.toString() !== req.user._id.toString()) {
+            req.flash('error', 'Property not found or unauthorized');
+            return res.redirect('/tenancy-manager/propertyListing');
+        }
+
+        // Optionally delete associated images from the server
+        if (property.images && property.images.length > 0) {
+            property.images.forEach(image => {
+                const filePath = path.join(__dirname, '../public', image);
+                if (fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                }
+            });
+        }
+
+        await PropertyList.deleteOne({ _id: id });
+        req.flash('success', 'Property deleted successfully');
+        res.redirect('/tenancy-manager/propertyListing');
+    } catch (err) {
+        console.error(err);
+        req.flash('error', 'Failed to delete property');
+        res.redirect('/tenancy-manager/propertyListing');
     }
 });
 
