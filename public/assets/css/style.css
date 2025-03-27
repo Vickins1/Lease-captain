@@ -1,41 +1,3 @@
-/*=========================================================
-Template Name:Hamilton-Real Estate & Property HTML5 Template
-https://www.templatemonster.com/authors/techtime/
-Description: Description
-Version: 1.0.0
-Text Domain: Hamilton
-Tags: 	agency, Business Agency, Business Consultant, business optimization, company website, consultancy, Hamiltonng, Hamiltonng Firm, corporate solutions, digital agency, financial analysis, market trends analysis, Strategic insights
-================================================*/
-
-/*TABLE OF CONTENTS*/
-/*=====================
-01. Hamilton Header Top Menu Area Css
-02. Hamilton Nav Menu Area Css 
-03. Hamilton Slider Area Css
-04. Hamilton Section Title Css
-05. Hamilton Service Area css
-06. Hamilton About Area Css
-07. Hamilton Counter Area Css
-08. Hamilton Testimonial Area Css
-09. Hamilton Process Area Css
-10. Hamilton Team Area Css
-11. Hamilton Faq Area Css
-12. Hamilton Call Do Section Css
-13. Hamilton Form Box Css
-14. Hamilton Blog Area Css
-15. Hamilton footer Area Css
-16. Hamilton Subscribe Area Css
-17. Hamilton Prossess Ber Css
-18. Hamilton Scrollup Section
-19. Hamilton Breadcumb Area Css
-20. Hamilton abouts_areas Css
-21. Hamilton Pricing Section Css
-22. Hamilton Contact  US Css
-23. Hamilton Blog Sidber Widget CSS
-24. Hamilton Search Box Css
-25. Hamilton Loader Css
-=======================*/
-
 
 
 
@@ -153,7 +115,7 @@ Tags: 	agency, Business Agency, Business Consultant, business optimization, comp
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 0;
+    padding: 7px 0;
 }
 
 .header-menu ul {
