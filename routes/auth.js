@@ -159,6 +159,7 @@ router.post('/signup', async (req, res) => {
       .then(async () => {
         try {
           await sendWelcomeEmail(email, username, user.verificationToken);
+          await sendWelcomeSMS(phone, username);
           req.flash('success', 'Successfully signed up! Please check your email or spam to verify your account.');
           res.redirect('/login');
         } catch (emailErr) {
@@ -177,7 +178,6 @@ router.post('/signup', async (req, res) => {
     res.redirect('/signup');
   }
 });
-
 
 const planRates = {
   'Basic': 0,
@@ -323,10 +323,11 @@ const sendWelcomeSMS = async (phone, username) => {
   try {
     const response = await axios.post(
       'https://api.umeskiasoftwares.com/api/v1/sms',
+      
       {
-        api_key: "VEpGOTVNTlY6dnUxaG5odHA=",
-        email: "vickinstechnologies@gmail.com",
-        Sender_Id: "UMS_SMS",
+        api_key: process.env.SMS_API_KEY,
+        email: process.env.SMS_EMAIL,
+        Sender_Id: process.env.SMS_SENDER_ID,
         message: message,
         phone: phone
       },
@@ -431,11 +432,11 @@ router.post('/login', (req, res, next) => {
         sessionData.lockoutUntil = null;
 
         await user.save();
-        return res.redirect('/tenancy-manager/dashboard'); // Adjusted path
+        return res.redirect('/dashboard');
       } catch (saveErr) {
         console.error('Error saving login activity:', saveErr);
         req.flash('error', 'Login successful, but an error occurred. Contact support.');
-        return res.redirect('/tenancy-manager/dashboard');
+        return res.redirect('/dashboard');
       }
     });
   })(req, res, next);

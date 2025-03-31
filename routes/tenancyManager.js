@@ -166,7 +166,7 @@ const sendWelcomeEmail = async (email, username, verificationToken) => {
     }
 };
 
-router.get('/tenancy-manager/dashboard', async (req, res) => {
+router.get('/dashboard', async (req, res) => {
     try {
         if (!req.user) {
             req.flash('error', 'Please log in to access the dashboard');
@@ -365,7 +365,7 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
     }
 });
 
-router.get('/tenancy-manager/dashboard/rent-data', async (req, res) => {
+router.get('/dashboard/rent-data', async (req, res) => {
     try {
         // Check if user is authenticated
         if (!req.user) {
@@ -448,114 +448,6 @@ router.post('/api/user/complete-tour', async (req, res) => {
     }
 });
 
-router.get('/subscription', async (req, res) => {
-    try {
-        if (!req.user) {
-            req.flash('error', 'Please log in to view subscription details.');
-            return res.redirect('/login');
-        }
-        // Fetch user from database to ensure latest data
-        const user = await mongoose.model('User').findById(req.user._id);
-        if (!user) {
-            req.flash('error', 'User not found.');
-            return res.redirect('/login');
-        }
-
-        // Define pricing for both monthly and yearly plans
-        const planAmounts = {
-            'Basic': { monthly: 0, yearly: 0 },
-            'Standard': { monthly: 1499, yearly: 14390 },
-            'Pro': { monthly: 2999, yearly: 28790 },
-            'Advanced': { monthly: 4499, yearly: 43190 },
-            'Enterprise': { monthly: 6999, yearly: 67190 },
-            'Premium': { monthly: null, yearly: null },
-        };
-
-        const planDetails = {
-            'Basic': {
-                'monthly': { amount: 0, units: 5 },
-                'yearly': { amount: 0, units: 5 }
-            },
-            'Standard': {
-                'monthly': { amount: 1499, units: 20 },
-                'yearly': { amount: 14390, units: 20 }
-            },
-            'Pro': {
-                'monthly': { amount: 2999, units: 50 },
-                'yearly': { amount: 28790, units: 50 }
-            },
-            'Advanced': {
-                'monthly': { amount: 4499, units: 100 },
-                'yearly': { amount: 43190, units: 100 }
-            },
-            'Enterprise': {
-                'monthly': { amount: 6999, units: 150 },
-                'yearly': { amount: 67190, units: 150 }
-            },
-            'Premium': {
-                'monthly': { amount: null, units: "Contact Support for Pricing" },
-                'yearly': { amount: null, units: "Contact Support for Pricing" }
-            },
-        };
-
-        // Extract user plan and billing period from the model
-        let userPlan = user.plan || 'Basic';
-        const billingPeriod = user.paymentStatus?.billingPeriod || 'monthly';
-
-        // Normalize plan name (remove billing period suffix if present)
-        const planTier = userPlan.replace(/-(Monthly|Yearly)$/, '');
-        const expectedBillingPeriod = userPlan.includes('Monthly') ? 'monthly' : userPlan.includes('Yearly') ? 'yearly' : billingPeriod;
-
-        // Validate if planTier exists in planDetails
-        if (!planDetails[planTier]) {
-            console.error(`Invalid plan: ${planTier}`);
-            req.flash('error', 'Invalid subscription plan. Defaulting to Basic.');
-            user.plan = 'Basic';
-            await user.save();
-            return res.redirect('/subscription');
-        }
-
-        // Validate if billingPeriod exists for the selected plan
-        if (!planDetails[planTier][expectedBillingPeriod]) {
-            console.error(`Invalid billing period: ${expectedBillingPeriod} for plan ${planTier}`);
-            req.flash('error', 'Invalid billing period. Defaulting to monthly.');
-            user.paymentStatus.billingPeriod = 'monthly';
-            user.plan = `${planTier}-Monthly`; // Update plan to match schema enum
-            await user.save();
-            return res.redirect('/subscription');
-        }
-
-        const expectedAmount = planAmounts[planTier][expectedBillingPeriod] || 0;
-        const hasPaid = user.paymentStatus?.status === 'completed';
-        const transactionId = user.paymentStatus?.transactionId || '';
-
-        if (hasPaid) {
-            req.flash('success', 'You have already paid for this subscription.');
-            return res.redirect('/tenancy-manager/dashboard');
-        }
-
-        res.render('subscription', {
-            plan: planTier,
-            billingPeriod: expectedBillingPeriod,
-            expectedAmount,
-            hasPaid,
-            currentUser: user,
-            planDetails,
-            planAmounts,
-            transactionId,
-            messages: {
-                success: req.flash('success') || [],
-                error: req.flash('error') || [],
-                info: req.flash('info') || [],
-            },
-        });
-    } catch (err) {
-        console.error('Error loading subscription page:', err);
-        req.flash('error', 'An error occurred while loading the subscription page. Please try again later.');
-        return res.redirect('/login');
-    }
-});
-
 router.get('/upgrade-subscription', async (req, res) => {
     try {
         if (!req.user) {
@@ -564,12 +456,12 @@ router.get('/upgrade-subscription', async (req, res) => {
         }
 
         const planDetails = {
-            Basic: { amount: 0, units: 5 },
-            Standard: { amount: 1499, units: 20 },
-            Pro: { amount: 2999, units: 50 },
-            Advanced: { amount: 4499, units: 100 },
-            Enterprise: { amount: 6999, units: 150 },
-            Premium: { amount: null, units: "Contact Support for Pricing" },
+            Basic: { amountMonthly: 0, amountYearly: 0, units: 5 },
+            Standard: { amountMonthly: 1499, amountYearly: Math.round(1499 * 12 * 0.8), units: 20 },
+            Pro: { amountMonthly: 2999, amountYearly: Math.round(2999 * 12 * 0.8), units: 50 },
+            Advanced: { amountMonthly: 4499, amountYearly: Math.round(4499 * 12 * 0.8), units: 100 },
+            Enterprise: { amountMonthly: 6999, amountYearly: Math.round(6999 * 12 * 0.8), units: 150 },
+            Premium: { amountMonthly: null, amountYearly: null, units: "Contact Support for Pricing" },
         };
 
         res.render('tenancyManager/upgrade', {
@@ -585,7 +477,7 @@ router.get('/upgrade-subscription', async (req, res) => {
     } catch (err) {
         console.error('Error loading upgrade subscription page:', err);
         req.flash('error', 'An error occurred while loading the subscription page. Please try again later.');
-        return res.redirect('/tenancy-manager/dashboard');
+        return res.redirect('/dashboard');
     }
 });
 
@@ -760,7 +652,7 @@ router.post('/subscription', async (req, res) => {
             account_id: 'UMPAY772831690',
             amount: Math.floor(parseFloat(amount)).toString(),
             msisdn: msisdn.trim(),
-            reference: `L-${Date.now()}`,
+            reference: `VT${Date.now()}`,
         };
 
         const paymentResponse = await sendPaymentRequest(payload, req, res);
@@ -779,6 +671,115 @@ router.post('/subscription', async (req, res) => {
     } catch (error) {
         console.error('Error in /subscription:', error.message);
         res.status(500).json({ message: 'An unexpected error occurred.' });
+    }
+});
+
+router.get('/subscription', async (req, res) => {
+    try {
+        if (!req.user) {
+            req.flash('error', 'Please log in to view subscription details.');
+            return res.redirect('/login');
+        }
+
+        // Fetch user from database to ensure latest data
+        const user = await mongoose.model('User').findById(req.user._id);
+        if (!user) {
+            req.flash('error', 'User not found.');
+            return res.redirect('/login');
+        }
+
+        // Define pricing for both monthly and yearly plans
+        const planAmounts = {
+            'Basic': { monthly: 0, yearly: 0 },
+            'Standard': { monthly: 1499, yearly: 14390 },
+            'Pro': { monthly: 2999, yearly: 28790 },
+            'Advanced': { monthly: 4499, yearly: 43190 },
+            'Enterprise': { monthly: 6999, yearly: 67190 },
+            'Premium': { monthly: null, yearly: null },
+        };
+
+        const planDetails = {
+            'Basic': { 
+                'monthly': { amount: 0, units: 5 },
+                'yearly': { amount: 0, units: 5 }
+            },
+            'Standard': { 
+                'monthly': { amount: 1499, units: 20 },
+                'yearly': { amount: 14390, units: 20 }
+            },
+            'Pro': { 
+                'monthly': { amount: 2999, units: 50 },
+                'yearly': { amount: 28790, units: 50 }
+            },
+            'Advanced': { 
+                'monthly': { amount: 4499, units: 100 },
+                'yearly': { amount: 43190, units: 100 }
+            },
+            'Enterprise': { 
+                'monthly': { amount: 6999, units: 150 },
+                'yearly': { amount: 67190, units: 150 }
+            },
+            'Premium': { 
+                'monthly': { amount: null, units: "Contact Support for Pricing" },
+                'yearly': { amount: null, units: "Contact Support for Pricing" }
+            },
+        };
+
+        // Extract user plan and billing period from the model
+        let userPlan = user.plan || 'Basic';
+        const billingPeriod = user.paymentStatus?.billingPeriod || 'monthly';
+
+        // Normalize plan name 
+        const planTier = userPlan.replace(/-(Monthly|Yearly)$/, '');
+        const expectedBillingPeriod = userPlan.includes('Monthly') ? 'monthly' : userPlan.includes('Yearly') ? 'yearly' : billingPeriod;
+
+        // Validate if planTier exists in planDetails
+        if (!planDetails[planTier]) {
+            console.error(`Invalid plan: ${planTier}`);
+            req.flash('error', 'Invalid subscription plan. Defaulting to Basic.');
+            user.plan = 'Basic';
+            await user.save();
+            return res.redirect('/subscription');
+        }
+
+        // Validate if billingPeriod exists for the selected plan
+        if (!planDetails[planTier][expectedBillingPeriod]) {
+            console.error(`Invalid billing period: ${expectedBillingPeriod} for plan ${planTier}`);
+            req.flash('error', 'Invalid billing period. Defaulting to monthly.');
+            user.paymentStatus.billingPeriod = 'monthly';
+            user.plan = `${planTier}-Monthly`; // Update plan to match schema enum
+            await user.save();
+            return res.redirect('/subscription');
+        }
+
+        const expectedAmount = planAmounts[planTier][expectedBillingPeriod] || 0;
+        const hasPaid = user.paymentStatus?.status === 'completed';
+        const transactionId = user.paymentStatus?.transactionId || '';
+
+        if (hasPaid) {
+            req.flash('success', 'You have already paid for this subscription.');
+            return res.redirect('/dashboard');
+        }
+
+        res.render('subscription', {
+            plan: planTier,
+            billingPeriod: expectedBillingPeriod,
+            expectedAmount,
+            hasPaid,
+            currentUser: user,
+            planDetails,
+            planAmounts,
+            transactionId,
+            messages: {
+                success: req.flash('success') || [],
+                error: req.flash('error') || [],
+                info: req.flash('info') || [],
+            },
+        });
+    } catch (err) {
+        console.error('Error loading subscription page:', err);
+        req.flash('error', 'An error occurred while loading the subscription page. Please try again later.');
+        return res.redirect('/dashboard');
     }
 });
 
@@ -966,7 +967,7 @@ router.post('/submit', async (req, res) => {
 
     if (!emailAddress || !supportMessage) {
         req.flash('error', 'Please fill in all required fields.');
-        return res.redirect('/tenancy-manager/dashboard');
+        return res.redirect('/dashboard');
     }
 
     try {
@@ -990,11 +991,11 @@ router.post('/submit', async (req, res) => {
         await transporter.sendMail(mailOptions);
 
         req.flash('success', 'Your support message has been sent successfully.');
-        res.redirect('/tenancy-manager/dashboard');
+        res.redirect('/dashboard');
     } catch (error) {
         console.error('Error sending support message:', error);
         req.flash('error', 'An error occurred while sending your message.');
-        res.redirect('/tenancy-manager/dashboard');
+        res.redirect('/dashboard');
     }
 });
 
@@ -1141,7 +1142,9 @@ const getMaxTenants = (plan) => {
         Premium: Infinity,
     };
 
-    return tenantsLimit[plan] || 0;
+    const basePlan = plan.split('-')[0];
+
+    return tenantsLimit[basePlan] || 0;
 };
 
 router.post('/tenancy-manager/tenant/new', async (req, res) => {
@@ -1487,7 +1490,7 @@ router.get('/tenancy-manager/payments', isTenancyManager, async (req, res) => {
     } catch (error) {
         console.error("Error fetching payments:", error);
         req.flash('error', 'Internal Server Error while fetching payments.');
-        res.redirect('/tenancy-manager/payments');
+        res.redirect('/dasboard');
     }
 });
 
@@ -1506,7 +1509,6 @@ router.get('/api/tenants/:id', async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 });
-
 
 router.get('/reports-invoices', async (req, res) => {
     try {
@@ -1641,10 +1643,9 @@ router.get('/maintenance-requests', isTenancyManager, async (req, res) => {
         // Log the error and redirect if an issue occurs
         console.error('Error fetching maintenance requests:', err);
         req.flash('error', 'Error fetching maintenance requests.');
-        res.redirect('/tenancy-manager/dashboard');
+        res.redirect('/dashboard');
     }
 });
-
 
 //POST Maintenance Request
 router.post('/maintenance-requests/:id', isTenancyManager, async (req, res) => {
@@ -1878,7 +1879,6 @@ router.post('/templates/delete/:id', isTenancyManager, async (req, res) => {
     }
 });
 
-
 // Create and dispatch a new reminder via email or SMS
 router.post('/reminders/create', isTenancyManager, async (req, res) => {
     try {
@@ -1951,8 +1951,6 @@ router.post('/reminders/delete/:id', isTenancyManager, async (req, res) => {
         res.redirect('/sms&email');
     }
 });
-
-
 
 // POST /forgot-password
 router.post('/forgot-password', async (req, res) => {

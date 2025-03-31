@@ -42,8 +42,8 @@ router.post('/tenant/login', async (req, res) => {
         req.session.tenant = {
             name: tenant.name,
             email: tenant.email,
-            property: tenant.property, // if you need to access property details later
-            unit: tenant.unit          // and/or unit details
+            property: tenant.property,
+            unit: tenant.unit 
         };
 
         req.flash('success', `Login successful. Welcome, ${tenant.name}! Manage your payments efficiently and easily.`);

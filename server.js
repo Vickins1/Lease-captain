@@ -94,7 +94,6 @@ app.use('/', tenantPortalRoutes);
 app.use('/', paymentGatewayRoutes);
 app.use('/', sendRemindersRoutes);
 
-
 // GET: Landing Page with Search
 app.get('/', async (req, res) => {
   try {
@@ -144,7 +143,6 @@ app.get('/properties', async (req, res) => {
       res.status(500).send('Server Error');
   }
 });
-
 
 // Property Detail Route
 app.get('/property/:id', async (req, res) => {

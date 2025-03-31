@@ -19,469 +19,532 @@
 </head>
 
 <body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
-    <div class="wrapper">
-
-        <!-- Preloader -->
-        <div class="preloader flex-column justify-content-center align-items-center">
-            <img class="animation__wobble" src="/assets/images/2.png" alt="AdminLTELogo" height="150" width="150">
-        </div>
-
-             <!-- Navbar -->
-             <nav class="main-header navbar navbar-expand navbar-light">
-                <!-- Left navbar links -->
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
-                    </li>
-                </ul>
-    
-                <!-- Right navbar links -->
-                <ul class="navbar-nav ml-auto">
-                    <!-- Navbar Search -->
-                    <li class="nav-item">
-                        <a class="nav-link" data-widget="navbar-search" href="#" role="button">
-                            <i class="fas fa-search"></i>
-                        </a>
-                        <div class="navbar-search-block">
-                            <form class="form-inline">
-                                <div class="input-group input-group-sm">
-                                    <input class="form-control form-control-navbar" type="search" placeholder="Search"
-                                        aria-label="Search">
-                                    <div class="input-group-append">
-                                        <button class="btn btn-navbar" type="submit">
-                                            <i class="fas fa-search"></i>
-                                        </button>
-                                        <button class="btn btn-navbar" type="button" data-widget="navbar-search">
-                                            <i class="fas fa-times"></i>
-                                        </button>
+       <div class="wrapper">
+   
+           <!-- Preloader -->
+           <div class="preloader flex-column justify-content-center align-items-center">
+               <img class="animation__wobble" src="/assets/images/2.png" alt="AdminLTELogo" height="150" width="150">
+           </div>
+   
+           <!-- Navbar -->
+           <nav class="main-header navbar navbar-expand navbar-light">
+               <!-- Left navbar links -->
+               <ul class="navbar-nav">
+                   <li class="nav-item">
+                       <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                   </li>
+               </ul>
+   
+               <!-- Right navbar links -->
+               <ul class="navbar-nav ml-auto">
+                   <li class="nav-item">
+                       <a class="nav-link" data-widget="navbar-search" href="#" role="button">
+                           <i class="fas fa-search"></i>
+                       </a>
+                       <div class="navbar-search-block">
+                           <form class="form-inline">
+                               <div class="input-group input-group-sm">
+                                   <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+                                   <div class="input-group-append">
+                                       <button class="btn btn-navbar" type="submit">
+                                           <i class="fas fa-search"></i>
+                                       </button>
+                                       <button class="btn btn-navbar" type="button" data-widget="navbar-search">
+                                           <i class="fas fa-times"></i>
+                                       </button>
+                                   </div>
+                               </div>
+                           </form>
+                       </div>
+                   </li>
+                   <li class="nav-item dropdown">
+                       <a class="nav-link" data-toggle="dropdown" href="#">
+                           <i class="far fa-bell"></i>
+                           <span class="badge badge-warning navbar-badge"></span>
+                       </a>
+                   </li>
+                   <li class="nav-item">
+                       <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+                           <i class="fas fa-expand-arrows-alt"></i>
+                       </a>
+                   </li>
+                   <li class="nav-item">
+                       <a href="/logout" class="nav-link" role="button">
+                           <i class="nav-icon fas fa-sign-out-alt"></i>
+                       </a>
+                   </li>
+               </ul>
+           </nav>
+           <!-- /.navbar -->
+   
+           <!-- Main Sidebar Container -->
+           <aside class="main-sidebar sidebar-light-primary elevation-4">
+               <a href="/" class="brand-link">
+                   <img src="/assets/images/2.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+                   <h4 class="brand-text font-weight-bold"><strong>Lease Captain</strong></h4>
+               </a>
+               <div class="sidebar">
+                   <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                       <div class="image">
+                           <img src="/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+                       </div>
+                       <div class="info">
+                           <a href="#" class="d-block" aria-haspopup="true" aria-expanded="false">
+                               <span>Welcome,</span>
+                               <strong><%= currentUser.username %></strong>
+                           </a>
+                       </div>
+                   </div>
+   
+                   <!-- Sidebar Menu -->
+                   <nav class="mt-2">
+                       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                           <li class="nav-item">
+                               <a href="/dashboard" class="nav-link active" style="background-color: #003366; color: #ffffff;">
+                                   <i class="nav-icon fas fa-tachometer-alt"></i>
+                                   <p>Dashboard</p>
+                               </a>
+                           </li>
+                           <li class="nav-header"><strong>PROPERTY MANAGEMENT</strong></li>
+                           <li class="nav-item"><a href="/tenancy-manager/properties" class="nav-link"><i class="nav-icon fas fa-building"></i><p>Properties</p></a></li>
+                           <li class="nav-item"><a href="/tenancy-manager/property/units" class="nav-link"><i class="nav-icon fas fa-cogs"></i><p>Property Units</p></a></li>
+                           <li class="nav-item"><a href="/tenancy-manager/propertyListing" class="nav-link"><i class="nav-icon fas fa-list-alt"></i><p>List Properties</p></a></li>
+                           <li class="nav-item">
+                               <a href="#" class="nav-link"><i class="nav-icon fas fa-chart-line"></i><p>Tenant Management<i class="right fas fa-angle-left"></i></p></a>
+                               <ul class="nav nav-treeview">
+                                   <li class="nav-item"><a href="/tenancy-manager/tenants" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Tenants</p></a></li>
+                                   <li class="nav-item"><a href="/maintenance-requests" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Maintenance Requests</p></a></li>
+                                   <li class="nav-item"><a href="/tenancy-manager/tenant-reports" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Tenant Reports</p></a></li>
+                               </ul>
+                           </li>
+                           <li class="nav-header"><strong>LAND MANAGEMENT</strong></li>
+                           <li class="nav-item"><a href="/tenancy-manager/lands" class="nav-link"><i class="nav-icon fas fa-map"></i><p>Registered Lands</p></a></li>
+                           <li class="nav-item"><a href="/tenancy-manager/land-parcels" class="nav-link"><i class="nav-icon fas fa-th-large"></i><p>Land Parcels</p></a></li>
+                           <li class="nav-item"><a href="/tenancy-manager/land-reports" class="nav-link"><i class="nav-icon fas fa-chart-area"></i><p>Land Reports</p></a></li>
+                           <li class="nav-header"><strong>LEASE MANAGEMENT</strong></li>
+                           <li class="nav-item"><a href="/tenancy-manager/leases" class="nav-link"><i class="nav-icon fas fa-file-contract"></i><p>Leases</p></a></li>
+                           <li class="nav-item"><a href="/tenancy-manager/lease-templates" class="nav-link"><i class="nav-icon fas fa-file-alt"></i><p>Lease Templates</p></a></li>
+                           <li class="nav-item"><a href="/tenancy-manager/lease-reports" class="nav-link"><i class="nav-icon fas fa-chart-bar"></i><p>Lease Reports</p></a></li>
+                           <li class="nav-header"><strong>VEHICLE MANAGEMENT</strong></li>
+                           <li class="nav-item"><a href="/tenancy-manager/vehicles" class="nav-link"><i class="nav-icon fas fa-car"></i><p>Registered Vehicles</p></a></li>
+                           <li class="nav-item"><a href="/tenancy-manager/vehicle-parking" class="nav-link"><i class="nav-icon fas fa-parking"></i><p>Parking Spaces</p></a></li>
+                           <li class="nav-item"><a href="/tenancy-manager/vehicle-reports" class="nav-link"><i class="nav-icon fas fa-clipboard-list"></i><p>Vehicle Reports</p></a></li>
+                           <li class="nav-header"><strong>FINANCE MANAGEMENT</strong></li>
+                           <li class="nav-item"><a href="/tenancy-manager/payments" class="nav-link"><i class="nav-icon fas fa-money-bill-wave"></i><p>Payment Transactions</p></a></li>
+                           <li class="nav-item"><a href="/reports-invoices" class="nav-link"><i class="nav-icon fas fa-file-invoice"></i><p>Reports & Invoices</p></a></li>
+                           <li class="nav-item"><a href="/expenses" class="nav-link"><i class="nav-icon fas fa-wallet"></i><p>Expense Tracking</p></a></li>
+                           <li class="nav-item"><a href="/budget-planning" class="nav-link"><i class="nav-icon fas fa-chart-pie"></i><p>Budget Planning</p></a></li>
+                           <li class="nav-header"><strong>NOTIFICATION MANAGEMENT</strong></li>
+                           <li class="nav-item"><a href="/sms&email" class="nav-link"><i class="nav-icon fas fa-sms"></i><p>SMS & Email</p></a></li>
+                           <li class="nav-item"><a href="/sms&email" class="nav-link"><i class="nav-icon fas fa-credit-card"></i><p>Credit Top-up</p></a></li>
+                           <li class="nav-header"><strong>STAFF MANAGEMENT</strong></li>
+                           <li class="nav-item"><a href="/staff-directory" class="nav-link"><i class="nav-icon fas fa-user-tie"></i><p>Staff Directory</p></a></li>
+                           <li class="nav-item"><a href="/staff-attendance" class="nav-link"><i class="nav-icon fas fa-calendar-check"></i><p>Attendance</p></a></li>
+                           <li class="nav-item"><a href="/staff-payroll" class="nav-link"><i class="nav-icon fas fa-file-invoice-dollar"></i><p>Payroll</p></a></li>
+                           <li class="nav-header"><strong>ACCOUNT MANAGEMENT</strong></li>
+                           <li class="nav-item"><a href="/tenancy-manager/profile" class="nav-link"><i class="nav-icon fas fa-user"></i><p>Profile Settings</p></a></li>
+                           <li class="nav-item"><a href="/tenancy-manager/security" class="nav-link"><i class="nav-icon fas fa-lock"></i><p>Security Settings</p></a></li>
+                           <li class="nav-item"><a href="/connect" class="nav-link"><i class="nav-icon fas fa-link"></i><p>Payment Gateway</p></a></li>
+                           <li class="nav-item"><a href="/users" class="nav-link"><i class="nav-icon fas fa-users"></i><p>User Accounts</p></a></li>
+                           <li class="nav-item"><a href="/upgrade-subscription" class="nav-link"><i class="nav-icon fas fa-arrow-circle-up"></i><p>Upgrade Subscription</p></a></li>
+                           <li class="nav-item mt-auto"><a href="/contacts" class="nav-link d-flex align-items-center justify-content-center" style="background-color: #003366; color: #ffffff; border-radius: 5px; margin: 10px;"><i class="fas fa-headset mr-2"></i><p>Support</p></a></li>
+                       </ul>
+                   </nav>
+               </div>
+           </aside>
+   
+           <!-- Content Wrapper -->
+           <div class="content-wrapper">
+               <div class="content-header">
+                   <div class="container-fluid">
+                       <div class="row mb-2">
+                           <div class="col-sm-6">
+                               <h1 class="m-0">Upgrade Subscription</h1>
+                           </div>
+                           <div class="col-sm-6">
+                               <ol class="breadcrumb float-sm-right">
+                                   <li class="breadcrumb-item"><a href="/tenancy-manager/dashboard">Home</a></li>
+                                   <li class="breadcrumb-item active">Upgrade Subscription</li>
+                               </ol>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+   
+               <!-- Main content -->
+               <section class="content">
+                   <div class="container-fluid">
+                       <!-- Flash Messages -->
+                       <% if (messages.success.length > 0) { %>
+                           <div class="alert alert-success alert-dismissible fade show" role="alert">
+                               <% messages.success.forEach(message => { %>
+                                   <p><%= message %></p>
+                               <% }) %>
+                               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                   <span aria-hidden="true">×</span>
+                               </button>
+                           </div>
+                       <% } %>
+                       <% if (messages.error.length > 0) { %>
+                           <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                               <% messages.error.forEach(message => { %>
+                                   <p><%= message %></p>
+                               <% }) %>
+                               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                   <span aria-hidden="true">×</span>
+                               </button>
+                           </div>
+                       <% } %>
+                       <% if (messages.info.length > 0) { %>
+                           <div class="alert alert-info alert-dismissible fade show" role="alert">
+                               <% messages.info.forEach(message => { %>
+                                   <p><%= message %></p>
+                               <% }) %>
+                               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                   <span aria-hidden="true">×</span>
+                               </button>
+                           </div>
+                       <% } %>
+                       <div class="row justify-content-center">
+                            <% Object.keys(planDetails).forEach(planName => { %>
+                                <div class="col-md-4 col-sm-6 mb-4">
+                                    <div class="pricing-card <%= planName === plan.split('-')[0] ? 'current-plan-card' : '' %>">
+                                        <div class="card-header text-center" style="background: linear-gradient(90deg, #003366, #0066cc);">
+                                            <h3 class="text-white"><strong><%= planName %></strong></h3>
+                                            <% if (planName === plan.split('-')[0]) { %>
+                                                <span class="badge badge-success mt-2">Current Plan</span>
+                                            <% } %>
+                                        </div>
+                                        <div class="card-body text-center">
+                                            <div class="pricing-toggle mb-3">
+                                                <button class="btn btn-sm btn-outline-primary toggle-btn monthly active" 
+                                                    data-plan="<%= planName %>-Monthly" 
+                                                    data-amount="<%= planDetails[planName].amountMonthly %>">Monthly</button>
+                                                <button class="btn btn-sm btn-outline-primary toggle-btn yearly" 
+                                                    data-plan="<%= planName %>-Yearly" 
+                                                    data-amount="<%= planDetails[planName].amountYearly %>">Yearly (20% Off)</button>
+                                            </div>
+                                            <h4 class="card-title price monthly-price">
+                                                <% if (planDetails[planName].amountMonthly === null) { %>
+                                                    Contact Support
+                                                <% } else { %>
+                                                    Ksh.<%= planDetails[planName].amountMonthly.toFixed(0) %>/month
+                                                <% } %>
+                                            </h4>
+                                            <h4 class="card-title price yearly-price" style="display: none;">
+                                                <% if (planDetails[planName].amountYearly === null) { %>
+                                                    Contact Support
+                                                <% } else { %>
+                                                    Ksh.<%= planDetails[planName].amountYearly.toFixed(0) %>/year
+                                                <% } %>
+                                            </h4>
+                                            <p class="card-text">Manage your properties efficiently.</p>
+                                            <ul class="list-unstyled mt-3 mb-4">
+                                                <li><i class="fas fa-check text-success"></i> <%= planDetails[planName].units %> Units</li>
+                                                <li><i class="fas fa-check text-success"></i> Full Dashboard Access</li>
+                                                <li><i class="fas fa-check text-success"></i> Tenant Management</li>
+                                                <% if (planName !== 'Basic') { %>
+                                                    <li><i class="fas fa-check text-success"></i> Payment Gateway</li>
+                                                    <li><i class="fas fa-check text-success"></i> Unlimited Property Listings</li>
+                                                <% } else { %>
+                                                    <li><i class="fas fa-times text-danger"></i> No Payment Gateway</li>
+                                                    <li><i class="fas fa-times text-danger"></i>No Property Listings</li>
+                                                <% } %>
+                                            </ul>
+                                            <% if (planName === plan.split('-')[0]) { %>
+                                                <button type="button" class="btn btn-success text-white" disabled>Current Plan</button>
+                                            <% } else if (planDetails[planName].amountMonthly === null) { %>
+                                                <a href="/contacts" class="btn btn-subscribe text-white">Contact Support</a>
+                                            <% } else { %>
+                                                <button type="button" class="btn btn-subscribe text-white upgrade-btn" 
+                                                    data-plan="<%= planName %>-Monthly" 
+                                                    data-amount="<%= planDetails[planName].amountMonthly %>"
+                                                    data-toggle="modal" data-target="#upgradeModal">Upgrade Now</button>
+                                            <% } %>
+                                        </div>
                                     </div>
                                 </div>
-                            </form>
+                            <% }) %>
                         </div>
-                    </li>
-    
-                    <!-- Notifications Dropdown Menu -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link" data-toggle="dropdown" href="#">
-                            <i class="far fa-bell"></i>
-                            <span class="badge badge-warning navbar-badge"></span>
-                        </a>
-    
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-widget="fullscreen" href="#" role="button">
-                            <i class="fas fa-expand-arrows-alt"></i>
-                        </a>
-                    </li>
-                    <li class="nav-item ">
-                        <a href="/logout" class="nav-link" role="button">
-                            <i class="nav-icon fas fa-sign-out-alt"></i>
-                        </a>
-                    </li>
-    
-                </ul>
-            </nav>
-            <!-- /.navbar -->
+                   </div>
+               </section>
+               <!-- /.content -->
+   
+               <!-- Upgrade Modal -->
+<div class="modal fade" id="upgradeModal" tabindex="-1" role="dialog" aria-labelledby="upgradeModalLabel" aria-hidden="true">
+       <div class="modal-dialog modal-dialog-centered" role="document">
+           <div class="modal-content">
+               <div class="modal-header" style="background: linear-gradient(90deg, #003366, #0066cc); color: #fff;">
+                   <h5 class="modal-title" id="upgradeModalLabel">Upgrade Subscription</h5>
+                   <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #fff;">
+                       <span aria-hidden="true">×</span>
+                   </button>
+               </div>
+               <div class="modal-body">
+                   <form id="upgradeForm">
+                       <div class="form-group">
+                           <label for="msisdn" class="form-label"><i class="fas fa-phone mr-1"></i> Phone Number</label>
+                           <input type="tel" class="form-control" id="msisdn" name="msisdn" placeholder="e.g., 0768123456" pattern="[0-9]{7,15}" required>
+                           <small class="form-text text-muted">Enter the M-PESA number (0787654321).</small>
+                       </div>
+                       <div class="form-group">
+                           <label class="form-label">Selected Plan</label>
+                           <p id="selectedPlan" class="font-weight-bold text-primary"></p>
+                       </div>
+                       <div class="form-group">
+                           <label class="form-label">Amount</label>
+                           <p id="selectedAmount" class="font-weight-bold text-primary"></p>
+                       </div>
+                       <button type="submit" class="btn btn-subscribe text-white" id="submitUpgradeBtn">
+                           <i class="fas fa-credit-card mr-2"></i> Confirm Payment
+                       </button>
+                   </form>
+                   <div id="paymentStatus" class="mt-3 text-center" style="display: none;">
+                       <div class="spinner"></div>
+                       <p class="mt-2">Processing payment, please wait...</p>
+                   </div>
+               </div>
+           </div>
+       </div>
+   </div>
+           </div>
+           <!-- /.content-wrapper -->
+   
+           <!-- Control Sidebar -->
+           <aside class="control-sidebar control-sidebar-dark">
+               <!-- Control sidebar content goes here -->
+           </aside>
+           <!-- /.control-sidebar -->
+   
+           <!-- Main Footer -->
+           <footer class="main-footer">
+               <strong>Copyright © 2024-2025 <a href="https://leasecaptain.com/">Lease Captain</a></strong>
+               All rights reserved.
+               <div class="float-right d-none d-sm-inline-block">
+                   <b>Version</b> 1.0.2
+               </div>
+           </footer>
+       </div>
+       <!-- ./wrapper -->
+   
+       <!-- REQUIRED SCRIPTS -->
+       <script src="/plugins/jquery/jquery.min.js"></script>
+       <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+       <script src="/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+       <script src="/dist/js/adminlte2167.js?v=3.2.0"></script>
+       <script src="/plugins/jquery-mousewheel/jquery.mousewheel.js"></script>
+       <script src="/plugins/raphael/raphael.min.js"></script>
+       <script src="/plugins/jquery-mapael/jquery.mapael.min.js"></script>
+       <script src="/plugins/jquery-mapael/maps/usa_states.min.js"></script>
+       <script src="/plugins/chart.js/Chart.min.js"></script>
+       <script src="/dist/js/demo.js"></script>
+       <script src="/dist/js/pages/dashboard2.js"></script>
+   
+       <!-- Custom Styles and Scripts -->
+       <style>
+              .content { padding: 15px 0; } /* Reduced padding */
+          
+              .pricing-card {
+                  background: #fff;
+                  border-radius: 5px;
+                  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Slightly smaller shadow */
+                  overflow: hidden;
+                  transition: transform 0.3s ease, box-shadow 0.3s ease;
+                  border: 1px solid #e0e0e0;
+                  max-width: 450px; /* Added max-width to constrain card size */
+              }
+          
+              .pricing-card:hover {
+                  transform: translateY(-5px); /* Reduced hover lift */
+                  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* Smaller shadow on hover */
+              }
+          
+              .current-plan-card { border: 2px solid #28a745; }
+          
+              .card-header { 
+                  padding: 15px; /* Reduced padding */
+                  color: #fff; 
+              }
+          
+              .card-body { 
+                  padding: 15px; /* Reduced padding */
+              }
+          
+              .pricing-toggle .btn {
+                  font-size: 0.8rem; /* Smaller font size */
+                  padding: 4px 12px; /* Reduced padding */
+                  border-radius: 8px; /* Slightly smaller radius */
+                  margin: 0 3px; /* Reduced margin */
+              }
+          
+              .pricing-toggle .btn.active {
+                  background: linear-gradient(90deg, #003366, #0066cc);
+                  color: #fff;
+                  border: none;
+              }
+          
+              .price {
+                  font-size: 1.5rem; /* Reduced font size */
+                  color: #003366;
+                  font-weight: 700;
+                  margin-bottom: 15px; /* Reduced margin */
+              }
+          
+              .card-text { 
+                  color: #666; 
+                  font-size: 0.9rem; /* Smaller font size */
+              }
+          
+              .list-unstyled li { 
+                  margin: 8px 0; /* Reduced margin */
+                  font-size: 0.85rem; /* Smaller font size */
+              }
+          
+              .btn-subscribe {
+                  background: linear-gradient(90deg, #003366, #0066cc);
+                  border: none;
+                  padding: 8px 15px; /* Reduced padding */
+                  border-radius: 12px; /* Smaller radius */
+                  font-weight: 600;
+                  transition: all 0.3s ease;
+              }
+          
+              .btn-subscribe:hover {
+                  background: linear-gradient(90deg, #005bb5, #0088ff);
+                  transform: translateY(-1px); /* Reduced hover lift */
+              }
+          
+              .btn-success:disabled {
+                  background: #28a745;
+                  opacity: 0.8;
+                  cursor: not-allowed;
+              }
+          
+              .badge-success { 
+                  font-size: 0.7rem; /* Smaller font size */
+                  padding: 4px 8px; /* Reduced padding */
+              }
+          
+              .form-label {
+                  font-weight: 600;
+                  color: #003366;
+                  margin-bottom: 4px; /* Reduced margin */
+                  font-size: 0.85rem; /* Smaller font size */
+              }
+          
+              .form-control {
+                  width: 100%;
+                  padding: 8px; /* Reduced padding */
+                  border: 1px solid #ccc;
+                  border-radius: 4px; /* Smaller radius */
+                  font-size: 0.85rem; /* Smaller font size */
+                  transition: border-color 0.3s, box-shadow 0.3s;
+              }
+          
+              .form-control:focus {
+                  outline: none;
+                  border-color: #003366;
+                  box-shadow: 0 0 4px rgba(0, 51, 102, 0.3); /* Smaller shadow */
+              }
+          
+              .spinner {
+                  width: 30px; /* Reduced size */
+                  height: 30px; /* Reduced size */
+                  border: 3px solid #e0e0e0; /* Thinner border */
+                  border-top: 3px solid #003366;
+                  border-radius: 50%;
+                  animation: spin 1s linear infinite;
+                  margin: 0 auto;
+              }
+          
+              @keyframes spin {
+                  0% { transform: rotate(0deg); }
+                  100% { transform: rotate(360deg); }
+              }
+          
+              @media (max-width: 768px) {
+                  .pricing-card { 
+                      margin-bottom: 15px; /* Reduced margin */
+                      max-width: 100%; /* Full width on smaller screens */
+                  }
+                  .price { 
+                      font-size: 1.3rem; /* Smaller font size for mobile */
+                  }
+              }
+          </style>
+       <script>
+           // Toggle Monthly/Yearly
+           document.querySelectorAll('.toggle-btn').forEach(button => {
+               button.addEventListener('click', function() {
+                   const card = this.closest('.pricing-card');
+                   const monthlyPrice = card.querySelector('.monthly-price');
+                   const yearlyPrice = card.querySelector('.yearly-price');
+                   const upgradeBtn = card.querySelector('.upgrade-btn');
+   
+                   card.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
+                   this.classList.add('active');
+   
+                   if (this.classList.contains('monthly')) {
+                       monthlyPrice.style.display = 'block';
+                       yearlyPrice.style.display = 'none';
+                       upgradeBtn.dataset.plan = this.dataset.plan;
+                       upgradeBtn.dataset.amount = this.dataset.amount;
+                   } else {
+                       monthlyPrice.style.display = 'none';
+                       yearlyPrice.style.display = 'block';
+                       upgradeBtn.dataset.plan = this.dataset.plan;
+                       upgradeBtn.dataset.amount = this.dataset.amount;
+                   }
+               });
+           });
+   
+           document.querySelectorAll('.upgrade-btn').forEach(button => {
+    button.addEventListener('click', function () {
+        const plan = this.getAttribute('data-plan');
+        const amount = parseInt(this.getAttribute('data-amount')); // Treat as whole Ksh
 
-        <!-- Main Sidebar Container -->
-        <aside class="main-sidebar sidebar-light-primary elevation-4">
-            <!-- Brand Logo -->
-            <a href="/" class="brand-link">
-                <img src="/assets/images/2.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
-                    style="opacity: .8">
-                <h4 class="brand-text font-weight-bold"><strong>Lease Captain</strong></h4>
-            </a>
-
-            <!-- Sidebar -->
-            <div class="sidebar">
-                <!-- Sidebar user panel (optional) -->
-                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-                    <div class="image">
-                        <img src="/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
-                    </div>
-                    <div class="info">
-                        <a href="#" class="d-block" aria-haspopup="true" aria-expanded="false">
-                            <span>Welcome,</span>
-                            <strong>
-                                <%= currentUser.username %>
-                            </strong>
-                        </a>
-                    </div>
-                </div>
-
-               <!-- Sidebar Menu -->
-<nav class="mt-2">
-    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-        <!-- Dashboard -->
-        <li class="nav-item">
-            <a href="/tenancy-manager/dashboard" class="nav-link active" style="background-color: #003366; color: #ffffff;">
-                <i class="nav-icon fas fa-tachometer-alt"></i>
-                <p>Dashboard</p>
-            </a>
-        </li>
-
-        <!-- Property Management -->
-        <li class="nav-header"><strong>PROPERTY MANAGEMENT</strong></li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/properties" class="nav-link">
-                <i class="nav-icon fas fa-building"></i>
-                <p>Properties</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/property/units" class="nav-link">
-                <i class="nav-icon fas fa-cogs"></i>
-                <p>Property Units</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/propertyListing" class="nav-link">
-                <i class="nav-icon fas fa-list-alt"></i>
-                <p>List Properties</p>
-            </a>
-        </li>
-
-        <li class="nav-item">
-            <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-chart-line"></i>
-                <p>
-                    Tenant Management
-                    <i class="right fas fa-angle-left"></i>
-                </p>
-            </a>
-            <ul class="nav nav-treeview">
-                <li class="nav-item">
-                    <a href="/tenancy-manager/tenants" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Tenants</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/maintenance-requests" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Maintenance Requests</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/tenancy-manager/tenant-reports" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Tenant Reports</p>
-                    </a>
-                </li>
-            </ul>
-        </li>
-
-        <!-- Land Management -->
-        <li class="nav-header"><strong>LAND MANAGEMENT</strong></li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/lands" class="nav-link">
-                <i class="nav-icon fas fa-map"></i>
-                <p>Registered Lands</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/land-parcels" class="nav-link">
-                <i class="nav-icon fas fa-th-large"></i>
-                <p>Land Parcels</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/land-reports" class="nav-link">
-                <i class="nav-icon fas fa-chart-area"></i>
-                <p>Land Reports</p>
-            </a>
-        </li>
-
-        <!-- Lease Management -->
-        <li class="nav-header"><strong>LEASE MANAGEMENT</strong></li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/leases" class="nav-link">
-                <i class="nav-icon fas fa-file-contract"></i>
-                <p>Leases</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/lease-templates" class="nav-link">
-                <i class="nav-icon fas fa-file-alt"></i>
-                <p>Lease Templates</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/lease-reports" class="nav-link">
-                <i class="nav-icon fas fa-chart-bar"></i>
-                <p>Lease Reports</p>
-            </a>
-        </li>
-
-        <!-- Vehicle Management -->
-        <li class="nav-header"><strong>VEHICLE MANAGEMENT</strong></li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/vehicles" class="nav-link">
-                <i class="nav-icon fas fa-car"></i>
-                <p>Registered Vehicles</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/vehicle-parking" class="nav-link">
-                <i class="nav-icon fas fa-parking"></i>
-                <p>Parking Spaces</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/vehicle-reports" class="nav-link">
-                <i class="nav-icon fas fa-clipboard-list"></i>
-                <p>Vehicle Reports</p>
-            </a>
-        </li>
-
-        <!-- Finance -->
-        <li class="nav-header"><strong>FINANCE MANAGEMENT</strong></li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/payments" class="nav-link">
-                <i class="nav-icon fas fa-money-bill-wave"></i>
-                <p>Payment Transactions</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/reports-invoices" class="nav-link">
-                <i class="nav-icon fas fa-file-invoice"></i>
-                <p>Reports & Invoices</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/expenses" class="nav-link">
-                <i class="nav-icon fas fa-wallet"></i>
-                <p>Expense Tracking</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/budget-planning" class="nav-link">
-                <i class="nav-icon fas fa-chart-pie"></i>
-                <p>Budget Planning</p>
-            </a>
-        </li>
-
-        <!-- Notifications -->
-        <li class="nav-header"><strong>NOTIFICATION MANAGEMENT</strong></li>
-        <li class="nav-item">
-            <a href="/sms&email" class="nav-link">
-                <i class="nav-icon fas fa-sms"></i>
-                <p>SMS & Email</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/sms&email" class="nav-link">
-                <i class="nav-icon fas fa-credit-card"></i>
-                <p>Credit Top-up</p>
-            </a>
-        </li>
-
-        <!-- Staff Management -->
-        <li class="nav-header"><strong>STAFF MANAGEMENT</strong></li>
-        <li class="nav-item">
-            <a href="/staff-directory" class="nav-link">
-                <i class="nav-icon fas fa-user-tie"></i>
-                <p>Staff Directory</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/staff-attendance" class="nav-link">
-                <i class="nav-icon fas fa-calendar-check"></i>
-                <p>Attendance</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/staff-payroll" class="nav-link">
-                <i class="nav-icon fas fa-file-invoice-dollar"></i>
-                <p>Payroll</p>
-            </a>
-        </li>
-
-        <!-- Account Management -->
-        <li class="nav-header"><strong>ACCOUNT MANAGEMENT</strong></li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/profile" class="nav-link">
-                <i class="nav-icon fas fa-user"></i>
-                <p>Profile Settings</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/security" class="nav-link">
-                <i class="nav-icon fas fa-lock"></i>
-                <p>Security Settings</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/connect" class="nav-link">
-                <i class="nav-icon fas fa-link"></i>
-                <p>Payment Gateway</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/users" class="nav-link">
-                <i class="nav-icon fas fa-users"></i>
-                <p>User Accounts</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/upgrade-subscription" class="nav-link">
-                <i class="nav-icon fas fa-arrow-circle-up"></i>
-                <p>Upgrade Subscription</p>
-            </a>
-        </li>
-        <!-- Support -->
-        <li class="nav-item mt-auto">
-            <a href="/contacts" class="nav-link d-flex align-items-center justify-content-center"
-                style="background-color: #003366; color: #ffffff; border-radius: 5px; margin: 10px;">
-                <i class="fas fa-headset mr-2"></i>
-                <p>Support</p>
-            </a>
-        </li>
-    </ul>
-</nav>
-
-
-            </div>
-
-            <!-- /.sidebar -->
-
-        </aside>
-
-        
-        <!-- Content Wrapper. Contains page content -->
-        <div class="content-wrapper">
-              <div class="content-header">
-                  <div class="container-fluid">
-                      <div class="row mb-2">
-                          <div class="col-sm-6">
-                              <h1 class="m-0">Upgrade Subscription</h1>
-                          </div>
-                          <div class="col-sm-6">
-                              <ol class="breadcrumb float-sm-right">
-                                  <li class="breadcrumb-item"><a href="/tenancy-manager/dashboard">Home</a></li>
-                                  <li class="breadcrumb-item active">Upgrade Subscription</li>
-                              </ol>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-  
-              <!-- Main content -->
-              <section class="content">
-                  <div class="container-fluid">
-                      <!-- Flash Messages -->
-                      <% if (messages.success.length > 0) { %>
-                          <div class="alert alert-success">
-                              <% messages.success.forEach(message => { %>
-                                  <p><%= message %></p>
-                              <% }) %>
-                          </div>
-                      <% } %>
-                      <% if (messages.error.length > 0) { %>
-                          <div class="alert alert-danger">
-                              <% messages.error.forEach(message => { %>
-                                  <p><%= message %></p>
-                              <% }) %>
-                          </div>
-                      <% } %>
-                      <% if (messages.info.length > 0) { %>
-                          <div class="alert alert-info">
-                              <% messages.info.forEach(message => { %>
-                                  <p><%= message %></p>
-                              <% }) %>
-                          </div>
-                      <% } %>
-  
-                      <div class="row">
-                          <% Object.keys(planDetails).forEach(planName => { %>
-                              <div class="col-md-4">
-                                  <div class="card pricing-card">
-                                      <div class="card-header text-center <%= planName === plan ? 'bg-success' : 'bg-primary' %>">
-                                          <h3><%= planName %></h3>
-                                      </div>
-                                      <div class="card-body text-center">
-                                          <h4 class="card-title">
-                                              <% if (planDetails[planName].amount === null) { %>
-                                                  Contact Support
-                                              <% } else { %>
-                                                  $<%= (planDetails[planName].amount / 100).toFixed(2) %>/month
-                                              <% } %>
-                                          </h4>
-                                          <p class="card-text">Manage your properties efficiently.</p>
-                                          <ul class="list-unstyled mt-3 mb-4">
-                                              <li><i class="fas fa-check text-success"></i> <%= planDetails[planName].units %> Units</li>
-                                              <li><i class="fas fa-check text-success"></i> Full Dashboard Access</li>
-                                              <li><i class="fas fa-check text-success"></i> Tenant Management</li>
-                                              <% if (planName !== 'Basic') { %>
-                                                  <li><i class="fas fa-check text-success"></i> Payment Gateway</li>
-                                              <% } else { %>
-                                                  <li><i class="fas fa-times text-danger"></i> No Payment Gateway</li>
-                                              <% } %>
-                                          </ul>
-                                          <form action="/upgrade-subscription" method="POST">
-                                              <input type="hidden" name="newPlan" value="<%= planName %>">
-                                              <% if (planName === plan) { %>
-                                                  <button type="button" class="btn current-plan text-white" disabled>Current Plan</button>
-                                              <% } else if (planDetails[planName].amount === null) { %>
-                                                  <a href="/contacts" class="btn btn-subscribe text-white">Contact Support</a>
-                                              <% } else { %>
-                                                  <button type="submit" class="btn btn-subscribe text-white">Upgrade Now</button>
-                                              <% } %>
-                                          </form>
-                                      </div>
-                                  </div>
-                              </div>
-                          <% }) %>
-                      </div>
-                  </div>
-              </section>
-              <!-- /.content -->
-          </div>
-          <!-- /.content-wrapper -->
-
-        <!-- Control Sidebar -->
-        <aside class="control-sidebar control-sidebar-dark">
-              <!-- Control sidebar content goes here -->
-          </aside>
-          <!-- /.control-sidebar -->
-  
-  <!-- Main Footer -->
-    <footer class="main-footer">
-      <strong>Copyright &copy; 2024-2025 <a href="https://leasecaptain.com/">Lease Captain</a></strong>
-      All rights reserved.
-      <div class="float-right d-none d-sm-inline-block">
-        <b>Version</b> 1.0.2
-      </div>
-    </footer>
-  
-      </div>
-      <!-- ./wrapper -->
-  
-  
-  
-      <!-- REQUIRED SCRIPTS -->
-      <!-- Bootstrap JS (including Popper.js) -->
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-      <!-- jQuery -->
-      <script src="/plugins/jquery/jquery.min.js"></script>
-      <!-- Bootstrap -->
-      <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-      <!-- overlayScrollbars -->
-      <script src="/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
-      <!-- AdminLTE App -->
-      <script src="/dist/js/adminlte2167.js?v=3.2.0"></script>
-  
-      <!-- PAGE PLUGINS -->
-      <!-- jQuery Mapael -->
-      <script src="/plugins/jquery-mousewheel/jquery.mousewheel.js"></script>
-      <script src="/plugins/raphael/raphael.min.js"></script>
-      <script src="/plugins/jquery-mapael/jquery.mapael.min.js"></script>
-      <script src="/plugins/jquery-mapael/maps/usa_states.min.js"></script>
-      <!-- ChartJS -->
-      <script src="/plugins/chart.js/Chart.min.js"></script>
-  
-      <script src="/dist/js/demo.js"></script>
-      <script src="/dist/js/pages/dashboard2.js"></script>
-  </body>
+        // Populate modal fields
+        document.getElementById('selectedPlan').textContent = plan;
+        document.getElementById('selectedAmount').textContent = `Ksh.${amount.toFixed(0)}`; // Display as whole Ksh
+    });
+});
+   
+           // Form Submission
+           document.getElementById('upgradeForm').addEventListener('submit', async (e) => {
+               e.preventDefault();
+               const msisdn = document.getElementById('msisdn').value;
+               const plan = document.getElementById('selectedPlan').textContent;
+               const amount = document.querySelector(`.upgrade-btn[data-plan="${plan}"]`).dataset.amount;
+               const submitBtn = document.getElementById('submitUpgradeBtn');
+               const paymentStatus = document.getElementById('paymentStatus');
+   
+               submitBtn.disabled = true;
+               submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+               paymentStatus.style.display = 'block';
+   
+               try {
+                   const response = await fetch('/subscription', {
+                       method: 'POST',
+                       headers: { 'Content-Type': 'application/json' },
+                       body: JSON.stringify({ msisdn, amount, plan })
+                   });
+                   const data = await response.json();
+   
+                   if (response.ok) {
+                       paymentStatus.innerHTML = `<p class="text-success">Payment initiated! Transaction ID: ${data.transactionId}. Please check your phone to complete.</p>`;
+                       setTimeout(() => location.reload(), 10000); // Refresh after 5s to show updated plan
+                   } else {
+                       paymentStatus.innerHTML = `<p class="text-danger">${data.message}</p>`;
+                       submitBtn.disabled = false;
+                       submitBtn.innerHTML = '<i class="fas fa-credit-card mr-2"></i> Confirm Payment';
+                   }
+               } catch (error) {
+                   paymentStatus.innerHTML = `<p class="text-danger">Error: ${error.message}</p>`;
+                   submitBtn.disabled = false;
+                   submitBtn.innerHTML = '<i class="fas fa-credit-card mr-2"></i> Confirm Payment';
+               }
+           });
+       </script>
+   </body>
   
   </html>
