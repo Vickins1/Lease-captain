@@ -226,19 +226,99 @@ app.post('/support/submit', async (req, res) => {
 
     await newMessage.save();
 
-    // Set up email options
-    const mailOptions = {
-      from: `"Lease Captain Support" <${process.env.EMAIL_USERNAME}>`,
-      to: 'vickievokes360@gmail.com',
-      subject: 'New Support Message',
-      text: `You have received a new support message:
-      
-Name: ${name}
-Email: ${email}
-Phone: ${number}
-Address: ${address}
-Message: ${message}`,
-    };
+// Set up email options
+const mailOptions = {
+  from: `"Lease Captain Support" <${process.env.EMAIL_USERNAME}>`,
+  to: 'vickievokes360@gmail.com',
+  subject: 'New Support Message',
+  html: `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f5f7fa;
+          margin: 0;
+          padding: 0;
+          color: #333;
+        }
+        .container {
+          max-width: 600px;
+          margin: 20px auto;
+          background: #ffffff;
+          border-radius: 10px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+          overflow: hidden;
+          border-top: 5px solid #003366;
+        }
+        .header {
+          background: linear-gradient(90deg, #003366, #0066cc);
+          padding: 20px;
+          text-align: center;
+          color: #ffffff;
+        }
+        .header h1 {
+          margin: 0;
+          font-size: 24px;
+          font-weight: 700;
+        }
+        .content {
+          padding: 20px;
+        }
+        .content h2 {
+          color: #003366;
+          font-size: 18px;
+          margin-bottom: 15px;
+        }
+        .content p {
+          font-size: 16px;
+          line-height: 1.5;
+          margin: 5px 0;
+        }
+        .field-label {
+          font-weight: 600;
+          color: #003366;
+        }
+        .footer {
+          background: #f5f7fa;
+          padding: 10px;
+          text-align: center;
+          font-size: 12px;
+          color: #666;
+        }
+        .footer a {
+          color: #003366;
+          text-decoration: none;
+        }
+        .footer a:hover {
+          text-decoration: underline;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>New Support Message</h1>
+        </div>
+        <div class="content">
+          <h2>You have received a new support message:</h2>
+          <p><span class="field-label">Name:</span> ${name}</p>
+          <p><span class="field-label">Email:</span> ${email}</p>
+          <p><span class="field-label">Phone:</span> ${number}</p>
+          <p><span class="field-label">Address:</span> ${address}</p>
+          <p><span class="field-label">Message:</span> ${message}</p>
+        </div>
+        <div class="footer">
+          <p>Sent from <a href="https://leasecaptain.com">Lease Captain</a> | Support Team</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `,
+};
 
     // Send email
     await transporter.sendMail(mailOptions);
