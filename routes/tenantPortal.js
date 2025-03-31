@@ -3,7 +3,8 @@ const router = express.Router();
 const Tenant = require('../models/tenant');
 const bcrypt = require('bcryptjs');
 const MaintenanceRequest = require('../models/maintenanceRequest')
-const Payment = require('../models/payment')
+const Payment = require('../models/payment');
+const Document = require('../models/document');
 
 router.get('/tenantPortal/login', (req, res) => {
     res.render('tenantPortal/login');
@@ -54,7 +55,6 @@ router.post('/tenant/login', async (req, res) => {
         return res.redirect('/tenantPortal/login');
     }
 });
-
 
 router.get('/tenantPortal/dashboard', async (req, res) => {
     try {
@@ -226,7 +226,6 @@ router.get('/payments', async (req, res) => {
 
         // Check if there are payments and handle accordingly
         if (payments.length === 0) {
-            console.log('No payments found for this tenant.');
             req.flash('info', 'No payments found for your account.');
         }
 
@@ -247,26 +246,69 @@ router.get('/payments', async (req, res) => {
 
 router.get('/lease', async (req, res) => {
     try {
-        const tenant = await Tenant.findById(req.session.tenantId).populate('property').exec();
+        const tenantId = req.session.tenantId;
+        if (!tenantId) {
+            req.flash('error', 'Please log in to access your lease details.');
+            return res.redirect('/tenantPortal/login');
+        }
+
+        // Fetch tenant with populated references
+        const tenant = await Tenant.findById(tenantId)
+            .populate('property', 'address greenFeatures virtualTourUrl')
+            .populate('unit', 'unitType unitPrice utilities smartFeatures')
+            .populate('owner', 'username phone')
+            .lean();
 
         if (!tenant) {
             req.flash('error', 'Tenant not found.');
             return res.redirect('/tenantPortal/login');
         }
 
-        const leaseStatus = tenant.status;
+        // Fetch lease-related documents (e.g., from a Document model)
+        const leaseDocuments = await Document.find({ tenant: tenantId, type: 'lease' }).lean();
 
+        // Determine lease status
+        const today = new Date();
+        const leaseEndDate = new Date(tenant.leaseEndDate);
+        const leaseStartDate = new Date(tenant.leaseStartDate);
+        let leaseStatus;
+        if (today < leaseStartDate) {
+            leaseStatus = 'Pending';
+        } else if (today <= leaseEndDate) {
+            leaseStatus = 'Active';
+        } else {
+            leaseStatus = 'Expired';
+        }
+
+        // Render the lease page with all necessary data
         res.render('tenantPortal/lease', {
             tenant,
-            leaseStatus
+            leaseStatus,
+            leaseDocuments
         });
     } catch (error) {
-        console.error('Error fetching lease information:', error);
+        console.error('Error fetching lease information:', {
+            message: error.message,
+            stack: error.stack,
+            tenantId: req.session.tenantId,
+            timestamp: new Date().toISOString()
+        });
         req.flash('error', 'Error fetching lease information.');
         res.redirect('/tenantPortal/dashboard');
     }
 });
 
+router.get('/lease/download/:tenantId', async (req, res) => {
+    const tenant = await Tenant.findById(req.params.tenantId).populate('property unit owner').lean();
+    const PDFDocument = require('pdfkit');
+    const doc = new PDFDocument();
+    res.setHeader('Content-Disposition', `attachment; filename=lease_${tenant.name}.pdf`);
+    doc.pipe(res);
+    doc.fontSize(16).text(`Lease Agreement for ${tenant.name}`, { align: 'center' });
+    doc.fontSize(12).text(`Address: ${tenant.property.address}`);
+    // Add more details...
+    doc.end();
+});
 
 router.get('/tenantPortal/logout', (req, res) => {
     req.session.destroy(err => {

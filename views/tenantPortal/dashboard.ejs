@@ -1,31 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lease Captain | Tenant Dashboard</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" href="/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
     <link rel="stylesheet" href="/dist/css/adminlte.min2167.css?v=3.2.0">
     <link rel="icon" type="image/png" sizes="56x56" href="/assets/images/1.png">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { background-color: #f4f6f9; } /* Light gray background for contrast */
-        .content-wrapper { background-color: #ffffff; } /* White content area */
-        .welcome-banner { background: linear-gradient(135deg, #003366, #0055a5); color: white; padding: 20px; border-radius: 10px; }
-        .card { transition: transform 0.3s; background-color: #ffffff; }
-        .card:hover { transform: translateY(-5px); }
-        .card-header { background: linear-gradient(90deg, #003366, #004080); color: #ffffff; }
-        .quick-action-btn { transition: background-color 0.3s; background-color: #003366; color: #ffffff; }
-        .quick-action-btn:hover { background-color: #0055a5 !important; }
-        .status-chip { padding: 5px 10px; border-radius: 15px; color: white; font-size: 0.9rem; }
-        .status-pending { background-color: #f39c12; }
-        .status-in-progress { background-color: #007bff; }
-        .status-completed { background-color: #28a745; }
-        .chart-container { background: #ffffff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .btn-primary { background-color: #003366; border-color: #003366; }
-        .btn-primary:hover { background-color: #0055a5; border-color: #0055a5; }
+        body {
+            background-color: #f4f6f9;
+        }
+
+        /* Light gray background for contrast */
+        .content-wrapper {
+            background-color: #ffffff;
+        }
+
+        /* White content area */
+        .welcome-banner {
+            background: linear-gradient(135deg, #003366, #0055a5);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .card {
+            transition: transform 0.3s;
+            background-color: #ffffff;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            background: linear-gradient(90deg, #003366, #004080);
+            color: #ffffff;
+        }
+
+        .quick-action-btn {
+            transition: background-color 0.3s;
+            background-color: #003366;
+            color: #ffffff;
+        }
+
+        .quick-action-btn:hover {
+            background-color: #0055a5 !important;
+        }
+
+        .status-chip {
+            padding: 5px 10px;
+            border-radius: 15px;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .status-pending {
+            background-color: #f39c12;
+        }
+
+        .status-in-progress {
+            background-color: #007bff;
+        }
+
+        .status-completed {
+            background-color: #28a745;
+        }
+
+        .chart-container {
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background-color: #003366;
+            border-color: #003366;
+        }
+
+        .btn-primary:hover {
+            background-color: #0055a5;
+            border-color: #0055a5;
+        }
     </style>
 </head>
 
@@ -46,13 +109,15 @@
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
-                        <i class="far fa-user"></i>  </a>
+                        <i class="far fa-user"></i> </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                        <a href="/tenantPortal/logout" class="dropdown-item"><i class="fas fa-sign-out-alt mr-2"></i> Logout</a>
+                        <a href="/tenantPortal/logout" class="dropdown-item"><i class="fas fa-sign-out-alt mr-2"></i>
+                            Logout</a>
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-widget="fullscreen" href="#" role="button"><i class="fas fa-expand-arrows-alt"></i></a>
+                    <a class="nav-link" data-widget="fullscreen" href="#" role="button"><i
+                            class="fas fa-expand-arrows-alt"></i></a>
                 </li>
             </ul>
         </nav>
@@ -60,7 +125,8 @@
         <!-- Sidebar -->
         <aside class="main-sidebar sidebar-light-primary elevation-4">
             <a href="/tenantPortal/dashboard" class="brand-link">
-                <img src="/assets/images/2.png" alt="LeaseCaptain Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+                <img src="/assets/images/2.png" alt="LeaseCaptain Logo" class="brand-image img-circle elevation-3"
+                    style="opacity: .8">
                 <h4 class="brand-text font-weight-bold"><strong>Tenant Portal</strong></h4>
             </a>
             <div class="sidebar">
@@ -69,17 +135,41 @@
                         <img src="/dist/img/cap.png" class="img-circle elevation-2" alt="User Image">
                     </div>
                     <div class="info">
-                        <a href="#" class="d-block"><strong><% if (tenant) { %><%= tenant.name %><% } else { %>Guest<% } %></strong></a>
+                        <a href="#" class="d-block"><strong>
+                                <% if (tenant) { %>
+                                    <%= tenant.name %>
+                                        <% } else { %>Guest<% } %>
+                            </strong></a>
                     </div>
                 </div>
                 <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                        <li class="nav-item"><a href="/tenantPortal/dashboard" class="nav-link active" style="background-color: #003366; color: #ffffff;"><i class="nav-icon fas fa-tachometer-alt"></i><p>Dashboard</p></a></li>
-                        <li class="nav-item"><a href="/payments" class="nav-link"><i class="nav-icon fas fa-money-bill-wave"></i><p>Payments</p></a></li>
-                        <li class="nav-item"><a href="/requestMaintenance" class="nav-link"><i class="nav-icon fas fa-wrench"></i><p>Maintenance</p></a></li>
-                        <li class="nav-item"><a href="/lease" class="nav-link"><i class="nav-icon fas fa-file-contract"></i><p>Lease</p></a></li>
-                        <li class="nav-item"><a href="/tenant/agreement" class="nav-link"><i class="nav-icon fas fa-hourglass-half"></i><p>Agreement</p></a></li>
-                        <li class="nav-item"><a href="/tenant/profile" class="nav-link"><i class="nav-icon fas fa-user"></i><p>Profile</p></a></li>
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                        data-accordion="false">
+                        <li class="nav-item"><a href="/tenantPortal/dashboard" class="nav-link active"
+                                style="background-color: #003366; color: #ffffff;"><i
+                                    class="nav-icon fas fa-tachometer-alt"></i>
+                                <p>Dashboard</p>
+                            </a></li>
+                        <li class="nav-item"><a href="/payments" class="nav-link"><i
+                                    class="nav-icon fas fa-money-bill-wave"></i>
+                                <p>Payments</p>
+                            </a></li>
+                        <li class="nav-item"><a href="/requestMaintenance" class="nav-link"><i
+                                    class="nav-icon fas fa-wrench"></i>
+                                <p>Maintenance</p>
+                            </a></li>
+                        <li class="nav-item"><a href="/lease" class="nav-link"><i
+                                    class="nav-icon fas fa-file-contract"></i>
+                                <p>Lease</p>
+                            </a></li>
+                        <li class="nav-item"><a href="/tenant/agreement" class="nav-link"><i
+                                    class="nav-icon fas fa-hourglass-half"></i>
+                                <p>Agreement</p>
+                            </a></li>
+                        <li class="nav-item"><a href="/tenant/profile" class="nav-link"><i
+                                    class="nav-icon fas fa-user"></i>
+                                <p>Profile</p>
+                            </a></li>
                     </ul>
                 </nav>
             </div>
@@ -87,235 +177,77 @@
 
         <!-- Content Wrapper -->
         <div class="content-wrapper">
-          
-            <!-- Main Content -->
-            <section class="content">
-                <div class="container-fluid px-4">
-                    <style>
-                        .card { 
-                            transition: transform 0.3s; 
-                            background-color: #ffffff; 
-                        }
-                        .card:hover { 
-                            transform: translateY(-5px); 
-                        }
-                        .card-header { 
-                            background: linear-gradient(90deg, #003366, #004080); 
-                            color: #ffffff; 
-                        }
-                        /* Additional styles for consistency */
-                        .card-body i { 
-                            margin-right: 8px; /* Consistent spacing for icons */
-                        }
-                        .card-body strong { 
-                            color: #003366; /* Match the gradient theme */
-                        }
-                    </style>
-                    
-                    <!-- Responsive Cards -->
-                    <div class="row mt-4 g-4">
 
-                        <!-- Monthly Rent Card -->
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-                            <div class="card shadow-lg border-0 h-100">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Monthly Rent</h5>
-                                </div>
-                                <div class="card-body bg-light rounded-bottom">
-                                    <p class="mb-0">Ksh. 
-                                        <strong>
-                                            <%= tenant.unit?.unitPrice ?? '0.00' %>
-                                        </strong>
-                                    </p>
-                                </div>
+            <section class="content">
+                <div class="container-fluid">
+                    <!-- Welcome Banner -->
+                    <div class="welcome-banner mb-4">
+                        <h2>Welcome, <%= tenant?.name ?? 'Tenant' %>!</h2>
+                        <p class="mb-0">Your tenancy management hub. Stay updated and manage everything effortlessly.</p>
+                    </div>
+
+                    <!-- Dashboard Cards -->
+                    <div class="row g-4">
+                        <div class="col-lg-3 col-md-6 col-sm-12">
+                            <div class="modern-card">
+                                <div class="card-header"><h5>Monthly Rent</h5></div>
+                                <div class="card-body"><p>Ksh. <strong><%= tenant?.unit?.unitPrice ?? '0.00' %></strong></p></div>
                             </div>
                         </div>
-                    
-                        <!-- Rent Paid Card -->
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-                            <div class="card shadow-lg border-0 h-100">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Rent Paid</h5>
-                                </div>
-                                <div class="card-body bg-light rounded-bottom">
-                                    <p class="mb-0">Ksh. 
-                                        <strong>
-                                            <%= totalRentPaid ?? '0.00' %>
-                                        </strong>
-                                    </p>
-                                </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12">
+                            <div class="modern-card">
+                                <div class="card-header"><h5>Rent Paid</h5></div>
+                                <div class="card-body"><p>Ksh. <strong><%= totalRentPaid ?? '0.00' %></strong></p></div>
                             </div>
                         </div>
-                    
-                        <!-- Utility Paid Card -->
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-                            <div class="card shadow-lg border-0 h-100">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Utility Paid</h5>
-                                </div>
-                                <div class="card-body bg-light rounded-bottom">
-                                    <p class="mb-0">Ksh. 
-                                        <strong>
-                                            <%= utilityPaid ?? '0.00' %>
-                                        </strong>
-                                    </p>
-                                </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12">
+                            <div class="modern-card">
+                                <div class="card-header"><h5>Utility Paid</h5></div>
+                                <div class="card-body"><p>Ksh. <strong><%= utilityPaid ?? '0.00' %></strong></p></div>
                             </div>
                         </div>
-                    
-                        <!-- Deposit Paid Card -->
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-                            <div class="card shadow-lg border-0 h-100">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Deposit Paid</h5>
-                                </div>
-                                <div class="card-body bg-light rounded-bottom">
-                                    <p class="mb-0">Ksh. 
-                                        <strong>
-                                            <%= depositPaid ?? '0.00' %> of <%= depositAmount ?? '0.00' %>
-                                        </strong>
-                                    </p>
-                                </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12">
+                            <div class="modern-card">
+                                <div class="card-header"><h5>Deposit Paid</h5></div>
+                                <div class="card-body"><p>Ksh. <strong><%= depositPaid ?? '0.00' %> / <%= depositAmount ?? '0.00' %></strong></p></div>
                             </div>
                         </div>
-                    
-                        <!-- Rent Due Card -->
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-                            <div class="card shadow-lg border-0 h-100">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Rent Due</h5>
-                                </div>
-                                <div class="card-body bg-light rounded-bottom">
-                                    <p class="mb-0">Ksh. 
-                                        <strong>
-                                            <%= rentDue ?? '0.00' %>
-                                        </strong>
-                                    </p>
-                                </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12">
+                            <div class="modern-card">
+                                <div class="card-header"><h5>Rent Due</h5></div>
+                                <div class="card-body"><p>Ksh. <strong><%= rentDue ?? '0.00' %></strong></p></div>
                             </div>
                         </div>
-                    
-                        <!-- Utility Due Card -->
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-                            <div class="card shadow-lg border-0 h-100">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Utility Due</h5>
-                                </div>
-                                <div class="card-body bg-light rounded-bottom">
-                                    <p class="mb-0">Ksh. 
-                                        <strong>
-                                            <%= utilityDue ?? '0.00' %>
-                                        </strong>
-                                    </p>
-                                </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12">
+                            <div class="modern-card">
+                                <div class="card-header"><h5>Utility Due</h5></div>
+                                <div class="card-body"><p>Ksh. <strong><%= utilityDue ?? '0.00' %></strong></p></div>
                             </div>
                         </div>
-                    
-                        <!-- Rent Due Date Card -->
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-                            <div class="card shadow-lg border-0 h-100">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Rent Due Date</h5>
-                                </div>
-                                <div class="card-body bg-light rounded-bottom">
-                                    <div class="d-flex align-items-center">
-                                        <i class="fas fa-calendar-alt"></i>
-                                        <strong>
-                                            <%= nextRentDue ?? 'Not Set' %>
-                                        </strong>
-                                    </div>
-                                </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12">
+                            <div class="modern-card">
+                                <div class="card-header"><h5>Rent Due Date</h5></div>
+                                <div class="card-body"><i class="fas fa-calendar-alt me-2"></i><strong><%= nextRentDue ?? 'Not Set' %></strong></div>
                             </div>
                         </div>
-                        <!-- Property Name Card -->
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-                            <div class="card shadow-lg border-0 h-100">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Property Name</h5>
-                                </div>
-                                <div class="card-body bg-light rounded-bottom">
-                                    <div class="d-flex align-items-center">
-                                        <i class="fas fa-home"></i>
-                                        <strong>
-                                            <%= tenant.property?.name ?? 'Not Assigned' %>
-                                        </strong>
-                                    </div>
-                                </div>
+                        <div class="col-lg-3 col-md-6 col-sm-12">
+                            <div class="modern-card">
+                                <div class="card-header"><h5>Lease End Date</h5></div>
+                                <div class="card-body"><i class="fas fa-calendar-check me-2"></i><strong><%= tenant?.leaseEndDate?.toDateString() ?? 'N/A' %></strong></div>
                             </div>
                         </div>
-                    
-                        <!-- Unit Name Card -->
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-                            <div class="card shadow-lg border-0 h-100">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Unit Type</h5>
-                                </div>
-                                <div class="card-body bg-light rounded-bottom">
-                                    <div class="d-flex align-items-center">
-                                        <i class="fas fa-door-open"></i>
-                                        <strong>
-                                            <%= tenant.unit?.unitType ?? 'Not Assigned' %>
-                                        </strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    
-                        <!-- Room Number Card -->
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-                            <div class="card shadow-lg border-0 h-100">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Room Number</h5>
-                                </div>
-                                <div class="card-body bg-light rounded-bottom">
-                                    <div class="d-flex align-items-center">
-                                        <i class="fas fa-door-closed"></i>
-                                        <strong>
-                                            <%= tenant.doorNumber ?? 'N/A' %>
-                                        </strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    
-                        
-                    
-                        <!-- Lease Start Date Card -->
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-                            <div class="card shadow-lg border-0 h-100">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Lease Start Date</h5>
-                                </div>
-                                <div class="card-body bg-light rounded-bottom">
-                                    <div class="d-flex align-items-center">
-                                        <i class="fas fa-calendar-check"></i>
-                                        <strong>
-                                            <%= tenant.leaseStartDate?.toDateString() ?? 'N/A' %>
-                                        </strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    
-                        <!-- Maintenance Schedule Cards -->
+
+                        <!-- Maintenance Schedule -->
                         <% if (maintenanceScheduleDates?.length > 0) { %>
                             <% maintenanceScheduleDates.forEach((schedule, index) => { %>
-                                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-                                    <div class="card shadow-lg border-0 h-100">
-                                        <div class="card-header">
-                                            <h5 class="mb-0">Maintenance #<%= index + 1 %></h5>
-                                        </div>
-                                        <div class="card-body bg-light rounded-bottom">
+                                <div class="col-lg-3 col-md-6 col-sm-12">
+                                    <div class="modern-card">
+                                        <div class="card-header"><h5>Maintenance #<%= index + 1 %></h5></div>
+                                        <div class="card-body">
                                             <div class="d-flex align-items-center mb-2">
-                                                <i class="fas fa-wrench"></i>
-                                                <strong>
-                                                    <%= schedule.scheduleDateFormatted ?? 'TBD' %>
-                                                </strong>
+                                                <i class="fas fa-wrench me-2"></i><strong><%= schedule.scheduleDateFormatted ?? 'TBD' %></strong>
                                             </div>
-                                            <span class="badge bg-<%= 
-                                                schedule.status === 'pending' ? 'warning' : 
-                                                schedule.status === 'in-progress' ? 'info' : 
-                                                'success' %>">
+                                            <span class="status-chip <%= schedule.status === 'pending' ? 'bg-warning' : schedule.status === 'in-progress' ? 'bg-info' : 'bg-success' %>">
                                                 <%= schedule.status || 'Pending' %>
                                             </span>
                                         </div>
@@ -323,182 +255,91 @@
                                 </div>
                             <% }) %>
                         <% } else { %>
-                            <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-                                <div class="card shadow-lg border-0 h-100">
-                                    <div class="card-header">
-                                        <h5 class="mb-0">Maintenance Schedule</h5>
-                                    </div>
-                                    <div class="card-body bg-light rounded-bottom">
-                                        <p class="mb-0 text-muted">No scheduled maintenance</p>
-                                    </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12">
+                                <div class="modern-card">
+                                    <div class="card-header"><h5>Maintenance Schedule</h5></div>
+                                    <div class="card-body"><p class="text-muted">No scheduled maintenance</p></div>
                                 </div>
                             </div>
                         <% } %>
-                    </div>        
-                  <!-- Quick Actions -->
-    <div class="card mb-4 shadow">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Quick Actions</h5>
-        </div>
-        <div class="card-body">
-            <div class="row row-cols-1 row-cols-md-3 g-3">
-                <div class="col">
-                    <a href="/payments" class="btn btn-primary w-100">
-                        <i class="fas fa-money-bill-alt me-2"></i>Pay Rent
-                    </a>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="modern-card mt-4">
+                        <div class="card-header"><h5>Quick Actions</h5></div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4"><a href="/payments" class="btn-modern w-100"><i class="fas fa-money-bill-alt me-2"></i>Pay Rent</a></div>
+                                <div class="col-md-4"><a href="/requestMaintenance" class="btn-modern w-100"><i class="fas fa-wrench me-2"></i>Request Maintenance</a></div>
+                                <div class="col-md-4"><a href="/lease" class="btn-modern w-100"><i class="fas fa-file-contract me-2"></i>View Lease</a></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts -->
+                    <div class="row g-4 mt-4">
+                        <div class="col-lg-6">
+                            <div class="chart-container">
+                                <h5 class="mb-3">Rent Overview</h5>
+                                <canvas id="rentChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="chart-container">
+                                <h5 class="mb-3">Utility Overview</h5>
+                                <canvas id="utilityChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Transactions -->
+                    <div class="modern-card mt-4">
+                        <div class="card-header"><h5>Recent Transactions</h5></div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Type</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% if (recentTransactions?.length > 0) { %>
+                                            <% recentTransactions.forEach(tx => { %>
+                                                <tr>
+                                                    <td><%= tx.date?.toLocaleDateString() ?? 'N/A' %></td>
+                                                    <td><%= tx.type ?? 'Unknown' %></td>
+                                                    <td>Ksh. <%= tx.amount?.toFixed(2) ?? '0.00' %></td>
+                                                    <td><span class="status-chip <%= tx.status === 'completed' ? 'bg-success' : tx.status === 'pending' ? 'bg-warning' : 'bg-danger' %>"><%= tx.status ?? 'Unknown' %></span></td>
+                                                </tr>
+                                            <% }) %>
+                                        <% } else { %>
+                                            <tr><td colspan="4" class="text-center">No recent transactions</td></tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col">
-                    <a href="/requestMaintenance" class="btn btn-primary w-100">
-                        <i class="fas fa-wrench me-2"></i>Request Maintenance
-                    </a>
-                </div>
-                <div class="col">
-                    <a href="/lease" class="btn btn-primary w-100">
-                        <i class="fas fa-file-contract me-2"></i>View Lease
-                    </a>
-                </div>
-            </div>
+            </section>
+                <!-- Footer -->
+                <footer class="main-footer">
+                    <strong>Copyright © 2024-2025 <a href="https://leasecaptain.com/">Lease Captain</a></strong> All
+                    rights reserved.
+                    <div class="float-right d-none d-sm-inline-block"><b>Version</b> 1.0.2</div>
+                </footer>
         </div>
-    </div>
-    <style>
-        /* Info Boxes Styling */
-    .bold-text {
-        font-weight: bold;
-    }
-    
-    /* Optional: Enhance card styling for consistency */
-    .card {
-        border-radius: 0.1rem;
-        transition: transform 0.2s;
-    }
-    
-    .card:hover {
-        transform: translateY(-5px);
-    }
-    
-    .card-header {
-        background-color: #003366; /* Matches your previous branding */
-        padding: 10px 15px;
-        border-top-left-radius: 0.2rem;
-        border-top-right-radius: 0.2rem;
-    }
-    
-    .card-body {
-        padding: 15px;
-        font-size: 1.1rem;
-        color: #333;
-    }
-    
-    .fas {
-        color: #003366;
-    }
-    
-    /* Responsive Adjustments */
-    @media (max-width: 576px) {
-        .card-body {
-            font-size: 0.9rem;
-        }
-    }
-    
-    @media (max-width: 768px) {
-        .col-md-3 {
-            flex: 0 0 50%;
-            max-width: 50%;
-        }
-    }
-    </style>
-    <!-- Recent Transactions -->
-    <div class="card mb-4 shadow mt-4">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Recent Transactions</h5>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Type</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% if (recentTransactions?.length > 0) { %>
-                            <% recentTransactions.forEach(tx => { %>
-                                <tr>
-                                    <td><%= tx.date?.toLocaleDateString() ?? 'N/A' %></td>
-                                    <td><%= tx.type ?? 'Unknown' %></td>
-                                    <td>Ksh. <%= tx.amount?.toFixed(2) ?? '0.00' %></td>
-                                    <td>
-                                        <span class="badge bg-<%= 
-                                            tx.status === 'completed' ? 'success' : 
-                                            tx.status === 'pending' ? 'warning' : 
-                                            'danger' %>">
-                                            <%= tx.status ?? 'Unknown' %>
-                                        </span>
-                                    </td>
-                                </tr>
-                            <% }) %>
-                        <% } else { %>
-                            <tr><td colspan="4" class="text-center">No recent transactions</td></tr>
-                        <% } %>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Lease Status -->
-    <div class="card mb-4 shadow">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Lease Status</h5>
-        </div>
-        <div class="card-body">
-            <p class="mb-2">
-                Lease End Date: <%= tenant.leaseEndDate?.toLocaleDateString() ?? 'N/A' %>
-            </p>
-
-            <div class="progress" style="height: 20px;">
-                <div class="progress-bar bg-success progress-width-<%= leaseProgress ?? 0 %>" 
-                     role="progressbar" 
-                     aria-valuenow="<%= leaseProgress ?? 0 %>"
-                     aria-valuemin="0" 
-                     aria-valuemax="100">
-                    <%= leaseProgress ?? 0 %>%
-                </div>
-            </div>
-
-<style>
-    .progress-width-0 { width: 0%; }
-.progress-width-10 { width: 10%; }
-.progress-width-20 { width: 20%; }
-.progress-width-30 { width: 30%; }
-.progress-width-40 { width: 40%; }
-.progress-width-50 { width: 50%; }
-.progress-width-60 { width: 60%; }
-.progress-width-70 { width: 70%; }
-.progress-width-80 { width: 80%; }
-.progress-width-90 { width: 90%; }
-.progress-width-100 { width: 100%; }
-</style>
-
-
-        </div>
-    </div>
-</div>
-        <!-- Footer -->
-        <footer class="main-footer">
-            <strong>Copyright © 2024-2025 <a href="https://leasecaptain.com/">Lease Captain</a></strong> All rights reserved.
-            <div class="float-right d-none d-sm-inline-block"><b>Version</b> 1.0.2</div>
-        </footer>
-    </div>
-    <script src="/plugins/chart.js/Chart.min.js"></script>
-    <!-- Scripts -->
-    <script src="/plugins/jquery/jquery.min.js"></script>
-    <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
-    <script src="/dist/js/adminlte2167.js?v=3.2.0"></script>
+        <script src="/plugins/chart.js/Chart.min.js"></script>
+        <!-- Scripts -->
+        <script src="/plugins/jquery/jquery.min.js"></script>
+        <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+        <script src="/dist/js/adminlte2167.js?v=3.2.0"></script>
 
 </body>
+
 </html>

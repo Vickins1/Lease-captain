@@ -140,231 +140,326 @@
 
             <div class="container-fluid mt-4">
                
-                <!-- Main Content -->
-                <section class="content">
-                    <div class="container-fluid">
-                        <!-- Messages -->
-                        <% if (error && error.length > 0) { %>
-                            <div class="alert alert-danger text-center" role="alert">
-                                <%= error %>
-                            </div>
-                        <% } %>
-                        <% if (success && success.length > 0) { %>
-                            <div class="alert alert-success text-center" role="alert">
-                                <%= success %>
-                            </div>
-                        <% } %>
-            
-                        <!-- Payment Section -->
-                        <div class="card mt-4">
-                            <div class="card-header" style="background-color: #003366; color: #ffffff;">
-                                <h5 class="mb-0">Payment History</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-sm">
-                                        <thead>
-                                            <tr>
-                                                <th>#</th>
-                                                <th>Date Paid</th>
-                                                <th>Transaction ID</th>
-                                                <th>Payment Type</th>
-                                                <th>Amount Paid</th>
-                                                <th>Payment Method</th>
-                                                <th>Status</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <% if (!payments || payments.length === 0) { %>
-                                                <tr>
-                                                    <td colspan="8" class="text-center">No payment records found.</td>
-                                                </tr>
-                                            <% } else { %>
-                                                <% payments.slice().reverse().forEach((payment, index) => { %>
-                                                    <tr>
-                                                        <td><%= index + 1 %></td>
-                                                        <td><%= payment.datePaid ? new Date(payment.datePaid).toLocaleDateString() : 'N/A' %></td>
-                                                        <td><%= payment.transactionId || 'N/A' %></td>
-                                                        <td><%= payment.paymentType || 'N/A' %></td>
-                                                        <td>Ksh. <%= Number(payment.totalPaid || 0).toFixed(2) %></td>
-                                                        <td><%= payment.method || 'N/A' %></td>
-                                                        <td>
-                                                            <span class="badge <%= 
-                                                                payment.status === 'completed' ? 'bg-success' : 
-                                                                payment.status === 'pending' ? 'bg-warning' : 
-                                                                payment.status === 'failed' ? 'bg-danger' : 'bg-secondary' %>">
-                                                                <i class="fas <%= 
-                                                                    payment.status === 'completed' ? 'fa-check-circle' : 
-                                                                    payment.status === 'pending' ? 'fa-hourglass-half' : 
-                                                                    payment.status === 'failed' ? 'fa-times-circle' : 'fa-question-circle' %>">
-                                                                </i>
-                                                                <%= payment.status || 'Unknown' %>
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            <a href="/download-receipt/<%= payment._id %>" 
-                                                               class="text-primary" title="Download Receipt">
-                                                                <i class="fas fa-download"></i>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                <% }) %>
-                                            <% } %>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-            
-                        <!-- Payment Buttons -->
-                        <div class="row mt-3">
-                            <div class="col-12 col-md-6 mb-2">
-                                <button class="btn btn-primary btn-block" data-toggle="modal" data-target="#rentPaymentModal">
-                                    <i class="fas fa-plus"></i> Make Rent Payment
-                                </button>
-                            </div>
-                            <div class="col-12 col-md-6 mb-2">
-                                <button class="btn btn-primary btn-block" data-toggle="modal" data-target="#utilityPaymentModal">
-                                    <i class="fas fa-plus"></i> Make Utility Payment
-                                </button>
-                            </div>
-                        </div>
-            
-                        <!-- Rent Payment Modal -->
-                        <div class="modal fade" id="rentPaymentModal" tabindex="-1" role="dialog" aria-labelledby="rentPaymentModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header" style="background-color: #003366; color: #ffffff;">
-                                        <h5 class="modal-title" id="rentPaymentModalLabel">Make Rent Payment</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form id="rentPaymentForm" action="/payment/rent" method="POST">
-                                            <div class="form-group">
-                                                <label for="rentAmount">Payment Amount</label>
-                                                <input type="number" class="form-control" id="rentAmount" name="amount" 
-                                                       placeholder="Enter amount" step="0.01" min="0" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="rentPaymentMethod">Payment Method</label>
-                                                <select class="form-control" id="rentPaymentMethod" name="paymentMethod" required>
-                                                    <option value="">Select Payment Method</option>
-                                                    <option value="mobilePayment">Mobile Payment</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group" id="rentPhoneGroup" style="display: none;">
-                                                <label for="rentPhoneNumber">Phone Number</label>
-                                                <input type="tel" class="form-control" id="rentPhoneNumber" name="phoneNumber" 
-                                                       placeholder="e.g., +254712345678" pattern="^\+254\d{9}$" required>
-                                            </div>
-                                            <button type="submit" class="btn btn-primary" id="rentSubmitButton">Pay Rent</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-            
-                        <!-- Utility Payment Modal -->
-                        <div class="modal fade" id="utilityPaymentModal" tabindex="-1" role="dialog" aria-labelledby="utilityPaymentModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header" style="background-color: #003366; color: #ffffff;">
-                                        <h5 class="modal-title" id="utilityPaymentModalLabel">Make Utility Payment</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form id="utilityPaymentForm" action="/payment/utility" method="POST">
-                                            <div class="form-group">
-                                                <label for="utilityAmount">Utility Amount</label>
-                                                <input type="number" class="form-control" id="utilityAmount" name="amount" 
-                                                       placeholder="Enter amount" step="0.01" min="0" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="utilityPaymentMethod">Payment Method</label>
-                                                <select class="form-control" id="utilityPaymentMethod" name="paymentMethod" required>
-                                                    <option value="">Select Payment Method</option>
-                                                    <option value="mobilePayment">Mobile Payment</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group" id="utilityPhoneGroup" style="display: none;">
-                                                <label for="utilityPhoneNumber">Phone Number</label>
-                                                <input type="tel" class="form-control" id="utilityPhoneNumber" name="phoneNumber" 
-                                                       placeholder="e.g., +254712345678" pattern="^\+254\d{9}$" required>
-                                            </div>
-                                            <button type="submit" class="btn btn-primary" id="utilitySubmitButton">Pay Utility</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+<!-- Main Content -->
+<section class="content">
+    <div class="container-fluid">
+        <!-- Messages -->
+        <% if (error && error.length > 0) { %>
+            <div class="alert alert-danger text-center" role="alert">
+                <%= error %>
+            </div>
+        <% } %>
+        <% if (success && success.length > 0) { %>
+            <div class="alert alert-success text-center" role="alert">
+                <%= success %>
+            </div>
+        <% } %>
+
+        <!-- Payment Section -->
+        <div class="card mt-4">
+            <div class="card-header" style="background-color: #003366; color: #ffffff;">
+                <h5 class="mb-0">Payment History</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Date Paid</th>
+                                <th>Transaction ID</th>
+                                <th>Payment Type</th>
+                                <th>Amount Paid</th>
+                                <th>Payment Method</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (!payments || payments.length === 0) { %>
+                                <tr>
+                                    <td colspan="8" class="text-center">No payment records found.</td>
+                                </tr>
+                            <% } else { %>
+                                <% payments.slice().reverse().forEach((payment, index) => { %>
+                                    <tr>
+                                        <td><%= index + 1 %></td>
+                                        <td><%= payment.datePaid ? new Date(payment.datePaid).toLocaleDateString() : 'N/A' %></td>
+                                        <td><%= payment.transactionId || 'N/A' %></td>
+                                        <td><%= payment.paymentType || 'N/A' %></td>
+                                        <td>Ksh. <%= Number(payment.totalPaid || 0).toFixed(2) %></td>
+                                        <td><%= payment.method || 'N/A' %></td>
+                                        <td>
+                                            <span class="badge <%= 
+                                                payment.status === 'completed' ? 'bg-success' : 
+                                                payment.status === 'pending' ? 'bg-warning' : 
+                                                payment.status === 'failed' ? 'bg-danger' : 'bg-secondary' %>">
+                                                <i class="fas <%= 
+                                                    payment.status === 'completed' ? 'fa-check-circle' : 
+                                                    payment.status === 'pending' ? 'fa-hourglass-half' : 
+                                                    payment.status === 'failed' ? 'fa-times-circle' : 'fa-question-circle' %>">
+                                                </i>
+                                                <%= payment.status || 'Unknown' %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="/download-receipt/<%= payment._id %>" 
+                                               class="text-primary" title="Download Receipt">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Buttons -->
+        <div class="row mt-3">
+            <div class="col-12 col-md-6 mb-2">
+                <button class="btn btn-primary btn-block" data-toggle="modal" data-target="#rentPaymentModal">
+                    <i class="fas fa-plus"></i> Make Rent Payment
+                </button>
+            </div>
+            <div class="col-12 col-md-6 mb-2">
+                <button class="btn btn-primary btn-block" data-toggle="modal" data-target="#utilityPaymentModal">
+                    <i class="fas fa-plus"></i> Make Utility Payment
+                </button>
+            </div>
+        </div>
+
+        <!-- Rent Payment Modal -->
+        <div class="modal fade" id="rentPaymentModal" tabindex="-1" role="dialog" aria-labelledby="rentPaymentModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content animate-modal">
+                    <div class="modal-header" style="background-color: #003366; color: #ffffff;">
+                        <h5 class="modal-title" id="rentPaymentModalLabel">Make Rent Payment</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                </section>
-            
-                <!-- Custom Styles -->
-                <style>
-                    @media (max-width: 576px) {
-                        .alert {
-                            font-size: 0.8rem;
-                        }
-                    }
-                    .table-responsive {
-                        min-height: 200px; /* Ensure table has minimum height */
-                    }
-                    .modal-header .close {
-                        color: #ffffff; /* Ensure close button visibility */
-                    }
-                </style>
-            
-                <!-- Custom Scripts -->
-                <script>
-                    // Ensure DOM is fully loaded
-                    document.addEventListener('DOMContentLoaded', function() {
-                        // Show/Hide phone number input based on payment method
-                        const rentPaymentMethod = document.getElementById('rentPaymentMethod');
-                        const utilityPaymentMethod = document.getElementById('utilityPaymentMethod');
-                        const rentPhoneGroup = document.getElementById('rentPhoneGroup');
-                        const utilityPhoneGroup = document.getElementById('utilityPhoneGroup');
-            
-                        rentPaymentMethod.addEventListener('change', function() {
-                            rentPhoneGroup.style.display = this.value === 'mobilePayment' ? 'block' : 'none';
-                            document.getElementById('rentPhoneNumber').required = this.value === 'mobilePayment';
-                        });
-            
-                        utilityPaymentMethod.addEventListener('change', function() {
-                            utilityPhoneGroup.style.display = this.value === 'mobilePayment' ? 'block' : 'none';
-                            document.getElementById('utilityPhoneNumber').required = this.value === 'mobilePayment';
-                        });
-            
-                        // Set processing state
-                        function setProcessing(form) {
-                            const submitButton = form.querySelector('button[type="submit"]');
-                            submitButton.disabled = true;
-                            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-            
-                            if (typeof toastr !== 'undefined') {
-                                toastr.info('Payment is being processed. Please wait...', 'Processing Payment', {
-                                    closeButton: true,
-                                    progressBar: true,
-                                    timeOut: 10000,
-                                    positionClass: 'toast-top-right'
-                                });
-                            }
-                        }
-            
-                        // Attach setProcessing to form submissions
-                        document.getElementById('rentPaymentForm').addEventListener('submit', function(e) {
-                            setProcessing(this);
-                        });
-                        document.getElementById('utilityPaymentForm').addEventListener('submit', function(e) {
-                            setProcessing(this);
-                        });
-                    });
-                </script>
+                    <div class="modal-body">
+                        <form id="rentPaymentForm" action="/payment/rent" method="POST">
+                            <div class="form-group">
+                                <label for="rentAmount">Payment Amount</label>
+                                <input type="number" class="form-control" id="rentAmount" name="amount" 
+                                       placeholder="Enter amount (e.g., 5000)" step="0.01" min="0" required 
+                                       aria-describedby="rentAmountHelp">
+                                <small id="rentAmountHelp" class="form-text text-muted">Enter the rent amount in Ksh.</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="rentPaymentMethod">Payment Method</label>
+                                <select class="form-control" id="rentPaymentMethod" name="paymentMethod" required 
+                                        aria-describedby="rentMethodHelp">
+                                    <option value="">Select Payment Method</option>
+                                    <option value="mobilePayment">Mobile Payment</option>
+                                </select>
+                                <small id="rentMethodHelp" class="form-text text-muted">Choose how you'd like to pay.</small>
+                            </div>
+                            <div class="form-group" id="rentPhoneGroup" style="display: none;">
+                                <label for="rentPhoneNumber">Phone Number</label>
+                                <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" 
+                                       placeholder="e.g., +254712345678" required 
+                                       aria-describedby="rentPhoneHelp">
+                                <small id="rentPhoneHelp" class="form-text text-muted">Use format: 0787654321</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block" id="rentSubmitButton">Pay Rent</button>
+                            <div id="rentStatus" class="mt-2 text-center" style="display: none;"></div>
+                            <div class="loader-overlay" id="rentLoader" style="display: none;">
+                                <div class="loader"></div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Utility Payment Modal -->
+        <div class="modal fade" id="utilityPaymentModal" tabindex="-1" role="dialog" aria-labelledby="utilityPaymentModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content animate-modal">
+                    <div class="modal-header" style="background-color: #003366; color: #ffffff;">
+                        <h5 class="modal-title" id="utilityPaymentModalLabel">Make Utility Payment</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="utilityPaymentForm" action="/payment/utility" method="POST">
+                            <div class="form-group">
+                                <label for="utilityAmount">Utility Amount</label>
+                                <input type="number" class="form-control" id="utilityAmount" name="amount" 
+                                       placeholder="Enter amount (e.g., 1000)" step="0.01" min="0" required 
+                                       aria-describedby="utilityAmountHelp">
+                                <small id="utilityAmountHelp" class="form-text text-muted">Enter the utility amount in Ksh.</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="utilityPaymentMethod">Payment Method</label>
+                                <select class="form-control" id="utilityPaymentMethod" name="paymentMethod" required 
+                                        aria-describedby="utilityMethodHelp">
+                                    <option value="">Select Payment Method</option>
+                                    <option value="mobilePayment">Mobile Payment</option>
+                                </select>
+                                <small id="utilityMethodHelp" class="form-text text-muted">Choose how you'd like to pay.</small>
+                            </div>
+                            <div class="form-group" id="utilityPhoneGroup" style="display: none;">
+                                <label for="utilityPhoneNumber">Phone Number</label>
+                                <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" 
+                                       placeholder="e.g., +254712345678" pattern="^\+254\d{9}$" required 
+                                       aria-describedby="utilityPhoneHelp">
+                                <small id="utilityPhoneHelp" class="form-text text-muted">Use format: +254 followed by 9 digits.</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block" id="utilitySubmitButton">Pay Utility</button>
+                            <div id="utilityStatus" class="mt-2 text-center" style="display: none;"></div>
+                            <div class="loader-overlay" id="utilityLoader" style="display: none;">
+                                <div class="loader"></div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Custom Styles -->
+<style>
+    @media (max-width: 576px) {
+        .alert {
+            font-size: 0.8rem;
+        }
+    }
+    .table-responsive {
+        min-height: 200px; /* Ensure table has minimum height */
+    }
+    .modal-header .close {
+        color: #ffffff; /* Ensure close button visibility */
+        opacity: 1;
+    }
+    .modal-header .close:hover {
+        color: #ddd;
+    }
+    .modal-content.animate-modal {
+        animation: slideIn 0.3s ease-out;
+    }
+    @keyframes slideIn {
+        from { transform: translateY(-50px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    .loader-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+    .loader {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #003366;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    .form-group {
+        margin-bottom: 1.5rem; /* Increased spacing for better readability */
+    }
+    .btn-primary {
+        transition: background-color 0.3s ease;
+    }
+    .btn-primary:hover {
+        background-color: #002244; /* Darker shade on hover */
+    }
+</style>
+
+<!-- Custom Scripts -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const rentPaymentMethod = document.getElementById('rentPaymentMethod');
+        const utilityPaymentMethod = document.getElementById('utilityPaymentMethod');
+        const rentPhoneGroup = document.getElementById('rentPhoneGroup');
+        const utilityPhoneGroup = document.getElementById('utilityPhoneGroup');
+        const rentForm = document.getElementById('rentPaymentForm');
+        const utilityForm = document.getElementById('utilityPaymentForm');
+        const rentLoader = document.getElementById('rentLoader');
+        const utilityLoader = document.getElementById('utilityLoader');
+        const rentSubmitButton = document.getElementById('rentSubmitButton');
+        const utilitySubmitButton = document.getElementById('utilitySubmitButton');
+        const rentStatus = document.getElementById('rentStatus');
+        const utilityStatus = document.getElementById('utilityStatus');
+
+        // Show/hide phone number input based on payment method
+        rentPaymentMethod.addEventListener('change', function() {
+            rentPhoneGroup.style.display = this.value === 'mobilePayment' ? 'block' : 'none';
+            document.getElementById('rentPhoneNumber').required = this.value === 'mobilePayment';
+        });
+
+        utilityPaymentMethod.addEventListener('change', function() {
+            utilityPhoneGroup.style.display = this.value === 'mobilePayment' ? 'block' : 'none';
+            document.getElementById('utilityPhoneNumber').required = this.value === 'mobilePayment';
+        });
+
+        // Handle form submission with loader and status
+        function showLoader(form, loader, button, statusElement) {
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            loader.style.display = 'flex';
+            form.style.opacity = '0.5';
+            statusElement.style.display = 'block';
+            statusElement.innerHTML = '<small class="text-muted">Initiating payment, please wait...</small>';
+        }
+
+        function hideLoader(form, loader, button, originalText, statusElement) {
+            button.disabled = false;
+            button.innerHTML = originalText;
+            loader.style.display = 'none';
+            form.style.opacity = '1';
+            statusElement.style.display = 'none';
+            statusElement.innerHTML = '';
+        }
+
+        rentForm.addEventListener('submit', function(e) {
+            if (!this.checkValidity()) {
+                e.preventDefault();
+                this.classList.add('was-validated');
+                return;
+            }
+            showLoader(rentForm, rentLoader, rentSubmitButton, rentStatus);
+        });
+
+        utilityForm.addEventListener('submit', function(e) {
+            if (!this.checkValidity()) {
+                e.preventDefault();
+                this.classList.add('was-validated');
+                return;
+            }
+            showLoader(utilityForm, utilityLoader, utilitySubmitButton, utilityStatus);
+        });
+
+        // Reset loader and status on modal close
+        $('#rentPaymentModal').on('hidden.bs.modal', function() {
+            hideLoader(rentForm, rentLoader, rentSubmitButton, 'Pay Rent', rentStatus);
+            rentForm.classList.remove('was-validated');
+        });
+
+        $('#utilityPaymentModal').on('hidden.bs.modal', function() {
+            hideLoader(utilityForm, utilityLoader, utilitySubmitButton, 'Pay Utility', utilityStatus);
+            utilityForm.classList.remove('was-validated');
+        });
+    });
+</script>
             </div>
 
 
@@ -393,9 +488,7 @@
 <!-- ChartJS -->
 <script src="/plugins/chart.js/Chart.min.js"></script>
 
-<!-- AdminLTE for demo purposes -->
 <script src="/dist/js/demo.js"></script>
-<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 <script src="/dist/js/pages/dashboard2.js"></script>
 </body>
 

@@ -16,138 +16,6 @@
     <link rel="stylesheet" href="/css/lease.css">
     <link rel="icon" type="image/png" sizes="56x56" href="/assets/images/1.png">
 
-    <style>
-        /* Enhanced Styling for Kenyan Lease Portal */
-        .lease-hero {
-            background: linear-gradient(135deg, #003366 0%, #28a745 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .lease-card {
-            border-radius: 10px;
-            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
-            background: #fff;
-            overflow: hidden;
-            transition: transform 0.3s;
-        }
-
-        .lease-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .lease-card .card-header {
-            background: #003366;
-            color: white;
-            padding: 15px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            border-bottom: 2px solid #28a745;
-        }
-
-        .lease-card .card-body {
-            padding: 25px;
-            background: linear-gradient(to bottom, #f8f9fa, #ffffff);
-        }
-
-        .lead {
-            font-size: 1.15rem;
-            line-height: 1.6;
-            color: #333;
-        }
-
-        .text-secondary {
-            color: #6c757d;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-        }
-
-        .btn-primary {
-            background-color: #003366;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            transition: all 0.3s;
-        }
-
-        .btn-primary:hover {
-            background-color: #00509e;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-success {
-            background-color: #28a745;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-        }
-
-        .btn-success:hover {
-            background-color: #218838;
-        }
-
-        .btn-warning {
-            background-color: #ffc107;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-        }
-
-        .btn-warning:hover {
-            background-color: #e0a800;
-        }
-
-        .btn-info {
-            background-color: #17a2b8;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-        }
-
-        .btn-info:hover {
-            background-color: #138496;
-        }
-
-        .virtual-tour-card {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .compliance-note {
-            background: #fff3cd;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 20px;
-            color: #856404;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 576px) {
-            .lease-hero h1 {
-                font-size: 1.75rem;
-            }
-            .lead {
-                font-size: 1rem;
-            }
-            .btn {
-                font-size: 0.9rem;
-                padding: 8px 15px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .lease-card .card-body {
-                padding: 20px;
-            }
-        }
-    </style>
 </head>
 <body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
     <div class="wrapper">
@@ -226,197 +94,254 @@
         <!-- Content Wrapper -->
         <div class="content-wrapper">
            
-                <% if (tenant) { %>
-                    <div class="card mb-4 shadow-sm lease-card">
-                        <div class="card-header">
-                            <h5 class="mb-0">Lease Details for <%= tenant.name %></h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <h6 class="text-secondary">Property Address:</h6>
-                                    <p class="lead"><%= tenant.property.address %></p>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <h6 class="text-secondary">Unit Type:</h6>
-                                    <p class="lead"><%= tenant.unit.unitType || 'Modern Apartment' %></p>
-                                </div>
+            <section class="content">
+                <div class="container-fluid">
+                    <% if (tenant) { %>
+                        <!-- Lease Details Card -->
+                        <div class="modern-card lease-card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">Lease Details for <%= tenant.name %></h5>
                             </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <h6 class="text-secondary">Lease Start Date:</h6>
-                                    <p class="lead"><%= new Date(tenant.leaseStartDate).toLocaleDateString() %></p>
+                            <div class="card-body">
+                                <div class="lease-detail">
+                                    <h6 class="text-secondary">Property Address</h6>
+                                    <p class="lead"><%= tenant.property.address || 'N/A' %></p>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <h6 class="text-secondary">Lease End Date:</h6>
-                                    <p class="lead"><%= new Date(tenant.leaseEndDate).toLocaleDateString() %></p>
+                                <div class="lease-detail">
+                                    <h6 class="text-secondary">Unit Type</h6>
+                                    <p class="lead"><%= tenant.unit?.unitType || 'Modern Apartment' %></p>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <h6 class="text-secondary">Monthly Rent:</h6>
-                                    <p class="lead">Ksh. <%= tenant.rentPaid.toFixed(2) %></p>
+                                <div class="lease-detail">
+                                    <h6 class="text-secondary">Lease Term</h6>
+                                    <p class="lead">
+                                        <%= new Date(tenant.leaseStartDate).toLocaleDateString() %> - 
+                                        <%= new Date(tenant.leaseEndDate).toLocaleDateString() %>
+                                    </p>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <h6 class="text-secondary">Security Deposit:</h6>
-                                    <p class="lead">Ksh. <%= tenant.deposit.toFixed(2) %></p>
+                                <div class="lease-detail">
+                                    <h6 class="text-secondary">Monthly Rent</h6>
+                                    <p class="lead">Ksh. <%= tenant.unit?.unitPrice?.toFixed(2) || '0.00' %></p>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <div class="card shadow-sm h-100">
-                                        <div class="card-body text-center">
-                                            <h6 class="text-secondary mb-3">
-                                                <i class="fas fa-file-contract mr-2"></i> Lease Status
-                                            </h6>
-                                            <div class="d-flex justify-content-center align-items-center mb-3">
-                                                <span class="lease-icon <%= leaseStatus === 'Active' ? 'text-success' : 'text-warning' %>">
-                                                    <i class="fas <%= leaseStatus === 'Active' ? 'fa-check-circle' : 'fa-exclamation-triangle' %> fa-2x"></i>
-                                                </span>
-                                                <p class="lead ml-3 mb-0 <%= leaseStatus === 'Active' ? 'text-success' : 'text-warning' %>">
-                                                    <%= leaseStatus || 'Active' %>
-                                                </p>
-                                            </div>
-                                            
-                                        </div>
-                                    </div>
+                                <div class="lease-detail">
+                                    <h6 class="text-secondary">Security Deposit</h6>
+                                    <p class="lead">Ksh. <%= tenant.deposit?.toFixed(2) || '0.00' %></p>
                                 </div>
-                                
-                               
-                                <div class="col-md-6 mb-3">
-                                    <h6 class="text-secondary">Green Features:</h6>
-                                    <p class="lead"><%= tenant.property.greenFeatures || 'Solar Panels, Rainwater Harvesting' %></p>
+                                <div class="lease-detail">
+                                    <h6 class="text-secondary">Lease Status</h6>
+                                    <span class="status-chip <%= leaseStatus === 'Active' ? 'bg-success' : leaseStatus === 'Pending' ? 'bg-warning' : 'bg-danger' %>">
+                                        <%= leaseStatus || 'Active' %>
+                                    </span>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <h6 class="text-secondary">Penalty for Late Payment:</h6>
-                                    <p class="lead">Ksh. <%= tenant.latePenalty || '500.00' %> (per week)</p>
+                                <div class="lease-detail">
+                                    <h6 class="text-secondary">Penalty for Late Payment</h6>
+                                    <p class="lead">Ksh. <%= tenant.latePenalty?.toFixed(2) || '500.00' %> (per week)</p>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <h6 class="text-secondary">Landlord Contact:</h6>
-                                    <p class="lead"><%= tenant.owner.phone?.name || 'John Doe' %> - <%= tenant.landlord?.phone || '+254 700 123 456' %></p>
+                                <div class="lease-detail">
+                                    <h6 class="text-secondary">Landlord Contact</h6>
+                                    <p class="lead">
+                                        <%= tenant.owner?.username || 'John Doe' %> - 
+                                        <%= tenant.owner?.phone || '+254 700 123 456' %>
+                                    </p>
                                 </div>
-                            </div>
-                            <div class="mb-3">
-                                <h6 class="text-secondary">Tenant Contact:</h6>
-                                <p class="lead"><strong>Email:</strong> <%= tenant.email || 'Not provided' %></p>
-                                <p class="lead"><strong>Phone:</strong> <%= tenant.phone || 'Not provided' %></p>
-                            </div>
-                            <div class="mb-3">
-                                <h6 class="text-secondary">Smart Home Features:</h6>
-                                <p class="lead"><%= tenant.unit.smartFeatures || 'Wi-Fi Enabled, Smart Locks' %></p>
-                            </div>
-                            <div class="mb-3">
-                                <h6 class="text-secondary">Additional Notes:</h6>
-                                <p class="lead"><%= tenant.notes || 'Enjoy your eco-friendly urban retreat!' %></p>
-                            </div>
-                            <div class="compliance-note">
-                                <strong>Compliance Note:</strong> This lease adheres to the Kenyan Landlord and Tenant Act. Rent increases require 2 months' notice, and termination requires 1 month's notice unless otherwise stated.
+                                <div class="lease-detail">
+                                    <h6 class="text-secondary">Tenant Contact</h6>
+                                    <p class="lead">
+                                        <strong>Email:</strong> <%= tenant.email || 'Not provided' %><br>
+                                        <strong>Phone:</strong> <%= tenant.phone || 'Not provided' %>
+                                    </p>
+                                </div>
+                                <div class="lease-detail">
+                                    <h6 class="text-secondary">Utilities Included</h6>
+                                    <p class="lead">
+                                        <%= tenant.unit?.utilities?.length > 0 ? tenant.unit.utilities.map(u => `${u.type}: Ksh. ${u.amount.toFixed(2)}`).join(', ') : 'None included' %>
+                                    </p>
+                                </div>
+                                <div class="lease-detail">
+                                    <h6 class="text-secondary">Additional Terms</h6>
+                                    <p class="lead"><%= tenant.terms || 'No pets allowed, no smoking indoors.' %></p>
+                                </div>
+                                <div class="lease-detail">
+                                    <h6 class="text-secondary">Notes</h6>
+                                    <p class="lead"><%= tenant.notes || 'Enjoy your eco-friendly urban retreat!' %></p>
+                                </div>
+                                <div class="compliance-note">
+                                    <strong>Compliance Note:</strong> This lease adheres to the Kenyan Landlord and Tenant Act. Rent increases require 2 months' notice, and termination requires 1 month's notice unless otherwise stated.
+                                </div>
                             </div>
                         </div>
-                    </div>
+                        <!-- Lease Documents -->
+                        <div class="modern-card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">Lease Documents</h5>
+                            </div>
+                            <div class="card-body">
+                                <% if (leaseDocuments?.length > 0) { %>
+                                    <ul class="list-group list-group-flush">
+                                        <% leaseDocuments.forEach(doc => { %>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span><i class="fas fa-file-pdf me-2"></i><%= doc.name %></span>
+                                                <a href="/lease/download/<%= doc._id %>" class="btn btn-sm btn-modern">Download</a>
+                                            </li>
+                                        <% }) %>
+                                    </ul>
+                                <% } else { %>
+                                    <p class="text-muted">No lease documents available.</p>
+                                <% } %>
+                            </div>
+                        </div>
 
-                    <!-- Virtual Tour Section -->
-                    <div class="card mb-4 shadow-sm virtual-tour-card">
-                        <div class="card-header">
-                            <h5 class="mb-0">Take a Virtual Tour</h5>
-                        </div>
-                        <div class="card-body text-center">
-                            <button class="btn btn-primary" data-toggle="modal" data-target="#virtualTourModal">
-                                <i class="fas fa-vr-cardboard"></i> Explore Your Space
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between flex-wrap gap-3">
+                            <button class="btn-modern" onclick="window.print();">
+                                <i class="fas fa-print me-2"></i> Print Lease
                             </button>
-                            <div class="modal fade" id="virtualTourModal" tabindex="-1" role="dialog">
-                                <div class="modal-dialog modal-lg" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">Your Property in 360°</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">×</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <iframe src="/virtual-tour/<%= tenant.property._id %>" width="100%" height="400" frameborder="0" allowfullscreen></iframe>
-                                        </div>
+                            <a href="/lease/download/<%= tenant._id %>" class="btn-modern bg-success">
+                                <i class="fas fa-download me-2"></i> Download PDF
+                            </a>
+                            <button class="btn-modern bg-info" data-bs-toggle="modal" data-bs-target="#renewLeaseModal">
+                                <i class="fas fa-sync-alt me-2"></i> Renew Lease
+                            </button>
+                            <button class="btn-modern bg-warning" data-bs-toggle="modal" data-bs-target="#terminateLeaseModal">
+                                <i class="fas fa-times-circle me-2"></i> Request Termination
+                            </button>
+                        </div>
+
+                        <!-- Renew Lease Modal -->
+                        <div class="modal fade" id="renewLeaseModal" tabindex="-1" aria-labelledby="renewLeaseModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="renewLeaseModalLabel">Renew Your Lease</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="/#" method="POST">
+                                            <input type="hidden" name="tenantId" value="<%= tenant._id %>">
+                                            <div class="mb-3">
+                                                <label for="newEndDate" class="form-label">New End Date</label>
+                                                <input type="date" class="form-control" id="newEndDate" name="newEndDate" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="renewalNotes" class="form-label">Additional Notes</label>
+                                                <textarea class="form-control" id="renewalNotes" name="renewalNotes" rows="3"></textarea>
+                                            </div>
+                                            <button type="submit" class="btn btn-modern w-100">Submit Renewal</button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Action Buttons -->
-                    <div class="d-flex justify-content-between flex-wrap">
-                        <button class="btn btn-primary mb-2" onclick="window.print();">
-                            <i class="fas fa-print"></i> Print Lease
-                        </button>
-                        <a href="/lease/download" class="btn btn-success mb-2">
-                            <i class="fas fa-download"></i> Download PDF
-                        </a>
-                        <button class="btn btn-info mb-2" data-toggle="modal" data-target="#renewLeaseModal">
-                            <i class="fas fa-sync-alt"></i> Renew Lease
-                        </button>
-                        <button class="btn btn-warning mb-2" data-toggle="modal" data-target="#terminateLeaseModal">
-                            <i class="fas fa-times-circle"></i> Request Termination
-                        </button>
-                    </div>
-
-                    <!-- Renew Lease Modal -->
-                    <div class="modal fade" id="renewLeaseModal" tabindex="-1" role="dialog">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Renew Your Lease</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">×</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <form action="/lease/renew" method="POST">
-                                        <input type="hidden" name="tenantId" value="<%= tenant._id %>">
-                                        <div class="form-group">
-                                            <label for="newEndDate">New End Date</label>
-                                            <input type="date" class="form-control" id="newEndDate" name="newEndDate" required>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">Submit Renewal</button>
-                                    </form>
+                        <!-- Terminate Lease Modal -->
+                        <div class="modal fade" id="terminateLeaseModal" tabindex="-1" aria-labelledby="terminateLeaseModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="terminateLeaseModalLabel">Request Lease Termination</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="/lease/terminate" method="POST">
+                                            <input type="hidden" name="tenantId" value="<%= tenant._id %>">
+                                            <div class="mb-3">
+                                                <label for="terminationDate" class="form-label">Requested Termination Date</label>
+                                                <input type="date" class="form-control" id="terminationDate" name="terminationDate" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="reason" class="form-label">Reason for Termination</label>
+                                                <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+                                            </div>
+                                            <button type="submit" class="btn btn-modern bg-warning w-100">Submit Request</button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Terminate Lease Modal -->
-                    <div class="modal fade" id="terminateLeaseModal" tabindex="-1" role="dialog">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Request Lease Termination</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">×</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <form action="/lease/terminate" method="POST">
-                                        <input type="hidden" name="tenantId" value="<%= tenant._id %>">
-                                        <div class="form-group">
-                                            <label for="terminationDate">Requested Termination Date</label>
-                                            <input type="date" class="form-control" id="terminationDate" name="terminationDate" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="reason">Reason for Termination</label>
-                                            <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
-                                        </div>
-                                        <button type="submit" class="btn btn-warning">Submit Request</button>
-                                    </form>
-                                </div>
-                            </div>
+                    <% } else { %>
+                        <div class="alert alert-danger text-center">
+                            <strong>Oops!</strong> No tenant or lease info found. Contact support to get started!
                         </div>
-                    </div>
-                <% } else { %>
-                    <div class="alert alert-danger text-center">
-                        <strong>Oops!</strong> No tenant or lease info found. Contact support to get started!
-                    </div>
-                <% } %>
-            </main>
+                    <% } %>
+                </div>
+            </section>
+            <style>
+        .content-wrapper {
+            padding: 30px;
+        }
+
+        .modern-card {
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .modern-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .modern-card .card-header {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: var(--white);
+            padding: 15px;
+            border-bottom: none;
+        }
+
+        .modern-card .card-body {
+            padding: 20px;
+        }
+
+        .btn-modern {
+            background: var(--primary);
+            color: var(--white);
+            border-radius: 25px;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-modern:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 51, 102, 0.3);
+        }
+
+        .status-chip {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .lease-detail {
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px 0;
+        }
+
+        .lease-detail:last-child {
+            border-bottom: none;
+        }
+
+        .compliance-note {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+
+        .virtual-tour iframe {
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        @media (max-width: 768px) {
+            .content-wrapper { padding: 15px; }
+            .modern-card { margin-bottom: 15px; }
+        }
+            </style>
         </div>
 
         <!-- Main Footer -->
