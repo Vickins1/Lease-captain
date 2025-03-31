@@ -19,8 +19,8 @@
     <meta name="author" content="Lease Captain Team">
     <meta name="robots" content="index, follow">
 
-    <title>Lease Captain - Landing Page</title>
-    <!-- Open Graph Meta Tags (For Social Media Sharing) -->
+    <title>Lease Captain - Advanced Property And Lease Management Software</title>
+ 
     <meta property="og:title" content="Lease Captain - Advanced Property Management Software">
     <meta property="og:description"
         content="Manage properties effortlessly with Lease Captain's powerful tenant and payment tracking features. Try our free demo today!">
@@ -928,44 +928,42 @@
     <!-- End About Area -->
     <!--==================================================-->
 
-
-<!-- Pricing Section -->
+    <!-- Pricing Section -->
 <section id="pricing" class="py-5" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
     <div class="container">
         <h3 class="text-center mb-5" style="color: #001b36; font-size: 2.25rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
-            <i class="fas fa-tags mr-2" style="color: #003366;"></i> Our Pricing Plans
+            <i class="fas fa-tags mr-2" style="color: #003366;" aria-hidden="true"></i> Our Pricing Plans
         </h3>
         <p class="text-center mb-4" style="font-size: 1rem; color: #000000;"><strong>Save more with yearly plans! Slide to view all options.</strong></p>
         <div class="text-center mb-4" style="font-size: 1.1rem; font-weight: 500; color: #003366;">
-            <i class="fas fa-check-circle mr-2"></i> All plans include full features, including unlimited property listings!
+            <i class="fas fa-check-circle mr-2" aria-hidden="true"></i> All plans include full features, including unlimited property listings!
         </div>
 
         <!-- Billing Toggle -->
         <div class="d-flex justify-content-center mb-5">
             <div class="toggle-wrapper" style="background: #fff; border-radius: 50px; padding: 5px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: inline-flex;">
-                <button type="button" class="btn toggle-btn active" id="monthlyToggle" style="border-radius: 50px; padding: 10px 25px; font-weight: 600; color: #003366; background: #e6f0fa; border: none; transition: all 0.3s ease;">
+                <button type="button" class="btn toggle-btn active" id="monthlyToggle" aria-pressed="true" style="border-radius: 50px; padding: 10px 25px; font-weight: 600; transition: all 0.3s ease;">
                     Monthly
                 </button>
-                <button type="button" class="btn toggle-btn" id="yearlyToggle" style="border-radius: 50px; padding: 10px 25px; font-weight: 600; color: #666; background: transparent; border: none; transition: all 0.3s ease;">
+                <button type="button" class="btn toggle-btn" id="yearlyToggle" aria-pressed="false" style="border-radius: 50px; padding: 10px 25px; font-weight: 600; transition: all 0.3s ease;">
                     Yearly <span class="discount-tag" style="font-size: 0.75rem; color: #fff; background: #28a745; padding: 2px 8px; border-radius: 10px; margin-left: 5px;">Save 20%</span>
                 </button>
             </div>
         </div>
 
         <!-- Row for Pricing Cards with Responsive Layout -->
-        <div class="row flex-nowrap overflow-auto text-center" id="pricingCards">
-
+        <div class="row flex-nowrap overflow-auto text-center" id="pricingCards" style="scroll-behavior: smooth; padding-bottom: 15px;">
             <!-- Standard Plan -->
-            <div class="col-md-6 col-lg-3 mb-4" data-aos="zoom-in" data-aos-duration="1000">
+            <div class="col-10 col-sm-6 col-lg-3 mb-4 mx-2" data-aos="zoom-in" data-aos-duration="1000">
                 <div class="card h-100 shadow-lg border-0" style="border-radius: 15px; transition: transform 0.3s;">
                     <div class="card-body p-4">
                         <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
-                            <i class="fas fa-user"></i>
+                            <i class="fas fa-user" aria-hidden="true"></i>
                         </div>
                         <h3 class="card-title" style="color: #003366; font-size: 1.75rem; font-weight: 600;">Standard</h3>
                         <p class="lead" style="font-size: 1.2rem;">Up to 20 Units</p>
                         <p class="font-weight-bold monthly-price" style="font-size: 1.5rem;">
-                           <strong> Ksh.1,499</strong> <span class="text-muted" style="font-size: 0.7rem; vertical-align: super;">/month</span>
+                            <strong>Ksh.1,499</strong> <span class="text-muted" style="font-size: 0.7rem; vertical-align: super;">/month</span>
                         </p>
                         <p class="font-weight-bold yearly-price d-none" style="font-size: 1.5rem;">
                             <strong>Ksh.14,390</strong> <span class="text-muted" style="font-size: 0.7rem; vertical-align: super;">/year</span>
@@ -973,18 +971,18 @@
                         </p>
                         <p style="font-size: 0.9rem; color: #555;">All features for small property managers, including unlimited listings.</p>
                         <div class="hamilton-btn slider mt-4">
-                            <a href="/signup?plan=Standard" class="btn btn-primary btn-lg" style="border-radius: 25px; padding: 10px 25px;">Get Started</a>
+                            <a href="/signup?plan=Standard-Monthly" class="btn btn-primary btn-lg plan-link" data-plan="Standard" style="border-radius: 25px; padding: 10px 25px;">Get Started</a>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Pro Plan -->
-            <div class="col-md-6 col-lg-3 mb-4" data-aos="zoom-in" data-aos-duration="1000">
+            <div class="col-10 col-sm-6 col-lg-3 mb-4 mx-2" data-aos="zoom-in" data-aos-duration="1000">
                 <div class="card h-100 shadow-lg border-0" style="border-radius: 15px; transition: transform 0.3s;">
                     <div class="card-body p-4">
                         <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
-                            <i class="fas fa-building"></i>
+                            <i class="fas fa-building" aria-hidden="true"></i>
                         </div>
                         <h3 class="card-title" style="color: #003366; font-size: 1.75rem; font-weight: 600;">Pro</h3>
                         <p class="lead" style="font-size: 1.2rem;">Up to 50 Units</p>
@@ -997,18 +995,18 @@
                         </p>
                         <p style="font-size: 0.9rem; color: #555;">Full access for growing portfolios, with unlimited listings.</p>
                         <div class="hamilton-btn slider mt-4">
-                            <a href="/signup?plan=Pro" class="btn btn-primary btn-lg" style="border-radius: 25px; padding: 10px 25px;">Get Started</a>
+                            <a href="/signup?plan=Pro-Monthly" class="btn btn-primary btn-lg plan-link" data-plan="Pro" style="border-radius: 25px; padding: 10px 25px;">Get Started</a>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Advanced Plan -->
-            <div class="col-md-6 col-lg-3 mb-4" data-aos="zoom-in" data-aos-duration="1000">
+            <div class="col-10 col-sm-6 col-lg-3 mb-4 mx-2" data-aos="zoom-in" data-aos-duration="1000">
                 <div class="card h-100 shadow-lg border-0" style="border-radius: 15px; transition: transform 0.3s;">
                     <div class="card-body p-4">
                         <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
-                            <i class="fas fa-users"></i>
+                            <i class="fas fa-users" aria-hidden="true"></i>
                         </div>
                         <h3 class="card-title" style="color: #003366; font-size: 1.75rem; font-weight: 600;">Advanced</h3>
                         <p class="lead" style="font-size: 1.2rem;">Up to 100 Units</p>
@@ -1021,18 +1019,18 @@
                         </p>
                         <p style="font-size: 0.9rem; color: #555;">Complete tools for large portfolios, unlimited listings included.</p>
                         <div class="hamilton-btn slider mt-4">
-                            <a href="/signup?plan=Advanced" class="btn btn-primary btn-lg" style="border-radius: 25px; padding: 10px 25px;">Get Started</a>
+                            <a href="/signup?plan=Advanced-Monthly" class="btn btn-primary btn-lg plan-link" data-plan="Advanced" style="border-radius: 25px; padding: 10px 25px;">Get Started</a>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Enterprise Plan -->
-            <div class="col-md-6 col-lg-3 mb-4" data-aos="zoom-in" data-aos-duration="1000">
+            <div class="col-10 col-sm-6 col-lg-3 mb-4 mx-2" data-aos="zoom-in" data-aos-duration="1000">
                 <div class="card h-100 shadow-lg border-0" style="border-radius: 15px; transition: transform 0.3s;">
                     <div class="card-body p-4">
                         <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
-                            <i class="fas fa-city"></i>
+                            <i class="fas fa-city" aria-hidden="true"></i>
                         </div>
                         <h3 class="card-title" style="color: #003366; font-size: 1.75rem; font-weight: 600;">Enterprise</h3>
                         <p class="lead" style="font-size: 1.2rem;">Up to 150 Units</p>
@@ -1040,66 +1038,69 @@
                             <strong>Ksh.6,999</strong> <span class="text-muted" style="font-size: 0.7rem; vertical-align: super;">/month</span>
                         </p>
                         <p class="font-weight-bold yearly-price d-none" style="font-size: 1.5rem;">
-                            <strong></strong> <span class="text-muted" style="font-size: 0.7rem; vertical-align: super;">/year</span>
+                            <strong>Ksh.67,190</strong> <span class="text-muted" style="font-size: 0.7rem; vertical-align: super;">/year</span>
                             <span class="badge badge-success ml-2">Save 20%</span>
                         </p>
                         <p style="font-size: 0.9rem; color: #555;">All features for extensive portfolios, unlimited listings.</p>
                         <div class="hamilton-btn slider mt-4">
-                            <a href="/signup?plan=Enterprise" class="btn btn-primary btn-lg" style="border-radius: 25px; padding: 10px 25px;">Get Started</a>
+                            <a href="/signup?plan=Enterprise-Monthly" class="btn btn-primary btn-lg plan-link" data-plan="Enterprise" style="border-radius: 25px; padding: 10px 25px;">Get Started</a>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Premium Plan -->
-            <div class="col-md-6 col-lg-3 mb-4" data-aos="zoom-in" data-aos-duration="1000">
+            <div class="col-10 col-sm-6 col-lg-3 mb-4 mx-2" data-aos="zoom-in" data-aos-duration="1000">
                 <div class="card h-100 shadow-lg border-0" style="border-radius: 15px; transition: transform 0.3s; background: linear-gradient(135deg, #003366 0%, #0066cc 100%); color: white;">
                     <div class="card-body p-4">
                         <div class="feature-icon mb-3" style="font-size: 2rem; color: #fff;">
-                            <i class="fas fa-briefcase"></i>
+                            <i class="fas fa-briefcase" aria-hidden="true"></i>
                         </div>
                         <h3 class="card-title" style="color: #fff; font-size: 1.75rem; font-weight: 600;">Premium</h3>
                         <p class="lead" style="font-size: 1.2rem; color: #fff;">Unlimited Units</p>
                         <p class="font-weight-bold" style="font-size: 1.75rem; color: #fff;">Custom Pricing</p>
                         <p style="font-size: 0.9rem; color: #ddd;">Full features with unlimited listings, tailored to you.</p>
                         <div class="hamilton-btn slider mt-4">
-                            <a href="/signup?plan=Premium" class="btn btn-light btn-lg" style="border-radius: 25px; padding: 10px 25px; color: #003366;">Contact Us</a>
+                            <a href="/signup?plan=Premium" class="btn btn-light btn-lg plan-link" data-plan="Premium" style="border-radius: 25px; padding: 10px 25px; color: #003366;">Contact Us</a>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
-    <!-- JavaScript for Toggle -->
+    <!-- Font Awesome (Ensure this is included in your project) -->
+    <script src="https://kit.fontawesome.com/your-font-awesome-kit.js" crossorigin="anonymous"></script>
+
+    <!-- JavaScript for Toggle and Link Updates -->
     <script>
         const monthlyToggle = document.getElementById('monthlyToggle');
         const yearlyToggle = document.getElementById('yearlyToggle');
         const monthlyPrices = document.querySelectorAll('.monthly-price');
         const yearlyPrices = document.querySelectorAll('.yearly-price');
+        const planLinks = document.querySelectorAll('.plan-link');
 
-        monthlyToggle.addEventListener('click', function() {
-            this.classList.add('active');
-            this.style.background = '#e6f0fa';
-            this.style.color = '#003366';
-            yearlyToggle.classList.remove('active');
-            yearlyToggle.style.background = 'transparent';
-            yearlyToggle.style.color = '#666';
-            monthlyPrices.forEach(el => el.classList.remove('d-none'));
-            yearlyPrices.forEach(el => el.classList.add('d-none'));
-        });
+        function togglePricing(activeBtn, inactiveBtn, showClass, hideClass, billingCycle) {
+            activeBtn.classList.add('active');
+            activeBtn.setAttribute('aria-pressed', 'true');
+            inactiveBtn.classList.remove('active');
+            inactiveBtn.setAttribute('aria-pressed', 'false');
+            showClass.forEach(el => el.classList.remove('d-none'));
+            hideClass.forEach(el => el.classList.add('d-none'));
 
-        yearlyToggle.addEventListener('click', function() {
-            this.classList.add('active');
-            this.style.background = '#e6f0fa';
-            this.style.color = '#003366';
-            monthlyToggle.classList.remove('active');
-            monthlyToggle.style.background = 'transparent';
-            monthlyToggle.style.color = '#666';
-            monthlyPrices.forEach(el => el.classList.add('d-none'));
-            yearlyPrices.forEach(el => el.classList.remove('d-none'));
-        });
+            // Update the href of each "Get Started" link based on billing cycle
+            planLinks.forEach(link => {
+                const plan = link.getAttribute('data-plan');
+                if (plan === 'Premium') {
+                    link.href = `/signup?plan=Premium`; // Premium doesn't change
+                } else {
+                    link.href = `/signup?plan=${plan}-${billingCycle}`;
+                }
+            });
+        }
+
+        monthlyToggle.addEventListener('click', () => togglePricing(monthlyToggle, yearlyToggle, monthlyPrices, yearlyPrices, 'Monthly'));
+        yearlyToggle.addEventListener('click', () => togglePricing(yearlyToggle, monthlyToggle, yearlyPrices, monthlyPrices, 'Yearly'));
 
         // Card hover effect
         document.querySelectorAll('.card').forEach(card => {
@@ -1108,8 +1109,6 @@
         });
     </script>
 </section>
-
-
 
 
     <!--==================================================-->
@@ -1133,15 +1132,7 @@
                                 <ul>
                                     <li class="dropdown"><a href="#" data-toggle="dropdown">Home</a>
                                     </li>
-                                    <li class="dropdown"><a href="#" data-toggle="dropdown">Service <i
-                                                class="icon-arrow"></i></a>
-                                        <ul class="dropdown-menu">
-                                            <li><a href="/service1">Services</a>
-                                            </li>
-                                            <li><a href="/services">Services
-                                                    Details</a></li>
-                                        </ul>
-                                    </li>
+                                    
                                     <li class="dropdown"><a href="#" data-toggle="dropdown">Blog <i
                                                 class="icon-arrow"></i></a>
                                         <ul class="dropdown-menu">

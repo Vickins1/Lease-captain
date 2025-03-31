@@ -235,29 +235,22 @@
     top: 99%;
 }
 
-
-/* mobile menu */
-
 .mobile-menu-area {
     display: none;
 }
-
-/*==================================================
- <-- Hamilton All Btn Css-->
-===================================================*/
 
 .hamilton-btn a {
     color: #FFF;
     font-size: 20px;
     font-weight: 500;
-    padding: 14px 32px;
+    padding: 10px 27px;
     background-color: #003d4d;
     text-decoration: none;
     position: relative;
     display: block;
     overflow: hidden;
     width: 100%;
-    height: 60px;
+    height: 50px;
     max-width: 250px;
     z-index: 1;
 }
@@ -341,7 +334,7 @@
 .banner-carousel .slide-item {
     position: relative;
     overflow: hidden;
-    min-height: 900px;
+    min-height: 570px;
 }
 
 .banner-carousel .slide-item .image-layer {
@@ -379,7 +372,7 @@
 }
 
 .slider-title-shape {
-    display: inline-block;
+    display:inline-block;
 }
 
 .slider-title-shape img {
@@ -392,7 +385,7 @@
 
 .slider-sub-title h4 {
     color: #ffffff;
-    font-size: 18px;
+    font-size: 28px;
     font-weight: 400;
     line-height: 30px;
     display: inline-block;
@@ -402,13 +395,13 @@
 .slider-main-title h1 {
     color: #FFF;
     font-family: Jost;
-    font-size: 70px;
+    font-size: 45px;
     font-weight: 600;
-    line-height: 82px;
+    line-height: 52px;
 }
 
 .slider-discripton p {
-    color: #dddddd;
+    color: #fdfdfd;
     font-family: Jost;
     font-size: 16px;
     font-weight: 400;

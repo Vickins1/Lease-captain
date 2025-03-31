@@ -223,70 +223,233 @@
         </div>
     </div>
 
-    <!-- Sidebar -->
-<nav class="sidebar" id="sidebarMenu">
-    <h2 class="sidebar-title"><strong>Lease Captain</strong></h2>
-    <ul class="nav flex-column">
-        <li>
-            <a class="nav-link" href="/tenancy-manager/dashboard">
-                <i class="fas fa-tachometer-alt"></i> Dashboard
+<!-- Sidebar Menu -->
+<nav class="mt-2">
+    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        <!-- Dashboard -->
+        <li class="nav-item">
+            <a href="/tenancy-manager/dashboard" class="nav-link active" style="background-color: #003366; color: #ffffff;">
+                <i class="nav-icon fas fa-tachometer-alt"></i>
+                <p>Dashboard</p>
             </a>
         </li>
-        <li>
-            <a class="nav-link dropdown-toggle" href="#propertiesSubmenu" data-toggle="collapse">
-                <i class="fas fa-home"></i> Property Management
+
+        <!-- Property Management -->
+        <li class="nav-header"><strong>PROPERTY MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/properties" class="nav-link">
+                <i class="nav-icon fas fa-building"></i>
+                <p>Properties</p>
             </a>
-            <ul class="collapse" id="propertiesSubmenu">
-                <li><a class="nav-link" href="/tenancy-manager/properties">Properties</a></li>
-                <li><a class="nav-link" href="/tenancy-manager/property/units">Property Units</a></li>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/property/units" class="nav-link">
+                <i class="nav-icon fas fa-cogs"></i>
+                <p>Property Units</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/propertyListing" class="nav-link">
+                <i class="nav-icon fas fa-list-alt"></i>
+                <p>List Properties</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-chart-line"></i>
+                <p>
+                    Tenant Management
+                    <i class="right fas fa-angle-left"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="/tenancy-manager/tenants" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Tenants</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/maintenance-requests" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Maintenance Requests</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/tenancy-manager/tenant-reports" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Tenant Reports</p>
+                    </a>
+                </li>
             </ul>
         </li>
-        <li>
-            <a class="nav-link dropdown-toggle" href="#tenantsSubmenu" data-toggle="collapse">
-                <i class="fas fa-users"></i> Tenant Management
+
+        <!-- Land Management -->
+        <li class="nav-header"><strong>LAND MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/lands" class="nav-link">
+                <i class="nav-icon fas fa-map"></i>
+                <p>Registered Lands</p>
             </a>
-            <ul class="collapse" id="tenantsSubmenu">
-                <li><a class="nav-link" href="/tenancy-manager/tenants">Tenants</a></li>
-                <li><a class="nav-link" href="/maintenance-requests">Maintenance Requests</a></li>
-            </ul>
         </li>
-        <li>
-            <a class="nav-link dropdown-toggle" href="#billingSubmenu" data-toggle="collapse">
-                <i class="fas fa-money-bill-wave"></i> Financial Overview
+        <li class="nav-item">
+            <a href="/tenancy-manager/land-parcels" class="nav-link">
+                <i class="nav-icon fas fa-th-large"></i>
+                <p>Land Parcels</p>
             </a>
-            <ul class="collapse" id="billingSubmenu">
-                <li><a class="nav-link" href="/tenancy-manager/payments">Payment Transactions</a></li>
-                <li><a class="nav-link" href="/reports-invoices">Reports & Invoices</a></li>
-                <li><a class="nav-link" href="/expenses">Expense Tracking</a></li>
-            </ul>
         </li>
-        <li>
-            <a class="nav-link dropdown-toggle" href="#smsSubmenu" data-toggle="collapse">
-                <i class="fas fa-sms"></i> Notification Management
+        <li class="nav-item">
+            <a href="/tenancy-manager/land-reports" class="nav-link">
+                <i class="nav-icon fas fa-chart-area"></i>
+                <p>Land Reports</p>
             </a>
-            <ul class="collapse" id="smsSubmenu">
-                <li><a class="nav-link" href="/top-ups">Credit Top-Up</a></li>
-                <li><a class="nav-link" href="/sms&email">SMS & Email Notifications</a></li>
-            </ul>
         </li>
-        <li>
-            <a class="nav-link dropdown-toggle" href="#userSubmenu" data-toggle="collapse">
-                <i class="fas fa-users-cog"></i> User Administration
+
+        <!-- Lease Management -->
+        <li class="nav-header"><strong>LEASE MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/leases" class="nav-link">
+                <i class="nav-icon fas fa-file-contract"></i>
+                <p>Leases</p>
             </a>
-            <ul class="collapse" id="userSubmenu">
-                <li><a class="nav-link" href="/users">User Accounts</a></li>
-                <li><a class="nav-link" href="/roles">User Roles</a></li>
-            </ul>
         </li>
-        <li>
-            <a class="nav-link dropdown-toggle" href="#settingsSubmenu" data-toggle="collapse">
-                <i class="fas fa-cog"></i> Account Settings
+        <li class="nav-item">
+            <a href="/tenancy-manager/lease-templates" class="nav-link">
+                <i class="nav-icon fas fa-file-alt"></i>
+                <p>Lease Templates</p>
             </a>
-            <ul class="collapse" id="settingsSubmenu">
-                <li><a class="nav-link" href="/tenancy-manager/profile">Profile Settings</a></li>
-                <li><a class="nav-link" href="/tenancy-manager/security">Security Settings</a></li>
-                <li><a class="nav-link" href="/connect">Payment Gateway Integration</a></li>
-            </ul>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/lease-reports" class="nav-link">
+                <i class="nav-icon fas fa-chart-bar"></i>
+                <p>Lease Reports</p>
+            </a>
+        </li>
+
+        <!-- Vehicle Management -->
+        <li class="nav-header"><strong>VEHICLE MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/vehicles" class="nav-link">
+                <i class="nav-icon fas fa-car"></i>
+                <p>Registered Vehicles</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/vehicle-parking" class="nav-link">
+                <i class="nav-icon fas fa-parking"></i>
+                <p>Parking Spaces</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/vehicle-reports" class="nav-link">
+                <i class="nav-icon fas fa-clipboard-list"></i>
+                <p>Vehicle Reports</p>
+            </a>
+        </li>
+
+        <!-- Finance -->
+        <li class="nav-header"><strong>FINANCE MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/payments" class="nav-link">
+                <i class="nav-icon fas fa-money-bill-wave"></i>
+                <p>Payment Transactions</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/reports-invoices" class="nav-link">
+                <i class="nav-icon fas fa-file-invoice"></i>
+                <p>Reports & Invoices</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/expenses" class="nav-link">
+                <i class="nav-icon fas fa-wallet"></i>
+                <p>Expense Tracking</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/budget-planning" class="nav-link">
+                <i class="nav-icon fas fa-chart-pie"></i>
+                <p>Budget Planning</p>
+            </a>
+        </li>
+
+        <!-- Notifications -->
+        <li class="nav-header"><strong>NOTIFICATION MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/sms&email" class="nav-link">
+                <i class="nav-icon fas fa-sms"></i>
+                <p>SMS & Email</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/sms&email" class="nav-link">
+                <i class="nav-icon fas fa-credit-card"></i>
+                <p>Credit Top-up</p>
+            </a>
+        </li>
+
+        <!-- Staff Management -->
+        <li class="nav-header"><strong>STAFF MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/staff-directory" class="nav-link">
+                <i class="nav-icon fas fa-user-tie"></i>
+                <p>Staff Directory</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/staff-attendance" class="nav-link">
+                <i class="nav-icon fas fa-calendar-check"></i>
+                <p>Attendance</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/staff-payroll" class="nav-link">
+                <i class="nav-icon fas fa-file-invoice-dollar"></i>
+                <p>Payroll</p>
+            </a>
+        </li>
+
+        <!-- Account Management -->
+        <li class="nav-header"><strong>ACCOUNT MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/profile" class="nav-link">
+                <i class="nav-icon fas fa-user"></i>
+                <p>Profile Settings</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/security" class="nav-link">
+                <i class="nav-icon fas fa-lock"></i>
+                <p>Security Settings</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/connect" class="nav-link">
+                <i class="nav-icon fas fa-link"></i>
+                <p>Payment Gateway</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/users" class="nav-link">
+                <i class="nav-icon fas fa-users"></i>
+                <p>User Accounts</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/upgrade-subscription" class="nav-link">
+                <i class="nav-icon fas fa-arrow-circle-up"></i>
+                <p>Upgrade Subscription</p>
+            </a>
+        </li>
+        <!-- Support -->
+        <li class="nav-item mt-auto">
+            <a href="/contacts" class="nav-link d-flex align-items-center justify-content-center"
+                style="background-color: #003366; color: #ffffff; border-radius: 5px; margin: 10px;">
+                <i class="fas fa-headset mr-2"></i>
+                <p>Support</p>
+            </a>
         </li>
     </ul>
 </nav>

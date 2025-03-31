@@ -11,10 +11,10 @@
   <link rel="icon" href="/images/icon.png" type="image/png">
   <style>
     body {
-      background-color: #f7f7f7;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       font-family: 'Arial', sans-serif;
       margin: 0;
-      padding: 0;
+      padding: 20px 10px;
       min-height: 100vh;
       display: flex;
       justify-content: center;
@@ -25,10 +25,17 @@
     .signup-container {
       background: #fff;
       padding: 30px;
-      border-radius: 5px;
+      border-radius: 15px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
       width: 100%;
       max-width: 500px;
+      border-top: 5px solid #003366;
+      transition: transform 0.3s ease;
+      overflow: hidden;
+    }
+
+    .signup-container:hover {
+      transform: scale(1.02);
     }
 
     h1 {
@@ -36,20 +43,23 @@
       text-align: center;
       margin-bottom: 25px;
       font-size: 24px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      word-wrap: break-word;
     }
 
     .form-label {
-      font-weight: bold;
+      font-weight: 600;
       color: #003366;
       margin-bottom: 5px;
-      font-size: small;
+      font-size: 0.9rem;
       display: block;
     }
 
     .form-group {
       margin-bottom: 20px;
       width: 100%;
-      font-size: small;
     }
 
     input[type="password"],
@@ -58,11 +68,12 @@
     input[type="tel"],
     select {
       width: 100%;
-      padding: 8px;
+      padding: 10px;
       border: 1px solid #ccc;
       border-radius: 5px;
       box-sizing: border-box;
-      font-size: small;
+      font-size: 0.9rem;
+      transition: border-color 0.3s, box-shadow 0.3s;
     }
 
     input[type="password"]:focus,
@@ -76,36 +87,39 @@
     }
 
     .btn-submit {
-      background-color: #003366;
+      background: linear-gradient(90deg, #003366, #0066cc);
       color: white;
       border: none;
-      padding: 10px;
+      padding: 12px;
       width: 100%;
-      border-radius: 5px;
-      font-weight: bold;
+      border-radius: 25px;
+      font-weight: 600;
       cursor: pointer;
       text-align: center;
-      font-size: small;
-      transition: background-color 0.3s;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
     }
 
     .btn-submit:hover {
-      background-color: #005bb5;
+      background: linear-gradient(90deg, #005bb5, #0088ff);
+      transform: translateY(-2px);
     }
 
     .btn-submit:disabled {
-      background-color: #6c757d;
+      background: #6c757d;
       cursor: not-allowed;
+      transform: none;
     }
 
     .sign-up-link {
       text-align: center;
       margin-top: 15px;
+      font-size: 0.9rem;
     }
 
     .sign-up-link a {
       color: #003366;
-      font-weight: bold;
+      font-weight: 600;
       text-decoration: none;
     }
 
@@ -119,20 +133,29 @@
     }
 
     .logo img {
-      width: 200px;
+      max-width: 200px;
+      width: 100%;
+      transition: transform 0.3s ease;
+    }
+
+    .logo img:hover {
+      transform: scale(1.05);
     }
 
     .alert {
-      font-size: 0.7rem;
+      font-size: 0.8rem;
       margin-bottom: 20px;
       padding: 10px;
       border-radius: 5px;
+      word-wrap: break-word;
     }
 
     small.error {
-      color: red;
+      color: #dc3545;
       display: block;
       margin-top: 5px;
+      font-size: 0.75rem;
+      word-wrap: break-word;
     }
 
     /* Responsive Design */
@@ -147,7 +170,7 @@
       }
 
       .logo img {
-        width: 150px;
+        max-width: 150px;
       }
 
       .form-group {
@@ -155,14 +178,19 @@
       }
 
       .btn-submit {
-        padding: 8px;
+        padding: 10px;
       }
     }
 
     @media (max-width: 576px) {
+      body {
+        padding: 15px 5px;
+      }
+
       .signup-container {
         padding: 15px;
-        max-width: 350px;
+        max-width: 100%;
+        margin: 0 10px;
       }
 
       h1 {
@@ -174,12 +202,39 @@
       }
 
       .btn-submit {
-        font-size: 0.9rem;
+        font-size: 0.8rem;
         padding: 8px;
       }
 
       .logo img {
-        width: 120px;
+        max-width: 120px;
+      }
+
+      input[type="password"],
+      input[type="text"],
+      input[type="email"],
+      input[type="tel"],
+      select {
+        font-size: 0.85rem;
+        padding: 8px;
+      }
+
+      .form-label {
+        font-size: 0.85rem;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .signup-container {
+        padding: 10px;
+      }
+
+      h1 {
+        font-size: 16px;
+      }
+
+      .logo img {
+        max-width: 100px;
       }
     }
   </style>
@@ -188,7 +243,7 @@
 <body>
   <div class="signup-container">
     <div class="logo"><a href="/"><img src="/images/logo2.png" alt="Lease Captain Logo"></a></div>
-    <h1><strong>Fill in your details to create an account</strong></h1>
+    <h1><i class="fas fa-user-plus mr-2"></i> Create Your Account</h1>
 
     <!-- Error Message -->
     <% if (error && error.length > 0) { %>
@@ -206,8 +261,8 @@
 
     <form id="signupForm" action="/signup" method="POST" novalidate>
       <div class="form-group">
-        <label for="username"><i class="fas fa-user"></i> Username</label>
-        <input type="text" name="username" id="username" placeholder="e.g John123" 
+        <label for="username" class="form-label"><i class="fas fa-user mr-1"></i> Username</label>
+        <input type="text" name="username" id="username" placeholder="e.g., John123" 
                value="<%= typeof username !== 'undefined' ? username : '' %>"
                pattern="^[a-zA-Z0-9_]{3,20}$" 
                title="Username must be 3-20 characters and contain only letters, numbers, or underscores" 
@@ -216,8 +271,8 @@
       </div>
 
       <div class="form-group">
-        <label for="email"><i class="fas fa-envelope"></i> Email</label>
-        <input type="email" name="email" id="email" placeholder="e.g example@domain.com" 
+        <label for="email" class="form-label"><i class="fas fa-envelope mr-1"></i> Email</label>
+        <input type="email" name="email" id="email" placeholder="e.g., example@domain.com" 
                value="<%= typeof email !== 'undefined' ? email : '' %>"
                pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$" 
                title="Enter a valid email address" 
@@ -226,8 +281,8 @@
       </div>
 
       <div class="form-group">
-        <label for="phone"><i class="fas fa-phone"></i> Phone Number</label>
-        <input type="tel" name="phone" id="phone" placeholder="e.g +254768123456" 
+        <label for="phone" class="form-label"><i class="fas fa-phone mr-1"></i> Phone Number</label>
+        <input type="tel" name="phone" id="phone" placeholder="e.g., +254768123456" 
                value="<%= typeof phone !== 'undefined' ? phone : '' %>"
                pattern="^\+?[1-9]\d{1,14}$" 
                title="Enter a valid phone number (e.g., +254768123456)" 
@@ -236,7 +291,7 @@
       </div>
 
       <div class="form-group">
-        <label for="password"><i class="fas fa-lock"></i> Password</label>
+        <label for="password" class="form-label"><i class="fas fa-lock mr-1"></i> Password</label>
         <input type="password" name="password" id="password" placeholder="Create your password" 
                pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}" 
                title="Password must be at least 8 characters and include an uppercase letter, lowercase letter, number, and special character" 
@@ -245,31 +300,47 @@
       </div>
 
       <div class="form-group">
-        <label for="confirm-password"><i class="fas fa-lock"></i> Confirm Password</label>
+        <label for="confirm-password" class="form-label"><i class="fas fa-lock mr-1"></i> Confirm Password</label>
         <input type="password" name="confirm-password" id="confirm-password" placeholder="Confirm password" required>
         <small class="error" id="confirmPasswordError"></small>
       </div>
 
       <div class="form-group">
-        <label for="plan"><i class="fas fa-layer-group"></i> Select Your Plan</label>
-        <select name="plan" id="plan" class="form-control" required>
-          <option value="Basic" <%= typeof plan !== 'undefined' && plan === 'Basic' ? 'selected' : '' %>>Demo</option>
-          <option value="Standard" <%= typeof plan !== 'undefined' && plan === 'Standard' ? 'selected' : '' %>>Standard (Up to 20 Units) - Ksh. 1,499/month</option>
-          <option value="Pro" <%= typeof plan !== 'undefined' && plan === 'Pro' ? 'selected' : '' %>>Pro (Up to 50 Units) - Ksh. 2,999/month</option>
-          <option value="Advanced" <%= typeof plan !== 'undefined' && plan === 'Advanced' ? 'selected' : '' %>>Advanced (Up to 100 Units) - Ksh. 4,499/month</option>
-          <option value="Enterprise" <%= typeof plan !== 'undefined' && plan === 'Enterprise' ? 'selected' : '' %>>Enterprise (Up to 150 Units) - Ksh. 6,999/month</option>
-          <option value="Premium" <%= typeof plan !== 'undefined' && plan === 'Premium' ? 'selected' : '' %>>Custom (Unlimited Units) - Contact Us</option>
+        <label for="plan" class="form-label"><i class="fas fa-layer-group mr-1"></i> Select Your Plan</label>
+        <select name="plan" id="plan" required>
+          <option value="Basic" <%= typeof plan !== 'undefined' && plan === 'Basic' ? 'selected' : '' %>>Demo (5 Units) - Free</option>
+          <option value="Standard-Monthly" <%= typeof plan !== 'undefined' && plan === 'Standard-Monthly' ? 'selected' : '' %>>Standard (Up to 20 Units) - Ksh. 1,499/month</option>
+          <option value="Standard-Yearly" <%= typeof plan !== 'undefined' && plan === 'Standard-Yearly' ? 'selected' : '' %>>Standard (Up to 20 Units) - Ksh. 14,390/year (Save 20%)</option>
+          <option value="Pro-Monthly" <%= typeof plan !== 'undefined' && plan === 'Pro-Monthly' ? 'selected' : '' %>>Pro (Up to 50 Units) - Ksh. 2,999/month</option>
+          <option value="Pro-Yearly" <%= typeof plan !== 'undefined' && plan === 'Pro-Yearly' ? 'selected' : '' %>>Pro (Up to 50 Units) - Ksh. 28,790/year (Save 20%)</option>
+          <option value="Advanced-Monthly" <%= typeof plan !== 'undefined' && plan === 'Advanced-Monthly' ? 'selected' : '' %>>Advanced (Up to 100 Units) - Ksh. 4,499/month</option>
+          <option value="Advanced-Yearly" <%= typeof plan !== 'undefined' && plan === 'Advanced-Yearly' ? 'selected' : '' %>>Advanced (Up to 100 Units) - Ksh. 43,190/year (Save 20%)</option>
+          <option value="Enterprise-Monthly" <%= typeof plan !== 'undefined' && plan === 'Enterprise-Monthly' ? 'selected' : '' %>>Enterprise (Up to 150 Units) - Ksh. 6,999/month</option>
+          <option value="Enterprise-Yearly" <%= typeof plan !== 'undefined' && plan === 'Enterprise-Yearly' ? 'selected' : '' %>>Enterprise (Up to 150 Units) - Ksh. 67,190/year (Save 20%)</option>
+          <option value="Premium" <%= typeof plan !== 'undefined' && plan === 'Premium' ? 'selected' : '' %>>Premium (Unlimited Units) - Contact Us</option>
         </select>
       </div>
 
       <button type="submit" id="signupButton" class="btn-submit">
-        <i class="fas fa-user-plus"></i> Sign Up
+        <i class="fas fa-user-plus mr-2"></i> Sign Up
       </button>
     </form>
 
     <div class="sign-up-link">
-      <p>Already have an account? <a href="/login"><i class="fas fa-sign-in-alt"></i> <strong>Login</strong></a></p>
+      <p>Already have an account? <a href="/login"><i class="fas fa-sign-in-alt mr-1"></i> <strong>Login</strong></a></p>
     </div>
+  </div>
+
+  <!-- Inject plan data via hidden elements -->
+  <div id="data-container" style="display: none;">
+    <input type="hidden" id="plan-details" value='<%- JSON.stringify({
+      Basic: { monthly: { amount: 0, units: 5 }, yearly: { amount: 0, units: 5 } },
+      Standard: { monthly: { amount: 1499, units: 20 }, yearly: { amount: 14390, units: 20 } },
+      Pro: { monthly: { amount: 2999, units: 50 }, yearly: { amount: 28790, units: 50 } },
+      Advanced: { monthly: { amount: 4499, units: 100 }, yearly: { amount: 43190, units: 100 } },
+      Enterprise: { monthly: { amount: 6999, units: 150 }, yearly: { amount: 67190, units: 150 } },
+      Premium: { monthly: { amount: null, units: "Unlimited" }, yearly: { amount: null, units: "Unlimited" } }
+    }) %>'>
   </div>
 
   <script>
@@ -277,8 +348,9 @@
     const signupButton = document.getElementById('signupButton');
     const password = document.getElementById('password');
     const confirmPassword = document.getElementById('confirm-password');
-
-    // Real-time validation
+    const planDetails = JSON.parse(document.getElementById('plan-details').value);
+  
+    // Real-time validation (unchanged)
     const validateField = (field, regex, errorElement, errorMessage) => {
       field.addEventListener('input', () => {
         if (!regex.test(field.value)) {
@@ -288,35 +360,35 @@
         }
       });
     };
-
+  
     validateField(
       document.getElementById('username'),
       /^[a-zA-Z0-9_]{3,20}$/,
       document.getElementById('usernameError'),
       'Username must be 3-20 characters and contain only letters, numbers, or underscores'
     );
-
+  
     validateField(
       document.getElementById('email'),
       /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
       document.getElementById('emailError'),
       'Enter a valid email address'
     );
-
+  
     validateField(
       document.getElementById('phone'),
       /^\+?[1-9]\d{1,14}$/,
       document.getElementById('phoneError'),
       'Enter a valid phone number (e.g., +254768123456)'
     );
-
+  
     validateField(
       password,
       /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}/,
       document.getElementById('passwordError'),
       'Password must be 8+ characters with an uppercase, lowercase, number, and special character'
     );
-
+  
     confirmPassword.addEventListener('input', () => {
       const errorElement = document.getElementById('confirmPasswordError');
       if (password.value !== confirmPassword.value) {
@@ -325,8 +397,8 @@
         errorElement.textContent = '';
       }
     });
-
-    // Form submission handling
+  
+    // Form submission handling (unchanged)
     signupForm.addEventListener('submit', (e) => {
       const errors = [];
       if (!/^[a-zA-Z0-9_]{3,20}$/.test(document.getElementById('username').value)) {
@@ -344,23 +416,26 @@
       if (password.value !== confirmPassword.value) {
         errors.push('Passwords do not match');
       }
-
+  
       if (errors.length > 0) {
         e.preventDefault();
         alert(errors.join('. '));
       } else {
         signupButton.disabled = true;
-        signupButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        signupButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
       }
     });
-
+  
     // Preselect plan from URL parameter
     const urlParams = new URLSearchParams(window.location.search);
     const selectedPlan = urlParams.get('plan');
     if (selectedPlan) {
-      document.getElementById('plan').value = selectedPlan;
+      const planSelect = document.getElementById('plan');
+      planSelect.value = selectedPlan; // Directly set the value from URL
+      if (!planSelect.value) { // If the value isn't found, fallback to a default
+        planSelect.value = 'Basic';
+      }
     }
   </script>
 </body>
-
 </html>

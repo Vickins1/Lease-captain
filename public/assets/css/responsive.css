@@ -31,8 +31,8 @@
     /* banner section */
 
     .slider-main-title h1 {
-        font-size: 43px;
-        line-height: 62px;
+        font-size: 30px;
+        line-height: 42px;
     }
 
     .slider-discripton p {
@@ -145,122 +145,7 @@
         right: 10px;
     }
 
-    /*===============================================================
-<-- Home Two All Css-->
-=================================================================*/
-
-    /* banner section */
-    .slider-main-title.style-two h1 {
-        font-size: 73px;
-        line-height: 90px;
-    }
-
-    .counter-content p {
-        font-size: 16px;
-    }
-
-    .banner-slider {
-        left: 27%;
-    }
-
-    /* about area */
-
-    .about-list ul li {
-        padding: 0 15px;
-    }
-
-    /* team area */
-
-    .team-thumb {
-        left: 5px;
-    }
-
-    /* service area */
-
-    .service-items-content h4 a {
-        font-size: 22px;
-    }
-
-    /* testimonial area */
-
-    .testi-title h4 {
-        font-size: 28px;
-    }
-
-    /* abou style three */
-
-    .about-skill h4 {
-        padding: 18px 18px;
-    }
-
-    /* blog area */
-
-    .blog-content.style-two {
-        width: 100%;
-        padding: 0 20px 0;
-    }
-
-    /* footer area */
-
-    .footer-btn {
-        margin-left: 30px;
-    }
-
-    /* project inner page css */
-
-    .project-grid-content {
-        width: 100%;
-        left: 0;
-        right: 0;
-    }
-
-    /*===============================================================
-<-- All Details Inner Page Css-->
-=================================================================*/
-
-    /* service details inner page */
-
-    .widget-download-btn a {
-        padding: 22px 52px;
-    }
-
-    /* project detailas inner page */
-
-    .porject-detials-discription.inner {
-        margin: 20px 0 0;
-    }
-
-    /* team details inner page */
-
-    .barfiller {
-        width: 100%;
-    }
-
-    .row.author-info {
-        margin-top: -140px;
-    }
-
-    /* blog details inner page */
-
-    .blog-details-content h4 {
-        line-height: 54px;
-        margin-bottom: 20px;
-    }
-
-    .blog-details-item.two {
-        margin-left: 30px;
-    }
-
-    .widget-recent-box {
-        padding: 50px 15px 55px;
-    }
-
-    .sidber-widget-recent-post {
-        padding: 16px 20px;
-    }
-
 }
-
 
 /* Normal desktop :992px. */
 @media (min-width: 992px) and (max-width: 1199px) {
@@ -790,7 +675,8 @@
     }
 
     .slider-main-title h1 {
-        font-size: 64px;
+        font-size: 34px;
+        line-height: 62px;
     }
 
     .slider-discripton p {
@@ -1248,16 +1134,17 @@
     /* banner area */
 
     .banner-carousel .slide-item {
-        min-height: 700px;
+        min-height: 400px;
     }
 
     .slider-content {
-        width: 100%;
+        width: 50%;
     }
 
     .slider-main-title h1 {
-        font-size: 49px;
-        line-height: 62px;
+        font-size: 39px;
+        width: 70%;
+      
     }
 
     .slider-discripton p {

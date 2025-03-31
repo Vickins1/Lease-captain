@@ -13,6 +13,6 @@ const PropertySchema = new mongoose.Schema({
     facilities: [String],
     propertyType: { type: String, enum: ['Apartment', 'Bungalow', 'Maisonette', 'Townhouse', 'Single Family Home', 'Farmhouse', ''], default: '' },
     category: { type: String, enum: ['Residential', 'Commercial', 'Agricultural', ''], default: '' }
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('PropertyList', PropertySchema);

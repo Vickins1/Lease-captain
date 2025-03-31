@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const router = express.Router();
 const nodemailer = require('nodemailer');
 require('dotenv').config();
@@ -17,12 +18,14 @@ const Account = require('../models/account');
 const Topups = require('../models/topups');
 const Reminder = require('../models/reminder');
 const crypto = require('crypto');
-const axios = require('axios')
+const axios = require('axios');
 const SupportMessage = require('../models/supportMessage');
 const PropertyList = require('../models/propertyList');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
+const EventEmitter = require('events');
+const paymentEvents = new EventEmitter();
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -163,15 +166,6 @@ const sendWelcomeEmail = async (email, username, verificationToken) => {
     }
 };
 
-const planAmounts = {
-    Basic: 0,
-    Standard: 1499,
-    Pro: 2999,
-    Advanced: 4499,
-    Enterprise: 6999,
-    Premium: null
-};
-
 router.get('/tenancy-manager/dashboard', async (req, res) => {
     try {
         if (!req.user) {
@@ -184,10 +178,27 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
             return res.redirect('/verification');
         }
 
-        const expectedAmount = planAmounts[req.user.plan];
+        // Define pricing matching the schema enum, with yearly as 20% off (monthly * 12 * 0.8)
+        const planAmounts = {
+            'Basic': 0,
+            'Standard-Monthly': 1499,
+            'Standard-Yearly': 14390,
+            'Pro-Monthly': 2999,
+            'Pro-Yearly':28790,
+            'Advanced-Monthly': 4499,
+            'Advanced-Yearly': 43190,
+            'Enterprise-Monthly': 6999,
+            'Enterprise-Yearly': 67190,
+            'Premium': null 
+        };
+
+        // Get the expected amount directly from the user's plan
+        const expectedAmount = planAmounts[req.user.plan] || 0; // Default to 0 if plan not found
+
+        // Check payment status
         const hasPaid = (req.user.plan === 'Basic') ||
-            (req.user.paymentStatus?.status === 'completed' && 
-             req.user.paymentStatus?.amount === expectedAmount);
+            (req.user.paymentStatus?.status === 'completed' &&
+                req.user.paymentStatus?.amount >= expectedAmount);
 
         if (!hasPaid && req.user.plan !== 'Basic') {
             req.flash('error', 'Please complete your subscription payment');
@@ -205,21 +216,25 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
         const tenants = await Tenant.find({ owner: req.user._id })
             .populate('property unit');
 
+        // Fetch the 5 latest payments with proper population
         const payments = await Payment.find({ owner: req.user._id })
             .populate({
                 path: 'tenant',
-                populate: [
-                    { path: 'property', select: 'name' },
-                    { path: 'unit', select: 'name' }
-                ]
+                select: 'name', // Only fetch tenant name
             })
-            .populate('property', 'name')
-            .populate('unit', 'name')
-            .limit(5)
-            .sort({ datePaid: -1 })
-            .lean();
+            .populate({
+                path: 'property',
+                select: 'name', // Only fetch property name
+            })
+            .populate({
+                path: 'unit',
+                select: 'unitType',
+            })
+            .sort({ datePaid: -1 }) // Sort by most recent first
+            .limit(5) // Limit to 5 payments
+            .lean(); // Convert to plain objects for rendering
 
-        // Calculate metrics
+        // Calculate metrics (unchanged for brevity, assume this works as is)
         const currentYear = new Date().getFullYear();
         const today = new Date();
         let totalRentCollected = 0, totalRentDue = 0, utilityCollected = 0, utilityDue = 0;
@@ -249,19 +264,24 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
             utilityDue += tenant.utilityDue;
         }
 
+        // Fetch payments for the current year
         const allPayments = await Payment.find({
             owner: req.user._id,
             datePaid: { $gte: new Date(currentYear, 0, 1), $lte: new Date(currentYear, 11, 31) }
         }).lean();
 
+        // Prepare rentDataArray for the graph with rentPaid and utilityPaid
         const allMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        const rentDataArray = allMonths.map(month => ({ month, collected: 0, due: 0 }));
+        const rentDataArray = allMonths.map(month => ({ month, rentPaid: 0, utilityPaid: 0, due: 0 }));
 
         allPayments.forEach(payment => {
             const monthIndex = new Date(payment.datePaid).getMonth();
-            rentDataArray[monthIndex].collected += payment.amount || 0;
+            if (payment.paymentType === 'rent') {
+                rentDataArray[monthIndex].rentPaid += payment.rentPaid || 0;
+            } else if (payment.paymentType === 'utility') {
+                rentDataArray[monthIndex].utilityPaid += payment.utilityPaid || 0;
+            }
         });
-
         tenants.forEach(tenant => {
             const unitPrice = tenant.unit?.unitPrice || 0;
             const leaseStartDate = new Date(tenant.leaseStartDate);
@@ -293,22 +313,18 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
 
         const occupiedTenants = tenants.filter(tenant => tenant.status === 'occupied').length;
 
-        // Define userProgress here
         const userProgress = {
             hasProperties: properties.length > 0,
-            hasPropertyUnits: propertyUnits.length > 0, // Simplified check as discussed
+            hasPropertyUnits: propertyUnits.length > 0,
             hasTenants: tenants.length > 0,
             hasPaymentConnected: hasPaid
         };
 
-        // Check if user is new (first login or hasn't completed tour)
         const isNewUser = !req.user.tourCompleted && (
-            req.user.loginActivity.length <= 1 || // First or second login
-            !userProgress.hasProperties // No properties yet
+            req.user.loginActivity.length <= 1 || !userProgress.hasProperties
         );
 
         if (isNewUser && req.user.loginActivity.length > 1) {
-            // Mark as not new after first meaningful interaction
             await User.findByIdAndUpdate(req.user._id, { isNewUser: false });
         }
 
@@ -318,7 +334,7 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
             propertyUnits,
             tenants,
             totalTenants: tenants.length,
-            payments,
+            payments, // Updated payments data
             totalExpectedRent,
             tenantRetention,
             totalProfit,
@@ -336,7 +352,7 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
             tenantPercentage: tenants.length ? (occupiedTenants / tenants.length) * 100 : 0,
             numberOfTenants: tenants.length,
             occupiedUnitsCount: occupiedTenants,
-            userProgress, // Now defined
+            userProgress,
             currentUser: req.user,
             isNewUser,
             success: req.flash('success'),
@@ -346,6 +362,44 @@ router.get('/tenancy-manager/dashboard', async (req, res) => {
         console.error('Dashboard error:', err.message, err.stack);
         req.flash('error', 'Unable to load dashboard. Please try again.');
         res.redirect('/login');
+    }
+});
+
+router.get('/tenancy-manager/dashboard/rent-data', async (req, res) => {
+    try {
+        // Check if user is authenticated
+        if (!req.user) {
+            return res.status(401).json({ error: 'Please log in to access rent data' });
+        }
+
+        // Optional: Add verification and payment checks if required
+        if (!req.user.isVerified) {
+            return res.status(403).json({ error: 'Please verify your account first' });
+        }
+
+        // Proceed with fetching rent data
+        const currentYear = new Date().getFullYear();
+        const allPayments = await Payment.find({
+            owner: req.user._id,
+            datePaid: { $gte: new Date(currentYear, 0, 1), $lte: new Date(currentYear, 11, 31) }
+        }).lean();
+
+        const allMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const rentDataArray = allMonths.map(month => ({ month, rentPaid: 0, utilityPaid: 0, due: 0 }));
+
+        allPayments.forEach(payment => {
+            const monthIndex = new Date(payment.datePaid).getMonth();
+            if (payment.paymentType === 'rent') {
+                rentDataArray[monthIndex].rentPaid += payment.rentPaid || 0;
+            } else if (payment.paymentType === 'utility') {
+                rentDataArray[monthIndex].utilityPaid += payment.utilityPaid || 0;
+            }
+        });
+
+        res.json({ rentDataArray });
+    } catch (err) {
+        console.error('Error fetching rent data:', err);
+        res.status(500).json({ error: 'Failed to fetch rent data' });
     }
 });
 
@@ -359,10 +413,10 @@ router.get('/api/user/progress', async (req, res) => {
         const propertyIds = properties.map(p => p._id);
         const propertyUnits = await PropertyUnit.find({ propertyId: { $in: propertyIds } });
         const tenants = await Tenant.find({ owner: req.user._id });
-        const hasPaid = req.user.plan === 'Basic' || 
-            (req.user.paymentStatus?.status === 'completed' && 
-             req.user.paymentStatus?.amount === planAmounts[req.user.plan]);
-        
+        const hasPaid = req.user.plan === 'Basic' ||
+            (req.user.paymentStatus?.status === 'completed' &&
+                req.user.paymentStatus?.amount === planAmounts[req.user.plan]);
+
         const progress = {
             hasProperties: properties.length > 0,
             hasPropertyUnits: propertyUnits.length > 0,
@@ -383,9 +437,9 @@ router.post('/api/user/complete-tour', async (req, res) => {
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
-        await User.findByIdAndUpdate(req.user._id, { 
+        await User.findByIdAndUpdate(req.user._id, {
             tourCompleted: true,
-            isNewUser: false 
+            isNewUser: false
         });
         res.status(200).json({ success: true });
     } catch (err) {
@@ -393,33 +447,87 @@ router.post('/api/user/complete-tour', async (req, res) => {
         res.status(500).json({ error: 'Failed to complete tour' });
     }
 });
+
 router.get('/subscription', async (req, res) => {
     try {
         if (!req.user) {
             req.flash('error', 'Please log in to view subscription details.');
             return res.redirect('/login');
         }
+        // Fetch user from database to ensure latest data
+        const user = await mongoose.model('User').findById(req.user._id);
+        if (!user) {
+            req.flash('error', 'User not found.');
+            return res.redirect('/login');
+        }
 
+        // Define pricing for both monthly and yearly plans
         const planAmounts = {
-            Basic: 0,
-            Standard: 1499,
-            Pro: 2999,
-            Advanced: 4499,
-            Enterprise: 6999,
-            Premium: null,
+            'Basic': { monthly: 0, yearly: 0 },
+            'Standard': { monthly: 1499, yearly: 14390 },
+            'Pro': { monthly: 2999, yearly: 28790 },
+            'Advanced': { monthly: 4499, yearly: 43190 },
+            'Enterprise': { monthly: 6999, yearly: 67190 },
+            'Premium': { monthly: null, yearly: null },
         };
 
         const planDetails = {
-            Basic: { amount: 0, units: 5 },
-            Standard: { amount: 1499, units: 20 },
-            Pro: { amount: 2999, units: 50 },
-            Advanced: { amount: 4499, units: 10 },
-            Enterprise: { amount: 6999, units: 150 },
-            Premium: { amount: null, units: "Contact Support for Pricing" },
+            'Basic': {
+                'monthly': { amount: 0, units: 5 },
+                'yearly': { amount: 0, units: 5 }
+            },
+            'Standard': {
+                'monthly': { amount: 1499, units: 20 },
+                'yearly': { amount: 14390, units: 20 }
+            },
+            'Pro': {
+                'monthly': { amount: 2999, units: 50 },
+                'yearly': { amount: 28790, units: 50 }
+            },
+            'Advanced': {
+                'monthly': { amount: 4499, units: 100 },
+                'yearly': { amount: 43190, units: 100 }
+            },
+            'Enterprise': {
+                'monthly': { amount: 6999, units: 150 },
+                'yearly': { amount: 67190, units: 150 }
+            },
+            'Premium': {
+                'monthly': { amount: null, units: "Contact Support for Pricing" },
+                'yearly': { amount: null, units: "Contact Support for Pricing" }
+            },
         };
 
-        const expectedAmount = planAmounts[req.user.plan] || 0; // Default to 0 if undefined
-        const hasPaid = req.user.paymentStatus?.status === 'completed';
+        // Extract user plan and billing period from the model
+        let userPlan = user.plan || 'Basic';
+        const billingPeriod = user.paymentStatus?.billingPeriod || 'monthly';
+
+        // Normalize plan name (remove billing period suffix if present)
+        const planTier = userPlan.replace(/-(Monthly|Yearly)$/, '');
+        const expectedBillingPeriod = userPlan.includes('Monthly') ? 'monthly' : userPlan.includes('Yearly') ? 'yearly' : billingPeriod;
+
+        // Validate if planTier exists in planDetails
+        if (!planDetails[planTier]) {
+            console.error(`Invalid plan: ${planTier}`);
+            req.flash('error', 'Invalid subscription plan. Defaulting to Basic.');
+            user.plan = 'Basic';
+            await user.save();
+            return res.redirect('/subscription');
+        }
+
+        // Validate if billingPeriod exists for the selected plan
+        if (!planDetails[planTier][expectedBillingPeriod]) {
+            console.error(`Invalid billing period: ${expectedBillingPeriod} for plan ${planTier}`);
+            req.flash('error', 'Invalid billing period. Defaulting to monthly.');
+            user.paymentStatus.billingPeriod = 'monthly';
+            user.plan = `${planTier}-Monthly`; // Update plan to match schema enum
+            await user.save();
+            return res.redirect('/subscription');
+        }
+
+        const expectedAmount = planAmounts[planTier][expectedBillingPeriod] || 0;
+        const hasPaid = user.paymentStatus?.status === 'completed';
+        const transactionId = user.paymentStatus?.transactionId || '';
 
         if (hasPaid) {
             req.flash('success', 'You have already paid for this subscription.');
@@ -427,11 +535,14 @@ router.get('/subscription', async (req, res) => {
         }
 
         res.render('subscription', {
-            plan: req.user.plan,
+            plan: planTier,
+            billingPeriod: expectedBillingPeriod,
             expectedAmount,
             hasPaid,
-            currentUser: req.user,
+            currentUser: user,
             planDetails,
+            planAmounts,
+            transactionId,
             messages: {
                 success: req.flash('success') || [],
                 error: req.flash('error') || [],
@@ -441,13 +552,46 @@ router.get('/subscription', async (req, res) => {
     } catch (err) {
         console.error('Error loading subscription page:', err);
         req.flash('error', 'An error occurred while loading the subscription page. Please try again later.');
-        return res.redirect('/dashboard');
+        return res.redirect('/login');
+    }
+});
+
+router.get('/upgrade-subscription', async (req, res) => {
+    try {
+        if (!req.user) {
+            req.flash('error', 'Please log in to view subscription options.');
+            return res.redirect('/login');
+        }
+
+        const planDetails = {
+            Basic: { amount: 0, units: 5 },
+            Standard: { amount: 1499, units: 20 },
+            Pro: { amount: 2999, units: 50 },
+            Advanced: { amount: 4499, units: 100 },
+            Enterprise: { amount: 6999, units: 150 },
+            Premium: { amount: null, units: "Contact Support for Pricing" },
+        };
+
+        res.render('tenancyManager/upgrade', {
+            plan: req.user.plan,
+            currentUser: req.user,
+            planDetails,
+            messages: {
+                success: req.flash('success') || [],
+                error: req.flash('error') || [],
+                info: req.flash('info') || [],
+            },
+        });
+    } catch (err) {
+        console.error('Error loading upgrade subscription page:', err);
+        req.flash('error', 'An error occurred while loading the subscription page. Please try again later.');
+        return res.redirect('/tenancy-manager/dashboard');
     }
 });
 
 async function sendPaymentRequest(payload, req, res) {
     try {
-        const transactionId = `LC${Math.floor(100000 + Math.random() * 900000)}`;
+        const transactionId = payload.transaction_id || `LC${Math.floor(100000 + Math.random() * 900000)}`;
         payload.transaction_id = transactionId;
 
         console.log('Sending payment initiation request with payload:', payload);
@@ -455,191 +599,246 @@ async function sendPaymentRequest(payload, req, res) {
         const response = await axios.post(
             'https://api.umeskiasoftwares.com/api/v1/intiatestk',
             payload,
-            { headers: { 'Content-Type': 'application/json' } }
+            { 
+                headers: { 'Content-Type': 'application/json' },
+                timeout: 30000
+            }
         );
 
-        console.log('Payment initiation response:', response.data);
-
-        const transactionRequestId = response.data.tranasaction_request_id || null;
-
-        if (response.status === 200 && transactionRequestId) {
+        if (response.status === 200 && response.data.success === '200' && response.data.tranasaction_request_id) {
             console.log('Payment request successful:', response.data);
-            req.flash('info', 'Payment request initiated successfully! Please enter your Mpesa pin to complete the payment.');
-            return { success: '200', transaction_request_id: transactionRequestId };
+            req.flash('', 'Payment request initiated successfully! Please enter your Mpesa PIN.');
+            return { 
+                success: '200', 
+                transaction_request_id: response.data.tranasaction_request_id,
+                responseData: response.data
+            };
         } else {
             console.error('Invalid response from payment initiation:', response.data);
-            req.flash('error', 'Payment request failed. Please try again.');
-            return { success: 'error' };
+            req.flash('error', response.data.message || 'Payment request failed.');
+            return { success: 'error', errorDetails: response.data.message || 'Invalid response format' };
         }
     } catch (err) {
-        console.error('Payment request failed:', err.message);
-        req.flash('error', `Error: ${err.message || 'Unknown error occurred during payment request.'}`);
-        return { success: 'error' };
+        const errorMessage = err.response?.data?.message || err.message || 'Unknown error';
+        console.error('Payment request failed:', errorMessage);
+        req.flash('error', `Error: ${errorMessage}`);
+        return { success: 'error', errorDetails: errorMessage };
     }
 }
 
-async function pollPaymentStatus(transactionRequestId, transactionId, api_key, email, expectedAmount, user, plan, req, res) {
-    const pollingInterval = 5000; // 5 seconds
-    const pollingTimeout = 60000; // 1 minute
-    const startTime = Date.now();
-    let responseSent = false;
+// Updated pollPaymentStatus with retries and increased timeout
+async function pollPaymentStatus(transactionRequestId, transactionId, api_key, email, expectedAmount, user, plan, msisdn) {
+    const pollingInterval = 3000;
+    const pollingTimeout = 60000;
+    const maxAttempts = Math.floor(pollingTimeout / pollingInterval);
+    let attempts = 0;
+    const maxRetries = 3; // Retry up to 3 times on ECONNRESET
 
-    const interval = setInterval(async () => {
-        if (responseSent) {
-            clearInterval(interval);
-            return;
-        }
+    const poll = async () => {
+        let retryCount = 0;
 
-        try {
-            const verificationPayload = {
-                api_key,
-                email,
-                transaction_id: transactionId,
-                tranasaction_request_id: transactionRequestId,
-            };
+        while (retryCount <= maxRetries) {
+            try {
+                const verificationPayload = {
+                    api_key,
+                    email,
+                    transaction_id: transactionId,
+                    tranasaction_request_id: transactionRequestId,
+                };
 
-            console.log('Verifying payment with payload:', verificationPayload);
+                console.log(`Polling attempt ${attempts + 1}, retry ${retryCount} with payload:`, verificationPayload);
 
-            const response = await axios.post(
-                'https://api.umeskiasoftwares.com/api/v1/transactionstatus',
-                verificationPayload,
-                { headers: { 'Content-Type': 'application/json' } }
-            );
+                const response = await axios.post(
+                    'https://api.umeskiasoftwares.com/api/v1/transactionstatus',
+                    verificationPayload,
+                    { 
+                        headers: { 'Content-Type': 'application/json' },
+                        timeout: 30000 // Increased from 20000 to 30000ms (30 seconds)
+                    }
+                );
 
-            if (response && response.data) {
                 const { ResultCode, TransactionStatus, TransactionAmount } = response.data;
+                console.log('Payment status response:', response.data);
 
                 if (TransactionStatus === 'Completed' && ResultCode === '200') {
-                    clearInterval(interval);
-                    responseSent = true;
+                    const receivedAmount = parseFloat(TransactionAmount);
+                    const expected = parseFloat(expectedAmount);
 
-                    if (parseFloat(TransactionAmount) >= parseFloat(expectedAmount)) {
-                        // Update payment status only once
+                    if (receivedAmount >= expected) {
                         user.paymentStatus = {
                             status: 'completed',
                             transactionId,
                             amount: TransactionAmount,
-                            plan,
+                            billingPeriod: user.paymentStatus?.billingPeriod || 'monthly',
                         };
+                        await user.save();
+                        await sendInvoice(user, transactionId, TransactionAmount, plan, user.paymentStatus.billingPeriod, msisdn);
 
-                        // Send invoice
-                        await sendInvoice(user, transactionId, TransactionAmount, plan);
-
-                        req.flash('success', `Payment completed! Welcome to the ${plan} plan.`);
-                        return res.redirect('/tenancy-manager/dashboard');
+                        paymentEvents.emit(transactionId, {
+                            status: 'completed',
+                            message: `Payment completed! Welcome to the ${plan} plan.`,
+                            redirect: '/tenancy-manager/dashboard'
+                        });
+                        return true;
                     } else {
-                        req.flash('error', 'Insufficient payment amount. Please try again.');
-                        return res.redirect('/subscription');
+                        paymentEvents.emit(transactionId, {
+                            status: 'failed',
+                            message: `Insufficient payment amount. Expected ${expected}, received ${receivedAmount}.`,
+                            redirect: '/subscription'
+                        });
+                        return true;
                     }
                 } else if (TransactionStatus === 'Pending') {
-                    console.log('Payment pending. Continuing polling...');
+                    paymentEvents.emit(transactionId, { status: 'pending' });
+                    return false;
                 } else {
-                    clearInterval(interval);
-                    responseSent = true;
-                    req.flash('error', 'Payment failed. Please try again.');
-                    return res.redirect('/subscription');
+                    paymentEvents.emit(transactionId, {
+                        status: 'failed',
+                        message: `Payment failed with status: ${TransactionStatus}`,
+                        redirect: '/subscription'
+                    });
+                    return true;
                 }
-            } else {
-                console.error('Invalid response during payment verification:', response);
-                clearInterval(interval);
-                req.flash('error', 'An error occurred during payment verification. Please try again.');
-                return res.redirect('/subscription');
-            }
-        } catch (error) {
-            console.error('Error during payment verification:', error.message);
-            clearInterval(interval);
-            req.flash('error', 'An error occurred during payment verification. Please try again.');
-            return res.redirect('/subscription');
-        }
+            } catch (error) {
+                console.error('Error during payment verification:', {
+                    message: error.message,
+                    code: error.code,
+                    response: error.response?.data,
+                    attempt: attempts + 1,
+                    retry: retryCount
+                });
 
-        // Timeout handling
-        if (Date.now() - startTime > pollingTimeout) {
-            clearInterval(interval);
-            if (!responseSent) {
-                responseSent = true;
-                req.flash('error', 'Payment verification timed out. Please check back later.');
-                return res.redirect('/subscription');
+                if (error.code === 'ECONNRESET' && retryCount < maxRetries) {
+                    retryCount++;
+                    console.log(`Retrying due to ECONNRESET, attempt ${retryCount} of ${maxRetries}`);
+                    await new Promise(resolve => setTimeout(resolve, 1000 * retryCount)); // Exponential backoff
+                    continue;
+                }
+
+                paymentEvents.emit(transactionId, {
+                    status: 'failed',
+                    message: error.message.includes('timeout') 
+                        ? 'Payment verification timed out. Please try again later.'
+                        : 'Payment verification failed due to a network issue. Please try again.',
+                    redirect: '/subscription'
+                });
+                return true;
             }
         }
-    }, pollingInterval);
-}
+    };
 
-async function sendInvoice(user, transactionId, amount) {
-    // Avoid re-sending emails or SMS
-    if (user.invoiceSent) {
-        console.log('Invoice already sent, skipping...');
-        return;
+    while (attempts < maxAttempts) {
+        const shouldStop = await poll();
+        if (shouldStop) break;
+
+        attempts++;
+        await new Promise(resolve => setTimeout(resolve, pollingInterval));
     }
 
-    try {
-        // Send invoice email
-        await sendInvoiceEmail(user, {
-            reference: transactionId,
-            amount,
-            date: new Date().toLocaleString(),
-            status: 'Completed',
+    if (attempts >= maxAttempts) {
+        paymentEvents.emit(transactionId, {
+            status: 'timeout',
+            message: 'Payment verification timed out. Please check your payment status later.',
+            redirect: '/subscription'
         });
-
-        console.log('Invoice email sent to', user.email);
-
-        // Send SMS
-        const smsResponse = await sendInvoiceSMS(user, {
-            reference: transactionId,
-            amount,
-        });
-
-        console.log('Invoice SMS response:', smsResponse);
-
-        // Update the user object to reflect that the invoice has been sent
-        user.invoiceSent = true;
-        await user.save();
-    } catch (error) {
-        console.error('Error sending invoice:', error.message);
     }
 }
 
+// Subscription route
 router.post('/subscription', async (req, res) => {
     const { msisdn, amount, plan } = req.body;
     const user = req.user;
+
+    if (!user) {
+        return res.status(401).json({ message: 'User not authenticated. Please log in.' });
+    }
 
     try {
         const payload = {
             api_key: 'VEpGOTVNTlY6dnUxaG5odHA=',
             email: 'vickinstechnologies@gmail.com',
             account_id: 'UMPAY772831690',
-            amount,
-            msisdn,
+            amount: Math.floor(parseFloat(amount)).toString(),
+            msisdn: msisdn.trim(),
             reference: `L-${Date.now()}`,
         };
 
         const paymentResponse = await sendPaymentRequest(payload, req, res);
 
-        if (paymentResponse.success === '200') {
-            const transactionRequestId = paymentResponse.transaction_request_id || paymentResponse.tranasaction_request_id;
-
-            if (!transactionRequestId) {
-                req.flash('error', 'Transaction request ID is missing. Payment initiation failed.');
-                return res.redirect('/subscription');
-            }
-
-            console.log('Transaction Request ID:', transactionRequestId);
-
+        if (paymentResponse?.success === '200') {
+            const transactionRequestId = paymentResponse.transaction_request_id;
             const transactionId = `LC${Math.floor(100000 + Math.random() * 900000)}`;
 
-            await pollPaymentStatus(transactionRequestId, transactionId, payload.api_key, payload.email, amount, user, plan, req, res);
+            res.json({ transactionId });
+
+            // Start polling in the background
+            pollPaymentStatus(transactionRequestId, transactionId, payload.api_key, payload.email, amount, user, plan, msisdn);
         } else {
-            req.flash('error', 'Payment initiation failed. Please try again.');
-            return res.redirect('/subscription');
+            res.status(400).json({ message: paymentResponse.errorDetails || 'Payment initiation failed.' });
         }
     } catch (error) {
-        console.error(error);
-        req.flash('error', 'Payment initiation failed. Please try again.');
-        return res.redirect('/subscription');
+        console.error('Error in /subscription:', error.message);
+        res.status(500).json({ message: 'An unexpected error occurred.' });
     }
 });
 
+// SSE endpoint
+router.get('/payment-status-stream', (req, res) => {
+    const transactionId = req.query.transactionId;
+
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
+
+    const listener = (data) => {
+        res.write(`data: ${JSON.stringify(data)}\n\n`);
+        if (data.status === 'completed' || data.status === 'failed' || data.status === 'timeout') {
+            res.end();
+        }
+    };
+
+    paymentEvents.on(transactionId, listener);
+
+    req.on('close', () => {
+        paymentEvents.off(transactionId, listener);
+        res.end();
+    });
+});
+
+// Combined sendInvoice function
+async function sendInvoice(user, transactionId, amount, plan, billingPeriod, msisdn) {
+    const invoiceDetails = {
+        reference: transactionId,
+        amount,
+        plan,
+        billingPeriod,
+        date: new Date().toISOString().split('T')[0],
+        status: 'Completed'
+    };
+
+    try {
+        if (!msisdn) {
+            throw new Error('No MSISDN provided for SMS');
+        }
+
+        await Promise.all([
+            sendInvoiceEmail(user, invoiceDetails), // Assuming sendInvoiceEmail is defined elsewhere
+            sendInvoiceSMS(user, invoiceDetails, msisdn)
+        ]);
+        console.log('Invoice sent successfully to', user.email);
+    } catch (error) {
+        console.error('Error sending invoice:', error.message);
+    }
+};
+
+// Send invoice via email
 const sendInvoiceEmail = async (user, invoiceDetails) => {
     try {
+        if (!user.email) {
+            throw new Error('User email is missing');
+        }
+
         const mailOptions = {
             from: `"Lease Captain" <${process.env.EMAIL_USERNAME}>`,
             to: user.email,
@@ -695,11 +894,13 @@ const sendInvoiceEmail = async (user, invoiceDetails) => {
                         <h1>Payment Invoice</h1>
                     </div>
                     <div class="content">
-                        <p>Dear ${user.username},</p>
+                        <p>Dear ${user.username || 'Customer'},</p>
                         <p>Thank you for your payment. Below are the details of your transaction:</p>
                         <table>
                             <tr><td><strong>Reference:</strong></td><td>${invoiceDetails.reference}</td></tr>
                             <tr><td><strong>Amount:</strong></td><td>KES ${invoiceDetails.amount}</td></tr>
+                            <tr><td><strong>Plan:</strong></td><td>${invoiceDetails.plan}</td></tr>
+                            <tr><td><strong>Billing Period:</strong></td><td>${invoiceDetails.billingPeriod}</td></tr>
                             <tr><td><strong>Date:</strong></td><td>${invoiceDetails.date}</td></tr>
                             <tr><td><strong>Status:</strong></td><td>${invoiceDetails.status}</td></tr>
                         </table>
@@ -707,7 +908,7 @@ const sendInvoiceEmail = async (user, invoiceDetails) => {
                         <p>Best regards,<br>Lease Captain Team</p>
                     </div>
                     <div class="footer">
-                        <p>&copy; 2024 Lease Captain. All rights reserved.</p>
+                        <p>© 2024 Lease Captain. All rights reserved.</p>
                     </div>
                 </div>
             </body>
@@ -718,14 +919,19 @@ const sendInvoiceEmail = async (user, invoiceDetails) => {
         await transporter.sendMail(mailOptions);
         console.log(`Invoice email sent to ${user.email}`);
     } catch (error) {
-        console.error('Error sending invoice email:', error);
+        console.error('Error sending invoice email:', error.message);
+        throw error; // Propagate to Promise.all
     }
 };
 
-const sendInvoiceSMS = async (user, invoiceDetails) => {
-    const message = `Dear ${user.name}, thank you for your payment. Reference: ${invoiceDetails.reference}, Amount: KES ${invoiceDetails.amount}. Check your email for the detailed invoice.`;
-
+// Send invoice via SMS using msisdn directly as phone
+const sendInvoiceSMS = async (user, invoiceDetails, msisdn) => {
+    const message = `Greetings ${user.username || user.name || 'Customer'}, thank you for your payment to Lease Captain. Invoice Ref: ${invoiceDetails.reference}, Amount: KES ${invoiceDetails.amount}, Plan: ${invoiceDetails.plan}, Period: ${invoiceDetails.billingPeriod}. Full details have been emailed to you.`;
     try {
+        if (!msisdn) {
+            throw new Error('MSISDN is missing');
+        }
+
         const response = await axios.post(
             'https://api.umeskiasoftwares.com/api/v1/sms',
             {
@@ -733,18 +939,24 @@ const sendInvoiceSMS = async (user, invoiceDetails) => {
                 email: "vickinstechnologies@gmail.com",
                 Sender_Id: "UMS_SMS",
                 message: message,
-                phone: user.phone
+                phone: msisdn // Use msisdn directly as phone (not phone_number)
             },
             {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                timeout: 10000
             }
         );
 
         console.log('Invoice SMS sent successfully via UMS API:', response.data);
+
+        // Check UMS API response for success
+        if (response.data.ResultCode !== 'Success') {
+            throw new Error(response.data.errorMessage || 'SMS sending failed');
+        }
     } catch (error) {
-        console.error('Error sending invoice SMS via UMS API:', error.response ? error.response.data : error.message);
+        throw error; // Propagate to Promise.all
     }
 };
 
@@ -1281,19 +1493,19 @@ router.get('/tenancy-manager/payments', isTenancyManager, async (req, res) => {
 router.get('/api/tenants/:id', async (req, res) => {
     const tenantId = req.params.id;
     try {
-      const tenant = await Tenant.findById(tenantId).populate('property'); // Adjust to your schema
-      if (!tenant) return res.status(404).json({ error: 'Tenant not found' });
-  
-      res.json({
-        property: tenant.property.name, // Or another field relevant to property
-        unitType: tenant.unit.unitType, // Fetching unitType instead of unit
-        doorNumber: tenant.doorNumber,
-      });
+        const tenant = await Tenant.findById(tenantId).populate('property'); // Adjust to your schema
+        if (!tenant) return res.status(404).json({ error: 'Tenant not found' });
+
+        res.json({
+            property: tenant.property.name, // Or another field relevant to property
+            unitType: tenant.unit.unitType, // Fetching unitType instead of unit
+            doorNumber: tenant.doorNumber,
+        });
     } catch (err) {
-      res.status(500).json({ error: 'Server error' });
+        res.status(500).json({ error: 'Server error' });
     }
-  });
-  
+});
+
 
 router.get('/reports-invoices', async (req, res) => {
     try {
@@ -1349,74 +1561,6 @@ router.get('/reports-invoices', async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
-
-router.get('/expenses', async (req, res) => {
-    try {
-        const pageSize = 10;
-        const currentPage = Number(req.query.page) || 1;
-        const searchQuery = req.query.search || '';
-
-        // Ensure the user is authenticated
-        if (!req.user) {
-            req.flash('error', 'User not authenticated.');
-            return res.redirect('/login');
-        }
-
-        // Fetch expenses for the logged-in user only and apply search, pagination
-        const expenses = await Expense.find({
-            owner: req.user._id, // Filter by the logged-in user's ID
-            name: { $regex: searchQuery, $options: 'i' } // Apply search query
-        })
-            .skip((currentPage - 1) * pageSize)
-            .limit(pageSize);
-
-        // Count total expenses for pagination (filtered by user and search query)
-        const totalExpenses = await Expense.countDocuments({
-            owner: req.user._id, // Filter by the logged-in user's ID
-            name: { $regex: searchQuery, $options: 'i' }
-        });
-
-        const totalPages = Math.ceil(totalExpenses / pageSize);
-
-        res.render('tenancyManager/expense', {
-            expenses,
-            currentPage,
-            totalPages,
-            pageSize,
-            currentUser: req.user
-        });
-    } catch (error) {
-        console.error('Error fetching expenses:', error);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-router.post('/expenses', async (req, res) => {
-    try {
-        if (!req.user) {
-            req.flash('error', 'User not authenticated.');
-            return res.redirect('/login');
-        }
-
-        const newExpense = new Expense({
-            owner: req.user._id,
-            name: req.body.name,
-            category: req.body.category,
-            amount: req.body.amount,
-            date: req.body.date,
-            status: req.body.status
-        });
-
-        await newExpense.save();
-        req.flash('success', 'Expense created successfully.');
-        res.redirect('/expenses');
-    } catch (error) {
-        console.error('Error creating expense:', error);
-        req.flash('error', 'Error creating expense.');
-        res.redirect('/expenses');
-    }
-});
-
 
 // Users route
 router.get('/users', isTenancyManager, async (req, res) => {
@@ -1656,8 +1800,6 @@ router.post('/delete/:id', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
-
-
 
 //GET sms&email
 router.get('/sms&email', isTenancyManager, async (req, res) => {
@@ -2010,8 +2152,16 @@ router.get('/tenancy-manager/propertyListing', ensureAuthenticated, async (req, 
 // POST: Add Property
 router.post('/tenancy-manager/propertyListing/add', ensureAuthenticated, upload.array('images', 5), async (req, res) => {
     try {
+        // Check if the user's plan is "Basic"
+        if (req.user.plan === 'Basic') {
+            req.flash('error', 'Property listing is not available on the Basic plan. Please upgrade your plan.');
+            return res.redirect('/tenancy-manager/propertyListing');
+        }
+
+        // Proceed with adding the property for non-Basic users
         const { name, location, status, price, description, bedrooms, bathrooms, facilities, propertyType, category } = req.body;
         const imagePaths = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
+
         const newProperty = new PropertyList({
             name,
             location,
@@ -2026,6 +2176,7 @@ router.post('/tenancy-manager/propertyListing/add', ensureAuthenticated, upload.
             images: imagePaths,
             owner: req.user._id
         });
+
         await newProperty.save();
         req.flash('success', 'Property added successfully');
         res.redirect('/tenancy-manager/propertyListing');
@@ -2040,7 +2191,7 @@ router.post('/tenancy-manager/propertyListing/edit/:id', ensureAuthenticated, up
     try {
         const propertyId = req.params.id;
         const property = await PropertyList.findById(propertyId);
-        
+
         if (!property) {
             req.flash('error', 'Property not found');
             return res.redirect('/tenancy-manager/propertyListing');
@@ -2061,8 +2212,8 @@ router.post('/tenancy-manager/propertyListing/edit/:id', ensureAuthenticated, up
             description: req.body.description?.trim(),
             bedrooms: parseInt(req.body.bedrooms) || 0,
             bathrooms: parseInt(req.body.bathrooms) || 0,
-            facilities: Array.isArray(req.body.facilities) ? req.body.facilities : 
-                       req.body.facilities ? [req.body.facilities] : [],
+            facilities: Array.isArray(req.body.facilities) ? req.body.facilities :
+                req.body.facilities ? [req.body.facilities] : [],
             propertyType: req.body.propertyType,
             category: req.body.category
         };
@@ -2070,9 +2221,9 @@ router.post('/tenancy-manager/propertyListing/edit/:id', ensureAuthenticated, up
         // Handle image deletions
         let imagesToKeep = property.images || [];
         if (req.body.deleteImages) {
-            const deleteImages = Array.isArray(req.body.deleteImages) ? 
+            const deleteImages = Array.isArray(req.body.deleteImages) ?
                 req.body.deleteImages : [req.body.deleteImages];
-            
+
             // Remove selected images and delete files from server
             deleteImages.forEach(imagePath => {
                 imagesToKeep = imagesToKeep.filter(img => img !== imagePath);
@@ -2091,7 +2242,7 @@ router.post('/tenancy-manager/propertyListing/edit/:id', ensureAuthenticated, up
         if (req.files && req.files.length > 0) {
             const newImages = req.files.map(file => `/uploads/${file.filename}`);
             updateData.images = [...imagesToKeep, ...newImages];
-            
+
             // Validate total image count
             if (updateData.images.length > 10) {
                 throw new Error('Maximum of 10 images allowed');
@@ -2136,7 +2287,7 @@ router.post('/tenancy-manager/propertyListing/edit/:id', ensureAuthenticated, up
     } catch (error) {
         console.error('Error updating property:', error);
         req.flash('error', 'Error updating property: ' + error.message);
-        
+
         // Clean up uploaded files if update fails
         if (req.files && req.files.length > 0) {
             req.files.forEach(file => {
@@ -2150,7 +2301,7 @@ router.post('/tenancy-manager/propertyListing/edit/:id', ensureAuthenticated, up
                 }
             });
         }
-        
+
         res.redirect('/tenancy-manager/propertyListing');
     }
 });
@@ -2160,7 +2311,7 @@ router.post('/tenancy-manager/propertyListing/delete', ensureAuthenticated, asyn
     try {
         const { id } = req.body;
         const property = await PropertyList.findById(id);
-        
+
         if (!property || property.owner.toString() !== req.user._id.toString()) {
             req.flash('error', 'Property not found or unauthorized');
             return res.redirect('/tenancy-manager/propertyListing');
@@ -2186,5 +2337,110 @@ router.post('/tenancy-manager/propertyListing/delete', ensureAuthenticated, asyn
     }
 });
 
+router.get('/expenses', async (req, res) => {
+    try {
+        const pageSize = 10;
+        const currentPage = Number(req.query.page) || 1;
+        const searchQuery = req.query.search || ''; // This is the search term from the query
+
+        // Ensure the user is authenticated
+        if (!req.user) {
+            req.flash('error', 'User not authenticated.');
+            return res.redirect('/login');
+        }
+
+        // Fetch expenses for the logged-in user only and apply search, pagination
+        const expenses = await Expense.find({
+            owner: req.user._id, // Filter by the logged-in user's ID
+            name: { $regex: searchQuery, $options: 'i' } // Apply search query
+        })
+            .skip((currentPage - 1) * pageSize)
+            .limit(pageSize);
+
+        // Count total expenses for pagination (filtered by user and search query)
+        const totalExpenses = await Expense.countDocuments({
+            owner: req.user._id, // Filter by the logged-in user's ID
+            name: { $regex: searchQuery, $options: 'i' }
+        });
+
+        const totalPages = Math.ceil(totalExpenses / pageSize);
+
+        // Render the template with all required variables
+        res.render('tenancyManager/expense', {
+            expenses,
+            currentPage,
+            totalPages,
+            pageSize,
+            search: searchQuery, // Pass searchQuery as 'search' to the template
+            currentUser: req.user
+        });
+    } catch (error) {
+        console.error('Error fetching expenses:', error);
+        req.flash('error', 'Error fetching expenses.');
+        res.redirect('/'); // Redirect to a safe page instead of sending raw error
+    }
+});
+
+// Your POST route with multer middleware
+router.post('/expenses', upload.single('receipt'), async (req, res) => {
+    try {
+        if (!req.user) {
+            req.flash('error', 'User not authenticated.');
+            return res.redirect('/login');
+        }
+
+        const newExpense = new Expense({
+            owner: req.user._id,
+            name: req.body.name,
+            category: req.body.category,
+            amount: req.body.amount,
+            date: req.body.date,
+            status: req.body.status || 'Pending',
+            paymentMethod: req.body.paymentMethod,
+            receipt: req.file ? req.file.path : undefined, // Store file path if uploaded
+            notes: req.body.notes,
+            tags: req.body.tags ? req.body.tags.split(',').map(tag => tag.trim()) : []
+        });
+        await newExpense.save();
+        req.flash('success', 'Expense created successfully.');
+        res.redirect('/expenses');
+    } catch (error) {
+        console.error('Error creating expense:', error);
+        req.flash('error', 'Error creating expense: ' + error.message);
+        res.redirect('/expenses');
+    }
+});
+
+// POST route to delete an expense
+router.post('/expenses/delete/:id', async (req, res) => {
+    try {
+        if (!req.user) {
+            req.flash('error', 'User not authenticated.');
+            return res.redirect('/login');
+        }
+
+        const expenseId = req.params.id;
+        const expense = await Expense.findById(expenseId);
+
+        if (!expense) {
+            req.flash('error', 'Expense not found.');
+            return res.redirect('/expenses');
+        }
+
+        // Optional: Check if the user owns the expense
+        if (expense.owner.toString() !== req.user._id.toString()) {
+            req.flash('error', 'You do not have permission to delete this expense.');
+            return res.redirect('/expenses');
+        }
+
+        await Expense.findByIdAndDelete(expenseId);
+        req.flash('success', 'Expense deleted successfully.');
+        res.redirect('/expenses');
+    } catch (error) {
+        console.error('Error deleting expense:', error);
+        req.flash('error', 'Error deleting expense: ' + error.message);
+        res.redirect('/expenses');
+    }
+});
 
 module.exports = router;

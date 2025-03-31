@@ -1,480 +1,533 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-       <meta charset="UTF-8">
-       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-       <title>Subscription Payment</title>
-       <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-       <link rel="icon" href="/images/icon.png" type="image/png">
-       <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Payment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="icon" href="/images/icon.png" type="image/png">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
 
-       <style>
-              * {
-                     margin: 0;
-                     padding: 0;
-                     box-sizing: border-box;
-                     font-family: 'Roboto', sans-serif;
-              }
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
 
-              body {
-                     background-color: #f1f4f8;
-                     color: #333;
-                     display: flex;
-                     align-items: center;
-                     justify-content: center;
-                     height: 100vh;
-                     margin: 0;
-                     padding: 10px;
-              }
+        body {
+            background: linear-gradient(135deg, #e0eafc, #cfdef3);
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
 
-              .container {
-                     background-color: #fff;
-                     width: 100%;
-                     max-width: 600px;
-                     padding: 2rem;
-                     border-radius: 10px;
-                     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-                     text-align: center;
-                     border-top: 6px solid #004080;
-              }
+        .container {
+            background: #fff;
+            max-width: 650px;
+            width: 100%;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border-top: 8px solid #1e3a8a;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+        }
 
-              h1 {
-                     color: #004080;
-                     font-size: 28px;
-                     margin-bottom: 1rem;
-                     font-weight: 700;
-              }
+        @keyframes slideIn {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
 
-              p {
-                     font-size: 18px;
-                     color: #555;
-                     margin-bottom: 1.5rem;
-              }
+        h1 {
+            color: #1e3a8a;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            letter-spacing: 1px;
+        }
 
-              form label {
-                     display: block;
-                     font-weight: 500;
-                     color: #333;
-                     margin-bottom: 0.5rem;
-                     text-align: left;
-              }
+        p {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
 
-              form select,
-              form input[type="tel"],
-              form button {
-                     width: 100%;
-                     padding: 12px;
-                     margin-bottom: 1rem;
-                     border: 1px solid #ddd;
-                     border-radius: 5px;
-                     font-size: 16px;
-                     transition: border-color 0.3s;
-              }
+        form label {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 0.5rem;
+            text-align: left;
+            display: block;
+        }
 
-              form select:focus,
-              form input[type="tel"]:focus {
-                     border-color: #004080;
-                     outline: none;
-              }
+        form select,
+        form input[type="tel"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 1.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background: #f9fafb;
+        }
 
-              form button {
-                     background: linear-gradient(90deg, #004080, #0072cc);
-                     color: white;
-                     font-weight: 600;
-                     cursor: pointer;
-                     border: none;
-                     transition: background 0.3s;
-                     border-radius: 5px;
-                     display: flex;
-                     align-items: center;
-                     justify-content: center;
-              }
+        form select:focus,
+        form input[type="tel"]:focus {
+            border-color: #1e3a8a;
+            box-shadow: 0 0 8px rgba(30, 58, 138, 0.2);
+            outline: none;
+        }
 
-              form button:hover {
-                     background: linear-gradient(90deg, #003366, #0059b3);
-              }
+        form button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+            color: white;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s, background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
 
-              .flash-message {
-                     padding: 1rem;
-                     margin-bottom: 1.5rem;
-                     border-radius: 6px;
-                     font-weight: bold;
-                     text-align: center;
-              }
+        form button:hover {
+            background: linear-gradient(90deg, #1e40af, #2563eb);
+            transform: translateY(-2px);
+        }
 
-              .flash-message.error {
-                     background-color: #f8d7da;
-                     color: #721c24;
-              }
+        .paid-message {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            margin-top: 1.5rem;
+            animation: fadeIn 0.5s ease;
+        }
 
-              .flash-message.success {
-                     background-color: #d4edda;
-                     color: #155724;
-              }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
 
-              .flash-message.info {
-                     background-color: #cce5ff;
-                     color: #004085;
-              }
+        #amount-display,
+        #units-display {
+            font-weight: 600;
+            color: #1e3a8a;
+            transition: color 0.3s;
+        }
 
-              .paid-message {
-                     background-color: #dff0d8;
-                     color: #3c763d;
-                     padding: 12px;
-                     border-radius: 6px;
-                     margin-top: 1rem;
-                     font-weight: 600;
-              }
+        #loader-modal .modal-content {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+        }
 
-              #amount-display,
-              #units-display {
-                     transition: color 0.3s;
-              }
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #1e3a8a;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
 
-              /* Responsive styles for smaller screens */
-              @media (max-width: 768px) {
-                     .container {
-                            padding: 1.5rem;
-                     }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
-                     h1 {
-                            font-size: 24px;
-                     }
+        #payment-status-modal .modal-dialog {
+            max-width: 400px;
+        }
 
-                     p {
-                            font-size: 16px;
-                     }
+        #payment-status-modal .modal-content {
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            background: #fff;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
 
-                     form label {
-                            font-size: 14px;
-                     }
+        #payment-status-modal .modal-body {
+            font-size: 18px;
+            color: #333;
+        }
 
-                     form select,
-                     form input[type="tel"],
-                     form button {
-                            padding: 10px;
-                            font-size: 14px;
-                     }
-              }
+        #payment-status-modal .status-icon {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
 
-              @media (max-width: 480px) {
-                     .container {
-                            padding: 1rem;
-                     }
+        @media (max-width: 768px) {
+            .container { padding: 2rem; }
+            h1 { font-size: 28px; }
+            p { font-size: 16px; }
+            form select, form input[type="tel"], form button { font-size: 14px; padding: 10px; }
+        }
 
-                     h1 {
-                            font-size: 20px;
-                     }
+        @media (max-width: 480px) {
+            .container { padding: 1.5rem; }
+            h1 { font-size: 24px; }
+            p { font-size: 14px; }
+            form select, form input[type="tel"], form button { font-size: 13px; padding: 8px; }
+        }
 
-                     p {
-                            font-size: 14px;
-                     }
+        .floating-support {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 1000;
+        }
 
-                     form label {
-                            font-size: 13px;
-                     }
+        .floating-support .btn {
+            background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 50px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
 
-                     form select,
-                     form input[type="tel"],
-                     form button {
-                            padding: 8px;
-                            font-size: 13px;
-                     }
-
-                     .flash-message {
-                            font-size: 14px;
-                     }
-
-                     .paid-message {
-                            font-size: 14px;
-                     }
-              }
-       </style>
-
-       <script>
-              const planDetails = {
-                     Basic: { amount: 0, units: 5 },
-                     Standard: { amount: 1499, units: 20 },
-                     Pro: { amount: 2999, units: 50 },
-                     Advanced: { amount: 4499, units: 100 },
-                     Enterprise: { amount: 6999, units: 150 },
-                     Premium: { amount: null, units: "Unlimited" }
-              };
-
-              function updatePlanDetails() {
-                     const planSelect = document.getElementById("plan-select");
-                     const amountField = document.getElementById("amount-field");
-                     const selectedPlan = planSelect.value;
-
-                     const { amount, units } = planDetails[selectedPlan];
-                     amountField.value = amount;
-                     document.getElementById("amount-display").textContent = amount ? `KES ${amount}` : "Contact Support for Pricing";
-                     document.getElementById("units-display").textContent = `Units included: ${units}`;
-                     document.getElementById("amount-display").style.color = amount ? "#004080" : "#b30000";
-
-                     document.getElementById("selected-plan").textContent = selectedPlan;
-              }
-
-              window.onload = () => {
-                     updatePlanDetails();
-              };
-       </script>
+        .floating-support .btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(90deg, #1e40af, #2563eb);
+        }
+    </style>
 </head>
-
 <body>
+    <div class="container">
+        <h1><i class="fas fa-clipboard-list"></i> Subscribe to <span id="selected-plan"><%= plan %> (<%= billingPeriod %>)</span></h1>
+        <p><i class="fas fa-money-bill-wave"></i> Amount due: <span id="amount-display">KES <%= expectedAmount %></span></p>
+        <p><i class="fas fa-boxes"></i> <span id="units-display">Units included: <%= planDetails[plan][billingPeriod].units %></span></p>
 
-       <div class="container">
-              <!-- Subscription Title with Icon -->
-              <h1><i class="fas fa-clipboard-list"></i> Subscribe to <span id="selected-plan">
-                            <%= plan %>
-                     </span></h1>
+        <% if (!hasPaid) { %>
+            <form action="/subscription" method="POST" id="payment-form">
+                <label for="plan-select"><i class="fas fa-list-alt"></i> Change Plan:</label>
+                <select id="plan-select" name="plan" onchange="updatePlanDetails()">
+                    <option value="Standard" <%= plan === 'Standard' ? 'selected' : '' %>>Standard</option>
+                    <option value="Pro" <%= plan === 'Pro' ? 'selected' : '' %>>Pro</option>
+                    <option value="Advanced" <%= plan === 'Advanced' ? 'selected' : '' %>>Advanced</option>
+                    <option value="Enterprise" <%= plan === 'Enterprise' ? 'selected' : '' %>>Enterprise</option>
+                    <option value="Premium" <%= plan === 'Premium' ? 'selected' : '' %>>Premium</option>
+                </select>
 
-              <!-- Success and Error Messages with Icons -->
-              <% if (success && success.length> 0) { %>
-                     <div class="flash-message success"><i class="fas fa-check-circle"></i>
-                            <%= success %>
-                     </div>
-                     <% } %>
+                <label for="billing-period-select"><i class="fas fa-calendar-alt"></i> Billing Period:</label>
+                <select id="billing-period-select" name="billingPeriod" onchange="updatePlanDetails()">
+                    <option value="monthly" <%= billingPeriod === 'monthly' ? 'selected' : '' %>>Monthly</option>
+                    <option value="yearly" <%= billingPeriod === 'yearly' ? 'selected' : '' %>>Yearly (20% off)</option>
+                </select>
 
-                            <% if (error && error.length> 0) { %>
-                                   <div class="flash-message error"><i class="fas fa-exclamation-circle"></i>
-                                          <%= error %>
-                                   </div>
-                                   <% } %>
+                <label for="msisdn"><i class="fas fa-phone-alt"></i> Enter Phone Number:</label>
+                <input type="tel" name="msisdn" required placeholder="079450..." pattern="[0-9]{10}" title="Enter a valid 10-digit phone number">
 
-                                   <% if (messages.info && messages.info.length > 0) { %>
-                                          <div class="flash-message info"><%= messages.info %></div>
-                                      <% } %>
+                <input type="hidden" name="amount" id="amount-field" value="<%= expectedAmount %>">
 
-                                          <!-- Amount and Units Display with Icon -->
-                                          <p><i class="fas fa-money-bill-wave"></i> Amount due: <span
-                                                        id="amount-display"><strong>KES <%= expectedAmount %>
-                                                        </strong></span></p>
-                                          <p><i class="fas fa-boxes"></i> <span id="units-display">Units included: <%=
-                                                               planDetails[plan].units %></span></p>
+                <button type="submit" id="payButton" onclick="handlePaymentClick(event)">
+                    <i class="fas fa-paper-plane"></i> Pay Now via M-PESA
+                </button>
+            </form>
+        <% } else { %>
+            <p class="paid-message"><i class="fas fa-check-circle"></i> You have already paid for this subscription.</p>
+        <% } %>
+    </div>
 
-                                          <% if (!hasPaid) { %>
-                                                 <form action="/subscription" method="POST" id="payment-form">
-                                                        <!-- Plan Selection with Icon -->
-                                                        <label for="plan-select"><i class="fas fa-list-alt"></i> Change
-                                                               Plan:</label>
-                                                        <select id="plan-select" name="plan"
-                                                               onchange="updatePlanDetails()">
-                                                               <option value="Standard" <%=plan==='Standard'
-                                                                      ? 'selected' : '' %>>Standard</option>
-                                                               <option value="Pro" <%=plan==='Pro' ? 'selected' : '' %>
-                                                                      >Pro</option>
-                                                               <option value="Advanced" <%=plan==='Advanced'
-                                                                      ? 'selected' : '' %>>Advanced</option>
-                                                               <option value="Enterprise" <%=plan==='Enterprise'
-                                                                      ? 'selected' : '' %>>Enterprise</option>
-                                                               <option value="Premium" <%=plan==='Premium' ? 'selected'
-                                                                      : '' %>>Premium</option>
-                                                        </select>
+    <!-- Loader Modal -->
+    <div class="modal fade" id="loader-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="loader"></div>
+                    <p class="mt-3 text-center" id="loader-text">Initiating Payment...</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                                                        <!-- Phone Input with Icon -->
-                                                        <label for="msisdn"><i class="fas fa-phone-alt"></i> Enter Phone
-                                                               Number:</label>
-                                                        <input type="tel" name="msisdn" required
-                                                               placeholder="079450...">
+    <!-- Payment Status Modal -->
+    <div class="modal fade" id="payment-status-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div id="payment-status-text">
+                        <i class="fas fa-spinner fa-spin text-primary status-icon"></i><br>
+                        <span id="status-message">Checking Payment Status...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                                                        <input type="hidden" name="amount" id="amount-field"
-                                                               value="<%= expectedAmount %>">
+    <!-- Floating Support Button -->
+    <div class="floating-support">
+        <button type="button" class="btn d-flex align-items-center" data-toggle="modal" data-target="#supportModal">
+            <i class="fas fa-headset mr-2"></i> Support
+        </button>
+    </div>
 
-                                                        <!-- Submit Button with M-PESA Icon -->
-                                                        <button type="submit" id="payButton"
-                                                               onclick="handlePaymentClick()">
-                                                               <i class="fas fa-paper-plane"></i> Pay Now via M-PESA
-                                                        </button>
+    <!-- Support Modal -->
+    <div class="modal fade" id="supportModal" tabindex="-1" role="dialog" aria-labelledby="supportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header text-black">
+                    <h5 class="modal-title" id="supportModalLabel">Contact Support</h5>
+                    <button type="button" class="close text-black" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="supportForm" action="/submit" method="POST">
+                        <div class="form-group">
+                            <label for="emailAddress">Your Email</label>
+                            <input type="email" class="form-control" name="emailAddress" id="emailAddress" placeholder="Enter your email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="supportMessage">Message</label>
+                            <textarea class="form-control" name="supportMessage" id="supportMessage" rows="4" placeholder="Write your message here..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-dark" id="sendMessageButton" onclick="handleSendMessageClick(event)">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                                                        <script>
-                                                               function handlePaymentClick() {
-                                                                      const payButton = document.getElementById("payButton");
+    <!-- Inject planDetails and messages via hidden elements with EJS -->
+    <div id="data-container" style="display: none;">
+        <input type="hidden" id="plan-details" value='<%- JSON.stringify(planDetails) %>'>
+        <input type="hidden" id="messages-success" value='<%- JSON.stringify(messages.success || []) %>'>
+        <input type="hidden" id="messages-error" value='<%- JSON.stringify(messages.error || []) %>'>
+        <input type="hidden" id="messages-info" value='<%- JSON.stringify(messages.info || []) %>'>
+    </div>
 
-                                                                      // Disable the button to prevent multiple submissions
-                                                                      payButton.disabled = true;
+    <script type="text/javascript">
+        // Safely parse injected data
+        let planDetails, messages;
+        try {
+            planDetails = JSON.parse(document.getElementById("plan-details").value || '{}');
+            messages = {
+                success: JSON.parse(document.getElementById("messages-success").value || '[]'),
+                error: JSON.parse(document.getElementById("messages-error").value || '[]'),
+                info: JSON.parse(document.getElementById("messages-info").value || '[]')
+            };
+        } catch (e) {
+            console.error('Failed to parse plan details or messages:', e);
+            planDetails = {};
+            messages = { success: [], error: [], info: [] };
+        }
 
-                                                                      // Change the button text to "Processing..."
-                                                                      payButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        function updatePlanDetails() {
+            const planSelect = document.getElementById("plan-select");
+            const billingPeriodSelect = document.getElementById("billing-period-select");
+            const amountField = document.getElementById("amount-field");
+            const payButton = document.getElementById("payButton");
 
-                                                                      // Submit the form
-                                                                      document.getElementById("payment-form").submit();
-                                                               }
-                                                        </script>
+            if (!planSelect || !billingPeriodSelect || !amountField || !payButton) {
+                console.error('Missing required DOM elements for plan details.');
+                return;
+            }
 
-                                                 </form>
-                                                 <% } else { %>
-                                                        <!-- Payment Confirmation with Icon -->
-                                                        <p class="paid-message"><i class="fas fa-check-circle"></i> You
-                                                               have already paid for this subscription.</p>
-                                                        <% } %>
-       </div>
+            const selectedPlan = planSelect.value;
+            const selectedBillingPeriod = billingPeriodSelect.value;
 
-       <!-- Floating Support Button -->
-       <div class="floating-support">
-              <button type="button" class="btn btn-dark d-flex align-items-center" data-toggle="modal"
-                     data-target="#supportModal">
-                     <i class="fas fa-headset mr-2"></i> Support
-              </button>
-       </div>
+            const planData = planDetails[selectedPlan]?.[selectedBillingPeriod] || { amount: null, units: 0 };
+            const { amount, units } = planData;
 
-       <!-- Support Modal -->
-       <div class="modal fade" id="supportModal" tabindex="-1" role="dialog" aria-labelledby="supportModalLabel"
-              aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered" role="document">
-                     <div class="modal-content">
-                            <div class="modal-header text-black">
-                                   <h5 class="modal-title" id="supportModalLabel">Contact Support</h5>
-                                   <button type="button" class="close text-black" data-dismiss="modal"
-                                          aria-label="Close">
-                                          <span aria-hidden="true">&times;</span>
-                                   </button>
-                            </div>
-                            <div class="modal-body">
-                                   <form id="supportForm" action="/submit" method="POST">
-                                          <div class="form-group">
-                                                 <label for="emailAddress">Your Email</label>
-                                                 <input type="email" class="form-control" name="emailAddress"
-                                                        id="emailAddress" placeholder="Enter your email" required>
-                                          </div>
-                                          <div class="form-group">
-                                                 <label for="supportMessage">Message</label>
-                                                 <textarea class="form-control" name="supportMessage"
-                                                        id="supportMessage" rows="4"
-                                                        placeholder="Write your message here..." required></textarea>
-                                          </div>
-                                          <!-- Send Message Button -->
-                                          <!-- Send Message Button -->
-                                          <button type="submit" class="btn btn-dark" id="sendMessageButton"
-                                                 onclick="handleSendMessageClick(event)">
-                                                 Send Message
-                                          </button>
+            amountField.value = amount || "";
+            document.getElementById("amount-display").textContent = amount ? `KES ${amount}` : "Contact Support for Pricing";
+            document.getElementById("units-display").textContent = `Units included: ${units}`;
+            document.getElementById("amount-display").style.color = amount ? "#1e3a8a" : "#dc2626";
+            document.getElementById("selected-plan").textContent = `${selectedPlan} (${selectedBillingPeriod})`;
+            payButton.disabled = !amount;
+        }
 
-                                          <script>
-                                                 function handleSendMessageClick(event) {
-                                                        event.preventDefault();  // Prevent the default form submission
+        window.onload = () => {
+            updatePlanDetails();
 
-                                                        const sendMessageButton = document.getElementById("sendMessageButton");
-                                                        const form = document.getElementById("supportForm");  // Ensure your form has an ID 'supportForm'
+            if (typeof toastr !== 'undefined') {
+                toastr.options = {
+                    closeButton: true,
+                    progressBar: true,
+                    positionClass: "toast-top-right",
+                    timeOut: "5000"
+                };
+                if (messages.success.length > 0) toastr.success(messages.success[0]);
+                if (messages.error.length > 0) toastr.error(messages.error[0]);
+                if (messages.info.length > 0) toastr.info(messages.info[0]);
+            } else {
+                console.warn('Toastr library not loaded.');
+            }
 
-                                                        // Disable the button to prevent multiple submissions
-                                                        sendMessageButton.disabled = true;
+            const planSelect = document.getElementById("plan-select");
+            const billingPeriodSelect = document.getElementById("billing-period-select");
+            if (planSelect && billingPeriodSelect) {
+                planSelect.addEventListener('change', updatePlanDetails);
+                billingPeriodSelect.addEventListener('change', updatePlanDetails);
+            }
+        };
 
-                                                        // Change the button text to "Processing..."
-                                                        sendMessageButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        function handlePaymentClick(event) {
+            event.preventDefault();
 
-                                                        // Submit the form
-                                                        form.submit();
-                                                 }
-                                          </script>
+            const payButton = document.getElementById("payButton");
+            const form = document.getElementById("payment-form");
+            const msisdnInput = form.querySelector('input[name="msisdn"]');
+            const amountField = document.getElementById("amount-field");
 
+            if (!payButton || !form || !msisdnInput || !amountField) {
+                toastr.error('Internal error. Please refresh the page.');
+                return;
+            }
 
-                                   </form>
-                            </div>
-                     </div>
-              </div>
-       </div>
-       <style>
-              /* Adjust modal padding and form element spacing for smaller screens */
-              @media (max-width: 576px) {
-                     .modal-dialog {
-                            max-width: 95%;
-                            margin: 1.75rem auto;
-                     }
+            const phoneRegex = /^\d{10}$/;
+            if (!phoneRegex.test(msisdnInput.value)) {
+                toastr.error('Please enter a valid 10-digit phone number.');
+                return;
+            }
 
-                     .modal-header,
-                     .modal-body {
-                            padding: 1rem;
-                     }
+            const amount = parseFloat(amountField.value);
+            if (isNaN(amount) || amount <= 0) {
+                toastr.error('Please select a valid plan with an amount.');
+                return;
+            }
 
-                     .modal-body .form-group {
-                            margin-bottom: 1rem;
-                     }
+            payButton.disabled = true;
+            payButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            $('#loader-modal').modal({ backdrop: 'static', keyboard: false });
 
-                     .modal-body .form-control {
-                            padding: 0.5rem;
-                            font-size: 14px;
-                     }
+            $.ajax({
+                url: '/subscription',
+                method: 'POST',
+                data: $(form).serialize(),
+                success: function(response) {
+                    if (response.transactionId) {
+                        $('#loader-modal').modal('hide');
+                        $('#payment-status-modal').modal({ backdrop: 'static', keyboard: false });
+                        startPaymentStatusStream(response.transactionId);
+                    } else {
+                        resetPaymentUI();
+                        toastr.error(response.message || 'Failed to initiate payment.');
+                    }
+                },
+                error: function(xhr) {
+                    resetPaymentUI();
+                    toastr.error(xhr.responseJSON?.message || 'Failed to initiate payment.');
+                }
+            });
+        }
 
-                     .modal-body button {
-                            font-size: 14px;
-                            padding: 0.5rem;
-                     }
-              }
-       </style>
+        function startPaymentStatusStream(transactionId) {
+            const eventSource = new EventSource(`/payment-status-stream?transactionId=${transactionId}`);
+            const statusText = document.getElementById("payment-status-text");
 
-       <!-- Styles for Floating Button -->
-       <style>
-              /* Floating Support Button Style */
-              .floating-support {
-                     position: fixed;
-                     bottom: 20px;
-                     right: 20px;
-                     z-index: 1000;
-              }
+            eventSource.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                console.log('SSE Data:', data);
 
-              .floating-support .btn {
-                     background-color: #003366;
-                     color: #ffffff;
-                     font-size: 0.9rem;
-                     padding: 10px 16px;
-                     border-radius: 50px;
-                     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-                     transition: transform 0.2s ease, box-shadow 0.2s ease;
-              }
+                if (!statusText) return;
 
-              .floating-support .btn:hover {
-                     transform: scale(1.05);
-                     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-                     background-color: #0056b3;
-              }
+                switch (data.status) {
+                    case 'pending':
+                        statusText.innerHTML = `
+                            <i class="fas fa-spinner fa-spin text-primary status-icon"></i><br>
+                            <span id="status-message">Payment request initiated successfully! Please enter your Mpesa PIN...</span>`;
+                        break;
+                    case 'completed':
+                        statusText.innerHTML = `
+                            <i class="fas fa-check-circle text-success status-icon"></i><br>
+                            <span id="status-message">${data.message || 'Payment completed!'}</span>`;
+                        setTimeout(() => {
+                            resetPaymentUI();
+                            window.location.href = data.redirect || '/tenancy-manager/dashboard';
+                        }, 2000);
+                        eventSource.close();
+                        break;
+                    case 'failed':
+                        statusText.innerHTML = `
+                            <i class="fas fa-exclamation-circle text-danger status-icon"></i><br>
+                            <span id="status-message">${data.message || 'Payment failed.'}</span>`;
+                        setTimeout(() => {
+                            resetPaymentUI();
+                            window.location.href = data.redirect || '/subscription';
+                        }, 2000);
+                        eventSource.close();
+                        break;
+                    case 'timeout':
+                        statusText.innerHTML = `
+                            <i class="fas fa-clock text-warning status-icon"></i><br>
+                            <span id="status-message">${data.message || 'Payment verification timed out.'}</span>`;
+                        setTimeout(() => {
+                            resetPaymentUI();
+                            window.location.href = data.redirect || '/subscription';
+                        }, 2000);
+                        eventSource.close();
+                        break;
+                }
+            };
 
-              .floating-support .fas.fa-headset {
-                     color: #ffffff;
-              }
+            eventSource.onerror = function() {
+                statusText.innerHTML = `
+                    <i class="fas fa-exclamation-circle text-danger status-icon"></i><br>
+                    <span id="status-message">Connection lost. Please try again.</span>`;
+                setTimeout(() => {
+                    resetPaymentUI();
+                    window.location.href = '/subscription';
+                }, 2000);
+                eventSource.close();
+            };
+        }
 
-              /* Responsive Adjustments */
-              @media (max-width: 768px) {
-                     .floating-support .btn {
-                            font-size: 0.8rem;
-                            padding: 10px 16px;
-                     }
+        function resetPaymentUI() {
+            $('#loader-modal').modal('hide');
+            $('#payment-status-modal').modal('hide');
+            const payButton = document.getElementById("payButton");
+            if (payButton) {
+                payButton.disabled = false;
+                payButton.innerHTML = '<i class="fas fa-paper-plane"></i> Pay Now via M-PESA';
+            }
+        }
 
-                     .floating-support .fas.fa-headset {
-                            font-size: 1.2rem;
-                            margin-right: 6px;
-                     }
-              }
+        function handleSendMessageClick(event) {
+            event.preventDefault();
+            const sendMessageButton = document.getElementById("sendMessageButton");
+            const form = document.getElementById("supportForm");
 
-              @media (max-width: 576px) {
-                     .floating-support {
-                            bottom: 15px;
-                            right: 15px;
-                     }
+            if (!sendMessageButton || !form) {
+                console.error('Support form elements missing.');
+                toastr.error('Internal error. Please refresh the page.');
+                return;
+            }
 
-                     .floating-support .btn {
-                            font-size: 0.8rem;
-                            padding: 10px 14px;
-                     }
+            sendMessageButton.disabled = true;
+            sendMessageButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            form.submit();
+        }
+    </script>
 
-                     .floating-support .fas.fa-headset {
-                            font-size: 1rem;
-                            margin-right: 4px;
-                     }
-              }
-       </style>
-
-       <!-- Include Bootstrap and FontAwesome -->
-       <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-       <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-
-       <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-
-
-
+    <!-- External Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 </body>
-
 </html>

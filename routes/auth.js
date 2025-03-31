@@ -33,19 +33,16 @@ router.get('/signup', (req, res) => {
 });
 
 router.post('/signup', async (req, res) => {
-  const { username, email, password, phone, plan } = req.body;
+  const { username, email, password, phone, plan, 'confirm-password': confirmPassword } = req.body;
 
   try {
-    // Detailed input validation
     const errors = [];
 
     // Username validation
     if (!username) {
       errors.push('Username is required');
-    } else if (username.length < 3 || username.length > 20) {
-      errors.push('Username must be between 3 and 20 characters');
-    } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-      errors.push('Username can only contain letters, numbers, and underscores');
+    } else if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+      errors.push('Username must be 3-20 characters and contain only letters, numbers, or underscores');
     }
 
     // Email validation
@@ -55,15 +52,6 @@ router.post('/signup', async (req, res) => {
       errors.push('Please enter a valid email address');
     }
 
-    // Password validation
-    if (!password) {
-      errors.push('Password is required');
-    } else if (password.length < 8) {
-      errors.push('Password must be at least 8 characters long');
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/.test(password)) {
-      errors.push('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character');
-    }
-
     // Phone validation
     if (!phone) {
       errors.push('Phone number is required');
@@ -71,73 +59,82 @@ router.post('/signup', async (req, res) => {
       errors.push('Please enter a valid phone number');
     }
 
+    // Password validation
+    if (!password) {
+      errors.push('Password is required');
+    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}/.test(password)) {
+      errors.push('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character, and be at least 8 characters');
+    }
+
+    // Confirm Password validation
+    if (!confirmPassword) {
+      errors.push('Confirm password is required');
+    } else if (password !== confirmPassword) {
+      errors.push('Passwords do not match');
+    }
+
     // Plan validation
-    const validPlans = Object.keys(planRates); // Assuming planRates is defined elsewhere
+    const validPlans = [
+      'Basic',
+      'Standard-Monthly', 'Standard-Yearly',
+      'Pro-Monthly', 'Pro-Yearly',
+      'Advanced-Monthly', 'Advanced-Yearly',
+      'Enterprise-Monthly', 'Enterprise-Yearly',
+      'Premium'
+    ];
     if (!plan) {
       errors.push('Plan selection is required');
     } else if (!validPlans.includes(plan)) {
       errors.push('Invalid plan selected');
     }
 
-    // If any validation errors exist, return them all
     if (errors.length > 0) {
       req.flash('error', errors.join('. '));
-      return res.redirect('/signup');
+      return res.render('signup', {
+        error: errors.join('. '),
+        username,
+        email,
+        phone,
+        plan
+      });
+    }
+
+    // Determine billing period based on plan name
+    let billingPeriod = 'monthly'; // Default to monthly
+    if (plan.includes('Yearly')) {
+      billingPeriod = 'yearly';
     }
 
     // Check for existing user
     const existingUser = await User.findOne({ $or: [{ email }, { phone }, { username }] });
     if (existingUser) {
-      if (existingUser.email === email) {
-        req.flash('error', 'Email already registered');
-      } else if (existingUser.phone === phone) {
-        req.flash('error', 'Phone number already registered');
-      } else {
-        req.flash('error', 'Username already taken');
+      req.flash('error', 'Email, phone, or username is already registered.');
+      return res.redirect('/signup');
+    }
+
+    // Verify email domain
+    const emailDomain = email.split('@')[1];
+    if (!emailDomain) {
+      req.flash('error', 'Invalid email format');
+      return res.redirect('/signup');
+    }
+
+    try {
+      const mxRecords = await dns.promises.resolveMx(emailDomain);
+      if (!mxRecords || mxRecords.length === 0) {
+        req.flash('error', 'Email domain does not have valid mail servers.');
+        return res.redirect('/signup');
       }
-      return res.redirect('/signup');
+    } catch (dnsErr) {
+      if (dnsErr.code === 'ENOTFOUND' || dnsErr.code === 'ENODATA') {
+        req.flash('error', 'Email domain does not exist or has no mail servers.');
+        return res.redirect('/signup');
+      }
     }
-
-    // Basic bot detection (you might want to add more sophisticated checks)
-    const signupTimestamp = Date.now();
-    if (req.session.lastSignupAttempt && 
-        (signupTimestamp - req.session.lastSignupAttempt < 10000)) { // 5 second cooldown
-      req.flash('error', 'Please wait a few minutes before trying again');
-      return res.redirect('/signup');
-    }
-    req.session.lastSignupAttempt = signupTimestamp;
-
-  // Verify email domain exists with improved handling
-  const emailDomain = email.split('@')[1];
-  if (!emailDomain) {
-    req.flash('error', 'Invalid email format');
-    return res.redirect('/signup');
-  }
-
-  try {
-    const mxRecords = await dns.promises.resolveMx(emailDomain);
-    if (!mxRecords || mxRecords.length === 0) {
-      req.flash('error', 'Email domain does not have valid mail servers. Please use a valid email provider.');
-      return res.redirect('/signup');
-    }
-  } catch (dnsErr) {
-    // Handle specific DNS errors
-    if (dnsErr.code === 'ENOTFOUND' || dnsErr.code === 'ENODATA') {
-      req.flash('error', 'Email domain does not exist or has no mail servers.');
-      return res.redirect('/signup');
-    } else if (dnsErr.code === 'ETIMEOUT') {
-      // Log timeout but allow signup to proceed (optional leniency)
-      console.warn(`DNS MX lookup timed out for ${emailDomain}: ${dnsErr.message}`);
-    } else {
-      // Log unexpected errors but proceed (optional)
-      console.error(`DNS MX lookup failed for ${emailDomain}: ${dnsErr.message}`);
-    }
-  }
 
     const tenantsLimit = getTenantsCount(plan);
-    const planAmount = planRates[plan];
-    
-    // Create user with additional security fields
+    const planAmount = planRates[plan] || 0;
+
     const user = new User({
       username,
       email: email.toLowerCase(),
@@ -150,6 +147,8 @@ router.post('/signup', async (req, res) => {
       paymentStatus: {
         transactionId: null,
         amount: planAmount,
+        status: 'pending',
+        billingPeriod: billingPeriod // Now correctly setting the billing period
       },
       signupIp: req.ip,
       signupTimestamp: new Date(),
@@ -163,7 +162,6 @@ router.post('/signup', async (req, res) => {
           req.flash('success', 'Successfully signed up! Please check your email or spam to verify your account.');
           res.redirect('/login');
         } catch (emailErr) {
-          // Handle email sending failure but still allow signup
           console.error('Email sending failed:', emailErr);
           req.flash('success', 'Successfully signed up! Verification email failed to send, please contact support.');
           res.redirect('/login');
@@ -174,47 +172,41 @@ router.post('/signup', async (req, res) => {
       });
 
   } catch (err) {
-    let errorMessage;
-    
-    switch (err.code) {
-      case 11000:
-        errorMessage = 'Duplicate entry detected. Please use a unique username, email, and phone number.';
-        break;
-      case 'ECONNREFUSED':
-        errorMessage = 'Database connection failed. Please try again later.';
-        break;
-      default:
-        errorMessage = err.message.includes('Registration failed') 
-          ? err.message 
-          : 'An unexpected error occurred. Please try again.';
-    }
-
     console.error('Signup error:', err);
-    req.flash('error', errorMessage);
+    req.flash('error', 'An unexpected error occurred. Please try again.');
     res.redirect('/signup');
   }
 });
 
+
+const planRates = {
+  'Basic': 0,
+  'Standard-Monthly': 1499,
+  'Standard-Yearly': 14390,
+  'Pro-Monthly': 2999,
+  'Pro-Yearly': 28790,
+  'Advanced-Monthly': 4499,
+  'Advanced-Yearly': 43190,
+  'Enterprise-Monthly': 6999,
+  'Enterprise-Yearly': 67190,
+  'Premium': null
+};
+
 function getTenantsCount(plan) {
   const tenantsLimit = {
-      Basic: 5,
-      Standard: 20,
-      Pro: 50,
-      Advanced: 100,
-      Enterprise: 150,
-      Premium: Infinity
+    'Basic': 5,
+    'Standard-Monthly': 20,
+    'Standard-Yearly': 20,
+    'Pro-Monthly': 50,
+    'Pro-Yearly': 50,
+    'Advanced-Monthly': 100,
+    'Advanced-Yearly': 100,
+    'Enterprise-Monthly': 150,
+    'Enterprise-Yearly': 150,
+    'Premium': Infinity
   };
   return tenantsLimit[plan] || 5;
 }
-
-const planRates = {
-  Basic: 0,     
-  Standard: 1499,
-  Pro: 2999,
-  Advanced: 4499,
-  Enterprise: 6999,
-  Premium: null  
-};
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',

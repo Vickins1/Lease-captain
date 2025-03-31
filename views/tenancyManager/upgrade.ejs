@@ -26,8 +26,8 @@
             <img class="animation__wobble" src="/assets/images/2.png" alt="AdminLTELogo" height="150" width="150">
         </div>
 
-               <!-- Navbar -->
-               <nav class="main-header navbar navbar-expand navbar-light">
+             <!-- Navbar -->
+             <nav class="main-header navbar navbar-expand navbar-light">
                 <!-- Left navbar links -->
                 <ul class="navbar-nav">
                     <li class="nav-item">
@@ -109,7 +109,7 @@
                     </div>
                 </div>
 
-                <!-- Sidebar Menu -->
+               <!-- Sidebar Menu -->
 <nav class="mt-2">
     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
         <!-- Dashboard -->
@@ -340,272 +340,148 @@
     </ul>
 </nav>
 
+
             </div>
 
             <!-- /.sidebar -->
 
         </aside>
 
-    <div class="container my-5">
-        <div class="row">
-            <div class="col-md-12">
-                <h2 class="text-center" style="color: #00172f;">
-                    <i class="fas fa-file-alt"></i> Reports & Invoices
-                </h2>
-                <p class="text-center">View, filter, and download transaction reports and invoices.</p>
-            </div>
-        </div>
-    
-        <!-- Tabs for Reports and Invoices -->
-        <ul class="nav nav-tabs mb-4" id="reportsInvoicesTab" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link active" id="reports-tab" data-toggle="tab" href="#reports" role="tab"
-                    aria-controls="reports" aria-selected="true">
-                    <i class="fas fa-chart-line"></i> Reports
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="invoices-tab" data-toggle="tab" href="#invoices" role="tab"
-                    aria-controls="invoices" aria-selected="false">
-                    <i class="fas fa-file-invoice"></i> Invoices
-                </a>
-            </li>
-        </ul>
-    
-        <div class="tab-content" id="reportsInvoicesTabContent">
-            <!-- Reports Section -->
-            <div class="tab-pane fade show active" id="reports" role="tabpanel" aria-labelledby="reports-tab">
-                <h4 class="text-center">
-                    <i class="fas fa-chart-pie"></i> Property Reports
-                </h4>
-                <!-- Error Message -->
-                <% if (error && error.length > 0) { %>
-                    <div class="alert alert-danger text-center" role="alert" style="font-size: 0.9rem;">
-                        <%= error %>
-                    </div>
-                <% } %>
-    
-                <!-- Success Message -->
-                <% if (success && success.length > 0) { %>
-                    <div class="alert alert-success text-center" role="alert" style="font-size: 0.9rem;">
-                        <%= success %>
-                    </div>
-                <% } %>
-    
-                <!-- Reports Filter -->
-                <form method="GET" action="/reports-invoices">
-                    <div class="row mb-4">
-                        <div class="col-md-4">
-                            <label for="propertySelect" class="small">Select Property:</label>
-                            <select class="form-control form-control-sm" id="propertySelect" name="property">
-                                <option value="all" <%= selectedProperty === 'all' ? 'selected' : '' %>>All Properties</option>
-                                <% properties.forEach(property => { %>
-                                    <option value="<%= property.name %>" <%= selectedProperty === property.name ? 'selected' : '' %>><%= property.name %></option>
-                                <% }); %>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="reportDateRange" class="small">Date Range:</label>
-                            <input type="date" class="form-control form-control-sm" id="reportDateFrom" name="dateFrom" value="<%= dateFrom %>">
-                            <input type="date" class="form-control form-control-sm mt-2" id="reportDateTo" name="dateTo" value="<%= dateTo %>">
-                        </div>
-                        <div class="col-md-4">
-                            <button type="submit" class="btn btn-dark btn-sm mt-4" style="background-color: #003366;">
-                                <i class="fas fa-file-export"></i> Generate Report
-                            </button>
-                        </div>
-                    </div>
-                </form>
-    
-                <!-- Reports Table -->
-                <div class="table-responsive">
-                    <table class="table table-sm table-striped table-hover table-bordered">
-                        <thead class="text-center" style="background-color: #00172f; color: white;">
-                            <tr>
-                                <th>#</th>
-                                <th>Property</th>
-                                <th>Occupancy Rate</th>
-                                <th>Total Rent Collected</th>
-                                <th>Pending Payments</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-center">
-                            <% reports.forEach((report, index) => { %>
-                                <tr>
-                                    <td><%= index + 1 %></td>
-                                    <td><%= report.propertyName %></td>
-    
-                                    <% if (typeof report.occupancyRate === 'number') { %>
-                                        <td><%= report.occupancyRate.toFixed(2) %> %</td>
-                                    <% } else { %>
-                                        <td>N/A</td>
-                                    <% } %>
-    
-                                    <% if (typeof report.totalRentCollected === 'number') { %>
-                                        <td>$<%= report.totalRentCollected.toFixed(2) %></td>
-                                    <% } else { %>
-                                        <td>N/A</td>
-                                    <% } %>
-    
-                                    <% if (typeof report.pendingPayments === 'number') { %>
-                                        <td>$<%= report.pendingPayments.toFixed(2) %></td>
-                                    <% } else { %>
-                                        <td>N/A</td>
-                                    <% } %>
-                                </tr>
-                            <% }); %>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-    
-            <!-- Invoices Section -->
-            <div class="tab-pane fade" id="invoices" role="tabpanel" aria-labelledby="invoices-tab">
-                <h4 class="text-center">
-                    <i class="fas fa-calculator"></i> Invoice Calculations
-                </h4>
-                <div class="row mb-4">
-                    <div class="col-md-4">
-                        <label for="invoiceDateRange" class="small">Date Range:</label>
-                        <input type="date" class="form-control form-control-sm" id="invoiceDateFrom">
-                        <input type="date" class="form-control form-control-sm mt-2" id="invoiceDateTo">
-                    </div>
-                    <div class="col-md-4">
-                        <label for="invoiceStatus" class="small">Status:</label>
-                        <select class="form-control form-control-sm" id="invoiceStatus">
-                            <option value="all">All</option>
-                            <option value="paid">Paid</option>
-                            <option value="pending">Pending</option>
-                            <option value="overdue">Overdue</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <button class="btn btn-dark btn-sm mt-4" style="background-color: #003366;">
-                            <i class="fas fa-file-invoice-dollar"></i> Generate Invoice
-                        </button>
-                    </div>
-                </div>
-    
-                <!-- Invoices Table -->
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Invoice Number</th>
-                                <th>Description</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>Due Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% invoices.forEach(invoice => { %>
-                                <tr>
-                                    <td><%= invoice.invoiceNumber %></td>
-                                    <td><%= invoice.items[0].description %></td>
-                                    <td>$<%= invoice.totalAmount %></td>
-                                    <td><%= invoice.status %></td>
-                                    <td><%= new Date(invoice.dueDate).toLocaleDateString() %></td>
-                                    <td>
-                                        <% if (invoice.status === 'pending') { %>
-                                            <form action="/invoices/pay/<%= invoice._id %>" method="POST">
-                                                <button class="btn btn-success" type="submit">Pay Invoice</button>
-                                            </form>
-                                        <% } else { %>
-                                            <span class="badge badge-success">Paid</span>
-                                        <% } %>
-                                    </td>
-                                </tr>
-                            <% }); %>
-                        </tbody>
-                    </table>
-                    
-                </div>
-            </div>
-        </div>
-    </div>
-    
-
-        <style>
-            @media (max-width: 576px) {
-                h2 {
-                    font-size: 1.3rem;
-                }
-
-                h4 {
-                    font-size: 1.2rem;
-                }
-
-                p {
-                    font-size: 0.9rem;
-                }
-
-                .table th,
-                .table td {
-                    font-size: 0.7rem;
-                }
-
-                .btn {
-                    font-size: 0.8rem;
-                }
-
-                .small {
-                    font-size: 0.8rem;
-                }
-
-                .table-responsive {
-                    font-size: 0.7rem;
-                }
-            }
-        </style>
-
-
-
-
-
-       <!-- Control Sidebar -->
-    <aside class="control-sidebar control-sidebar-dark">
-        <!-- Control sidebar content goes here -->
-      </aside>
-      <!-- /.control-sidebar -->
+        
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+              <div class="content-header">
+                  <div class="container-fluid">
+                      <div class="row mb-2">
+                          <div class="col-sm-6">
+                              <h1 class="m-0">Upgrade Subscription</h1>
+                          </div>
+                          <div class="col-sm-6">
+                              <ol class="breadcrumb float-sm-right">
+                                  <li class="breadcrumb-item"><a href="/tenancy-manager/dashboard">Home</a></li>
+                                  <li class="breadcrumb-item active">Upgrade Subscription</li>
+                              </ol>
+                          </div>
+                      </div>
+                  </div>
+              </div>
   
-      <!-- Main Footer -->
-      <footer class="main-footer">
-        <strong>Copyright &copy; 2024-2025 <a href="https://leasecaptain.com/">Lease Captain</a></strong>
-        All rights reserved.
-        <div class="float-right d-none d-sm-inline-block">
-          <b>Version</b> 1.0.2
-        </div>
-      </footer>
-    </div>
-    <!-- ./wrapper -->
+              <!-- Main content -->
+              <section class="content">
+                  <div class="container-fluid">
+                      <!-- Flash Messages -->
+                      <% if (messages.success.length > 0) { %>
+                          <div class="alert alert-success">
+                              <% messages.success.forEach(message => { %>
+                                  <p><%= message %></p>
+                              <% }) %>
+                          </div>
+                      <% } %>
+                      <% if (messages.error.length > 0) { %>
+                          <div class="alert alert-danger">
+                              <% messages.error.forEach(message => { %>
+                                  <p><%= message %></p>
+                              <% }) %>
+                          </div>
+                      <% } %>
+                      <% if (messages.info.length > 0) { %>
+                          <div class="alert alert-info">
+                              <% messages.info.forEach(message => { %>
+                                  <p><%= message %></p>
+                              <% }) %>
+                          </div>
+                      <% } %>
   
-    <!-- REQUIRED SCRIPTS -->
-    <!-- jQuery -->
-    <script src="/plugins/jquery/jquery.min.js"></script>
-    <!-- Bootstrap -->
-    <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- overlayScrollbars -->
-    <script src="/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
-    <!-- AdminLTE App -->
-    <script src="/dist/js/adminlte2167.js?v=3.2.0"></script>
+                      <div class="row">
+                          <% Object.keys(planDetails).forEach(planName => { %>
+                              <div class="col-md-4">
+                                  <div class="card pricing-card">
+                                      <div class="card-header text-center <%= planName === plan ? 'bg-success' : 'bg-primary' %>">
+                                          <h3><%= planName %></h3>
+                                      </div>
+                                      <div class="card-body text-center">
+                                          <h4 class="card-title">
+                                              <% if (planDetails[planName].amount === null) { %>
+                                                  Contact Support
+                                              <% } else { %>
+                                                  $<%= (planDetails[planName].amount / 100).toFixed(2) %>/month
+                                              <% } %>
+                                          </h4>
+                                          <p class="card-text">Manage your properties efficiently.</p>
+                                          <ul class="list-unstyled mt-3 mb-4">
+                                              <li><i class="fas fa-check text-success"></i> <%= planDetails[planName].units %> Units</li>
+                                              <li><i class="fas fa-check text-success"></i> Full Dashboard Access</li>
+                                              <li><i class="fas fa-check text-success"></i> Tenant Management</li>
+                                              <% if (planName !== 'Basic') { %>
+                                                  <li><i class="fas fa-check text-success"></i> Payment Gateway</li>
+                                              <% } else { %>
+                                                  <li><i class="fas fa-times text-danger"></i> No Payment Gateway</li>
+                                              <% } %>
+                                          </ul>
+                                          <form action="/upgrade-subscription" method="POST">
+                                              <input type="hidden" name="newPlan" value="<%= planName %>">
+                                              <% if (planName === plan) { %>
+                                                  <button type="button" class="btn current-plan text-white" disabled>Current Plan</button>
+                                              <% } else if (planDetails[planName].amount === null) { %>
+                                                  <a href="/contacts" class="btn btn-subscribe text-white">Contact Support</a>
+                                              <% } else { %>
+                                                  <button type="submit" class="btn btn-subscribe text-white">Upgrade Now</button>
+                                              <% } %>
+                                          </form>
+                                      </div>
+                                  </div>
+                              </div>
+                          <% }) %>
+                      </div>
+                  </div>
+              </section>
+              <!-- /.content -->
+          </div>
+          <!-- /.content-wrapper -->
+
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+              <!-- Control sidebar content goes here -->
+          </aside>
+          <!-- /.control-sidebar -->
   
-    <!-- PAGE PLUGINS -->
-    <!-- jQuery Mapael -->
-    <script src="/plugins/jquery-mousewheel/jquery.mousewheel.js"></script>
-    <script src="/plugins/raphael/raphael.min.js"></script>
-    <script src="/plugins/jquery-mapael/jquery.mapael.min.js"></script>
-    <script src="/plugins/jquery-mapael/maps/usa_states.min.js"></script>
-    <!-- ChartJS -->
-    <script src="/plugins/chart.js/Chart.min.js"></script>
+  <!-- Main Footer -->
+    <footer class="main-footer">
+      <strong>Copyright &copy; 2024-2025 <a href="https://leasecaptain.com/">Lease Captain</a></strong>
+      All rights reserved.
+      <div class="float-right d-none d-sm-inline-block">
+        <b>Version</b> 1.0.2
+      </div>
+    </footer>
   
-    <!-- AdminLTE for demo purposes -->
-    <script src="/dist/js/demo.js"></script>
-    <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-    <script src="/dist/js/pages/dashboard2.js"></script>
+      </div>
+      <!-- ./wrapper -->
+  
+  
+  
+      <!-- REQUIRED SCRIPTS -->
+      <!-- Bootstrap JS (including Popper.js) -->
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+      <!-- jQuery -->
+      <script src="/plugins/jquery/jquery.min.js"></script>
+      <!-- Bootstrap -->
+      <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+      <!-- overlayScrollbars -->
+      <script src="/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+      <!-- AdminLTE App -->
+      <script src="/dist/js/adminlte2167.js?v=3.2.0"></script>
+  
+      <!-- PAGE PLUGINS -->
+      <!-- jQuery Mapael -->
+      <script src="/plugins/jquery-mousewheel/jquery.mousewheel.js"></script>
+      <script src="/plugins/raphael/raphael.min.js"></script>
+      <script src="/plugins/jquery-mapael/jquery.mapael.min.js"></script>
+      <script src="/plugins/jquery-mapael/maps/usa_states.min.js"></script>
+      <!-- ChartJS -->
+      <script src="/plugins/chart.js/Chart.min.js"></script>
+  
+      <script src="/dist/js/demo.js"></script>
+      <script src="/dist/js/pages/dashboard2.js"></script>
   </body>
-  
-  <!-- Mirrored from adminlte.io/themes/v3/index2.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 29 Nov 2024 09:27:35 GMT -->
   
   </html>
