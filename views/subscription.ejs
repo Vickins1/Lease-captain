@@ -284,34 +284,187 @@
         </button>
     </div>
 
-    <!-- Support Modal -->
-    <div class="modal fade" id="supportModal" tabindex="-1" role="dialog" aria-labelledby="supportModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header text-black">
-                    <h5 class="modal-title" id="supportModalLabel">Contact Support</h5>
-                    <button type="button" class="close text-black" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="supportForm" action="/submit" method="POST">
-                        <div class="form-group">
-                            <label for="emailAddress">Your Email</label>
-                            <input type="email" class="form-control" name="emailAddress" id="emailAddress" placeholder="Enter your email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="supportMessage">Message</label>
-                            <textarea class="form-control" name="supportMessage" id="supportMessage" rows="4" placeholder="Write your message here..." required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-dark" id="sendMessageButton" onclick="handleSendMessageClick(event)">
-                            Send Message
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+
+<!-- Support Modal -->
+<div class="modal fade" id="supportModal" tabindex="-1" role="dialog" aria-labelledby="supportModalLabel" aria-hidden="true">
+       <div class="modal-dialog modal-dialog-centered" role="document">
+           <div class="modal-content">
+               <div class="modal-header" style="background: linear-gradient(90deg, #003366, #0066cc); color: #fff;">
+                   <h5 class="modal-title" id="supportModalLabel">Contact Support</h5>
+                   <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #fff;">
+                       <span aria-hidden="true">×</span>
+                   </button>
+               </div>
+               <div class="modal-body">
+                   <form id="supportForm" action="/support/submit" method="POST">
+                       <div class="form-group">
+                           <label for="name" class="form-label"><i class="fas fa-user mr-1"></i> Your Name</label>
+                           <input type="text" class="form-control" name="name" id="name" placeholder="Enter your full name" required>
+                       </div>
+                       <div class="form-group">
+                           <label for="email" class="form-label"><i class="fas fa-envelope mr-1"></i> Your Email</label>
+                           <input type="email" class="form-control" name="email" id="email" placeholder="Enter your email" required>
+                       </div>
+                       <div class="form-group">
+                           <label for="number" class="form-label"><i class="fas fa-phone mr-1"></i> Phone Number</label>
+                           <input type="tel" class="form-control" name="number" id="number" placeholder="e.g., 0768123456" pattern="[0-9]{7,15}" title="Enter a valid phone number (7-15 digits, no + prefix)" required>
+                       </div>
+                       <div class="form-group">
+                           <label for="address" class="form-label"><i class="fas fa-map-marker-alt mr-1"></i> Address</label>
+                           <input type="text" class="form-control" name="address" id="address" placeholder="Enter your address" required>
+                       </div>
+                       <div class="form-group">
+                           <label for="reviewcheck" class="form-label">
+                               <svg class="professional-tick mr-1" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="#003366"/>
+                               </svg>
+                               Review Check
+                           </label>
+                           <div class="custom-checkbox">
+                               <input type="checkbox" name="reviewcheck" id="reviewcheck" value="on" required>
+                               <label for="reviewcheck" class="checkbox-label">
+                                   <svg class="tick-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                       <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="#ffffff"/>
+                                   </svg>
+                               </label>
+                           </div>
+                       </div>
+                       <div class="form-group">
+                           <label for="message" class="form-label"><i class="fas fa-comment mr-1"></i> Message</label>
+                           <textarea class="form-control" name="message" id="message" rows="4" placeholder="Write your message here..." required></textarea>
+                       </div>
+                       <button type="submit" class="btn-submit" id="sendMessageButton">
+                           <i class="fas fa-paper-plane mr-2"></i> Send Message
+                       </button>
+                   </form>
+               </div>
+           </div>
+       </div>
+   </div>
+   
+   <!-- Updated JavaScript -->
+   <script>
+       function handleSendMessageClick(event) {
+           event.preventDefault();
+           const form = document.getElementById('supportForm');
+           const button = document.getElementById('sendMessageButton');
+   
+           // Basic client-side validation
+           const requiredFields = ['name', 'email', 'number', 'address', 'message', 'reviewcheck'];
+           let isValid = true;
+   
+           requiredFields.forEach(field => {
+               const input = document.getElementById(field);
+               if (field === 'reviewcheck') {
+                   if (!input.checked) {
+                       isValid = false;
+                       input.nextElementSibling.style.borderColor = '#dc3545'; // Highlight checkbox
+                   } else {
+                       input.nextElementSibling.style.borderColor = '#003366';
+                   }
+               } else if (!input.value.trim()) {
+                   isValid = false;
+                   input.style.borderColor = '#dc3545';
+               } else {
+                   input.style.borderColor = '#ccc';
+               }
+           });
+   
+           if (isValid) {
+               button.disabled = true;
+               button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending...';
+               form.submit();
+           } else {
+               alert('Please fill in all required fields and check the Review Check box.');
+           }
+       }
+   
+       document.getElementById('sendMessageButton').addEventListener('click', handleSendMessageClick);
+   </script>
+   
+   <!-- Inline CSS for Consistency (Add this to your existing <style> block if not already present) -->
+   <style>
+       .form-label {
+           font-weight: 600;
+           color: #003366;
+           margin-bottom: 5px;
+           font-size: 0.9rem;
+           display: block;
+       }
+   
+       .form-control {
+           width: 100%;
+           padding: 10px;
+           border: 1px solid #ccc;
+           border-radius: 5px;
+           box-sizing: border-box;
+           font-size: 0.9rem;
+           transition: border-color 0.3s, box-shadow 0.3s;
+       }
+   
+       .form-control:focus {
+           outline: none;
+           border-color: #003366;
+           box-shadow: 0 0 5px rgba(0, 51, 102, 0.3);
+       }
+   
+       .btn-submit {
+           background: linear-gradient(90deg, #003366, #0066cc);
+           color: white;
+           border: none;
+           padding: 12px;
+           width: 100%;
+           border-radius: 25px;
+           font-weight: 600;
+           cursor: pointer;
+           text-align: center;
+           font-size: 0.9rem;
+           transition: all 0.3s ease;
+       }
+   
+       .btn-submit:hover {
+           background: linear-gradient(90deg, #005bb5, #0088ff);
+           transform: translateY(-2px);
+       }
+   
+       .btn-submit:disabled {
+           background: #6c757d;
+           cursor: not-allowed;
+           transform: none;
+       }
+   </style>
+   
+   <!-- Updated JavaScript for Form Submission Feedback -->
+   <script>
+       function handleSendMessageClick(event) {
+           event.preventDefault();
+           const form = document.getElementById('supportForm');
+           const button = document.getElementById('sendMessageButton');
+           
+           // Basic client-side validation
+           const requiredFields = ['name', 'emailAddress', 'number', 'address', 'reviewcheck', 'supportMessage'];
+           let isValid = true;
+   
+           requiredFields.forEach(field => {
+               const input = document.getElementById(field);
+               if (!input.value.trim()) {
+                   isValid = false;
+                   input.style.borderColor = '#dc3545';
+               } else {
+                   input.style.borderColor = '#ccc';
+               }
+           });
+   
+           if (isValid) {
+               button.disabled = true;
+               button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending...';
+               form.submit(); // Submit the form if all fields are valid
+           } else {
+               alert('Please fill in all required fields.');
+           }
+       }
+   </script>
+
 
     <!-- Inject planDetails and messages via hidden elements with EJS -->
     <div id="data-container" style="display: none;">

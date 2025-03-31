@@ -10,161 +10,292 @@
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous">
   <link rel="icon" href="/images/icon.png" type="image/png">
+
   <style>
     body {
-      background-color: #f7f7f7;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       font-family: 'Arial', sans-serif;
       margin: 0;
-      padding: 0;
+      padding: 20px 10px;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
       flex-direction: column;
     }
-  
+
+    .login-container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+      border-top: 5px solid #003366;
+      transition: transform 0.3s ease;
+      overflow: hidden;
+    }
+
+    .login-container:hover {
+      transform: scale(1.02);
+    }
+
     h2 {
       color: #003366;
       text-align: center;
-      margin-bottom: 20px;
-      font-size: 1rem;
+      margin-bottom: 25px;
+      font-size: 20px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      word-wrap: break-word;
     }
-  
+
     .form-label {
-      font-weight: bold;
+      font-weight: 600;
       color: #003366;
       margin-bottom: 5px;
-      font-size:small;
+      font-size: 0.9rem;
+      display: block;
     }
-  
+
     .form-group {
       margin-bottom: 20px;
-      width: 500px;
-      font-size: small;
+      width: 100%;
     }
-  
-    input[type="password"], input[type="text"], input[type="email"] {
+
+    input[type="password"],
+    input[type="text"],
+    input[type="email"] {
       width: 100%;
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 5px;
       box-sizing: border-box;
-      font-size: small;
-    }
-  
-    input[type="password"]:focus, input[type="text"]:focus, input[type="email"]:focus {
-      outline: none;
-      border-color: #003366;
-      font-size: small;
-    }
-  
-    .btn-dark {
-      background-color: #003366;
-      color: white;
-      border: none;
-      width: 100%;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: x-small;
+      font-size: 0.9rem;
+      transition: border-color 0.3s, box-shadow 0.3s;
     }
 
-    .btn-primary {
-      background-color: #003366;
+    input[type="password"]:focus,
+    input[type="text"]:focus,
+    input[type="email"]:focus {
+      outline: none;
+      border-color: #003366;
+      box-shadow: 0 0 5px rgba(0, 51, 102, 0.3);
+    }
+
+    .btn-submit {
+      background: linear-gradient(90deg, #003366, #0066cc);
       color: white;
       border: none;
+      padding: 12px;
       width: 100%;
-      border-radius: 5px;
-      font-weight: bold;
+      border-radius: 25px;
+      font-weight: 600;
       cursor: pointer;
-      font-size: x-small;
-    }
-  
-    .btn-primary:hover {
-      background-color: #005bb5;
-    }
-  
-    .social-login {
       text-align: center;
-      margin-top: 15px;
-      font-size: x-small;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
     }
-  
-    .social-login .btn {
-      width: 100%;
-      max-width: 250px;
-      margin: 10px auto;
-      font-size: x-small;
+
+    .btn-submit:hover {
+      background: linear-gradient(90deg, #005bb5, #0088ff);
+      transform: translateY(-2px);
     }
-  
+
+    .btn-submit:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .forgot-password {
       text-align: right;
+      margin-top: 10px;
     }
-  
+
     .forgot-password a {
       color: #003366;
       text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
     }
-  
+
     .forgot-password a:hover {
       text-decoration: underline;
-      font-size: x-small;
     }
-  
-    .sign-up-link {
-      text-align: center;
-      margin-top: 15px;
-    }
-  
-    .sign-up-link a {
-      color: #003366;
-      font-weight: bold;
-      text-decoration: none;
 
-    }
-  
-    .sign-up-link a:hover {
-      text-decoration: underline;
-    }
-  
     .logo {
       text-align: center;
       margin-bottom: 20px;
     }
-  
+
     .logo img {
-      width: 200px;
+      max-width: 200px;
+      width: 100%;
+      transition: transform 0.3s ease;
     }
-  
-    /* Responsive design */
+
+    .logo img:hover {
+      transform: scale(1.05);
+    }
+
+    .alert {
+      font-size: 0.8rem;
+      margin-bottom: 20px;
+      padding: 10px;
+      border-radius: 5px;
+      word-wrap: break-word;
+    }
+
+    /* Password Toggle */
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-wrapper .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 75%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #666;
+    }
+
+    /* Responsive Design */
     @media (max-width: 768px) {
+      .login-container {
+        padding: 20px;
+        max-width: 400px;
+      }
+
       h2 {
         font-size: 20px;
       }
-  
+
       .logo img {
-        width: 150px;
+        max-width: 150px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .btn-submit {
+        padding: 10px;
       }
     }
-  
+
     @media (max-width: 576px) {
+      body {
+        padding: 15px 5px;
+      }
+
+      .login-container {
+        padding: 15px;
+        max-width: 100%;
+        margin: 0 10px;
+      }
+
       h2 {
         font-size: 18px;
       }
-      .form-group{
-        max-width: 350px;
+
+      .form-group {
+        margin-bottom: 12px;
       }
-  
-      .btn-primary {
-        font-size: 0.9rem;
+
+      .btn-submit {
+        font-size: 0.8rem;
+        padding: 8px;
       }
-  
+
       .logo img {
-        width: 150px;
+        max-width: 120px;
+      }
+
+      input[type="password"],
+      input[type="text"],
+      input[type="email"] {
+        font-size: 0.85rem;
+        padding: 8px;
+      }
+
+      .form-label {
+        font-size: 0.85rem;
       }
     }
+
+    @media (max-width: 400px) {
+      .login-container {
+        padding: 10px;
+      }
+
+      h2 {
+        font-size: 16px;
+      }
+
+      .logo img {
+        max-width: 100px;
+      }
+    }
+
+    /* Professional Loader */
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #e0e0e0;
+      border-top: 5px solid #003366;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Loader Modal Styling */
+    #loaderModal .modal-content {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+    }
+
+    #loaderModal .modal-header {
+      background: linear-gradient(90deg, #003366, #0066cc);
+      border-bottom: none;
+      padding: 15px;
+    }
+
+    #loaderModal .modal-title {
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 1.2rem;
+      text-align: center;
+      width: 100%;
+    }
+
+    #loaderModal .modal-body {
+      padding: 30px;
+      background-color: #ffffff;
+      text-align: center;
+    }
+
+    #loaderModal h5 {
+      color: #003366;
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-top: 10px;
+    }
+
+    #loaderModal p {
+      color: #555;
+      font-size: 0.9rem;
+      margin-top: 5px;
+    }
   </style>
- 
 </head>
 <body>
   <div class="login-container">
@@ -174,10 +305,10 @@
     </div>
 
     <!-- Title -->
-    <h2>Sign In to Tenant Portal</h2>
+    <h2><i class="fas fa-sign-in-alt mr-2"></i> <strong>Sign In to Tenant Portal</strong></h2>
 
     <!-- Login Form -->
-    <form action="/tenant/login" method="POST" id="tenantLoginForm" onsubmit="showLoader(event)">
+    <form action="/tenant/login" method="POST" id="tenantLoginForm">
       <!-- Messages -->
       <% if (error && error.length > 0) { %>
         <div class="alert alert-danger text-center" role="alert"><%= error %></div>
@@ -189,50 +320,61 @@
       <!-- Username -->
       <div class="form-group">
         <label for="name" class="form-label"><i class="fas fa-user mr-1"></i> Username</label>
-        <input type="text" name="name" id="name" class="form-control" placeholder="e.g., John" required>
+        <input type="text" name="name" id="name" placeholder="e.g., John" required>
       </div>
 
       <!-- Password -->
-      <div class="form-group password-group">
+      <div class="form-group password-wrapper">
         <label for="password" class="form-label"><i class="fas fa-lock mr-1"></i> Password</label>
-        <input type="password" name="password" id="password" class="form-control" placeholder="Enter your password" required>
-        <span id="togglePassword" class="password-toggle"><i class="fas fa-eye"></i></span>
+        <input type="password" name="password" id="password" placeholder="Enter your password" required>
+        <span class="toggle-password" id="togglePassword"><i class="fas fa-eye"></i></span>
       </div>
 
       <!-- Submit Button -->
-      <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+      <button type="submit" class="btn-submit" id="loginButton">
+        <i class="fas fa-sign-in-alt mr-2"></i> Sign In
+      </button>
 
       <!-- Forgot Password -->
       <div class="forgot-password">
         <a href="#" data-toggle="modal" data-target="#forgotPasswordModal">Forgot Password?</a>
       </div>
-
-      <!-- Social Login -->
-      <div class="social-login">
-        <p>Or sign in with</p>
-        <a href="/auth/google" class="btn btn-outline-danger btn-block"><i class="fab fa-google mr-1"></i> Google</a>
-        <a href="/auth/facebook" class="btn btn-outline-primary btn-block"><i class="fab fa-facebook mr-1"></i> Facebook</a>
-      </div>
     </form>
+  </div>
+
+  <!-- Loader Modal -->
+  <div class="modal" id="loaderModal" tabindex="-1" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Processing</h5>
+        </div>
+        <div class="modal-body">
+          <div class="spinner"></div>
+          <h5>Logging In...</h5>
+          <p>Please wait while we verify your credentials.</p>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Forgot Password Modal -->
   <div class="modal fade" id="forgotPasswordModal" tabindex="-1" role="dialog" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
-        <div class="modal-header">
+        <div class="modal-header" style="background: linear-gradient(90deg, #003366, #0066cc); color: #fff;">
           <h5 class="modal-title" id="forgotPasswordModalLabel">Reset Password</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #fff;">
+            <span aria-hidden="true">×</span>
           </button>
         </div>
         <div class="modal-body">
           <form action="/forgot-password" method="POST">
             <div class="form-group">
-              <label for="email">Email Address</label>
-              <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
+              <label for="email" class="form-label"><i class="fas fa-envelope mr-1"></i> Email Address</label>
+              <input type="email" name="email" id="email" placeholder="Enter your email" required>
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Send Reset Link</button>
+            <button type="submit" class="btn-submit">Send Reset Link</button>
           </form>
         </div>
       </div>
@@ -253,11 +395,16 @@
       togglePassword.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
     });
 
-    // Form Submission Loader
-    function showLoader(event) {
-      event.preventDefault();
-      document.getElementById('tenantLoginForm').submit();
-    }
+    const loginForm = document.getElementById('tenantLoginForm');
+    const loginButton = document.getElementById('loginButton');
+
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      loginButton.disabled = true;
+      loginButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+      $('#loaderModal').modal('show');
+      setTimeout(() => loginForm.submit(), 500); // Delay for visual feedback
+    });
   </script>
 </body>
 </html>
