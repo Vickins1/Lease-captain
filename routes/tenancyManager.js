@@ -1373,6 +1373,7 @@ async function sendTenantEmail(newTenant, propertyName) {
         console.error('Error sending email:', emailError);
     }
 }
+
 const sendWelcomeSMS = async (tenant) => {
     const { phone, name, propertyName } = tenant;
     const message = `Dear ${name}, welcome to your new home at ${propertyName}! Use the credentials sent to your email to log in to your portal. Access it here: leasecaptain.com/tenantPortal/login.`;

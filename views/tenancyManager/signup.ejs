@@ -14,7 +14,7 @@
       background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       font-family: 'Arial', sans-serif;
       margin: 0;
-      padding: 20px 10px;
+      padding: 10px 0;
       min-height: 100vh;
       display: flex;
       justify-content: center;
@@ -24,7 +24,7 @@
 
     .signup-container {
       background: #fff;
-      padding: 30px;
+      padding: 20px;
       border-radius: 15px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
       width: 100%;
@@ -42,9 +42,8 @@
       color: #003366;
       text-align: center;
       margin-bottom: 25px;
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 700;
-      text-transform: uppercase;
       letter-spacing: 1px;
       word-wrap: break-word;
     }
@@ -243,7 +242,7 @@
 <body>
   <div class="signup-container">
     <div class="logo"><a href="/"><img src="/images/logo2.png" alt="Lease Captain Logo"></a></div>
-    <h1><i class="fas fa-user-plus mr-2"></i> Create Your Account</h1>
+    <h1><i class="fas fa-user-plus mr-2"></i> <strong>Create Your Account</strong></h1>
 
     <!-- Error Message -->
     <% if (error && error.length > 0) { %>
