@@ -178,13 +178,12 @@ router.get('/dashboard', async (req, res) => {
             return res.redirect('/verification');
         }
 
-        // Define pricing matching the schema enum, with yearly as 20% off (monthly * 12 * 0.8)
         const planAmounts = {
             'Basic': 0,
             'Standard-Monthly': 1499,
             'Standard-Yearly': 14390,
             'Pro-Monthly': 2999,
-            'Pro-Yearly':28790,
+            'Pro-Yearly': 28790,
             'Advanced-Monthly': 4499,
             'Advanced-Yearly': 43190,
             'Enterprise-Monthly': 6999,
@@ -192,10 +191,7 @@ router.get('/dashboard', async (req, res) => {
             'Premium': null 
         };
 
-        // Get the expected amount directly from the user's plan
-        const expectedAmount = planAmounts[req.user.plan] || 0; // Default to 0 if plan not found
-
-        // Check payment status
+        const expectedAmount = planAmounts[req.user.plan] || 0;
         const hasPaid = (req.user.plan === 'Basic') ||
             (req.user.paymentStatus?.status === 'completed' &&
                 req.user.paymentStatus?.amount >= expectedAmount);
@@ -205,7 +201,6 @@ router.get('/dashboard', async (req, res) => {
             return res.redirect('/subscription');
         }
 
-        // Fetch dashboard data
         let properties = await Property.find({ owner: req.user._id }).populate('tenants');
         properties = await Promise.all(properties.map(p => p.updateRentUtilitiesAndTenants()));
 
@@ -216,52 +211,32 @@ router.get('/dashboard', async (req, res) => {
         const tenants = await Tenant.find({ owner: req.user._id })
             .populate('property unit');
 
-        // Fetch the 5 latest payments with proper population
         const payments = await Payment.find({ owner: req.user._id })
-            .populate({
-                path: 'tenant',
-                select: 'name', // Only fetch tenant name
-            })
-            .populate({
-                path: 'property',
-                select: 'name', // Only fetch property name
-            })
-            .populate({
-                path: 'unit',
-                select: 'unitType',
-            })
-            .sort({ datePaid: -1 }) // Sort by most recent first
-            .limit(5) // Limit to 5 payments
-            .lean(); // Convert to plain objects for rendering
+            .populate({ path: 'tenant', select: 'name' })
+            .populate({ path: 'property', select: 'name' })
+            .populate({ path: 'unit', select: 'unitType' })
+            .sort({ datePaid: -1 })
+            .limit(5)
+            .lean();
 
-        // Calculate metrics (unchanged for brevity, assume this works as is)
+        // Calculate metrics using stored Tenant values
         const currentYear = new Date().getFullYear();
         const today = new Date();
-        let totalRentCollected = 0, totalRentDue = 0, utilityCollected = 0, utilityDue = 0;
+        let totalRentCollected = 0;
+        let totalRentDue = 0;
+        let utilityCollected = 0;
+        let utilityDue = 0;
 
         for (const tenant of tenants) {
             const totalRentPaid = tenant.rentPaid || 0;
             const totalUtilityPaid = tenant.utilityPaid || 0;
-            const unitPrice = tenant.unit?.unitPrice || 0;
-            const leaseStartDate = new Date(tenant.leaseStartDate);
-            const monthsSinceLeaseStart = Math.max(
-                (today.getFullYear() - leaseStartDate.getFullYear()) * 12 +
-                (today.getMonth() - leaseStartDate.getMonth()) + 1,
-                0
-            );
-            const expectedRent = monthsSinceLeaseStart * unitPrice;
-            const unitUtilities = Array.isArray(tenant.unit?.utilities) ? tenant.unit.utilities : [];
-            const totalUtilityChargesPerMonth = unitUtilities.reduce((acc, utility) => acc + (utility.amount || 0), 0);
-            const expectedUtility = monthsSinceLeaseStart * totalUtilityChargesPerMonth;
-
-            tenant.rentDue = Math.max(expectedRent - totalRentPaid, 0);
-            tenant.utilityDue = Math.max(expectedUtility - totalUtilityPaid, 0);
-            await tenant.save();
+            const tenantRentDue = tenant.rentDue || 0; // Renamed to avoid confusion
+            const tenantUtilityDue = tenant.utilityDue || 0;
 
             totalRentCollected += totalRentPaid;
-            totalRentDue += tenant.rentDue;
+            totalRentDue += tenantRentDue;
             utilityCollected += totalUtilityPaid;
-            utilityDue += tenant.utilityDue;
+            utilityDue += tenantUtilityDue;
         }
 
         // Fetch payments for the current year
@@ -270,7 +245,7 @@ router.get('/dashboard', async (req, res) => {
             datePaid: { $gte: new Date(currentYear, 0, 1), $lte: new Date(currentYear, 11, 31) }
         }).lean();
 
-        // Prepare rentDataArray for the graph with rentPaid and utilityPaid
+        // Prepare rentDataArray for the graph
         const allMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         const rentDataArray = allMonths.map(month => ({ month, rentPaid: 0, utilityPaid: 0, due: 0 }));
 
@@ -282,19 +257,21 @@ router.get('/dashboard', async (req, res) => {
                 rentDataArray[monthIndex].utilityPaid += payment.utilityPaid || 0;
             }
         });
+
+        // Distribute tenant.rentDue across active months
         tenants.forEach(tenant => {
-            const unitPrice = tenant.unit?.unitPrice || 0;
             const leaseStartDate = new Date(tenant.leaseStartDate);
             const leaseEndDate = new Date(tenant.leaseEndDate);
-            const startMonth = leaseStartDate.getMonth();
-            const endMonth = leaseEndDate.getMonth() > today.getMonth() && leaseEndDate.getFullYear() === currentYear
-                ? today.getMonth()
-                : leaseEndDate.getMonth();
+            const startMonth = leaseStartDate.getFullYear() === currentYear ? leaseStartDate.getMonth() : 0;
+            const endMonth = leaseEndDate.getFullYear() === currentYear && leaseEndDate.getMonth() <= today.getMonth() 
+                ? leaseEndDate.getMonth() 
+                : today.getMonth();
 
-            for (let i = startMonth; i <= endMonth && leaseStartDate.getFullYear() === currentYear; i++) {
-                const expectedRentForMonth = unitPrice;
-                const dueForMonth = Math.max(expectedRentForMonth - (tenant.rentPaid || 0) / (endMonth - startMonth + 1), 0);
-                rentDataArray[i].due += dueForMonth;
+            const monthsInYear = Math.max(1, endMonth - startMonth + 1);
+            const monthlyDue = (tenant.rentDue || 0) / monthsInYear;
+
+            for (let i = startMonth; i <= endMonth; i++) {
+                rentDataArray[i].due += monthlyDue; // Modify object property, not reassigning const
             }
         });
 
@@ -328,13 +305,12 @@ router.get('/dashboard', async (req, res) => {
             await User.findByIdAndUpdate(req.user._id, { isNewUser: false });
         }
 
-        // Render dashboard
         res.render('tenancyManager/dashboard', {
             properties,
             propertyUnits,
             tenants,
             totalTenants: tenants.length,
-            payments, // Updated payments data
+            payments,
             totalExpectedRent,
             tenantRetention,
             totalProfit,
@@ -1149,8 +1125,8 @@ const getMaxTenants = (plan) => {
 
 router.post('/tenancy-manager/tenant/new', async (req, res) => {
     const {
-        name, email, address, phone, leaseStartDate, leaseEndDate, property, deposit, utilities, unitId, doorNumber,
-        rentPaid, utilityPaid
+        name, email, address, phone, leaseStartDate, leaseEndDate, property, deposit, utilities, unitId, doorNumber
+        
     } = req.body;
 
     // Validate required fields
@@ -1253,8 +1229,6 @@ router.post('/tenancy-manager/tenant/new', async (req, res) => {
             unit: unitId,
             doorNumber,
             walletBalance,
-            rentPaid: rentPaid || 0,
-            utilityPaid: utilityPaid || 0
         });
 
         await newTenant.save();

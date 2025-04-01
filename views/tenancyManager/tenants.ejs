@@ -350,257 +350,243 @@
         <div class="content-wrapper">
 
 
-            <!-- Main content -->
-            <section class="content">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h3 class="card-title">Tenant Management</h3>
-                                </div>
-                                <!-- /.card-header -->
-                                <div class="card-body">
-                                    <!-- Add New Tenant Button -->
-                                    <div class="d-flex justify-content-end mb-3">
-                                        <!-- Full width on small screens, adjusted padding for responsiveness -->
-                                        <button type="button" class="btn btn-dark w-30" data-toggle="modal"
-                                            data-target="#addTenantModal"
-                                            style="background-color: #003366; color: #ffffff;">
-                                            Add New Tenant
-                                        </button>
-                                    </div>
-                                    <!-- Error Message -->
-                                    <% if (error && error.length> 0) { %>
-                                        <div class="alert alert-danger text-center" role="alert"
-                                            style="font-size: 0.9rem;">
-                                            <%= error %>
-                                        </div>
-                                        <% } %>
-
-                                            <!-- Success Message -->
-                                            <% if (success && success.length> 0) { %>
-                                                <div class="alert alert-success text-center" role="alert"
-                                                    style="font-size: 0.9rem;">
-                                                    <%= success %>
-                                                </div>
-                                                <% } %>
-                                                    <!-- Search bar for filtering tenants -->
-                                                    <div class="row mb-3">
-                                                        <div class="col-12 col-md-6">
-                                                            <input type="text" id="tenantSearch" class="form-control"
-                                                                placeholder="Search tenant by name, email, or property">
-                                                        </div>
-                                                    </div>
-                                                    <!-- Section to display the tenant results dynamically -->
-                                                    <div id="tenantResults">
-                                                        <!-- The tenant table will be dynamically populated here -->
-                                                    </div>
-                                                    <!-- Tenants Table -->
-                                                    <div class="table-responsive">
-                                                        <table id="tenantTable"
-                                                            class="table table-bordered table-striped table-hover table-sm small-table">
-                                                            <thead class="text-center"
-                                                                style="background-color: #00172f; color: white;">
-                                                                <tr>
-                                                                    <th>#</th>
-                                                                    <th>Name</th>
-                                                                    <th>Email</th>
-                                                                    <th>Phone</th>
-                                                                    <th>Property</th>
-                                                                    <th>Unit</th>
-                                                                    <th>Door</th>
-                                                                    <th>Lease Period</th>
-                                                                    <th>Rent Paid</th>
-                                                                    <th>Utility Paid</th>
-                                                                    <th>Wallet</th>
-                                                                    <th>Arrears</th>
-                                                                    <th>Status</th>
-                                                                    <th>Actions</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody class="text-center"
-                                                                style="background-color: #f8f9fa; color: black;">
-                                                                <% tenants.forEach((tenant, index)=> { %>
-                                                                    <tr>
-                                                                        <td>
-                                                                            <%= (index + 1) + ((currentPage - 1) *
-                                                                                perPage) %>
-                                                                        </td>
-                                                                        <td>
-                                                                            <%= tenant.name %>
-                                                                        </td>
-                                                                        <td>
-                                                                            <%= tenant.email %>
-                                                                        </td>
-                                                                        <td>
-                                                                            <%= tenant.phone %>
-                                                                        </td>
-                                                                        <td>
-                                                                            <%= tenant.property ? tenant.property.name
-                                                                                : 'N/A' %>
-                                                                        </td>
-                                                                        <td>
-                                                                            <%= tenant.unit ? tenant.unit.unitType
-                                                                                : 'N/A' %>
-                                                                        </td>
-                                                                        <td>
-                                                                            <%= tenant.doorNumber || 'N/A' %>
-                                                                        </td>
-                                                                        <td>
-                                                                            <%= new
-                                                                                Date(tenant.leaseStartDate).toLocaleDateString()
-                                                                                %> - <%= new
-                                                                                    Date(tenant.leaseEndDate).toLocaleDateString()
-                                                                                    %>
-                                                                        </td>
-                                                                        <td>Ksh.<%= tenant.rentPaid ?
-                                                                                tenant.rentPaid.toFixed(2) : "0.00" %>
-                                                                        </td>
-                                                                        <td>Ksh.<%= tenant.utilityPaid ?
-                                                                                tenant.utilityPaid.toFixed(2) : "0.00"
-                                                                                %>
-                                                                        </td>
-                                                                        <td>Ksh.<%= tenant.walletBalance ?
-                                                                                tenant.walletBalance.toFixed(2) : "0.00"
-                                                                                %>
-                                                                        </td>
-                                                                        <td>Ksh.<%= tenant.outstandingPayments ?
-                                                                                tenant.outstandingPayments.toFixed(2)
-                                                                                : "0.00" %>
-                                                                        </td>
-                                                                        <td>
-                                                                            <%= tenant.leaseStatus || 'N/A' %>
-                                                                        </td><td>
-                                                                            <div class="actions-group" role="group" aria-label="Tenant actions" style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
-                                                                                <button class="btn edit-button p-1" data-toggle="modal" data-target="#editTenantModal<%= tenant._id %>">
-                                                                                    <i class="fas fa-edit"></i>
-                                                                                </button>
-                                                                                <form action="/tenancy-manager/tenant/resend-email/<%= tenant._id %>" method="POST" style="margin: 0;">
-                                                                                    <button class="btn resend-email-button p-2" type="submit">
-                                                                                        <i class="fas fa-envelope"></i>
-                                                                                    </button>
-                                                                                </form>
-                                                                                <button class="btn delete-button p-3" data-toggle="modal" data-target="#deleteTenantModal<%= tenant._id %>">
-                                                                                    <i class="fas fa-trash-alt"></i>
-                                                                                </button>
-
-                                                                                <!-- Edit Tenant Modal -->
-<div class="modal fade" id="editTenantModal<%= tenant._id %>" tabindex="-1" role="dialog" aria-labelledby="editTenantModalLabel<%= tenant._id %>" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editTenantModalLabel<%= tenant._id %>">Edit Tenant</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form action="/tenancy-manager/tenants/edit/<%= tenant._id %>" method="POST">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="name<%= tenant._id %>">Name</label>
-                        <input type="text" class="form-control" id="name<%= tenant._id %>" name="name" value="<%= tenant.name %>" required>
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Tenant Management</h3>
                     </div>
-                    <div class="form-group">
-                        <label for="email<%= tenant._id %>">Email</label>
-                        <input type="email" class="form-control" id="email<%= tenant._id %>" name="email" value="<%= tenant.email %>" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="phone<%= tenant._id %>">Phone</label>
-                        <input type="text" class="form-control" id="phone<%= tenant._id %>" name="phone" value="<%= tenant.phone %>" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="leaseEndDate<%= tenant._id %>">Lease End Date</label>
-                        <input type="date" class="form-control" id="leaseEndDate<%= tenant._id %>" name="leaseEndDate" value="<%= new Date(tenant.leaseEndDate).toISOString().split('T')[0] %>" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="propertyId<%= tenant._id %>">Property</label>
-                        <select class="form-control" id="propertyId<%= tenant._id %>" name="propertyId" required>
-                            <!-- Dynamically load properties here -->
-                            <% properties.forEach(property => { %>
-                                <option value="<%= property._id %>" <%= property._id == tenant.property._id ? 'selected' : '' %>><%= property.name %></option>
-                            <% }) %>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="rentPaid<%= tenant._id %>">Rent Paid</label>
-                        <input type="number" class="form-control" id="rentPaid<%= tenant._id %>" name="rentPaid" value="<%= tenant.rentPaid || 0 %>" step="0.01" min="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="utilityPaid<%= tenant._id %>">Utility Paid</label>
-                        <input type="number" class="form-control" id="utilityPaid<%= tenant._id %>" name="utilityPaid" value="<%= tenant.utilityPaid || 0 %>" step="0.01" min="0">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-
-<!-- Delete Tenant Modal -->
-<div class="modal fade" id="deleteTenantModal<%= tenant._id %>" tabindex="-1" role="dialog" aria-labelledby="deleteTenantModalLabel<%= tenant._id %>" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteTenantModalLabel<%= tenant._id %>">Delete Tenant</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to delete this tenant? This action cannot be undone.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <form action="/tenancy-manager/tenants/delete/<%= tenant._id %>" method="POST">
-                    <button type="submit" class="btn btn-danger">Delete Tenant</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-                                                                            </div>
-                                                                        </td>
-                                                                        
-                                                                    </tr>
-                                                                    <% }) %>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                    <!-- /.table-responsive -->
-
-                                                    <!-- Pagination controls -->
-                                                    <div class="d-flex justify-content-between mt-3">
-                                                        <!-- Previous Button -->
-                                                        <% if (currentPage> 1) { %>
-                                                            <a href="/tenancy-manager/tenants?page=<%= currentPage - 1 %>"
-                                                                class="btn btn-secondary">Previous</a>
-                                                            <% } %>
-
-                                                                <!-- Next Button -->
-                                                                <% if (currentPage < totalPages) { %>
-                                                                    <a href="/tenancy-manager/tenants?page=<%= currentPage + 1 %>"
-                                                                        class="btn btn-secondary">Next</a>
-                                                                    <% } %>
-                                                    </div>
-
-                                </div>
-                                <!-- /.card-body -->
-                            </div>
-                            <!-- /.card -->
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <!-- Add New Tenant Button -->
+                        <div class="d-flex justify-content-end mb-3">
+                            <button type="button" class="btn btn-dark w-30" data-toggle="modal"
+                                data-target="#addTenantModal"
+                                style="background-color: #003366; color: #ffffff;">
+                                Add New Tenant
+                            </button>
                         </div>
-                        <!-- /.col -->
+
+                        <!-- Error Message -->
+                        <% if (error && error.length > 0) { %>
+                            <div class="alert alert-danger text-center" role="alert" style="font-size: 0.9rem;">
+                                <%= error %>
+                            </div>
+                        <% } %>
+
+                        <!-- Success Message -->
+                        <% if (success && success.length > 0) { %>
+                            <div class="alert alert-success text-center" role="alert" style="font-size: 0.9rem;">
+                                <%= success %>
+                            </div>
+                        <% } %>
+
+                        <!-- Search bar for filtering tenants -->
+                        <div class="row mb-3">
+                            <div class="col-12 col-md-6">
+                                <input type="text" id="tenantSearch" class="form-control"
+                                    placeholder="Search tenant by name, email, or property">
+                            </div>
+                        </div>
+
+                        <!-- Section to display the tenant results dynamically -->
+                        <div id="tenantResults">
+                            <!-- The tenant table will be dynamically populated here -->
+                        </div>
+
+                        <!-- Tenants Table -->
+                        <div class="table-responsive">
+                            <table id="tenantTable"
+                                class="table table-bordered table-striped table-hover table-sm small-table">
+                                <thead class="text-center" style="background-color: #00172f; color: white;">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Property</th>
+                                        <th>Unit</th>
+                                        <th>Door</th>
+                                        <th>Lease Period</th>
+                                        <th>Rent Paid</th>
+                                        <th>Utility Paid</th>
+                                        <th>Wallet</th>
+                                        <th>Arrears</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center" style="background-color: #f8f9fa; color: black;">
+                                    <% tenants.forEach((tenant, index) => { %>
+                                        <tr>
+                                            <td><%= (index + 1) + ((currentPage - 1) * perPage) %></td>
+                                            <td><%= tenant.name %></td>
+                                            <td><%= tenant.email %></td>
+                                            <td><%= tenant.phone %></td>
+                                            <td><%= tenant.property ? tenant.property.name : 'N/A' %></td>
+                                            <td><%= tenant.unit ? tenant.unit.unitType : 'N/A' %></td>
+                                            <td><%= tenant.doorNumber || 'N/A' %></td>
+                                            <td>
+                                                <%= new Date(tenant.leaseStartDate).toLocaleDateString() %> - 
+                                                <%= new Date(tenant.leaseEndDate).toLocaleDateString() %>
+                                            </td>
+                                            <td>Ksh.<%= tenant.rentPaid ? tenant.rentPaid.toFixed(2) : "0.00" %></td>
+                                            <td>Ksh.<%= tenant.utilityPaid ? tenant.utilityPaid.toFixed(2) : "0.00" %></td>
+                                            <td>Ksh.<%= tenant.walletBalance ? tenant.walletBalance.toFixed(2) : "0.00" %></td>
+                                            <td>Ksh.<%= tenant.outstandingPayments ? tenant.outstandingPayments.toFixed(2) : "0.00" %></td>
+                                            <td><%= tenant.leaseStatus || 'N/A' %></td>
+                                            <td>
+                                                <div class="actions-group" role="group" aria-label="Tenant actions" 
+                                                    style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                                                    <button class="btn edit-button p-1" data-toggle="modal" 
+                                                        data-target="#editTenantModal<%= tenant._id %>">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <form action="/tenancy-manager/tenant/resend-email/<%= tenant._id %>" method="POST" style="margin: 0;">
+                                                        <button class="btn resend-email-button p-2" type="submit">
+                                                            <i class="fas fa-envelope"></i>
+                                                        </button>
+                                                    </form>
+                                                    <button class="btn delete-button p-3" data-toggle="modal" 
+                                                        data-target="#deleteTenantModal<%= tenant._id %>">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Edit Tenant Modal -->
+                                        <div class="modal fade" id="editTenantModal<%= tenant._id %>" tabindex="-1" 
+                                            role="dialog" aria-labelledby="editTenantModalLabel<%= tenant._id %>" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="editTenantModalLabel<%= tenant._id %>">Edit Tenant</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <form action="/tenancy-manager/tenants/edit/<%= tenant._id %>" method="POST">
+                                                        <div class="modal-body">
+                                                            <div class="form-group">
+                                                                <label for="name<%= tenant._id %>">Name</label>
+                                                                <input type="text" class="form-control" id="name<%= tenant._id %>" 
+                                                                    name="name" value="<%= tenant.name %>" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="email<%= tenant._id %>">Email</label>
+                                                                <input type="email" class="form-control" id="email<%= tenant._id %>" 
+                                                                    name="email" value="<%= tenant.email %>" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="phone<%= tenant._id %>">Phone</label>
+                                                                <input type="text" class="form-control" id="phone<%= tenant._id %>" 
+                                                                    name="phone" value="<%= tenant.phone %>" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="leaseEndDate<%= tenant._id %>">Lease End Date</label>
+                                                                <input type="date" class="form-control" id="leaseEndDate<%= tenant._id %>" 
+                                                                    name="leaseEndDate" value="<%= new Date(tenant.leaseEndDate).toISOString().split('T')[0] %>" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="propertyId<%= tenant._id %>">Property</label>
+                                                                <select class="form-control" id="propertyId<%= tenant._id %>" name="propertyId" required>
+                                                                    <% properties.forEach(property => { %>
+                                                                        <option value="<%= property._id %>" 
+                                                                            <%= property._id.toString() === (tenant.property?._id?.toString() || '') ? 'selected' : '' %>>
+                                                                            <%= property.name %>
+                                                                        </option>
+                                                                    <% }) %>
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="rentPaid<%= tenant._id %>">Rent Paid</label>
+                                                                <input type="number" class="form-control" id="rentPaid<%= tenant._id %>" 
+                                                                    name="rentPaid" value="<%= tenant.rentPaid || 0 %>" step="0.01" min="0">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="utilityPaid<%= tenant._id %>">Utility Paid</label>
+                                                                <input type="number" class="form-control" id="utilityPaid<%= tenant._id %>" 
+                                                                    name="utilityPaid" value="<%= tenant.utilityPaid || 0 %>" step="0.01" min="0">
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                            <button type="submit" class="btn btn-primary">Save changes</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Delete Tenant Modal -->
+                                        <div class="modal fade" id="deleteTenantModal<%= tenant._id %>" tabindex="-1" 
+                                            role="dialog" aria-labelledby="deleteTenantModalLabel<%= tenant._id %>" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="deleteTenantModalLabel<%= tenant._id %>">Delete Tenant</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>Are you sure you want to delete this tenant? This action cannot be undone.</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                        <form action="/tenancy-manager/tenants/delete/<%= tenant._id %>" method="POST">
+                                                            <button type="submit" class="btn btn-danger">Delete Tenant</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.table-responsive -->
+
+                        <!-- Pagination controls -->
+                        <div class="d-flex justify-content-between mt-3">
+                            <div>
+                                <p>Showing <%= ((currentPage - 1) * perPage + 1) %> to 
+                                    <%= Math.min(currentPage * perPage, totalTenants) %> of <%= totalTenants %> tenants</p>
+                            </div>
+                            <div>
+                                <!-- Previous Button -->
+                                <% if (currentPage > 1) { %>
+                                    <a href="/tenancy-manager/tenants?page=<%= currentPage - 1 %>" class="btn btn-secondary mr-2">Previous</a>
+                                <% } %>
+                                <!-- Page Numbers -->
+                                <% for (let i = 1; i <= totalPages; i++) { %>
+                                    <a href="/tenancy-manager/tenants?page=<%= i %>" 
+                                        class="btn <%= currentPage === i ? 'btn-primary' : 'btn-secondary' %> mr-1">
+                                        <%= i %>
+                                    </a>
+                                <% } %>
+                                <!-- Next Button -->
+                                <% if (currentPage < totalPages) { %>
+                                    <a href="/tenancy-manager/tenants?page=<%= currentPage + 1 %>" class="btn btn-secondary">Next</a>
+                                <% } %>
+                            </div>
+                        </div>
                     </div>
-                    <!-- /.row -->
+                    <!-- /.card-body -->
                 </div>
-                <!-- /.container-fluid -->
-            </section>
-            <!-- /.content -->
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+<!-- /.content -->
 
             <!-- Modal Structure -->
             <div class="modal fade" id="addTenantModal" tabindex="-1" role="dialog"
@@ -651,18 +637,7 @@
                                                     <input type="date" class="form-control" id="leaseEndDate"
                                                         name="leaseEndDate" required>
                                                 </div>
-                                                <!-- Rent Paid -->
-                                                <div class="form-group">
-                                                    <label for="tenantRent">Rent Paid</label>
-                                                    <input type="number" class="form-control" id="tenantRent"
-                                                        name="rentPaid" min="0" step="0.01">
-                                                </div>
-                                                <!-- Utilities Paid -->
-                                                <div class="form-group">
-                                                    <label for="utilitiesPaid">Utilities Paid</label>
-                                                    <input type="number" class="form-control" id="utilitiesPaid"
-                                                        name="utilityPaid" min="0" step="0.01">
-                                                </div>
+                                               
                                             </div>
 
                                             <!-- Right Column -->

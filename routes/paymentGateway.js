@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
-const PaymentAccount = require('../models/account');
+const Property = require('../models/property');
 const Tenant = require('../models/tenant');
 const Payment = require('../models/payment');
 require('dotenv').config();
 const nodemailer = require('nodemailer');
+const EventEmitter = require('events');
+const paymentEvents = new EventEmitter();
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -15,355 +17,494 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-const generateTransactionId = (prefix) => {
-    const randomDigits = Math.floor(100000 + Math.random() * 900000);
-    return `${prefix}${randomDigits}`;
-};
+const Account = require('../models/account'); 
+const PropertyUnit = require('../models/unit');
+const User = require('../models/user'); 
 
-// Server-side validation for phone number
-const validatePhoneNumber = (phoneNumber) => {
-    const phoneRegex = /^\+254\d{9}$/;
-    return phoneRegex.test(phoneNumber);
-};
-
-router.post('/payment/rent', async (req, res) => {
-    const { amount, phoneNumber, paymentMethod } = req.body;
-    const tenantId = req.session.tenantId;
-
-    console.log('tenantId:', tenantId);
-
-    // Input validation
-    if (!tenantId) {
-        req.flash('error', 'No tenant session found. Please log in again.');
-        return res.redirect('/payments');
-    }
-    if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
-        req.flash('error', 'Please enter a valid payment amount greater than 0.');
-        return res.redirect('/payments');
-    }
-    if (!phoneNumber || !validatePhoneNumber(phoneNumber)) {
-        req.flash('error', 'Invalid phone number. Use format: +254 followed by 9 digits (e.g., +254712345678).');
-        return res.redirect('/payments');
-    }
-    if (!paymentMethod || paymentMethod !== 'mobilePayment') {
-        req.flash('error', 'Invalid payment method. Please select Mobile Payment.');
-        return res.redirect('/payments');
-    }
-
-    try {
-        const tenant = await Tenant.findById(tenantId).populate('property unit userId').lean();
-        if (!tenant) throw new Error('Tenant not found.');
-        if (!tenant.userId) throw new Error('Tenant does not have an associated user.');
-
-        const rentPaid = parseFloat(amount);
-        const transactionId = generateTransactionId('RNT');
-
-        const userPaymentAccount = await PaymentAccount.findOne({ userId: tenant.userId });
-        if (!userPaymentAccount) throw new Error('Payment account not found.');
-
-        const payload = {
-            api_key: userPaymentAccount.apiKey,
-            email: userPaymentAccount.accountEmail,
-            account_id: userPaymentAccount.accountId,
-            amount: rentPaid,
-            msisdn: phoneNumber,
-            reference: transactionId,
-        };
-
-        const paymentResponse = await sendPaymentRequest(payload);
-        if (paymentResponse.success === "200") {
-            const transactionRequestId = paymentResponse.tranasaction_request_id;
-            if (!transactionRequestId) {
-                req.flash('error', 'Payment initiation failed: No transaction request ID received.');
-                return res.redirect('/payments');
-            }
-
-            req.session.paymentData = {
-                tenant: tenantId,
-                tenantName: tenant.name,
-                property: tenant.property,
-                amount: rentPaid,
-                totalPaid: rentPaid,
-                doorNumber: tenant.unit && tenant.unit.doorNumber ? tenant.unit.doorNumber : 'N/A',
-                paymentType: 'rent',
-                due: tenant.rentDue || 0,
-                datePaid: new Date(),
-                method: paymentMethod,
-                status: 'pending',
-                transactionId,
-                transactionRequestId,
-            };
-
-            req.flash('info', 'Rent payment initiated successfully. Awaiting confirmation from your mobile device.');
-            req.session.transactionId = transactionId;
-
-            pollPaymentStatus(req, userPaymentAccount.apiKey, userPaymentAccount.accountEmail, tenantId);
-            return res.redirect('/payments');
-        } else {
-            req.flash('error', 'Payment initiation failed. Please check your details and try again.');
-            return res.redirect('/payments');
-        }
-    } catch (error) {
-        console.error('Rent Payment Initiation Error:', error.message);
-        req.flash('error', `An error occurred: ${error.message}. Please try again later.`);
-        return res.redirect('/payments');
-    }
-});
-
-router.post('/payment/utility', async (req, res) => {
-    const { amount, phoneNumber, paymentMethod } = req.body;
-    const tenantId = req.session.tenantId;
-
-    console.log('tenantId:', tenantId);
-
-    // Input validation
-    if (!tenantId) {
-        req.flash('error', 'No tenant session found. Please log in again.');
-        return res.redirect('/payments');
-    }
-    if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
-        req.flash('error', 'Please enter a valid payment amount greater than 0.');
-        return res.redirect('/payments');
-    }
-    if (!phoneNumber || !validatePhoneNumber(phoneNumber)) {
-        req.flash('error', 'Invalid phone number. Use format: +254 followed by 9 digits (e.g., +254712345678).');
-        return res.redirect('/payments');
-    }
-    if (!paymentMethod || paymentMethod !== 'mobilePayment') {
-        req.flash('error', 'Invalid payment method. Please select Mobile Payment.');
-        return res.redirect('/payments');
-    }
-
-    try {
-        const tenant = await Tenant.findById(tenantId).populate('property unit userId').lean();
-        if (!tenant) throw new Error('Tenant not found.');
-
-        const totalPaid = parseFloat(amount);
-        const transactionId = generateTransactionId('UTL');
-
-        const userPaymentAccount = await PaymentAccount.findOne({ userId: tenant.userId });
-        if (!userPaymentAccount) throw new Error('Payment account not found.');
-
-        const payload = {
-            api_key: userPaymentAccount.apiKey,
-            email: userPaymentAccount.accountEmail,
-            account_id: userPaymentAccount.accountId,
-            amount: totalPaid,
-            msisdn: phoneNumber,
-            reference: transactionId,
-        };
-
-        const paymentResponse = await sendPaymentRequest(payload);
-        if (paymentResponse.success === "200") {
-            const transactionRequestId = paymentResponse.tranasaction_request_id;
-            if (!transactionRequestId) {
-                req.flash('error', 'Payment initiation failed: No transaction request ID received.');
-                return res.redirect('/payments');
-            }
-
-            req.session.paymentData = {
-                tenant: tenantId,
-                tenantName: tenant.name,
-                property: tenant.property,
-                amount: totalPaid,
-                totalPaid: totalPaid,
-                doorNumber: tenant.unit && tenant.unit.doorNumber ? tenant.unit.doorNumber : 'N/A',
-                paymentType: 'utility',
-                due: tenant.utilityDue || 0,
-                datePaid: new Date(),
-                method: paymentMethod,
-                status: 'pending',
-                transactionId,
-                transactionRequestId,
-            };
-
-            req.flash('info', 'Utility payment initiated successfully. Awaiting confirmation from your mobile device.');
-            req.session.transactionId = transactionId;
-
-            pollPaymentStatus(req, userPaymentAccount.apiKey, userPaymentAccount.accountEmail, tenantId);
-            return res.redirect('/payments');
-        } else {
-            req.flash('error', 'Payment initiation failed. Please check your details and try again.');
-            return res.redirect('/payments');
-        }
-    } catch (error) {
-        console.error('Utility Payment Initiation Error:', error.message);
-        req.flash('error', `An error occurred: ${error.message}. Please try again later.`);
-        return res.redirect('/payments');
-    }
-});
-
-async function sendPaymentRequest(payload) {
-    try {
-        const response = await axios.post(
-            'https://api.umeskiasoftwares.com/api/v1/intiatestk',
-            payload,
-            { headers: { 'Content-Type': 'application/json' } }
-        );
-
-        if (response && response.status === 200) {
-            console.log('Payment request successful:', response.data);
-            return response.data;
-        } else {
-            console.error('Payment request failed: Invalid response status:', response.status);
-            return { success: false, error: `Unexpected response status: ${response.status}` };
-        }
-    } catch (err) {
-        if (err.response) {
-            console.error('Server error:', err.response.data);
-            return { success: false, error: err.response.data.message || 'Server error occurred.' };
-        } else if (err.request) {
-            console.error('Network error: No response received:', err.request);
-            return { success: false, error: 'No response from server. Please check your network connection.' };
-        } else {
-            console.error('Payment request failed:', err.message);
-            return { success: false, error: err.message || 'Unknown error occurred during payment request.' };
-        }
-    }
-}
-
-const pollPaymentStatus = async (req, api_key, email, tenantId) => {
-    const paymentTimeout = 30000;
-    const startTime = Date.now();
-
-    console.log("Received tenantId for polling:", tenantId);
-    if (!tenantId) {
-        console.error("No tenantId provided. Cannot proceed with payment polling.");
-        return { error: "Tenant ID is required for payment polling." };
-    }
-
-    try {
-        const tenant = await Tenant.findById(tenantId).populate("owner userId");
-        if (!tenant) throw new Error(`Tenant with ID ${tenantId} does not exist.`);
-        if (!tenant.owner) throw new Error(`Owner for tenant with ID ${tenantId} does not exist.`);
-        if (!tenant.userId) throw new Error(`User for tenant with ID ${tenantId} does not exist.`);
-
-        const { email: ownerEmail, phone: ownerPhone } = tenant.owner;
-        const { email: tenantEmail, phone: tenantPhone } = tenant.userId;
-
-        const interval = setInterval(async () => {
-            try {
-                const paymentData = req.session.paymentData;
-
-                if (!paymentData) {
-                    console.warn("No payment data found in session. Stopping polling.");
-                    clearInterval(interval);
-                    return;
-                }
-
-                console.log("Session Data => Transaction Request ID:", paymentData.transactionRequestId);
-
-                const verificationPayload = {
-                    api_key,
-                    email,
-                    tranasaction_request_id: paymentData.transactionRequestId,
-                };
-
-                console.log("Verifying payment with payload:", verificationPayload);
-
-                const response = await axios.post(
-                    "https://api.umeskiasoftwares.com/api/v1/transactionstatus",
-                    verificationPayload,
-                    { headers: { "Content-Type": "application/json" } }
-                );
-
-                const responseData = response.data;
-                console.log("Verification response:", responseData);
-
-                if (responseData) {
-                    const { ResultCode, TransactionStatus, TransactionCode } = responseData;
-
-                    if (TransactionStatus === "Completed" && ResultCode === "200" && TransactionCode === "0") {
-                        paymentData.status = "completed";
-                        clearInterval(interval);
-                        console.log("Payment completed.");
-
-                        updatePaymentData(paymentData, "completed");
-                        await savePaymentToDatabase(paymentData);
-                        await updateTenantDues(tenantId, paymentData.paymentType, paymentData.amount);
-                        await sendPaymentNotificationEmail(ownerEmail, paymentData.tenantName, paymentData.amount, paymentData.paymentType);
-                        await sendPaymentNotificationSMS(ownerPhone, paymentData.tenantName, paymentData.amount, paymentData.paymentType);
-                        await sendTenantConfirmationEmail(tenantEmail, paymentData);
-                        await sendTenantConfirmationSMS(tenantPhone, paymentData);
-
-                        req.flash('success', `${paymentData.paymentType.charAt(0).toUpperCase() + paymentData.paymentType.slice(1)} payment of Ksh.${paymentData.amount.toFixed(2)} completed successfully!`);
-                    } else if (TransactionStatus === "Pending") {
-                        console.log("Payment still pending, continuing to poll...");
-                    } else {
-                        paymentData.status = "failed";
-                        updatePaymentData(paymentData, "failed");
-                        await savePaymentToDatabase(paymentData);
-                        console.warn("Payment failed or canceled.");
-                        req.flash('error', 'Payment failed or was canceled. Please try again.');
-                        clearInterval(interval);
-                    }
-                }
-            } catch (error) {
-                console.error("Error during payment verification:", error.message);
-                req.flash('error', 'An error occurred while verifying payment. Please try again.');
-                clearInterval(interval);
-            }
-
-            if (Date.now() - startTime > paymentTimeout) {
-                console.warn("Payment verification timeout reached. Stopping polling.");
-                req.flash('error', 'Payment confirmation timed out. Please check your mobile device and try again if needed.');
-                clearInterval(interval);
-            }
-        }, 5000);
-    } catch (error) {
-        console.error("Error initializing polling:", error.message);
-        req.flash('error', `Polling error: ${error.message}. Please try again.`);
-    }
-};
-
-const updatePaymentData = (paymentData, status) => {
-    if (status === "completed") {
-        if (paymentData.paymentType === "rent") {
-            paymentData.rentPaid = paymentData.amount;
-            paymentData.utilityPaid = 0;
-        } else if (paymentData.paymentType === "utility") {
-            paymentData.utilityPaid = paymentData.amount;
-            paymentData.rentPaid = 0;
-        } else {
-            paymentData.rentPaid = 0;
-            paymentData.utilityPaid = 0;
-        }
-    } else {
-        paymentData.rentPaid = 0;
-        paymentData.utilityPaid = 0;
-    }
-};
-
-const savePaymentToDatabase = async (paymentData) => {
-    try {
-        const payment = new Payment(paymentData);
-        await payment.save();
-        console.log(`Payment saved with status: ${paymentData.status}`);
-    } catch (error) {
-        console.error("Error saving payment to database:", error.message);
-        throw error; // Re-throw to handle in caller
-    }
-};
-
-const updateTenantDues = async (tenantId, paymentType, amount) => {
+const updateTenantDues = async (tenantId, paymentType, amount, transactionId) => {
     try {
         const tenant = await Tenant.findById(tenantId);
         if (!tenant) throw new Error('Tenant not found.');
 
+        const property = await Property.findById(tenant.property).populate('owner');
+        if (!property) throw new Error('Property not found.');
+
+        const unit = await PropertyUnit.findById(tenant.unit);
+        if (!unit) throw new Error('Unit not found.');
+
+        const initialRentPaid = tenant.rentPaid || 0;
+        const initialUtilityPaid = tenant.utilityPaid || 0;
+
+        let remainingDue, overpayment;
         if (paymentType === 'rent') {
-            tenant.rentDue = Math.max(0, (tenant.rentDue || 0) - amount);
+            const today = new Date();
+            const leaseStartDate = new Date(tenant.leaseStartDate);
+            const paymentDay = property.paymentDay || 1;
+
+            // Calculate months due correctly
+            const start = new Date(leaseStartDate);
+            start.setDate(paymentDay); // First payment due date
+            if (start < leaseStartDate) start.setMonth(start.getMonth() + 1);
+
+            const end = new Date(today);
+            end.setDate(paymentDay); // Last due date passed
+            if (end > today) end.setMonth(end.getMonth() - 1);
+
+            const monthsDue = Math.max(1, // Ensure at least 1 month
+                (end.getFullYear() - start.getFullYear()) * 12 + 
+                (end.getMonth() - start.getMonth()) + 
+                (end >= start ? 1 : 0)
+            );
+
+            const totalRentExpected = monthsDue * unit.unitPrice;
+            const initialRentDue = Math.max(0, totalRentExpected - initialRentPaid);
+
+            remainingDue = initialRentDue - amount >= 0 ? initialRentDue - amount : 0;
+            overpayment = amount > initialRentDue ? amount - initialRentDue : 0;
+
+            tenant.rentDue = remainingDue;
+            tenant.rentPaid = initialRentPaid + amount;
+            tenant.overpayment = overpayment;
+
+            console.log(`Rent Calculation: monthsDue=${monthsDue}, totalRentExpected=${totalRentExpected}, initialRentDue=${initialRentDue}, amount=${amount}, remainingDue=${remainingDue}`);
         } else if (paymentType === 'utility') {
-            tenant.utilityDue = Math.max(0, (tenant.utilityDue || 0) - amount);
+            const initialUtilityDue = tenant.utilityDue || 0;
+            remainingDue = initialUtilityDue - amount >= 0 ? initialUtilityDue - amount : 0;
+            overpayment = amount > initialUtilityDue ? amount - initialUtilityDue : 0;
+
+            tenant.utilityDue = remainingDue;
+            tenant.utilityPaid = initialUtilityPaid + amount;
+            tenant.overpayment = overpayment;
+
+            console.log(`Utility Calculation: initialUtilityDue=${initialUtilityDue}, amount=${amount}, remainingDue=${remainingDue}`);
+        } else {
+            throw new Error(`Invalid paymentType: ${paymentType}`);
         }
 
-        await tenant.save();
-        console.log(`Tenant dues updated: ${paymentType} reduced by ${amount}`);
+        const payment = new Payment({
+            owner: property.owner._id,
+            tenant: tenant._id,
+            tenantName: tenant.name,
+            property: tenant.property,
+            unit: tenant.unit || null,
+            doorNumber: tenant.doorNumber,
+            amount: amount,
+            totalPaid: amount,
+            due: remainingDue,
+            method: 'mobilePayment',
+            paymentType,
+            transactionId,
+            status: 'completed',
+            rentPaid: paymentType === 'rent' ? amount : 0,
+            utilityPaid: paymentType === 'utility' ? amount : 0,
+            datePaid: new Date()
+        });
+
+        await payment.save();
+
+        tenant.payments = tenant.payments || [];
+        tenant.payments.push(payment._id);
+        await tenant.save({ validateBeforeSave: false });
+
+        if (property.updateRentUtilitiesAndTenants) {
+            await property.updateRentUtilitiesAndTenants();
+        }
+
+        console.log(`Tenant dues updated: ${paymentType} payment of ${amount} processed for tenant ${tenant.name}`);
+        console.log(`Initial rentPaid: ${initialRentPaid}, New rentPaid: ${tenant.rentPaid}`);
+        console.log(`Initial utilityPaid: ${initialUtilityPaid}, New utilityPaid: ${tenant.utilityPaid}`);
+        return payment;
     } catch (error) {
         console.error('Error updating tenant dues:', error.message);
         throw error;
     }
 };
 
+async function sendPaymentRequest(payload, req, res, account) {
+    try {
+        const transactionId = payload.transaction_id || `LC${Math.floor(100000 + Math.random() * 900000)}`;
+        payload.transaction_id = transactionId;
+
+        console.log('Sending payment initiation request with payload:', payload);
+
+        const response = await axios.post(
+            'https://api.umeskiasoftwares.com/api/v1/intiatestk',
+            payload,
+            { headers: { 'Content-Type': 'application/json' }, timeout: 30000 }
+        );
+
+        console.log('Payment initiation response:', response.data);
+
+        if (response.status === 200 && response.data.success === '200' && response.data.tranasaction_request_id) {
+            console.log('Payment request successful:', response.data);
+            return { 
+                success: '200', 
+                transaction_request_id: response.data.tranasaction_request_id,
+                transactionId: transactionId,
+                responseData: response.data
+            };
+        } else {
+            console.error('Invalid response from payment initiation:', response.data);
+            return { success: 'error', errorDetails: response.data.message || 'Invalid response format' };
+        }
+    } catch (err) {
+        const errorMessage = err.response?.data?.message || err.message || 'Unknown error';
+        console.error('Payment request failed:', errorMessage);
+        return { success: 'error', errorDetails: errorMessage };
+    }
+}
+
+// In-memory store for payment statuses
+const paymentStatuses = {};
+
+// Existing pollPaymentStatus function 
+async function pollPaymentStatus(transactionRequestId, transactionId, api_key, email, expectedAmount, tenant, paymentType, msisdn, account) {
+    const pollingInterval = 3000;
+    const pollingTimeout = 60000;
+    const maxAttempts = Math.floor(pollingTimeout / pollingInterval);
+    let attempts = 0;
+    const maxRetries = 3;
+
+    console.log(`Starting polling for transactionId: ${transactionId}, requestId: ${transactionRequestId}`);
+
+    const poll = async () => {
+        let retryCount = 0;
+
+        while (retryCount <= maxRetries) {
+            try {
+                const verificationPayload = {
+                    api_key: account.apiKey,
+                    email: account.accountEmail,
+                    transaction_id: transactionId,
+                    tranasaction_request_id: transactionRequestId, 
+                };
+
+                console.log(`Polling attempt ${attempts + 1}/${maxAttempts}, retry ${retryCount}/${maxRetries} with payload:`, verificationPayload);
+
+                const response = await axios.post(
+                    'https://api.umeskiasoftwares.com/api/v1/transactionstatus',
+                    verificationPayload,
+                    { headers: { 'Content-Type': 'application/json' }, timeout: 30000 }
+                );
+
+               
+                const { ResultCode, TransactionStatus, TransactionAmount } = response.data;
+
+                if (TransactionStatus === 'Completed' && ResultCode === '200') {
+                    const receivedAmount = parseFloat(TransactionAmount);
+                    const expected = parseFloat(expectedAmount);
+
+                    if (receivedAmount >= expected) {
+                        try {
+                            const payment = await updateTenantDues(tenant, paymentType, receivedAmount, transactionId);
+                            const property = await Property.findById(tenant.property).populate('owner');
+                            const ownerEmail = property.owner.email;
+                            const ownerPhone = property.owner.phone;
+
+
+                            if (ownerEmail) await sendPaymentNotificationEmail(ownerEmail, tenant.name, receivedAmount, paymentType);
+                            if (ownerPhone) await sendPaymentNotificationSMS(ownerPhone, tenant.name, receivedAmount, paymentType);
+
+                            const paymentData = {
+                                tenantName: tenant.name,
+                                transactionId,
+                                paymentType,
+                                amount: receivedAmount,
+                                datePaid: payment.datePaid,
+                                propertyName: property.name,
+                                doorNumber: tenant.doorNumber,
+                                method: payment.method,
+                                due: payment.due
+                            };
+                            if (tenant.email) await sendTenantConfirmationEmail(tenant.email, paymentData);
+                            if (tenant.phone) await sendTenantConfirmationSMS(tenant.phone, paymentData);
+
+                            const eventData = {
+                                status: 'completed',
+                                message: `${paymentType === 'rent' ? 'Rent' : 'Utility'} payment of Ksh.${receivedAmount.toFixed(2)} completed successfully!`,
+                                redirect: '/tenantPortal/dashboard'
+                            };
+                            paymentEvents.emit(transactionId, eventData);
+                            paymentStatuses[transactionId] = eventData; // Store final status
+                            return true;
+                        } catch (updateError) {
+                            const eventData = {
+                                status: 'failed',
+                                message: `Payment processing failed: ${updateError.message}`,
+                                redirect: '/payments'
+                            };
+                           
+                            paymentEvents.emit(transactionId, eventData);
+                            paymentStatuses[transactionId] = eventData; // Store final status
+                            return true;
+                        }
+                    } else {
+                        const eventData = {
+                            status: 'failed',
+                            message: `Insufficient payment amount. Expected Ksh.${expected.toFixed(2)}, received Ksh.${receivedAmount.toFixed(2)}.`,
+                            redirect: '/payments'
+                        };
+                        paymentEvents.emit(transactionId, eventData);
+                        paymentStatuses[transactionId] = eventData; // Store final status
+                        return true;
+                    }
+                } else if (TransactionStatus === 'Pending') {
+                    const eventData = {
+                        status: 'pending',
+                        message: 'Payment is still processing. Please wait...'
+                    };
+                    console.log(`Emitting event for transactionId ${transactionId}:`, eventData);
+                    paymentEvents.emit(transactionId, eventData);
+                    paymentStatuses[transactionId] = eventData; // Store interim status
+                    return false;
+                } else {
+                    const eventData = {
+                        status: 'failed',
+                        message: `Payment failed with status: ${TransactionStatus}. Please try again.`,
+                        redirect: '/payments'
+                    };
+                    paymentEvents.emit(transactionId, eventData);
+                    paymentStatuses[transactionId] = eventData; // Store final status
+                    return true;
+                }
+            } catch (error) {
+                console.error(`Polling error for transactionId ${transactionId}, retry ${retryCount}/${maxRetries}:`, error.message);
+                if (error.code === 'ECONNRESET' && retryCount < maxRetries) {
+                    retryCount++;
+                    const eventData = {
+                        status: 'pending',
+                        message: `Retrying payment verification (${retryCount}/${maxRetries})...`
+                    };
+                    console.log(`Emitting retry event for transactionId ${transactionId}:`, eventData);
+                    paymentEvents.emit(transactionId, eventData);
+                    paymentStatuses[transactionId] = eventData; // Store interim status
+                    await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+                    continue;
+                }
+
+                const errorMessage = error.message.includes('timeout')
+                    ? 'Payment verification timed out. Please check your status later.'
+                    : `Payment verification failed: ${error.message}`;
+                const eventData = {
+                    status: 'failed',
+                    message: errorMessage,
+                    redirect: '/payments'
+                };
+                console.log(`Emitting error event for transactionId ${transactionId}:`, eventData);
+                paymentEvents.emit(transactionId, eventData);
+                paymentStatuses[transactionId] = eventData; // Store final status
+                return true;
+            }
+        }
+    };
+
+    const initialEvent = {
+        status: 'pending',
+        message: 'Starting payment verification...'
+    };
+    console.log(`Emitting initial event for transactionId ${transactionId}:`, initialEvent);
+    paymentEvents.emit(transactionId, initialEvent);
+    paymentStatuses[transactionId] = initialEvent; // Store initial status
+
+    while (attempts < maxAttempts) {
+        console.log(`Polling loop iteration ${attempts + 1}/${maxAttempts} for transactionId ${transactionId}`);
+        const shouldStop = await poll();
+        if (shouldStop) {
+            console.log(`Polling stopped for transactionId ${transactionId} after ${attempts + 1} attempts`);
+            break;
+        }
+
+        attempts++;
+        const eventData = {
+            status: 'pending',
+            message: `Checking payment status... (${attempts}/${maxAttempts})`
+        };
+        console.log(`Emitting event for transactionId ${transactionId}:`, eventData);
+        paymentEvents.emit(transactionId, eventData);
+        paymentStatuses[transactionId] = eventData; // Store interim status
+        await new Promise(resolve => setTimeout(resolve, pollingInterval));
+    }
+
+    if (attempts >= maxAttempts) {
+        const eventData = {
+            status: 'timeout',
+            message: 'Payment verification timed out after 60 seconds. Please check your payment status later.',
+            redirect: '/payments'
+        };
+    
+        paymentEvents.emit(transactionId, eventData);
+        paymentStatuses[transactionId] = eventData; // Store final status
+    }
+
+}
+
+// New AJAX endpoint to fetch payment status
+router.get('/payment-status', (req, res) => {
+    const transactionId = req.query.transactionId;
+
+    if (!transactionId) {
+        return res.status(400).json({ status: 'error', message: 'Transaction ID is required' });
+    }
+
+    const status = paymentStatuses[transactionId];
+    if (status) {
+        res.json(status);
+    } else {
+        res.status(404).json({ status: 'pending', message: 'Payment status not found. Still processing...' });
+    }
+});
+
+router.get('/payments', async (req, res) => {
+    try {
+        const tenantId = req.session.tenantId;
+
+        // Check if tenantId is defined
+        if (!tenantId) {
+            console.log('Tenant ID is undefined');
+            req.flash('error', 'Please log in first.');
+            return res.redirect('/tenantPortal/login');
+        }
+
+        // Fetch tenant details
+        const tenant = await Tenant.findById(tenantId).exec();
+
+        if (!tenant) {
+            console.log(`Tenant not found for ID: ${tenantId}`);
+            req.flash('error', 'Tenant not found.');
+            return res.redirect('/tenantPortal/login');
+        }
+
+        // Pagination parameters
+        const perPage = 10; // Payments per page
+        const page = parseInt(req.query.page) || 1;
+        const skip = (perPage * page) - perPage;
+
+        // Fetch total payments for pagination
+        const totalPayments = await Payment.countDocuments({ tenant: tenantId });
+
+        // Fetch paginated payments, sorted by datePaid descending
+        const payments = await Payment.find({ tenant: tenantId })
+            .sort({ datePaid: -1 }) // Newest first
+            .skip(skip)
+            .limit(perPage)
+            .lean(); // Use lean() for performance
+
+        // Calculate total pages
+        const totalPages = Math.ceil(totalPayments / perPage);
+
+        // Provide feedback if no payments exist
+        if (totalPayments === 0) {
+            req.flash('info', 'No payments found for your account.');
+        }
+
+        // Render the payments page with tenant and paginated payment data
+        res.render('tenantPortal/payments', {
+            tenant,
+            payments,
+            title: 'Your Payments',
+            success: req.flash('success'),
+            error: req.flash('error'),
+            info: req.flash('info'),
+            currentPage: page,
+            perPage,
+            totalPages,
+            totalPayments
+        });
+    } catch (error) {
+        console.error('Error fetching payment data:', error.message);
+        req.flash('error', 'An error occurred while fetching your payment data. Please try again later.');
+        res.redirect('/tenantPortal/dashboard');
+    }
+});
+
+// Tenant confirmation email
+const sendTenantConfirmationEmail = async (tenantEmail, paymentData) => {
+    const mailOptions = {
+        from: `"Lease Captain" <${process.env.EMAIL_USERNAME}>`,
+        to: tenantEmail,
+        subject: `Payment Receipt: ${paymentData.paymentType} Payment Confirmation`,
+        html: `
+        <div style="font-family: Arial, sans-serif; background-color: #ffffff; padding: 20px; color: #333;">
+            <div style="max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 0; overflow: hidden;">
+                <div style="background-color: #003366; color: #ffffff; padding: 20px; text-align: center;">
+                    <h1 style="margin: 0; font-size: 18px;"><strong>Payment Receipt</strong></h1>
+                </div>
+                <div style="padding: 20px;">
+                    <p style="font-size: 14px; line-height: 1.6;">Dear <strong>${paymentData.tenantName}</strong>,</p>
+                    <p style="font-size: 14px; line-height: 1.6;">Thank you for your payment! Below is your receipt.</p>
+                    <h3 style="font-size: 16px; margin-top: 20px;">Receipt Details</h3>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                        <tr style="border-bottom: 1px solid #ddd;">
+                            <td style="padding: 8px;"><strong>Transaction ID:</strong></td>
+                            <td style="padding: 8px;">${paymentData.transactionId}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #ddd;">
+                            <td style="padding: 8px;"><strong>Payment Type:</strong></td>
+                            <td style="padding: 8px;">${paymentData.paymentType}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #ddd;">
+                            <td style="padding: 8px;"><strong>Amount Paid:</strong></td>
+                            <td style="padding: 8px;">Ksh.${paymentData.amount.toFixed(2)}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #ddd;">
+                            <td style="padding: 8px;"><strong>Date Paid:</strong></td>
+                            <td style="padding: 8px;">${new Date(paymentData.datePaid).toLocaleString()}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #ddd;">
+                            <td style="padding: 8px;"><strong>Property:</strong></td>
+                            <td style="padding: 8px;">${paymentData.propertyName || 'N/A'}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #ddd;">
+                            <td style="padding: 8px;"><strong>Door Number:</strong></td>
+                            <td style="padding: 8px;">${paymentData.doorNumber}</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #ddd;">
+                            <td style="padding: 8px;"><strong>Payment Method:</strong></td>
+                            <td style="padding: 8px;">${paymentData.method}</td>
+                        </tr>
+                    </table>
+                    <p style="font-size: 14px; line-height: 1.6; margin-top: 20px;">Contact us with any questions.</p>
+                </div>
+                <div style="background-color: #003366; color: #ffffff; padding: 10px; text-align: center; font-size: 12px;">
+                    <p style="margin: 0;">Lease Captain | Property Management Simplified</p>
+                    <p style="margin: 0;">© ${new Date().getFullYear()} Lease Captain. All Rights Reserved.</p>
+                </div>
+            </div>
+        </div>
+    `,
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log('Payment confirmation email sent successfully to tenant.');
+    } catch (error) {
+        console.error('Error sending payment confirmation email to tenant:', error.message);
+    }
+};
+
+// Tenant confirmation SMS
+const sendTenantConfirmationSMS = async (tenantPhone, paymentData) => {
+    const message = `Dear ${paymentData.tenantName},\nYour ${paymentData.paymentType} payment of Ksh.${paymentData.amount.toFixed(2)} is confirmed.\nTransaction ID: ${paymentData.transactionId}\nDate: ${new Date(paymentData.datePaid).toLocaleDateString()}\nProperty: ${paymentData.propertyName || 'N/A'}\nDoor: ${paymentData.doorNumber ?? 'N/A'}\n\nGet more details on your tenant portal.\n\nThank you,\nLease Captain`;
+
+    try {
+        const response = await axios.post(
+            'https://api.umeskiasoftwares.com/api/v1/sms',
+            {
+                api_key: "VEpGOTVNTlY6dnUxaG5odHA=", 
+                email: "vickinstechnologies@gmail.com",
+                Sender_Id: "UMS_SMS",
+                message,
+                phone: tenantPhone,
+            },
+            { headers: { 'Content-Type': 'application/json' } }
+        );
+        console.log('Payment confirmation SMS sent successfully to tenant:', response.data);
+    } catch (error) {
+        console.error('Error sending SMS to tenant via UMS API:', error.response?.data || error.message);
+    }
+};
+
+// Owner notification email
 const sendPaymentNotificationEmail = async (ownerEmail, tenantName, amount, paymentType) => {
     const mailOptions = {
         from: `"Lease Captain" <${process.env.EMAIL_USERNAME}>`,
@@ -402,114 +543,163 @@ const sendPaymentNotificationEmail = async (ownerEmail, tenantName, amount, paym
     }
 };
 
+// Owner notification SMS
 const sendPaymentNotificationSMS = async (ownerPhone, tenantName, amount, paymentType) => {
     const message = `Dear Property Owner,\n\n${tenantName} has made a ${paymentType} payment of Ksh.${amount.toFixed(2)}. Log in to Lease Captain for details.\n\nBest regards,\nLease Captain`;
 
+    // Validate and format phone number
+    let formattedPhone = ownerPhone?.trim() || '';
+    if (!formattedPhone) {
+        console.warn('Owner phone number is missing or empty. Skipping SMS notification.');
+        return;
+    }
+
+    // Define expected Kenyan format: starts with 0, 10 digits total
+    const phoneRegex = /^0\d{9}$/;
+    
+    // Check if already valid
+    if (!phoneRegex.test(formattedPhone)) {
+        const fixableRegex = /^[719]\d{8}$/;
+        if (fixableRegex.test(formattedPhone)) {
+            formattedPhone = `0${formattedPhone}`;
+            console.log(`Auto-corrected phone number from ${ownerPhone} to ${formattedPhone}`);
+        } else {
+            console.warn(`Invalid phone number format: ${formattedPhone}. Expected format: 0798765432. Skipping SMS notification.`);
+            return;
+        }
+    }
+
+    // Double-check after correction
+    if (!phoneRegex.test(formattedPhone)) {
+        console.warn(`Phone number correction failed: ${formattedPhone}. Skipping SMS notification.`);
+        return;
+    }
+
     try {
         const response = await axios.post(
             'https://api.umeskiasoftwares.com/api/v1/sms',
             {
-                api_key: "VEpGOTVNTlY6dnUxaG5odHA=",
+                api_key: "VEpGOTVNTlY6dnUxaG5odHA=", 
                 email: "vickinstechnologies@gmail.com",
                 Sender_Id: "UMS_SMS",
                 message,
-                phone: ownerPhone,
+                phone: formattedPhone,
             },
             { headers: { 'Content-Type': 'application/json' } }
         );
+
         console.log('Payment notification SMS sent successfully to owner:', response.data);
+
+        // Check API response for success
+        if (response.data.success === '200') {
+            return; // Success
+        } else {
+            console.error(`SMS API error: ${response.data.errorMessage || 'Unknown error in response'}`);
+        }
     } catch (error) {
-        console.error('Error sending SMS to owner via UMS API:', error.response?.data || error.message);
+        const errorDetails = error.response?.data || error.message;
+        console.error('Error sending SMS to owner via UMS API:', errorDetails);
     }
 };
 
-const sendTenantConfirmationEmail = async (tenantEmail, paymentData) => {
-    const mailOptions = {
-        from: `"Lease Captain" <${process.env.EMAIL_USERNAME}>`,
-        to: tenantEmail,
-        subject: `Payment Receipt: ${paymentData.paymentType} Payment Confirmation`,
-        html: `
-        <div style="font-family: Arial, sans-serif; background-color: #ffffff; padding: 20px; color: #333;">
-            <div style="max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 0; overflow: hidden;">
-                <div style="background-color: #003366; color: #ffffff; padding: 20px; text-align: center;">
-                    <h1 style="margin: 0; font-size: 18px;"><strong>Payment Receipt</strong></h1>
-                </div>
-                <div style="padding: 20px;">
-                    <p style="font-size: 14px; line-height: 1.6;">Dear <strong>${paymentData.tenantName}</strong>,</p>
-                    <p style="font-size: 14px; line-height: 1.6;">Thank you for your payment! Below is your receipt.</p>
-                    <h3 style="font-size: 16px; margin-top: 20px;">Receipt Details</h3>
-                    <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
-                        <tr style="border-bottom: 1px solid #ddd;">
-                            <td style="padding: 8px;"><strong>Transaction ID:</strong></td>
-                            <td style="padding: 8px;">${paymentData.transactionId}</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #ddd;">
-                            <td style="padding: 8px;"><strong>Payment Type:</strong></td>
-                            <td style="padding: 8px;">${paymentData.paymentType}</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #ddd;">
-                            <td style="padding: 8px;"><strong>Amount Paid:</strong></td>
-                            <td style="padding: 8px;">Ksh.${paymentData.amount.toFixed(2)}</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #ddd;">
-                            <td style="padding: 8px;"><strong>Date Paid:</strong></td>
-                            <td style="padding: 8px;">${new Date(paymentData.datePaid).toLocaleString()}</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #ddd;">
-                            <td style="padding: 8px;"><strong>Property:</strong></td>
-                            <td style="padding: 8px;">${paymentData.property.name || 'N/A'}</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #ddd;">
-                            <td style="padding: 8px;"><strong>Door Number:</strong></td>
-                            <td style="padding: 8px;">${paymentData.doorNumber}</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #ddd;">
-                            <td style="padding: 8px;"><strong>Payment Method:</strong></td>
-                            <td style="padding: 8px;">${paymentData.method}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 8px;"><strong>Remaining Due:</strong></td>
-                            <td style="padding: 8px;">Ksh.${Math.max(0, paymentData.due - paymentData.amount).toFixed(2)}</td>
-                        </tr>
-                    </table>
-                    <p style="font-size: 14px; line-height: 1.6; margin-top: 20px;">Contact us with any questions.</p>
-                </div>
-                <div style="background-color: #003366; color: #ffffff; padding: 10px; text-align: center; font-size: 12px;">
-                    <p style="margin: 0;">Lease Captain | Property Management Simplified</p>
-                    <p style="margin: 0;">© ${new Date().getFullYear()} Lease Captain. All Rights Reserved.</p>
-                </div>
-            </div>
-        </div>
-    `,
-    };
+// Middleware to fetch tenant from session
+const fetchTenantFromSession = async (req, res, next) => {
+    if (!req.session.tenantId) {
+        return res.status(401).json({ message: 'Tenant not authenticated. Please log in.' });
+    }
 
     try {
-        await transporter.sendMail(mailOptions);
-        console.log('Payment confirmation email sent successfully to tenant.');
+        const tenant = await Tenant.findById(req.session.tenantId);
+        if (!tenant) {
+            req.session.destroy(); // Clear invalid session
+            return res.status(401).json({ message: 'Tenant not found. Please log in again.' });
+        }
+        req.tenant = tenant; // Attach tenant to request object
+        next();
     } catch (error) {
-        console.error('Error sending payment confirmation email to tenant:', error.message);
+        console.error('Error fetching tenant from session:', error);
+        res.status(500).json({ message: 'An unexpected error occurred.' });
     }
 };
 
-const sendTenantConfirmationSMS = async (tenantPhone, paymentData) => {
-    const message = `Dear ${paymentData.tenantName},\nYour ${paymentData.paymentType} payment of Ksh.${paymentData.amount.toFixed(2)} is confirmed.\nTransaction ID: ${paymentData.transactionId}\nDate: ${new Date(paymentData.datePaid).toLocaleDateString()}\nProperty: ${paymentData.property.name || 'N/A'}\nDoor: ${paymentData.doorNumber}\nRemaining Due: Ksh.${Math.max(0, paymentData.due - paymentData.amount).toFixed(2)}.\nThank you,\nLease Captain`;
+// Payment routes with session-based authentication
+router.post('/payment/rent', fetchTenantFromSession, async (req, res) => {
+    const { msisdn, amount } = req.body;
+    const tenant = req.tenant;
 
     try {
-        const response = await axios.post(
-            'https://api.umeskiasoftwares.com/api/v1/sms',
-            {
-                api_key: "VEpGOTVNTlY6dnUxaG5odHA=",
-                email: "vickinstechnologies@gmail.com",
-                Sender_Id: "UMS_SMS",
-                message,
-                phone: tenantPhone,
-            },
-            { headers: { 'Content-Type': 'application/json' } }
-        );
-        console.log('Payment confirmation SMS sent successfully to tenant:', response.data);
+        // Fetch property and owner
+        const property = await Property.findById(tenant.property).populate('owner');
+        if (!property) return res.status(404).json({ message: 'Property not found.' });
+
+        // Fetch account details for the owner
+        const account = await Account.findOne({ userId: property.owner._id, status: 'active' });
+        if (!account) return res.status(400).json({ message: 'No active payment account found for the property owner.' });
+
+        const payload = {
+            api_key: account.apiKey,
+            email: account.accountEmail,
+            account_id: account.accountId,
+            amount: Math.floor(parseFloat(amount)).toString(),
+            msisdn: msisdn.trim(),
+            reference: `VT${Date.now()}`,
+        };
+
+        const paymentResponse = await sendPaymentRequest(payload, req, res, account);
+
+        if (paymentResponse?.success === '200') {
+            const transactionRequestId = paymentResponse.transaction_request_id;
+            const transactionId = `LC${Math.floor(100000 + Math.random() * 900000)}`;
+
+            res.json({ transactionId });
+            pollPaymentStatus(transactionRequestId, transactionId, account.apiKey, account.accountEmail, amount, tenant, 'rent', msisdn, account);
+        } else {
+            res.status(400).json({ message: paymentResponse.errorDetails || 'Payment initiation failed.' });
+        }
     } catch (error) {
-        console.error('Error sending SMS to tenant via UMS API:', error.response?.data || error.message);
+        console.error('Error in /payment/rent:', error.message);
+        res.status(500).json({ message: 'An unexpected error occurred.' });
     }
-};
+});
+
+router.post('/payment/utility', fetchTenantFromSession, async (req, res) => {
+    const { msisdn, amount } = req.body;
+    const tenant = req.tenant;
+
+    try {
+        // Fetch property and owner
+        const property = await Property.findById(tenant.property).populate('owner');
+        if (!property) return res.status(404).json({ message: 'Property not found.' });
+
+        // Fetch account details for the owner
+        const account = await Account.findOne({ userId: property.owner._id, status: 'active' });
+        if (!account) return res.status(400).json({ message: 'No active payment account found for the property owner.' });
+
+        const payload = {
+            api_key: account.apiKey,
+            email: account.accountEmail,
+            account_id: account.accountId,
+            amount: Math.floor(parseFloat(amount)).toString(),
+            msisdn: msisdn.trim(),
+            reference: `VT${Date.now()}`,
+        };
+
+        const paymentResponse = await sendPaymentRequest(payload, req, res, account);
+
+        if (paymentResponse?.success === '200') {
+            const transactionRequestId = paymentResponse.transaction_request_id;
+            const transactionId = `LC${Math.floor(100000 + Math.random() * 900000)}`;
+
+            res.json({ transactionId });
+            pollPaymentStatus(transactionRequestId, transactionId, account.apiKey, account.accountEmail, amount, tenant, 'utility', msisdn, account);
+        } else {
+            res.status(400).json({ message: paymentResponse.errorDetails || 'Payment initiation failed.' });
+        }
+    } catch (error) {
+        console.error('Error in /payment/utility:', error.message);
+        res.status(500).json({ message: 'An unexpected error occurred.' });
+    }
+});
+
 
 module.exports = router;

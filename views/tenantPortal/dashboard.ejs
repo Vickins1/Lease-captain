@@ -73,13 +73,6 @@
             background-color: #28a745;
         }
 
-        .chart-container {
-            background: #ffffff;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
         .btn-primary {
             background-color: #003366;
             border-color: #003366;
@@ -264,33 +257,148 @@
                         <% } %>
                     </div>
 
-                    <!-- Quick Actions -->
-                    <div class="modern-card mt-4">
-                        <div class="card-header"><h5>Quick Actions</h5></div>
-                        <div class="card-body">
-                            <div class="row g-3">
-                                <div class="col-md-4"><a href="/payments" class="btn-modern w-100"><i class="fas fa-money-bill-alt me-2"></i>Pay Rent</a></div>
-                                <div class="col-md-4"><a href="/requestMaintenance" class="btn-modern w-100"><i class="fas fa-wrench me-2"></i>Request Maintenance</a></div>
-                                <div class="col-md-4"><a href="/lease" class="btn-modern w-100"><i class="fas fa-file-contract me-2"></i>View Lease</a></div>
-                            </div>
-                        </div>
-                    </div>
+                   <!-- Quick Actions -->
+<div class="modern-card mt-4">
+    <div class="card-header">
+        <h5 class="header-title">Quick Actions</h5>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <a href="/payments" class="btn-modern w-100" aria-label="Pay Rent">
+                    <i class="fas fa-money-bill-alt me-2"></i>
+                    <span>Pay Rent</span>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="/requestMaintenance" class="btn-modern w-100" aria-label="Request Maintenance">
+                    <i class="fas fa-wrench me-2"></i>
+                    <span>Request Maintenance</span>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="/lease" class="btn-modern w-100" aria-label="View Lease">
+                    <i class="fas fa-file-contract me-2"></i>
+                    <span>View Lease</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 
-                    <!-- Charts -->
-                    <div class="row g-4 mt-4">
-                        <div class="col-lg-6">
-                            <div class="chart-container">
-                                <h5 class="mb-3">Rent Overview</h5>
-                                <canvas id="rentChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="chart-container">
-                                <h5 class="mb-3">Utility Overview</h5>
-                                <canvas id="utilityChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
+<style>
+    /* Modern Card Styling */
+    .modern-card {
+        background: #ffffff;
+        border-radius: 5px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .modern-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #003366 0%, #0055a5 100%);
+        color: #ffffff;
+        padding: 15px 20px;
+    }
+
+    .header-title {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    .card-body {
+        padding: 25px;
+        background: #f9fbfc;
+    }
+
+    /* Button Styling */
+    .btn-modern {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 15px;
+        font-size: 1.1rem;
+        font-weight: 500;
+        text-decoration: none;
+        color: #ffffff;
+        border-radius: 10px;
+        background: linear-gradient(45deg, #007bff, #00d4ff);
+        box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-modern:nth-child(2) {
+        background: linear-gradient(45deg, #28a745, #5cd85a);
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    }
+
+    .btn-modern:nth-child(3) {
+        background: linear-gradient(45deg, #ff9800, #ffc107);
+        box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+    }
+
+    .btn-modern:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        color: #ffffff;
+    }
+
+    .btn-modern i {
+        font-size: 1.3rem;
+        transition: transform 0.3s ease;
+    }
+
+    .btn-modern:hover i {
+        transform: rotate(20deg);
+    }
+
+    .btn-modern span {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Ripple Effect */
+    .btn-modern::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+        z-index: 0;
+    }
+
+    .btn-modern:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .btn-modern {
+            font-size: 1rem;
+            padding: 12px;
+        }
+        .header-title {
+            font-size: 1.25rem;
+        }
+    }
+</style>
 
                     <!-- Recent Transactions -->
                     <div class="modern-card mt-4">
@@ -324,6 +432,66 @@
                             </div>
                         </div>
                     </div>
+
+          <!-- Monthly Recap Report -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="monthly-recap shadow-lg">
+            <div class="header text-white" style="background-color: #003366;">
+                <h5 class="title">Monthly Recap Report</h5>
+                
+            </div>
+            <div class="body p-3">
+                <p class="text-center performance-text mb-3">
+                    <strong>Performance: 1 Jan, <%= new Date().getFullYear() %> - 31 Dec, <%= new Date().getFullYear() %></strong>
+                </p>
+                <div class="chart-container" style="position: relative; height: 300px; width: 100%;"
+                    data-rent-data="<%= rentDataArray %>">
+                    <canvas id="rentUtilityChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include Chart.js and render the chart -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const chartContainer = document.querySelector('.chart-container');
+        const rentData = JSON.parse(chartContainer.getAttribute('data-rent-data'));
+        const ctx = document.getElementById('rentUtilityChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'bar', // You can change to 'pie', 'doughnut', etc., as needed
+            data: rentData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Amount ($)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Tenant Payment Overview'
+                    }
+                }
+            }
+        });
+    });
+</script>
+
                 </div>
             </section>
                 <!-- Footer -->

@@ -19,11 +19,11 @@ const tenantSchema = new Schema({
     },
     rentPaid: {
         type: Number,
-        default: 0
+        default: 0,
     },
     utilityPaid: {
         type: Number,
-        required: true
+        default: 0,
     }, 
     rentDue: {
         type: Number,
@@ -121,7 +121,8 @@ const tenantSchema = new Schema({
 
 
 tenantSchema.pre('save', async function (next) {
-    const PropertyUnit = require('../models/unit'); 
+    const PropertyUnit = require('../models/unit');
+    const Property = require('../models/property');
     const Payment = require('../models/payment');
 
     if (!this.isModified('payments') && !this.isModified('leaseStartDate') && !this.isModified('leaseEndDate')) {
@@ -132,61 +133,44 @@ tenantSchema.pre('save', async function (next) {
         const unit = await PropertyUnit.findById(this.unit);
         if (!unit) throw new Error('Unit not found');
 
-        const today = new Date();
-        const leaseStartDate = this.leaseStartDate;
-        const totalMonths = (today.getFullYear() - leaseStartDate.getFullYear()) * 12 + (today.getMonth() - leaseStartDate.getMonth());
-        const monthsDue = Math.max(totalMonths + 1, 0);
-        const totalRentExpected = monthsDue * unit.unitPrice;
+        const property = await Property.findById(this.property);
+        if (!property) throw new Error('Property not found');
 
-        const rentPayments = await Payment.find({ tenant: this._id, type: 'rent' });
+        const today = new Date();
+        const leaseStartDate = new Date(this.leaseStartDate);
+        const paymentDay = property.paymentDay || 1;
+
+        // Calculate months due based on payment day
+        let monthsDue = 0;
+        let currentDate = new Date(leaseStartDate);
+        while (currentDate <= today) {
+            const dueDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), paymentDay);
+            if (dueDate <= today) {
+                monthsDue++;
+            }
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            currentDate.setDate(leaseStartDate.getDate());
+        }
+
+        const totalRentExpected = monthsDue * unit.unitPrice;
+        const rentPayments = await Payment.find({ tenant: this._id, paymentType: 'rent' });
         const totalRentPaid = rentPayments.reduce((total, payment) => total + (payment.amount || 0), 0);
 
         this.rentDue = Math.max(totalRentExpected - totalRentPaid, 0);
+        this.rentPaid = totalRentPaid;
         this.overpayment = Math.max(totalRentPaid - totalRentExpected, 0);
 
-        const utilityPayments = await Payment.find({ tenant: this._id, type: 'utility' });
+        const utilityPayments = await Payment.find({ tenant: this._id, paymentType: 'utility' });
         const totalUtilityPaid = utilityPayments.reduce((total, payment) => total + (payment.amount || 0), 0);
-
         const totalUtilityCharges = unit.utilities ? unit.utilities.reduce((total, utility) => total + (utility.amount || 0), 0) : 0;
         this.utilityDue = Math.max(totalUtilityCharges - totalUtilityPaid, 0);
+        this.utilityPaid = totalUtilityPaid;
 
         next();
     } catch (err) {
+        console.error('Pre-save hook error:', err.message);
         next(err);
     }
 });
-
-// Method to calculate and update dues manually
-tenantSchema.methods.calculateAndUpdateDues = async function () {
-    const PropertyUnit = require('../models/unit');
-    const Payment = require('../models/payment');
-
-    try {
-        const unit = await PropertyUnit.findById(this.unit);
-        if (!unit) throw new Error('Unit not found');
-
-        const today = new Date();
-        const leaseStartDate = this.leaseStartDate;
-        const totalMonths = (today.getFullYear() - leaseStartDate.getFullYear()) * 12 + (today.getMonth() - leaseStartDate.getMonth());
-        const monthsDue = Math.max(totalMonths + 1, 0);
-        const totalRentExpected = monthsDue * unit.unitPrice;
-
-        const rentPayments = await Payment.find({ tenant: this._id, type: 'rent' });
-        const totalRentPaid = rentPayments.reduce((total, payment) => total + (payment.amount || 0), 0);
-
-        this.rentDue = Math.max(totalRentExpected - totalRentPaid, 0);
-        this.overpayment = Math.max(totalRentPaid - totalRentExpected, 0);
-
-        const utilityPayments = await Payment.find({ tenant: this._id, type: 'utility' });
-        const totalUtilityPaid = utilityPayments.reduce((total, payment) => total + (payment.amount || 0), 0);
-        const totalUtilityCharges = unit.utilities ? unit.utilities.reduce((total, utility) => total + (utility.amount || 0), 0) : 0;
-
-        this.utilityDue = Math.max(totalUtilityCharges - totalUtilityPaid, 0);
-
-        await this.save();
-    } catch (err) {
-        console.error('Error calculating dues:', err);
-    }
-};
 
 module.exports = mongoose.model('Tenant', tenantSchema);

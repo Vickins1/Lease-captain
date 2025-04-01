@@ -22,45 +22,44 @@ router.get('/tenancy-manager/tenants', isTenancyManager, async (req, res) => {
         const searchTerm = req.query.search || '';
         const regex = new RegExp(searchTerm, 'i');
 
-        const tenants = await Tenant.find({
+        // Query for tenants with sorting by createdAt (descending)
+        const tenantQuery = {
             owner: currentUser._id,
             $or: [
                 { name: regex },
                 { email: regex },
                 { 'property.name': regex }
             ]
-        })
-        .populate('property')
-        .populate('unit')
-        .skip((perPage * page) - perPage)
-        .limit(perPage);
+        };
 
-        // Calculate lease status for each tenant
+        const tenants = await Tenant.find(tenantQuery)
+            .populate('property', 'name')
+            .populate('unit', 'unitType')
+            .sort({ createdAt: -1 }) // Sort by creation date, newest first
+            .skip((perPage * page) - perPage)
+            .limit(perPage)
+            .lean(); // Use lean() for performance since we modify in-memory
+
+        // Calculate lease status for each tenant (in-memory)
         tenants.forEach(tenant => {
             const currentDate = moment();
             const leaseEndDate = moment(tenant.leaseEndDate);
-
-            if (leaseEndDate.isBefore(currentDate)) {
-                tenant.leaseStatus = 'Expired';
-            } else {
-                tenant.leaseStatus = 'Active';
-            }
+            tenant.leaseStatus = leaseEndDate.isBefore(currentDate) ? 'Expired' : 'Active';
         });
 
-        const totalTenants = await Tenant.countDocuments({
-            owner: currentUser._id,
-            $or: [
-                { name: regex },
-                { email: regex },
-                { 'property.name': regex }
-            ]
-        });
+        // Count total tenants matching the search criteria
+        const totalTenants = await Tenant.countDocuments(tenantQuery);
 
+        // Handle AJAX request for partial rendering
         if (req.query.ajax) {
-            return res.render('tenancyManager/_tenantList', { tenants, currentPage: page, perPage });
+            return res.render('tenancyManager/_tenantList', { 
+                tenants, 
+                currentPage: page, 
+                perPage 
+            });
         }
 
-       
+        // Fetch properties for the edit modal
         const properties = await Property.find({ owner: currentUser._id });
         const messages = { success: req.flash('success'), error: req.flash('error') };
 
@@ -73,6 +72,7 @@ router.get('/tenancy-manager/tenants', isTenancyManager, async (req, res) => {
             totalPages: Math.ceil(totalTenants / perPage),
             currentUser,
             searchTerm,
+            totalTenants // Added for pagination display
         });
     } catch (err) {
         console.error('Error fetching tenants:', err);
@@ -118,8 +118,6 @@ router.get('/api/property/:propertyId/units', async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
-
-
 
 
 // POST route to update tenant details
