@@ -121,55 +121,40 @@ const tenantSchema = new Schema({
 
 
 tenantSchema.pre('save', async function (next) {
-    const PropertyUnit = require('../models/unit');
-    const Property = require('../models/property');
-    const Payment = require('../models/payment');
-
-    if (!this.isModified('payments') && !this.isModified('leaseStartDate') && !this.isModified('leaseEndDate')) {
+    if (!this.isModified('rentPaid') && !this.isModified('utilityPaid') && 
+        !this.isModified('leaseStartDate') && !this.isModified('leaseEndDate')) {
         return next();
     }
-
     try {
-        const unit = await PropertyUnit.findById(this.unit);
-        if (!unit) throw new Error('Unit not found');
+        const Property = mongoose.model('Property');
+        const PropertyUnit = mongoose.model('PropertyUnit');
 
         const property = await Property.findById(this.property);
-        if (!property) throw new Error('Property not found');
+        const unit = await PropertyUnit.findById(this.unit);
+        if (!property || !unit) throw new Error('Property or unit not found');
 
         const today = new Date();
-        const leaseStartDate = new Date(this.leaseStartDate);
+        const leaseStart = new Date(this.leaseStartDate);
         const paymentDay = property.paymentDay || 1;
 
-        // Calculate months due based on payment day
         let monthsDue = 0;
-        let currentDate = new Date(leaseStartDate);
-        while (currentDate <= today) {
-            const dueDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), paymentDay);
-            if (dueDate <= today) {
-                monthsDue++;
-            }
-            currentDate.setMonth(currentDate.getMonth() + 1);
-            currentDate.setDate(leaseStartDate.getDate());
+        let current = new Date(leaseStart);
+        while (current <= today) {
+            const dueDate = new Date(current.getFullYear(), current.getMonth(), paymentDay);
+            if (dueDate <= today) monthsDue++;
+            current.setMonth(current.getMonth() + 1);
         }
 
-        const totalRentExpected = monthsDue * unit.unitPrice;
-        const rentPayments = await Payment.find({ tenant: this._id, paymentType: 'rent' });
-        const totalRentPaid = rentPayments.reduce((total, payment) => total + (payment.amount || 0), 0);
+        const totalRentExpected = monthsDue * (unit.unitPrice || 0);
+        const totalUtilityExpected = monthsDue * (unit.utilities?.reduce((sum, u) => sum + (u.amount || 0), 0) || 0);
 
-        this.rentDue = Math.max(totalRentExpected - totalRentPaid, 0);
-        this.rentPaid = totalRentPaid;
-        this.overpayment = Math.max(totalRentPaid - totalRentExpected, 0);
-
-        const utilityPayments = await Payment.find({ tenant: this._id, paymentType: 'utility' });
-        const totalUtilityPaid = utilityPayments.reduce((total, payment) => total + (payment.amount || 0), 0);
-        const totalUtilityCharges = unit.utilities ? unit.utilities.reduce((total, utility) => total + (utility.amount || 0), 0) : 0;
-        this.utilityDue = Math.max(totalUtilityCharges - totalUtilityPaid, 0);
-        this.utilityPaid = totalUtilityPaid;
+        this.rentDue = Math.max(totalRentExpected - (this.rentPaid || 0), 0);
+        this.utilityDue = Math.max(totalUtilityExpected - (this.utilityPaid || 0), 0);
 
         next();
-    } catch (err) {
-        console.error('Pre-save hook error:', err.message);
-        next(err);
+    } catch (error) {
+        console.error('Error in tenant pre-save:', error);
+        next(error);
     }
 });
 

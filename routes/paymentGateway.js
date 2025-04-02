@@ -8,6 +8,7 @@ require('dotenv').config();
 const nodemailer = require('nodemailer');
 const EventEmitter = require('events');
 const paymentEvents = new EventEmitter();
+const moment = require('moment');
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -23,72 +24,63 @@ const User = require('../models/user');
 
 const updateTenantDues = async (tenantId, paymentType, amount, transactionId) => {
     try {
-        const tenant = await Tenant.findById(tenantId);
-        if (!tenant) throw new Error('Tenant not found.');
-
-        const property = await Property.findById(tenant.property).populate('owner');
-        if (!property) throw new Error('Property not found.');
-
+        // Fetch tenant and related data
+        const tenant = await Tenant.findById(tenantId).populate('property');
+        if (!tenant) throw new Error('Tenant not found');
+        
+        const property = tenant.property;
         const unit = await PropertyUnit.findById(tenant.unit);
-        if (!unit) throw new Error('Unit not found.');
+        if (!property || !unit) throw new Error('Property or unit not found');
 
-        const initialRentPaid = tenant.rentPaid || 0;
-        const initialUtilityPaid = tenant.utilityPaid || 0;
+        // Calculate months since lease start
+        const leaseStart = moment(tenant.leaseStartDate);
+        const leaseEnd = moment(tenant.leaseEndDate);
+        const currentDate = moment();
+        const effectiveEnd = leaseEnd.isBefore(currentDate) ? leaseEnd : currentDate;
+        const monthsSinceStart = effectiveEnd.diff(leaseStart, 'months');
 
-        let remainingDue, overpayment;
+        let remainingDue;
+
         if (paymentType === 'rent') {
-            const today = new Date();
-            const leaseStartDate = new Date(tenant.leaseStartDate);
-            const paymentDay = property.paymentDay || 1;
-
-            // Calculate months due correctly
-            const start = new Date(leaseStartDate);
-            start.setDate(paymentDay); // First payment due date
-            if (start < leaseStartDate) start.setMonth(start.getMonth() + 1);
-
-            const end = new Date(today);
-            end.setDate(paymentDay); // Last due date passed
-            if (end > today) end.setMonth(end.getMonth() - 1);
-
-            const monthsDue = Math.max(1, // Ensure at least 1 month
-                (end.getFullYear() - start.getFullYear()) * 12 + 
-                (end.getMonth() - start.getMonth()) + 
-                (end >= start ? 1 : 0)
-            );
-
-            const totalRentExpected = monthsDue * unit.unitPrice;
-            const initialRentDue = Math.max(0, totalRentExpected - initialRentPaid);
-
-            remainingDue = initialRentDue - amount >= 0 ? initialRentDue - amount : 0;
-            overpayment = amount > initialRentDue ? amount - initialRentDue : 0;
-
+            // Update total rent paid
+            tenant.rentPaid = (tenant.rentPaid || 0) + amount;
+            
+            // Calculate expected rent
+            const expectedRent = monthsSinceStart * unit.unitPrice;
+            
+            // Update rent due
+            remainingDue = Math.max(expectedRent - tenant.rentPaid, 0);
             tenant.rentDue = remainingDue;
-            tenant.rentPaid = initialRentPaid + amount;
-            tenant.overpayment = overpayment;
-
-            console.log(`Rent Calculation: monthsDue=${monthsDue}, totalRentExpected=${totalRentExpected}, initialRentDue=${initialRentDue}, amount=${amount}, remainingDue=${remainingDue}`);
         } else if (paymentType === 'utility') {
-            const initialUtilityDue = tenant.utilityDue || 0;
-            remainingDue = initialUtilityDue - amount >= 0 ? initialUtilityDue - amount : 0;
-            overpayment = amount > initialUtilityDue ? amount - initialUtilityDue : 0;
-
+            // Update total utility paid
+            tenant.utilityPaid = (tenant.utilityPaid || 0) + amount;
+            
+            // Calculate total monthly utility charges
+            const unitUtilities = Array.isArray(unit.utilities) ? unit.utilities : [];
+            const totalUtilityChargesPerMonth = unitUtilities.reduce(
+                (acc, utility) => acc + (utility.amount || 0),
+                0
+            );
+            
+            // Calculate expected utility
+            const expectedUtility = monthsSinceStart * totalUtilityChargesPerMonth;
+            
+            // Update utility due
+            remainingDue = Math.max(expectedUtility - tenant.utilityPaid, 0);
             tenant.utilityDue = remainingDue;
-            tenant.utilityPaid = initialUtilityPaid + amount;
-            tenant.overpayment = overpayment;
-
-            console.log(`Utility Calculation: initialUtilityDue=${initialUtilityDue}, amount=${amount}, remainingDue=${remainingDue}`);
         } else {
-            throw new Error(`Invalid paymentType: ${paymentType}`);
+            throw new Error('Invalid payment type');
         }
 
+        // Create payment record
         const payment = new Payment({
-            owner: property.owner._id,
+            owner: property.owner,
             tenant: tenant._id,
             tenantName: tenant.name,
             property: tenant.property,
             unit: tenant.unit || null,
             doorNumber: tenant.doorNumber,
-            amount: amount,
+            amount,
             totalPaid: amount,
             due: remainingDue,
             method: 'mobilePayment',
@@ -100,22 +92,16 @@ const updateTenantDues = async (tenantId, paymentType, amount, transactionId) =>
             datePaid: new Date()
         });
 
+        // Save payment and update tenant
         await payment.save();
-
-        tenant.payments = tenant.payments || [];
         tenant.payments.push(payment._id);
-        await tenant.save({ validateBeforeSave: false });
+        await tenant.save();
 
-        if (property.updateRentUtilitiesAndTenants) {
-            await property.updateRentUtilitiesAndTenants();
-        }
-
-        console.log(`Tenant dues updated: ${paymentType} payment of ${amount} processed for tenant ${tenant.name}`);
-        console.log(`Initial rentPaid: ${initialRentPaid}, New rentPaid: ${tenant.rentPaid}`);
-        console.log(`Initial utilityPaid: ${initialUtilityPaid}, New utilityPaid: ${tenant.utilityPaid}`);
+        // Update property (if needed)
+        await property.updateRentUtilitiesAndTenants();
         return payment;
     } catch (error) {
-        console.error('Error updating tenant dues:', error.message);
+        console.error('Error updating tenant dues:', error);
         throw error;
     }
 };
