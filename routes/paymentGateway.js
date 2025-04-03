@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const router = express.Router();
 const axios = require('axios');
 const Property = require('../models/property');
@@ -9,6 +10,8 @@ const nodemailer = require('nodemailer');
 const EventEmitter = require('events');
 const paymentEvents = new EventEmitter();
 const moment = require('moment');
+const path = require('path');
+PDFDocument = require('pdfkit');
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -18,16 +21,15 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-const Account = require('../models/account'); 
+const Account = require('../models/account');
 const PropertyUnit = require('../models/unit');
-const User = require('../models/user'); 
 
 const updateTenantDues = async (tenantId, paymentType, amount, transactionId) => {
     try {
         // Fetch tenant and related data
         const tenant = await Tenant.findById(tenantId).populate('property');
         if (!tenant) throw new Error('Tenant not found');
-        
+
         const property = tenant.property;
         const unit = await PropertyUnit.findById(tenant.unit);
         if (!property || !unit) throw new Error('Property or unit not found');
@@ -44,27 +46,27 @@ const updateTenantDues = async (tenantId, paymentType, amount, transactionId) =>
         if (paymentType === 'rent') {
             // Update total rent paid
             tenant.rentPaid = (tenant.rentPaid || 0) + amount;
-            
+
             // Calculate expected rent
             const expectedRent = monthsSinceStart * unit.unitPrice;
-            
+
             // Update rent due
             remainingDue = Math.max(expectedRent - tenant.rentPaid, 0);
             tenant.rentDue = remainingDue;
         } else if (paymentType === 'utility') {
             // Update total utility paid
             tenant.utilityPaid = (tenant.utilityPaid || 0) + amount;
-            
+
             // Calculate total monthly utility charges
             const unitUtilities = Array.isArray(unit.utilities) ? unit.utilities : [];
             const totalUtilityChargesPerMonth = unitUtilities.reduce(
                 (acc, utility) => acc + (utility.amount || 0),
                 0
             );
-            
+
             // Calculate expected utility
             const expectedUtility = monthsSinceStart * totalUtilityChargesPerMonth;
-            
+
             // Update utility due
             remainingDue = Math.max(expectedUtility - tenant.utilityPaid, 0);
             tenant.utilityDue = remainingDue;
@@ -123,8 +125,8 @@ async function sendPaymentRequest(payload, req, res, account) {
 
         if (response.status === 200 && response.data.success === '200' && response.data.tranasaction_request_id) {
             console.log('Payment request successful:', response.data);
-            return { 
-                success: '200', 
+            return {
+                success: '200',
                 transaction_request_id: response.data.tranasaction_request_id,
                 transactionId: transactionId,
                 responseData: response.data
@@ -162,7 +164,7 @@ async function pollPaymentStatus(transactionRequestId, transactionId, api_key, e
                     api_key: account.apiKey,
                     email: account.accountEmail,
                     transaction_id: transactionId,
-                    tranasaction_request_id: transactionRequestId, 
+                    tranasaction_request_id: transactionRequestId,
                 };
 
                 console.log(`Polling attempt ${attempts + 1}/${maxAttempts}, retry ${retryCount}/${maxRetries} with payload:`, verificationPayload);
@@ -173,7 +175,7 @@ async function pollPaymentStatus(transactionRequestId, transactionId, api_key, e
                     { headers: { 'Content-Type': 'application/json' }, timeout: 30000 }
                 );
 
-               
+
                 const { ResultCode, TransactionStatus, TransactionAmount } = response.data;
 
                 if (TransactionStatus === 'Completed' && ResultCode === '200') {
@@ -219,7 +221,7 @@ async function pollPaymentStatus(transactionRequestId, transactionId, api_key, e
                                 message: `Payment processing failed: ${updateError.message}`,
                                 redirect: '/payments'
                             };
-                           
+
                             paymentEvents.emit(transactionId, eventData);
                             paymentStatuses[transactionId] = eventData; // Store final status
                             return true;
@@ -317,7 +319,7 @@ async function pollPaymentStatus(transactionRequestId, transactionId, api_key, e
             message: 'Payment verification timed out after 60 seconds. Please check your payment status later.',
             redirect: '/payments'
         };
-    
+
         paymentEvents.emit(transactionId, eventData);
         paymentStatuses[transactionId] = eventData; // Store final status
     }
@@ -476,7 +478,7 @@ const sendTenantConfirmationSMS = async (tenantPhone, paymentData) => {
         const response = await axios.post(
             'https://api.umeskiasoftwares.com/api/v1/sms',
             {
-                api_key: "VEpGOTVNTlY6dnUxaG5odHA=", 
+                api_key: "VEpGOTVNTlY6dnUxaG5odHA=",
                 email: "vickinstechnologies@gmail.com",
                 Sender_Id: "UMS_SMS",
                 message,
@@ -542,7 +544,7 @@ const sendPaymentNotificationSMS = async (ownerPhone, tenantName, amount, paymen
 
     // Define expected Kenyan format: starts with 0, 10 digits total
     const phoneRegex = /^0\d{9}$/;
-    
+
     // Check if already valid
     if (!phoneRegex.test(formattedPhone)) {
         const fixableRegex = /^[719]\d{8}$/;
@@ -565,7 +567,7 @@ const sendPaymentNotificationSMS = async (ownerPhone, tenantName, amount, paymen
         const response = await axios.post(
             'https://api.umeskiasoftwares.com/api/v1/sms',
             {
-                api_key: "VEpGOTVNTlY6dnUxaG5odHA=", 
+                api_key: "VEpGOTVNTlY6dnUxaG5odHA=",
                 email: "vickinstechnologies@gmail.com",
                 Sender_Id: "UMS_SMS",
                 message,
@@ -687,5 +689,182 @@ router.post('/payment/utility', fetchTenantFromSession, async (req, res) => {
     }
 });
 
+router.get('/download-receipt/:Id', fetchTenantFromSession, async (req, res) => {
+    try {
+        const paymentId = req.params.Id;
+
+        if (!mongoose.Types.ObjectId.isValid(paymentId)) {
+            console.error(`Invalid payment ID: ${paymentId}`);
+            req.flash('error', 'Invalid payment ID');
+            return res.redirect('/payments');
+        }
+
+        const payment = await Payment.findById(paymentId)
+            .populate('tenant', 'name email phone doorNumber')
+            .populate('property', 'name')
+            .populate('owner', 'name')
+            .populate('unit', 'unitType')
+            .lean();
+
+        if (!payment) {
+            console.error(`Payment not found for ID: ${paymentId}`);
+            req.flash('error', 'Payment not found');
+            return res.redirect('/payments');
+        }
+
+        const isTenant = payment.tenant?._id?.toString() === req.tenant._id.toString();
+        const isOwner = payment.owner?._id?.toString() === req.tenant._id.toString();
+
+        if (!isTenant && !isOwner) {
+            console.error(`Unauthorized access attempt by tenant ${req.tenant._id} for payment ${paymentId}`);
+            req.flash('error', 'Unauthorized access to receipt');
+            return res.redirect('/payments');
+        }
+
+        const doc = new PDFDocument({
+            size: 'A4',
+            margin: 40,
+            info: { Title: `Receipt ${payment.transactionId || paymentId}`, Author: 'Lease Captain' }
+        });
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition',
+            `attachment; filename=receipt-${payment.transactionId || paymentId}-${Date.now()}.pdf`);
+        doc.pipe(res);
+
+        // Watermark with rotation
+        try {
+            doc.save()
+                .opacity(0.05)
+                .rotate(45)
+                .image(path.join(__dirname, '../public/assets/images/2.png'), 200, 300, {
+                    width: 250,
+                    height: 250
+                })
+                .restore();
+        } catch (watermarkErr) {
+            console.error('Failed to load watermark:', watermarkErr.message);
+        }
+
+        // Header 
+        try {
+            doc.image(path.join(__dirname, '../public/assets/images/2.png'), 40, 20, { width: 80 });
+        } catch (imgErr) {
+            console.error('Failed to load logo:', imgErr.message);
+            doc.fontSize(20).fillColor('#003366').text('LC', 40, 40);
+        }
+
+        doc.font('Helvetica-Bold').fillColor('#003366')
+            .fontSize(28).text('Lease Captain', 130, 30)
+            .fontSize(11).font('Helvetica-Oblique').fillColor('#666666')
+            .font('Helvetica').fontSize(9).fillColor('#444444')
+            .text('P.O. Box 701, Ruiru', 450, 40, { align: 'right' })
+            .text('+254 794 501 005', 450, 55, { align: 'right' })
+            .text('info@leasecaptain.com', 450, 70, { align: 'right' })
+            .text('www.leasecaptain.com', 450, 85, { align: 'right' });
+
+        // Receipt Title
+        doc.moveDown(3)
+            .fontSize(20).fillColor('#003366').font('Helvetica-Bold')
+            .text(`RECEIPT No: ${payment.transactionId || paymentId}`, { align: 'center' })
+            .moveDown(0.5) // Adds slight spacing for better visual balance
+            .moveTo(150, doc.y).lineTo(450, doc.y)
+
+
+
+        // Details Section (no borders)
+        doc.moveDown(2);
+        const leftY = doc.y;
+        doc.fontSize(14).fillColor('#003366').font('Helvetica-Bold')
+            .text('Received From:', 40, leftY)
+            .fontSize(11).fillColor('#333333').font('Helvetica')
+            .text(payment.tenant?.name || payment.tenantName || 'Unknown', 40, leftY + 20)
+            .text(payment.tenant?.email || 'N/A', 40, leftY + 35)
+            .text(payment.tenant?.phone || 'N/A', 40, leftY + 50);
+
+        const rightY = leftY;
+        doc.fontSize(14).fillColor('#003366').font('Helvetica-Bold')
+            .text('Payment Details:', 310, rightY)
+            .fontSize(11).fillColor('#333333').font('Helvetica')
+            .text(`Property: ${payment.property?.name || 'N/A'}`, 310, rightY + 20)
+            .text(`Unit: ${payment.unit?.unitType || 'N/A'} (${payment.tenant?.doorNumber || payment.doorNumber || 'N/A'})`, 310, rightY + 35)
+            .text(`Date: ${payment.datePaid ? new Date(payment.datePaid).toLocaleDateString() : 'N/A'}`, 310, rightY + 50)
+            .text(`Method: ${payment.method || 'N/A'}`, 310, rightY + 65);
+
+        // Payment Table (minimal borders)
+        const tableTop = doc.y + 20;
+        doc.lineWidth(1).rect(40, tableTop, 520, 30).fill('#003366')
+            .fontSize(12).fillColor('#ffffff').font('Helvetica-Bold')
+            .text('Description', 50, tableTop + 8)
+            .text('Type', 200, tableTop + 8)
+            .text('Date', 350, tableTop + 8)
+            .text('Amount (Ksh)', 450, tableTop + 8, { align: 'right' });
+
+        let currentY = tableTop + 30;
+        let rowCount = 0;
+
+        const addTableRow = (desc, type, amount) => {
+            const fillColor = rowCount % 2 === 0 ? '#f8f9fa' : '#ffffff';
+            doc.rect(40, currentY, 520, 25).fill(fillColor)
+                .fontSize(11).fillColor('#333333').font('Helvetica')
+                .text(desc, 50, currentY + 5)
+                .text(type, 200, currentY + 5).text(new Date(payment.datePaid).toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                }), 350, currentY + 5)
+                .text(Number(amount).toFixed(2), 450, currentY + 5, { align: 'right' });
+            currentY += 25;
+            rowCount++;
+        };
+
+        if (payment.rentPaid > 0) addTableRow('Rent Payment', 'Rent', payment.rentPaid);
+        if (payment.utilityPaid > 0) addTableRow('Utility Payment', 'Utility', payment.utilityPaid);
+        if (payment.paymentType === 'other' && payment.rentPaid === 0 && payment.utilityPaid === 0) {
+            addTableRow('Other Payment', 'Other', payment.amount);
+        }
+
+        // Total (no border)
+        doc.moveTo(400, currentY + 5).lineTo(550, currentY + 5).lineWidth(1).stroke('#28a745')
+            .fontSize(14).fillColor('#003366').font('Helvetica-Bold')
+            .text(`Total Paid: Ksh ${Number(payment.totalPaid).toFixed(2)}`, 400, currentY + 15, { align: 'right' });
+
+        // Footer (white background)
+        const footerY = doc.page.height - 100;
+        doc.fontSize(10).fillColor('#666666').font('Helvetica-Oblique')
+            .text('Thank you for your payment!', 0, footerY + 20, { align: 'center', width: 612 })
+            .font('Helvetica')
+            .text('This is an auto-generated receipt | Contact: support@leasecaptain.com | Lease Captain © 2025 | All Rights Reserved', 0, footerY + 40, { align: 'center', width: 612 })
+            .moveTo(40, footerY).lineTo(572, footerY).lineWidth(0.5).stroke('#cccccc');
+
+        // --- Watermark 
+        doc.opacity(0.1);  // Set transparency for the watermark
+        doc.image(path.join(__dirname, '../public/assets/images/2.png'), doc.page.width / 2 - 60, doc.page.height / 2 - 60, {
+            width: 120,
+            align: 'center'
+        });
+        doc.opacity(1); // Reset opacity back to normal for the rest of the document
+
+
+        doc.on('end', () => {
+            console.log(`Receipt generated successfully for payment ${paymentId} by tenant ${req.tenant._id}`);
+        });
+
+        doc.end();
+
+    } catch (err) {
+        console.error('Error generating receipt PDF:', {
+            message: err.message,
+            stack: err.stack,
+            paymentId: req.params.Id,
+            tenantId: req.tenant?._id
+        });
+        req.flash('error', 'Failed to generate receipt');
+        res.redirect('/payments');
+    }
+});
 
 module.exports = router;

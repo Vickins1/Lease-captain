@@ -345,223 +345,242 @@
             <!-- /.sidebar -->
 
         </aside>
-
-    <div class="container my-5">
-        <div class="row">
-            <div class="col-md-12">
-                <h2 class="text-center" style="color: #00172f;">
-                    <i class="fas fa-file-alt"></i> Reports & Invoices
-                </h2>
-                <p class="text-center">View, filter, and download transaction reports and invoices.</p>
-            </div>
-        </div>
-    
-        <!-- Tabs for Reports and Invoices -->
-        <ul class="nav nav-tabs mb-4" id="reportsInvoicesTab" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link active" id="reports-tab" data-toggle="tab" href="#reports" role="tab"
-                    aria-controls="reports" aria-selected="true">
-                    <i class="fas fa-chart-line"></i> Reports
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="invoices-tab" data-toggle="tab" href="#invoices" role="tab"
-                    aria-controls="invoices" aria-selected="false">
-                    <i class="fas fa-file-invoice"></i> Invoices
-                </a>
-            </li>
-        </ul>
-    
-        <div class="tab-content" id="reportsInvoicesTabContent">
-            <!-- Reports Section -->
-            <div class="tab-pane fade show active" id="reports" role="tabpanel" aria-labelledby="reports-tab">
-                <h4 class="text-center">
-                    <i class="fas fa-chart-pie"></i> Property Reports
-                </h4>
-                <!-- Error Message -->
-                <% if (error && error.length > 0) { %>
-                    <div class="alert alert-danger text-center" role="alert" style="font-size: 0.9rem;">
-                        <%= error %>
-                    </div>
-                <% } %>
-    
-                <!-- Success Message -->
-                <% if (success && success.length > 0) { %>
-                    <div class="alert alert-success text-center" role="alert" style="font-size: 0.9rem;">
-                        <%= success %>
-                    </div>
-                <% } %>
-    
-                <!-- Reports Filter -->
-                <form method="GET" action="/reports-invoices">
-                    <div class="row mb-4">
-                        <div class="col-md-4">
-                            <label for="propertySelect" class="small">Select Property:</label>
-                            <select class="form-control form-control-sm" id="propertySelect" name="property">
-                                <option value="all" <%= selectedProperty === 'all' ? 'selected' : '' %>>All Properties</option>
-                                <% properties.forEach(property => { %>
-                                    <option value="<%= property.name %>" <%= selectedProperty === property.name ? 'selected' : '' %>><%= property.name %></option>
-                                <% }); %>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="reportDateRange" class="small">Date Range:</label>
-                            <input type="date" class="form-control form-control-sm" id="reportDateFrom" name="dateFrom" value="<%= dateFrom %>">
-                            <input type="date" class="form-control form-control-sm mt-2" id="reportDateTo" name="dateTo" value="<%= dateTo %>">
-                        </div>
-                        <div class="col-md-4">
-                            <button type="submit" class="btn btn-dark btn-sm mt-4" style="background-color: #003366;">
-                                <i class="fas fa-file-export"></i> Generate Report
-                            </button>
-                        </div>
-                    </div>
-                </form>
-    
-                <!-- Reports Table -->
-                <div class="table-responsive">
-                    <table class="table table-sm table-striped table-hover table-bordered">
-                        <thead class="text-center" style="background-color: #00172f; color: white;">
-                            <tr>
-                                <th>#</th>
-                                <th>Property</th>
-                                <th>Occupancy Rate</th>
-                                <th>Total Rent Collected</th>
-                                <th>Pending Payments</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-center">
-                            <% reports.forEach((report, index) => { %>
-                                <tr>
-                                    <td><%= index + 1 %></td>
-                                    <td><%= report.propertyName %></td>
-    
-                                    <% if (typeof report.occupancyRate === 'number') { %>
-                                        <td><%= report.occupancyRate.toFixed(2) %> %</td>
-                                    <% } else { %>
-                                        <td>N/A</td>
-                                    <% } %>
-    
-                                    <% if (typeof report.totalRentCollected === 'number') { %>
-                                        <td>$<%= report.totalRentCollected.toFixed(2) %></td>
-                                    <% } else { %>
-                                        <td>N/A</td>
-                                    <% } %>
-    
-                                    <% if (typeof report.pendingPayments === 'number') { %>
-                                        <td>$<%= report.pendingPayments.toFixed(2) %></td>
-                                    <% } else { %>
-                                        <td>N/A</td>
-                                    <% } %>
-                                </tr>
-                            <% }); %>
-                        </tbody>
-                    </table>
+        <div class="content-wrapper">
+            <section class="content">
+                <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2 class="text-center" style="color: #00172f;">
+                        <i class="fas fa-file-alt"></i> Reports & Invoices
+                    </h2>
+                    <p class="text-center">Analyze your property performance and manage invoices effortlessly.</p>
                 </div>
             </div>
-    
-            <!-- Invoices Section -->
-            <div class="tab-pane fade" id="invoices" role="tabpanel" aria-labelledby="invoices-tab">
-                <h4 class="text-center">
-                    <i class="fas fa-calculator"></i> Invoice Calculations
-                </h4>
-                <div class="row mb-4">
+        
+            <!-- Tabs -->
+<ul class="nav nav-tabs mb-4" id="reportsInvoicesTab" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active" id="reports-tab" data-toggle="tab" href="#reports" role="tab" aria-controls="reports" aria-selected="true">
+            <i class="fas fa-chart-line"></i> Reports
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="invoices-tab" data-toggle="tab" href="#invoices" role="tab" aria-controls="invoices" aria-selected="false">
+            <i class="fas fa-file-invoice"></i> Invoices
+        </a>
+    </li>
+</ul>
+        
+            <div class="tab-content" id="reportsInvoicesTabContent">
+               <!-- Reports Section -->
+        <div class="tab-pane fade show active" id="reports" role="tabpanel" aria-labelledby="reports-tab">
+            <h4 class="text-center"><i class="fas fa-chart-pie"></i> Property Reports</h4>
+
+            <!-- Messages -->
+            <% if (error && error.length > 0) { %>
+                <div class="alert alert-danger text-center" role="alert"><%= error %></div>
+            <% } %>
+            <% if (success && success.length > 0) { %>
+                <div class="alert alert-success text-center" role="alert"><%= success %></div>
+            <% } %>
+
+            <!-- Filter Form -->
+            <form method="GET" action="/reports-invoices" class="mb-4">
+                <div class="row">
                     <div class="col-md-4">
-                        <label for="invoiceDateRange" class="small">Date Range:</label>
-                        <input type="date" class="form-control form-control-sm" id="invoiceDateFrom">
-                        <input type="date" class="form-control form-control-sm mt-2" id="invoiceDateTo">
-                    </div>
-                    <div class="col-md-4">
-                        <label for="invoiceStatus" class="small">Status:</label>
-                        <select class="form-control form-control-sm" id="invoiceStatus">
-                            <option value="all">All</option>
-                            <option value="paid">Paid</option>
-                            <option value="pending">Pending</option>
-                            <option value="overdue">Overdue</option>
+                        <label for="propertySelect" class="small">Property:</label>
+                        <select class="form-control form-control-sm" id="propertySelect" name="property">
+                            <option value="all" <%= selectedProperty === 'all' ? 'selected' : '' %>>All Properties</option>
+                            <% properties.forEach(prop => { %>
+                                <option value="<%= prop.name %>" <%= selectedProperty === prop.name ? 'selected' : '' %>><%= prop.name %></option>
+                            <% }); %>
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <button class="btn btn-dark btn-sm mt-4" style="background-color: #003366;">
-                            <i class="fas fa-file-invoice-dollar"></i> Generate Invoice
+                        <label for="reportDateRange" class="small">Date Range:</label>
+                        <input type="date" class="form-control form-control-sm" id="reportDateFrom" name="dateFrom" value="<%= dateFrom %>">
+                        <input type="date" class="form-control form-control-sm mt-2" id="reportDateTo" name="dateTo" value="<%= dateTo %>">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-dark btn-sm w-100" style="background-color: #003366;">
+                            <i class="fas fa-file-export"></i> Generate
                         </button>
                     </div>
                 </div>
-    
-                <!-- Invoices Table -->
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead>
+            </form>
+
+            <!-- Reports Table -->
+            <div class="table-responsive">
+                <table class="table table-sm table-striped table-hover table-bordered">
+                    <thead class="text-center" style="background-color: #00172f; color: white;">
+                        <tr>
+                            <th>#</th>
+                            <th>Property</th>
+                            <th>Occupancy Rate</th>
+                            <th>Rent Collected</th>
+                            <th>Pending Payments</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-center">
+                        <% reports.forEach((report, index) => { %>
                             <tr>
-                                <th>Invoice Number</th>
-                                <th>Description</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>Due Date</th>
-                                <th>Actions</th>
+                                <td><%= index + 1 %></td>
+                                <td><%= report.propertyName || 'Unnamed Property' %></td>
+                                <td>
+                                    <% if (report.occupancyRate !== undefined && report.occupancyRate !== null) { %>
+                                        <%= Number(report.occupancyRate).toFixed(2) %>%
+                                    <% } else { %>
+                                        N/A
+                                    <% } %>
+                                </td>
+                                <td>Ksh.<%= Number(report.totalRentCollected || 0).toFixed(2) %></td>
+                                <td>Ksh.<%= Number(report.pendingPayments || 0).toFixed(2) %></td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <% invoices.forEach(invoice => { %>
-                                <tr>
-                                    <td><%= invoice.invoiceNumber %></td>
-                                    <td><%= invoice.items[0].description %></td>
-                                    <td>$<%= invoice.totalAmount %></td>
-                                    <td><%= invoice.status %></td>
-                                    <td><%= new Date(invoice.dueDate).toLocaleDateString() %></td>
-                                    <td>
-                                        <% if (invoice.status === 'pending') { %>
-                                            <form action="/invoices/pay/<%= invoice._id %>" method="POST">
-                                                <button class="btn btn-success" type="submit">Pay Invoice</button>
-                                            </form>
-                                        <% } else { %>
-                                            <span class="badge badge-success">Paid</span>
-                                        <% } %>
-                                    </td>
-                                </tr>
-                            <% }); %>
-                        </tbody>
-                    </table>
-                    
-                </div>
+                        <% }); %>
+                    </tbody>
+                </table>
             </div>
         </div>
+        
+                <!-- Invoices Section -->
+<div class="tab-pane fade" id="invoices" role="tabpanel" aria-labelledby="invoices-tab">
+    <h4 class="text-center"><i class="fas fa-calculator"></i> Invoice Management</h4>
+
+    <!-- Filter Form -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <label for="invoiceDateRange" class="small">Date Range:</label>
+            <input type="date" class="form-control form-control-sm" id="invoiceDateFrom">
+            <input type="date" class="form-control form-control-sm mt-2" id="invoiceDateTo">
+        </div>
+        <div class="col-md-4">
+            <label for="invoiceStatus" class="small">Status:</label>
+            <select class="form-control form-control-sm" id="invoiceStatus">
+                <option value="all">All</option>
+                <option value="paid">Paid</option>
+                <option value="pending">Pending</option>
+                <option value="overdue">Overdue</option>
+            </select>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button class="btn btn-dark btn-sm w-100" style="background-color: #003366;" id="filterInvoices">
+                <i class="fas fa-filter"></i> Filter
+            </button>
+        </div>
     </div>
-    
 
+<!-- Invoices Table -->
+<div class="table-responsive">
+    <table class="table table-bordered table-hover" id="invoicesTable">
+        <thead style="background-color: #00172f; color: white;">
+            <tr>
+                <th>Invoice #</th>
+                <th>Transaction ID</th>
+                <th>Amount</th>
+                <th>Billing Period</th>
+                <th>Status</th>
+                <th>Due Date</th>
+                <th>Time</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% invoices.forEach(invoice => { %>
+                <tr data-due-date="<%= invoice.dueDate %>" data-status="<%= invoice.status %>">
+                    <td><%= invoice.invoiceNumber %></td>
+                    <td><%= invoice.transactionId || 'N/A' %></td>
+                    <td>Ksh.<%= invoice.amount.toFixed(2) %></td>
+                    <td><%= invoice.billingPeriod.charAt(0).toUpperCase() + invoice.billingPeriod.slice(1) %></td>
+                    <td>
+                        <span class="badge <%= invoice.status === 'paid' ? 'badge-success' : invoice.status === 'overdue' ? 'badge-danger' : 'badge-warning' %>">
+                            <%= invoice.status %>
+                        </span>
+                    </td>
+                    <td><%= new Date(invoice.dueDate).toLocaleDateString() %></td>
+                    <td><%= new Date(invoice.time).toLocaleString() %></td> <!-- Display time -->
+                    <td>
+                        <% if (invoice.status === 'pending') { %>
+                            <form action="/invoices/pay/<%= invoice._id %>" method="POST" style="display:inline;">
+                                <button class="btn btn-success btn-sm" type="submit">Pay</button>
+                            </form>
+                        <% } %>
+                        <a href="/invoices/download/<%= invoice._id %>" class="btn btn-info btn-sm">
+                            <i class="fas fa-download"></i>
+                        </a>
+                    </td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</div>
+
+<!-- JavaScript for Filtering -->
+<script>
+    document.getElementById('filterInvoices').addEventListener('click', function(e) {
+        e.preventDefault(); // Prevent any default form submission behavior
+
+        // Get filter values
+        const dateFrom = document.getElementById('invoiceDateFrom').value;
+        const dateTo = document.getElementById('invoiceDateTo').value;
+        const status = document.getElementById('invoiceStatus').value;
+
+        // Convert filter dates to Date objects (if provided)
+        const fromDate = dateFrom ? new Date(dateFrom) : null;
+        const toDate = dateTo ? new Date(dateTo) : null;
+
+        // Get all invoice rows
+        const rows = document.querySelectorAll('#invoicesTable tbody tr');
+
+        rows.forEach(row => {
+            const dueDateStr = row.getAttribute('data-due-date'); // ISO string from data attribute
+            const rowStatus = row.getAttribute('data-status');
+            const dueDate = new Date(dueDateStr);
+
+            // Filter conditions
+            let showRow = true;
+
+            // Date range filter
+            if (fromDate && dueDate < fromDate) {
+                showRow = false;
+            }
+            if (toDate && dueDate > toDate) {
+                showRow = false;
+            }
+
+            // Status filter
+            if (status !== 'all' && rowStatus !== status) {
+                showRow = false;
+            }
+
+            // Show or hide the row
+            row.style.display = showRow ? '' : 'none';
+        });
+    });
+</script>
+
+<style>
+    .badge-success { background-color: #28a745; }
+    .badge-warning { background-color: #ffc107; }
+    .badge-danger { background-color: #dc3545; }
+    @media (max-width: 576px) {
+        .table th, .table td { font-size: 0.8rem; }
+        .btn-sm { font-size: 0.7rem; }
+    }
+</style>
+            </div>
+        </div>
+
+        
         <style>
+            .badge-success { background-color: #28a745; }
+            .badge-warning { background-color: #ffc107; }
+            .badge-danger { background-color: #dc3545; }
             @media (max-width: 576px) {
-                h2 {
-                    font-size: 1.3rem;
-                }
-
-                h4 {
-                    font-size: 1.2rem;
-                }
-
-                p {
-                    font-size: 0.9rem;
-                }
-
-                .table th,
-                .table td {
-                    font-size: 0.7rem;
-                }
-
-                .btn {
-                    font-size: 0.8rem;
-                }
-
-                .small {
-                    font-size: 0.8rem;
-                }
-
-                .table-responsive {
-                    font-size: 0.7rem;
-                }
+                .nav-tabs .nav-link { font-size: 0.9rem; padding: 0.5rem; }
+                .btn-sm { font-size: 0.7rem; }
             }
         </style>
-
-
-
+        </div>
 
 
        <!-- Control Sidebar -->

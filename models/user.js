@@ -27,22 +27,26 @@ const userSchema = new mongoose.Schema({
   },
   paymentStatus: {
     status: { 
-      type: String, 
-      enum: ['pending', 'completed', 'failed'],
-      default: 'pending'
+        type: String, 
+        enum: ['pending', 'completed', 'failed'], 
+        default: 'pending' 
     },
     transactionId: { 
-      type: String 
+        type: String 
     },
     amount: { 
-      type: Number 
+        type: Number 
     },
     billingPeriod: { 
-      type: String, 
-      enum: ['monthly', 'yearly'], 
-      default: 'monthly' 
+        type: String, 
+        enum: ['monthly', 'yearly'], 
+        default: 'monthly' 
+    },
+    time: { 
+        type: Date, 
+        default: Date.now
     }
-  },
+},
   username: {
     type: String,
     required: true,
@@ -108,7 +112,7 @@ userSchema.methods.getPaymentStatus = async function() {
     status: this.paymentStatus.status,
     transactionId: this.paymentStatus.transactionId,
     amount: this.paymentStatus.amount,
-    billingPeriod: this.paymentStatus.billingPeriod // Added billingPeriod to the method
+    billingPeriod: this.paymentStatus.billingPeriod 
   };
 };
 

@@ -10,12 +10,12 @@ const bcrypt = require('bcryptjs');
 const Payment = require('../models/payment');
 const User = require('../models/user');
 const PropertyUnit = require('../models/unit');
-const Invoice = require('../models/invoice')
 const Expense = require('../models/expense');
 const Role = require('../models/role');
 const MaintenanceRequest = require('../models/maintenanceRequest');
 const Account = require('../models/account');
-const Topups = require('../models/topups');
+const Invoice = require('../models/invoice');
+const PDFDocument = require('pdfkit');
 const Reminder = require('../models/reminder');
 const crypto = require('crypto');
 const axios = require('axios');
@@ -24,6 +24,7 @@ const PropertyList = require('../models/propertyList');
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
+const moment = require('moment');
 const EventEmitter = require('events');
 const paymentEvents = new EventEmitter();
 const transporter = nodemailer.createTransport({
@@ -191,7 +192,7 @@ router.get('/dashboard', async (req, res) => {
             'Advanced-Yearly': 43190,
             'Enterprise-Monthly': 6999,
             'Enterprise-Yearly': 67190,
-            'Premium': null 
+            'Premium': null
         };
 
         const expectedAmount = planAmounts[req.user.plan] || 0;
@@ -264,8 +265,8 @@ router.get('/dashboard', async (req, res) => {
             const leaseStartDate = new Date(tenant.leaseStartDate);
             const leaseEndDate = new Date(tenant.leaseEndDate);
             const startMonth = leaseStartDate.getFullYear() === currentYear ? leaseStartDate.getMonth() : 0;
-            const endMonth = leaseEndDate.getFullYear() === currentYear && leaseEndDate.getMonth() <= today.getMonth() 
-                ? leaseEndDate.getMonth() 
+            const endMonth = leaseEndDate.getFullYear() === currentYear && leaseEndDate.getMonth() <= today.getMonth()
+                ? leaseEndDate.getMonth()
                 : today.getMonth();
 
             const monthsInYear = Math.max(1, endMonth - startMonth + 1);
@@ -470,7 +471,7 @@ async function sendPaymentRequest(payload, req, res) {
         const response = await axios.post(
             'https://api.umeskiasoftwares.com/api/v1/intiatestk',
             payload,
-            { 
+            {
                 headers: { 'Content-Type': 'application/json' },
                 timeout: 30000
             }
@@ -479,8 +480,8 @@ async function sendPaymentRequest(payload, req, res) {
         if (response.status === 200 && response.data.success === '200' && response.data.tranasaction_request_id) {
             console.log('Payment request successful:', response.data);
             req.flash('', 'Payment request initiated successfully! Please enter your Mpesa PIN.');
-            return { 
-                success: '200', 
+            return {
+                success: '200',
                 transaction_request_id: response.data.tranasaction_request_id,
                 responseData: response.data
             };
@@ -522,7 +523,7 @@ async function pollPaymentStatus(transactionRequestId, transactionId, api_key, e
                 const response = await axios.post(
                     'https://api.umeskiasoftwares.com/api/v1/transactionstatus',
                     verificationPayload,
-                    { 
+                    {
                         headers: { 'Content-Type': 'application/json' },
                         timeout: 30000 // Increased from 20000 to 30000ms (30 seconds)
                     }
@@ -588,7 +589,7 @@ async function pollPaymentStatus(transactionRequestId, transactionId, api_key, e
 
                 paymentEvents.emit(transactionId, {
                     status: 'failed',
-                    message: error.message.includes('timeout') 
+                    message: error.message.includes('timeout')
                         ? 'Payment verification timed out. Please try again later.'
                         : 'Payment verification failed due to a network issue. Please try again.',
                     redirect: '/subscription'
@@ -678,27 +679,27 @@ router.get('/subscription', async (req, res) => {
         };
 
         const planDetails = {
-            'Basic': { 
+            'Basic': {
                 'monthly': { amount: 0, units: 5 },
                 'yearly': { amount: 0, units: 5 }
             },
-            'Standard': { 
+            'Standard': {
                 'monthly': { amount: 1499, units: 20 },
                 'yearly': { amount: 14390, units: 20 }
             },
-            'Pro': { 
+            'Pro': {
                 'monthly': { amount: 2999, units: 50 },
                 'yearly': { amount: 28790, units: 50 }
             },
-            'Advanced': { 
+            'Advanced': {
                 'monthly': { amount: 4499, units: 100 },
                 'yearly': { amount: 43190, units: 100 }
             },
-            'Enterprise': { 
+            'Enterprise': {
                 'monthly': { amount: 6999, units: 150 },
                 'yearly': { amount: 67190, units: 150 }
             },
-            'Premium': { 
+            'Premium': {
                 'monthly': { amount: null, units: "Contact Support for Pricing" },
                 'yearly': { amount: null, units: "Contact Support for Pricing" }
             },
@@ -1129,7 +1130,7 @@ const getMaxTenants = (plan) => {
 router.post('/tenancy-manager/tenant/new', async (req, res) => {
     const {
         name, email, address, phone, leaseStartDate, leaseEndDate, property, deposit, utilities, unitId, doorNumber
-        
+
     } = req.body;
 
     // Validate required fields
@@ -1490,7 +1491,7 @@ router.get('/api/tenants/:id', async (req, res) => {
 router.get('/reports-invoices', async (req, res) => {
     try {
         const { property, dateFrom, dateTo } = req.query;
-        const currentPage = req.query.page || 1;
+        const currentPage = parseInt(req.query.page) || 1;
         const pageSize = 10;
 
         if (!req.user) {
@@ -1498,47 +1499,258 @@ router.get('/reports-invoices', async (req, res) => {
             return res.redirect('/login');
         }
 
-        // Filter for the payments/reports
-        let filter = {};
+        // Fetch properties for dropdown
+        const properties = await Property.find({ owner: req.user._id }).select('name');
+
+        // Build property report filter
+        let propertyFilter = { owner: req.user._id };
         if (property && property !== 'all') {
-            filter.propertyName = property;
+            propertyFilter.name = property;
         }
 
-        if (dateFrom && dateTo) {
-            filter.createdAt = {
-                $gte: new Date(dateFrom),
-                $lte: new Date(dateTo),
-            };
+// Fetch properties with populated units (no need to populate tenants within units)
+const propertyData = await Property.find(propertyFilter)
+  .populate('units'); // Fetch units linked to the property
+
+// Calculate reports
+const reports = await Promise.all(propertyData.map(async (prop) => {
+    const units = prop.units || []; // Get units for the property
+    const totalUnits = units.length;
+
+    // Get tenants for each unit directly
+    const unitTenants = await Promise.all(units.map(async (unit) => {
+        // Fetch tenants directly for each unit
+        const tenantsInUnit = await Tenant.find({ unit: unit._id }).lean();
+        return tenantsInUnit.length; // Return the count of tenants per unit
+    }));
+
+    const totalTenants = unitTenants.reduce((sum, tenantCount) => sum + tenantCount, 0); // Sum up the tenants across all units
+
+    // Calculate occupancy rate based on the number of tenants in the property
+    const occupancyRate = totalUnits > 0 ? (totalTenants / totalUnits) * 100 : 0;
+
+    const paymentFilter = { property: prop._id };
+    if (dateFrom && dateTo) {
+        paymentFilter.createdAt = { $gte: new Date(dateFrom), $lte: new Date(dateTo) };
+    }
+
+    const payments = await Payment.find(paymentFilter);
+    const totalRentCollected = payments.reduce((sum, p) => sum + (p.rentPaid || 0), 0);
+
+    const tenants = await Tenant.find({ property: prop._id });
+    const pendingPayments = tenants.reduce((sum, t) => sum + (t.rentDue || 0) + (t.utilityDue || 0), 0);
+
+    return {
+        propertyName: prop.name,
+        occupancyRate,
+        totalRentCollected,
+        pendingPayments
+    };
+}));
+
+
+
+        // Fetch user's paymentStatus and convert it to an invoice-like structure
+        const user = await User.findById(req.user._id);
+        const paymentStatus = user.paymentStatus;
+
+        // Fetch or create invoices based on paymentStatus
+        let invoices = await Invoice.find({ user: req.user._id });
+        if (!invoices.length && paymentStatus.transactionId) {
+            // Calculate dueDate based on billingPeriod
+            const baseDate = paymentStatus.time ? new Date(paymentStatus.time) : new Date();
+            let dueDate;
+
+            if (paymentStatus.billingPeriod === 'monthly') {
+                dueDate = new Date(baseDate);
+                dueDate.setDate(baseDate.getDate() + 30); // 30 days from base date
+            } else if (paymentStatus.billingPeriod === 'yearly') {
+                dueDate = new Date(baseDate);
+                dueDate.setFullYear(baseDate.getFullYear() + 1); // 1 year from base date
+            } else {
+                dueDate = new Date(baseDate);
+                dueDate.setDate(baseDate.getDate() + 30); // Default to 30 days if unspecified
+            }
+
+            // Create new invoice with dueDate
+            const newInvoice = new Invoice({
+                user: req.user._id,
+                invoiceNumber: `INV-${Date.now()}`,
+                transactionId: paymentStatus.transactionId,
+                amount: paymentStatus.amount || 0,
+                billingPeriod: paymentStatus.billingPeriod,
+                status: paymentStatus.status === 'completed' ? 'paid' :
+                    paymentStatus.status === 'failed' ? 'overdue' : 'pending',
+                dueDate: dueDate, // Explicitly set dynamic dueDate
+                time: paymentStatus.time || Date.now() // Include time from paymentStatus
+            });
+            await newInvoice.save();
+            invoices = [newInvoice];
         }
 
-        // Fetch reports (Payments)
-        const totalRecords = await Payment.countDocuments(filter);
-        const paginatedReports = await Payment.find(filter)
-            .skip((currentPage - 1) * pageSize)
-            .limit(pageSize);
+        // Pagination for reports
+        const totalRecords = reports.length;
+        const paginatedReports = reports.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-        // Fetch invoices
-        const invoices = await Invoice.find();
-
-        // Fetch properties to populate dropdown
-        const properties = await Property.find().select('name');
-
-        // Render the view with the data
+        // Render the view
         res.render('tenancyManager/reports&invoices', {
             reports: paginatedReports,
             properties,
-            invoices,                    // Pass the fetched invoices to the view
-            currentPage: parseInt(currentPage),
+            invoices,
+            currentPage,
             pageSize,
             totalRecords,
             currentUser: req.user,
             selectedProperty: property || 'all',
             dateFrom,
             dateTo,
+            error: req.flash('error'),
+            success: req.flash('success')
         });
     } catch (err) {
         console.error(err);
-        res.status(500).send('Server Error');
+        req.flash('error', 'Server Error');
+        res.status(500).redirect('/reports-invoices');
+    }
+});
+
+// New /invoices/download/:id route with attractive design
+router.get('/invoices/download/:id', async (req, res) => {
+    try {
+        const invoiceId = req.params.id;
+
+        // Validate ObjectId
+        if (!mongoose.Types.ObjectId.isValid(invoiceId)) {
+            req.flash('error', 'Invalid invoice ID');
+            return res.redirect('/reports-invoices');
+        }
+
+        // Fetch the invoice
+        const invoice = await Invoice.findById(invoiceId).populate('user');
+        if (!invoice) {
+            req.flash('error', 'Invoice not found');
+            return res.redirect('/reports-invoices');
+        }
+
+        // Check authorization
+        if (!req.user || invoice.user._id.toString() !== req.user._id.toString()) {
+            req.flash('error', 'Unauthorized access to invoice');
+            return res.redirect('/reports-invoices');
+        }
+
+        // Create a new PDF document
+        const doc = new PDFDocument({
+            size: 'A4',
+            margin: 50,
+            info: { Title: `Invoice ${invoice.invoiceNumber}`, Author: 'Lease Captain' }
+        });
+
+        // Set response headers for PDF download
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=invoice-${invoice.invoiceNumber}.pdf`);
+        doc.pipe(res);
+
+        // --- Header Section ---
+        doc.image(path.join(__dirname, '../public/assets/images/2.png'), 50, 30, { width: 120 });
+        doc.fontSize(24).font('Helvetica-Bold').fillColor('#003366')
+            .text('Lease Captain', 200, 40, { align: 'right' });
+        doc.fontSize(10).font('Helvetica').fillColor('#666666')
+            .text('P.O. Box 701, Ruiru, Kenya', 200, 70, { align: 'right' })
+            .text('Phone: +254 794 501 005', 200, 80, { align: 'right' })
+            .text('Email: support@leasecaptain.com', 200, 90, { align: 'right' })
+            .text('Website: www.leasecaptain.com', 200, 100, { align: 'right' });
+
+        // --- Invoice Title ---
+        doc.moveDown(2);
+        doc.fontSize(18).font('Helvetica-Bold').fillColor('#003366')
+            .text(`INVOICE #${invoice.invoiceNumber}`, { align: 'center' });
+        doc.moveDown(1);
+
+        // Status Badge
+        const statusColor = invoice.status === 'paid' ? '#28a745' : invoice.status === 'overdue' ? '#dc3545' : '#ffc107';
+        doc.fontSize(14).font('Helvetica-Bold').fillColor(statusColor)
+            .text(invoice.status.toUpperCase(), 450, 130, { align: 'right' });
+
+        // --- Invoice Details Section ---
+        doc.moveDown(1.5);
+        doc.fontSize(12).font('Helvetica-Bold').fillColor('#003366').text('Billed To:', 50, doc.y);
+        doc.font('Helvetica').fillColor('#000000')
+            .text(`${invoice.user.username}`, 50, doc.y + 5)
+            .text(`${invoice.user.email}`, 50, doc.y + 5)
+            .text(`${invoice.user.phone || 'N/A'}`, 50, doc.y + 5);
+
+        const detailsY = doc.y + 10;
+        doc.fontSize(12).font('Helvetica-Bold').fillColor('#003366')
+            .text('Invoice Details:', 350, detailsY - 40);
+
+        doc.font('Helvetica').fillColor('#000000');
+
+        const labelX = 350;  // Column position for labels
+        const valueX = 480;  // Column position for values
+
+        doc.text('Transaction ID:', labelX, detailsY + 30, { continued: false })
+            .text(invoice.transactionId || 'N/A', valueX, detailsY + 30)
+
+            .text('Billing Period:', labelX, detailsY + 45, { continued: false })
+            .text(invoice.billingPeriod, valueX, detailsY + 45);
+
+
+        // --- Table Section ---
+        doc.moveDown(2);
+        const tableTop = doc.y;
+        const col1 = 50;  // Description
+        const col2 = 200; // Billing Period
+        const col3 = 300; // Amount
+        const col4 = 400; // Time
+        const rowHeight = 25;
+
+        // Table Header
+        doc.fontSize(12).font('Helvetica-Bold').fillColor('#ffffff');
+        doc.rect(50, tableTop, 500, 30).fill('#003366').stroke('#003366');
+        doc.fillColor('#ffffff');
+        doc.text('Description', col1 + 10, tableTop + 8);
+        doc.text('Billing Period', col2 + 10, tableTop + 8);
+        doc.text('Amount (Ksh)', col3 + 10, tableTop + 8, { align: 'right' });
+
+        // Table Row
+        doc.fontSize(11).font('Helvetica').fillColor('#000000');
+        doc.rect(50, tableTop + 30, 500, rowHeight).fill('#f9f9f9').stroke('#d3d3d3');
+        doc.fillColor('#000000');
+        doc.text('Subscription Payment', col1 + 10, tableTop + 35);
+        doc.text(invoice.billingPeriod.charAt(0).toUpperCase() + invoice.billingPeriod.slice(1), col2 + 10, tableTop + 35);
+        doc.text(`${invoice.amount.toFixed(2)}`, col3 + 10, tableTop + 35, { align: 'right' });
+
+
+        // Total
+        const totalY = tableTop + 90;
+        doc.fontSize(14).font('Helvetica-Bold').fillColor('#003366');
+        doc.text(`Total: Ksh ${(invoice.amount).toFixed(2)}`, col3 - 50, totalY, { align: 'right' });
+
+        // --- Footer Section ---
+        const footerY = doc.page.height - 120;
+        doc.lineWidth(1).strokeColor('#003366')
+            .moveTo(50, footerY).lineTo(550, footerY).stroke();
+        doc.fontSize(10).font('Helvetica').fillColor('#666666')
+            .text('Thank you for trusting us with your business!', 50, footerY + 10, { align: 'center' })
+            .text(`Payment Terms: Due within ${invoice.billingPeriod === 'yearly' ? '1 year' : '30 days'} | Contact us at support@leasecaptain.com`, 50, footerY + 25, { align: 'center' })
+            .text('Lease Captain © 2025 | All Rights Reserved', 50, footerY + 40, { align: 'center' });
+
+        // --- Watermark 
+        doc.opacity(0.1);  // Set transparency for the watermark
+        doc.image(path.join(__dirname, '../public/assets/images/2.png'), doc.page.width / 2 - 60, doc.page.height / 2 - 60, {
+            width: 120,
+            align: 'center'
+        });
+        doc.opacity(1); // Reset opacity back to normal for the rest of the document
+
+
+        // Finalize the PDF
+        doc.end();
+
+    } catch (err) {
+        console.error('Error generating invoice PDF:', err);
+        req.flash('error', 'Failed to generate invoice PDF');
+        res.redirect('/reports-invoices');
     }
 });
 
