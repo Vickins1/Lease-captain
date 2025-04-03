@@ -2528,44 +2528,57 @@ router.post('/tenancy-manager/propertyListing/delete', ensureAuthenticated, asyn
 router.get('/expenses', async (req, res) => {
     try {
         const pageSize = 10;
-        const currentPage = Number(req.query.page) || 1;
-        const searchQuery = req.query.search || ''; // This is the search term from the query
+        const currentPage = Math.max(1, Number(req.query.page) || 1); // Ensure currentPage is at least 1
+        const searchQuery = req.query.search || '';
 
-        // Ensure the user is authenticated
         if (!req.user) {
             req.flash('error', 'User not authenticated.');
             return res.redirect('/login');
         }
 
-        // Fetch expenses for the logged-in user only and apply search, pagination
+        // Fetch expenses
         const expenses = await Expense.find({
-            owner: req.user._id, // Filter by the logged-in user's ID
-            name: { $regex: searchQuery, $options: 'i' } // Apply search query
+            owner: req.user._id,
+            name: { $regex: searchQuery, $options: 'i' }
         })
             .skip((currentPage - 1) * pageSize)
             .limit(pageSize);
 
-        // Count total expenses for pagination (filtered by user and search query)
+        // Calculate total expenses amount
+        const totalExpensesAmount = await Expense.aggregate([
+            { $match: { owner: req.user._id, name: { $regex: searchQuery, $options: 'i' } } },
+            { $group: { _id: null, total: { $sum: "$amount" } } }
+        ]);
+
+        // Count total expenses for pagination
         const totalExpenses = await Expense.countDocuments({
-            owner: req.user._id, // Filter by the logged-in user's ID
+            owner: req.user._id,
             name: { $regex: searchQuery, $options: 'i' }
         });
 
         const totalPages = Math.ceil(totalExpenses / pageSize);
+        const totalAmount = totalExpensesAmount.length > 0 ? totalExpensesAmount[0].total : 0;
 
-        // Render the template with all required variables
+        // Ensure currentPage doesn’t exceed totalPages
+        if (currentPage > totalPages && totalPages > 0) {
+            return res.redirect(`/expenses?page=${totalPages}&search=${encodeURIComponent(searchQuery)}`);
+        }
+
         res.render('tenancyManager/expense', {
             expenses,
             currentPage,
             totalPages,
             pageSize,
-            search: searchQuery, // Pass searchQuery as 'search' to the template
-            currentUser: req.user
+            search: searchQuery,
+            currentUser: req.user,
+            totalExpensesAmount: totalAmount,
+            error: req.flash('error'),
+            success: req.flash('success')
         });
     } catch (error) {
         console.error('Error fetching expenses:', error);
         req.flash('error', 'Error fetching expenses.');
-        res.redirect('/'); // Redirect to a safe page instead of sending raw error
+        res.redirect('/');
     }
 });
 

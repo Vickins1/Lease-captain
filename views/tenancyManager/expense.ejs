@@ -347,6 +347,8 @@
 
 <!-- Content Wrapper -->
 <div class="content-wrapper">
+    <!-- Content Header -->
+     <div class="content-header">
 
         <h2 class="text-center mt-4"><strong>Expenses</strong></h2>
 
@@ -439,34 +441,83 @@
     </div>
 </div>
 
-<!-- Pagination (unchanged) -->
-<% if (totalPages > 1) { %>
+<% if (totalPages > 0) { %>
     <nav aria-label="Expenses page navigation">
         <ul class="pagination justify-content-center">
-            <% if (currentPage > 1) { %>
+            <!-- Previous Button -->
+            <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                <a class="page-link" href="<%= currentPage > 1 ? `/expenses?page=${currentPage - 1}&search=${encodeURIComponent(search || '')}` : '#' %>" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+
+            <!-- Page Numbers (Dynamic Range) -->
+            <% 
+                const maxPagesToShow = 5;
+                let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+                let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+                if (endPage - startPage + 1 < maxPagesToShow) {
+                    startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                }
+            %>
+            <% if (startPage > 1) { %>
                 <li class="page-item">
-                    <a class="page-link" href="/expenses?page=<%= currentPage - 1 %>&search=<%= search || '' %>" aria-label="Previous">
-                        <span aria-hidden="true">«</span>
-                    </a>
+                    <a class="page-link" href="/expenses?page=1&search=<%= encodeURIComponent(search || '') %>">1</a>
                 </li>
+                <% if (startPage > 2) { %>
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                <% } %>
             <% } %>
-            <% for (let i = 1; i <= totalPages; i++) { %>
+            <% for (let i = startPage; i <= endPage; i++) { %>
                 <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                    <a class="page-link" href="/expenses?page=<%= i %>&search=<%= search || '' %>" aria-label="Page <%= i %>"><%= i %></a>
+                    <a class="page-link" href="/expenses?page=<%= i %>&search=<%= encodeURIComponent(search || '') %>"><%= i %></a>
                 </li>
             <% } %>
-            <% if (currentPage < totalPages) { %>
+            <% if (endPage < totalPages) { %>
+                <% if (endPage < totalPages - 1) { %>
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                <% } %>
                 <li class="page-item">
-                    <a class="page-link" href="/expenses?page=<%= currentPage + 1 %>&search=<%= search || '' %>" aria-label="Next">
-                        <span aria-hidden="true">»</span>
-                    </a>
+                    <a class="page-link" href="/expenses?page=<%= totalPages %>&search=<%= encodeURIComponent(search || '') %>"><%= totalPages %></a>
                 </li>
             <% } %>
+
+            <!-- Next Button -->
+            <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                <a class="page-link" href="<%= currentPage < totalPages ? `/expenses?page=${currentPage + 1}&search=${encodeURIComponent(search || '')}` : '#' %>" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
         </ul>
     </nav>
+<% } else if (expenses.length === 0) { %>
+    <p class="text-center text-muted">No expenses found for the current search.</p>
 <% } %>
+<style>
+    .pagination .page-link {
+    color: #003366;
+    border-radius: 5px;
+    margin: 0 2px;
+}
+.pagination .page-item.active .page-link {
+    background-color: #003366;
+    border-color: #003366;
+    color: white;
+}
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    pointer-events: none;
+}
+</style>
 
-
+<div class="modern-card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Total Expenses</h5>
+    </div>
+    <div class="card-body">
+        <p class="lead">Ksh. <%= totalExpensesAmount.toFixed(2) %></p>
+    </div>
+</div>
 <!-- Create Expense Modal -->
 <div class="modal fade" 
      id="createExpenseModal" 

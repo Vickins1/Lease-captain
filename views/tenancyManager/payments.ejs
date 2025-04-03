@@ -348,213 +348,200 @@
 
         </aside>
 
-        <!-- Content Wrapper. Contains page content -->
-        <div class="content-wrapper">
-
-            <!-- Main content -->
-            <section class="content">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h3 class="card-title">Transactions</h3>
-                                </div>
-
-                                <!-- Search Form -->
-                                <div class="mb-3">
-                                    <form id="searchForm" action="/tenancy-manager/payments" method="GET"
-                                        class="d-flex flex-column flex-sm-row justify-content-center">
-                                        <input type="text" id="searchInput" name="search"
-                                            class="form-control me-2 mb-2 mb-sm-0"
-                                            placeholder="Search by Tenant Name or Property" aria-label="Search">
-                                    </form>
-                                </div>
-
-
-
-                                <!-- /.card-header -->
-                                <div class="card-body">
-                                    <table id="paymentsTable" class="table table-bordered table-hover table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>#</th>
-                                                <th>Transaction ID</th>
-                                                <th>Tenant Name</th>
-                                                <th>Property</th>
-                                                <th>Unit</th>
-                                                <th>Door</th>
-                                                <th>Payment Type</th>
-                                                <th>Total Amount</th>
-                                                <th>Date Paid</th>
-                                                <th>Payment Method</th>
-                                                <th>Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <% payments.forEach((payment, index)=> { %>
-                                                <tr>
-                                                    <td>
-                                                        <%= (currentPage - 1) * pageSize + index + 1 %>
-                                                    </td>
-                                                    <td>
-                                                        <%= payment.transactionId || 'N/A' %>
-                                                    </td>
-                                                    <td>
-                                                        <%= payment.tenant?.name || 'N/A' %>
-                                                    </td>
-                                                    <td>
-                                                        <%= payment.tenant?.property?.name || 'N/A' %>
-                                                    </td>
-                                                    <td>
-                                                        <%= payment.tenant?.unit?.unitType || 'N/A' %>
-                                                    </td>
-                                                    <td>
-                                                        <%= payment.tenant?.doorNumber || 'N/A' %>
-                                                    </td>
-                                                    <td>
-                                                        <%= payment.paymentType || 'N/A' %>
-                                                    </td>
-                                                    <td>Ksh. <%= payment.amount ? payment.amount.toFixed(2) : '0.00' %>
-                                                    </td>
-                                                    <td>
-                                                        <%= payment.datePaid ? new
-                                                            Date(payment.datePaid).toLocaleDateString() : 'N/A' %>
-                                                    </td>
-                                                    <td>
-                                                        <%= payment.method || 'N/A' %>
-                                                    </td>
-                                                    <td>
-                                                        <span class="<%= payment.status === 'completed' ? 'text-success' : 
-                                    payment.status === 'pending' ? 'text-warning' : 
-                                    payment.status === 'failed' ? 'text-danger' : 'text-secondary' %>">
-                                                            <i class="fas <%= payment.status === 'completed' ? 'fa-check-circle' : 
-                                         payment.status === 'pending' ? 'fa-hourglass-half' : 
-                                         payment.status === 'failed' ? 'fa-times-circle' : 'fa-question-circle' %>">
-                                                            </i>
-                                                            <%= payment.status || 'N/A' %>
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                                <% }); %>
-                                        </tbody>
-                                       
-                                    </table>
-                                </div>
-                                <!-- /.card-body -->
-                            </div>
-                            <!-- /.card -->
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Transactions</h3>
                         </div>
-                        <!-- /.col -->
+
+                        <!-- Search Form -->
+                        <div class="card-body py-3">
+                            <div class="input-group mb-3" style="max-width: 400px; margin: 0 auto;">
+                                <input type="text" id="searchInput" class="form-control" 
+                                       placeholder="Search by Tenant Name or Property" 
+                                       aria-label="Search transactions">
+                                <div class="input-group-append">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                </div>
+                            </div>
+
+                            <!-- Table -->
+                            <div class="table-responsive">
+                                <table id="paymentsTable" class="table table-bordered table-hover table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Transaction ID</th>
+                                            <th>Tenant Name</th>
+                                            <th>Property</th>
+                                            <th>Unit</th>
+                                            <th>Door</th>
+                                            <th>Payment Type</th>
+                                            <th>Total Amount</th>
+                                            <th>Date Paid</th>
+                                            <th>Payment Method</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="paymentsTableBody">
+                                        <% payments.forEach((payment, index) => { %>
+                                            <tr data-tenant="<%= payment.tenant?.name || 'N/A' %>"
+                                                data-property="<%= payment.tenant?.property?.name || 'N/A' %>">
+                                                <td><%= (currentPage - 1) * pageSize + index + 1 %></td>
+                                                <td><%= payment.transactionId || 'N/A' %></td>
+                                                <td><%= payment.tenant?.name || 'N/A' %></td>
+                                                <td><%= payment.tenant?.property?.name || 'N/A' %></td>
+                                                <td><%= payment.tenant?.unit?.unitType || 'N/A' %></td>
+                                                <td><%= payment.tenant?.doorNumber || 'N/A' %></td>
+                                                <td><%= payment.paymentType || 'N/A' %></td>
+                                                <td>Ksh. <%= payment.amount ? payment.amount.toFixed(2) : '0.00' %></td>
+                                                <td><%= payment.datePaid ? new Date(payment.datePaid).toLocaleDateString() : 'N/A' %></td>
+                                                <td><%= payment.method || 'N/A' %></td>
+                                                <td>
+                                                    <span class="<%= payment.status === 'completed' ? 'text-success' : 
+                                                                    payment.status === 'pending' ? 'text-warning' : 
+                                                                    payment.status === 'failed' ? 'text-danger' : 'text-secondary' %>">
+                                                        <i class="fas <%= payment.status === 'completed' ? 'fa-check-circle' : 
+                                                                         payment.status === 'pending' ? 'fa-hourglass-half' : 
+                                                                         payment.status === 'failed' ? 'fa-times-circle' : 'fa-question-circle' %>"></i>
+                                                        <%= payment.status || 'N/A' %>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
                     </div>
-                    <!-- /.row -->
+                    <!-- /.card -->
                 </div>
-                <!-- /.container-fluid -->
-            </section>
-            <!-- /.content -->
-
-
-            <!-- Pagination -->
-            <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center">
-                    <% if (currentPage> 1) { %>
-                        <li class="page-item">
-                            <a class="page-link" href="/tenancy-manager/payments?page=<%= currentPage - 1 %>"
-                                aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
-                        </li>
-                        <% } %>
-                            <% for (let i=1; i <=totalPages; i++) { %>
-                                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                                    <a class="page-link" href="/tenancy-manager/payments?page=<%= i %>">
-                                        <%= i %>
-                                    </a>
-                                </li>
-                                <% } %>
-                                    <% if (currentPage < totalPages) { %>
-                                        <li class="page-item">
-                                            <a class="page-link"
-                                                href="/tenancy-manager/payments?page=<%= currentPage + 1 %>"
-                                                aria-label="Next">
-                                                <span aria-hidden="true">&raquo;</span>
-                                            </a>
-                                        </li>
-                                        <% } %>
-                </ul>
-            </nav>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
         </div>
+        <!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
 
-        <style>
-            @media (max-width: 768px) {
-                .form-control {
-                    font-size: 10px;
-                    padding: 5px;
-                }
+    <!-- Pagination -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <% if (currentPage > 1) { %>
+                <li class="page-item">
+                    <a class="page-link" href="/tenancy-manager/payments?page=<%= currentPage - 1 %>" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            <% } %>
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                    <a class="page-link" href="/tenancy-manager/payments?page=<%= i %>"><%= i %></a>
+                </li>
+            <% } %>
+            <% if (currentPage < totalPages) { %>
+                <li class="page-item">
+                    <a class="page-link" href="/tenancy-manager/payments?page=<%= currentPage + 1 %>" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            <% } %>
+        </ul>
+    </nav>
+</div>
 
-                .table th,
-                .table td {
-                    font-size: 10px;
-                    padding: 8px;
-                }
+<style>
+    /* Responsive Table and Form Styling */
+    .table-responsive {
+        overflow-x: auto;
+    }
 
-                .pagination .page-link {
-                    font-size: 9px;
-                }
+    .table th, .table td {
+        vertical-align: middle;
+        white-space: nowrap;
+    }
 
-                .table thead th {
-                    padding: 10px;
-                }
-            }
+    @media (max-width: 768px) {
+        .input-group {
+            max-width: 100%;
+        }
+        .table th, .table td {
+            font-size: 12px;
+            padding: 6px;
+        }
+        .pagination .page-link {
+            font-size: 12px;
+            padding: 5px 10px;
+        }
+    }
 
-            @media (max-width: 576px) {
-                .table {
-                    display: block;
-                    overflow-x: auto;
-                }
+    @media (max-width: 576px) {
+        .table th, .table td {
+            font-size: 10px;
+            padding: 4px;
+        }
+        .pagination .page-link {
+            font-size: 10px;
+            padding: 4px 8px;
+        }
+        .input-group-text {
+            padding: 0.375rem 0.5rem;
+        }
+    }
 
-                .table th,
-                .table td {
-                    font-size: 10px;
-                }
+    /* Enhance Search Input */
+    .input-group {
+        transition: all 0.3s ease;
+    }
+    .form-control:focus {
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        border-color: #007bff;
+    }
+</style>
 
-                .table-responsive {
-                    overflow-x: auto;
-                }
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('searchInput');
+        const tableBody = document.getElementById('paymentsTableBody');
+        const rows = Array.from(tableBody.getElementsByTagName('tr'));
 
-                .pagination .page-link {
-                    font-size: 10px;
-                }
+        // Debounce function to limit filter execution
+        const debounce = (func, delay) => {
+            let timeoutId;
+            return (...args) => {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => func.apply(null, args), delay);
+            };
+        };
 
-                .form-control {
-                    font-size: 10px;
-                }
-            }
-
-            .table-container {
-                margin-bottom: 1rem;
-            }
-        </style>
-
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const searchInput = document.getElementById('searchInput');
-
-                searchInput.addEventListener('input', function () {
-                    const query = searchInput.value;
-
-                    // Perform an AJAX request or filter results
-
-                    fetch(`/tenancy-manager/payments?search=${encodeURIComponent(query)}`)
-                        .then(response => response.text())
-                        .then(data => {
-                            // Update your results section with the new data
-                            document.querySelector('.table-container').innerHTML = data;
-                        })
-                        .catch(error => console.error('Error fetching data:', error));
-                });
+        // Filter function
+        const filterTable = () => {
+            const query = searchInput.value.trim().toLowerCase();
+            rows.forEach(row => {
+                const tenantName = row.dataset.tenant.toLowerCase();
+                const propertyName = row.dataset.property.toLowerCase();
+                const isMatch = tenantName.includes(query) || propertyName.includes(query);
+                row.style.display = isMatch ? '' : 'none';
             });
-        </script>
+
+            // Update row numbers after filtering
+            const visibleRows = rows.filter(row => row.style.display !== 'none');
+            visibleRows.forEach((row, index) => {
+                row.cells[0].textContent = index + 1;
+            });
+        };
+
+        // Apply filter with debounce on input
+        searchInput.addEventListener('input', debounce(filterTable, 300));
+    });
+</script>
 
 
         <!-- Control Sidebar -->

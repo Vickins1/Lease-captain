@@ -146,6 +146,85 @@ router.post('/tenancy-manager/tenants/edit/:id', isTenancyManager, async (req, r
     }
 });
 
+// Tenant Report Route for Owner
+router.get('/tenancy-manager/tenant-report/:tenantId', async (req, res) => {
+    try {
+        // Authentication Check
+        if (!req.user) {
+            req.flash('error', 'Please log in to access tenant reports');
+            return res.redirect('/login');
+        }
+
+        const tenantId = req.params.tenantId;
+
+        // Fetch Tenant Data
+        const tenant = await Tenant.findOne({ _id: tenantId, owner: req.user._id })
+            .populate('property', 'name address paymentDay')
+            .populate('unit', 'unitType unitPrice utilities')
+            .lean();
+
+        if (!tenant) {
+            req.flash('error', 'Tenant not found or you do not have access');
+            return res.redirect('/tenancy-manager/dashboard');
+        }
+
+        // Fetch Payment History
+        const payments = await Payment.find({ tenant: tenantId })
+            .sort({ datePaid: -1 })
+            .lean();
+
+        // Fetch Properties for Edit Modal
+        const properties = await Property.find({ owner: req.user._id }).lean();
+
+        // Calculate Metrics
+        const toNumber = (value) => Number(value) || 0;
+        const totalRentPaid = toNumber(tenant.rentPaid);
+        const totalUtilityPaid = toNumber(tenant.utilityPaid);
+        const rentDue = toNumber(tenant.rentDue);
+        const utilityDue = toNumber(tenant.utilityDue);
+        const totalPaid = totalRentPaid + totalUtilityPaid;
+        const totalDue = rentDue + utilityDue;
+        const overpayment = toNumber(tenant.overpayment);
+
+        // Lease Duration
+        const leaseStart = new Date(tenant.leaseStartDate);
+        const leaseEnd = new Date(tenant.leaseEndDate);
+        const leaseDurationDays = Math.max(1, (leaseEnd - leaseStart) / (1000 * 60 * 60 * 24));
+        const daysRemaining = Math.max(0, (leaseEnd - new Date()) / (1000 * 60 * 60 * 24));
+        const leaseProgress = Math.round((leaseDurationDays - daysRemaining) / leaseDurationDays * 100);
+
+        // Render Report
+        res.render('tenancyManager/tenantReport', {
+            tenant,
+            payments,
+            properties, // Pass properties for the edit modal
+            totalRentPaid: totalRentPaid.toFixed(2),
+            totalUtilityPaid: totalUtilityPaid.toFixed(2),
+            rentDue: rentDue.toFixed(2),
+            utilityDue: utilityDue.toFixed(2),
+            totalPaid: totalPaid.toFixed(2),
+            totalDue: totalDue.toFixed(2),
+            overpayment: overpayment.toFixed(2),
+            leaseStart: moment(leaseStart).format('MMMM D, YYYY'),
+            leaseEnd: moment(leaseEnd).format('MMMM D, YYYY'),
+            leaseProgress,
+            daysRemaining: Math.ceil(daysRemaining),
+            currentUser: req.user,
+            error: req.flash('error'),
+            success: req.flash('success')
+        });
+    } catch (error) {
+        console.error('Tenant Report Error:', {
+            message: error.message,
+            stack: error.stack,
+            tenantId: req.params.tenantId,
+            userId: req.user?._id
+        });
+        req.flash('error', 'Unable to generate tenant report. Please try again.');
+        res.redirect('/tenancy-manager/dashboard');
+    }
+});
+
 
 // POST route to delete a tenant
 router.post('/tenancy-manager/tenants/delete/:id', isTenancyManager, async (req, res) => {
