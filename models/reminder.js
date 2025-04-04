@@ -1,35 +1,11 @@
 const mongoose = require('mongoose');
-
 const reminderSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    owner: { 
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-
-    sendAt: {
-        type: Date,
-        required: true
-    },
-    frequency: {
-        type: String,
-        enum: ['once', 'daily', 'weekly', 'monthly'],
-        default: 'once',
-        required: true
-    },
-    status: {
-        type: String,
-        enum: ['pending', 'sent', 'failed'],
-        default: 'pending'
-    }
-}, {
-    timestamps: true
+    title: { type: String, required: true },
+    message: { type: String, required: true },
+    sendAt: { type: Date, required: true },
+    frequency: { type: String, enum: ['once', 'daily', 'weekly', 'monthly'], required: true },
+    status: { type: String, enum: ['pending', 'sent', 'failed'], default: 'pending' },
+    createdAt: { type: Date, default: Date.now }
 });
 
-const Reminder = mongoose.model('Reminder', reminderSchema);
-module.exports = Reminder;
+module.exports = mongoose.model('Reminder', reminderSchema);

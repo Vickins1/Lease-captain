@@ -343,531 +343,443 @@
 
         </aside>
 
-        <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
-            <!-- Main content -->
             <section class="content">
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-12">
-                            <div class="card">
+                            <div class="card custom-card">
                                 <div class="card-header">
-                                    <h3 class="card-title">Tenant Management</h3>
+                                    <h3 class="card-title"><i class="fas fa-users mr-2"></i> Tenant Management</h3>
                                 </div>
-                                <!-- /.card-header -->
                                 <div class="card-body">
-                                    <!-- Error Message -->
-                                    <% if (error && error.length> 0) { %>
-                                        <div class="alert alert-danger text-center" role="alert"
-                                            style="font-size: 0.9rem;">
-                                            <%= error %>
+                                    <!-- Messages -->
+                                    <% if (error && error.length > 0) { %>
+                                        <div class="alert alert-danger animate__animated animate__fadeIn">
+                                            <i class="fas fa-exclamation-circle mr-2"></i> <%= error %>
                                         </div>
-                                        <% } %>
-
-                                            <!-- Success Message -->
-                                            <% if (success && success.length> 0) { %>
-                                                <div class="alert alert-success text-center" role="alert"
-                                                    style="font-size: 0.9rem;">
-                                                    <%= success %>
+                                    <% } %>
+                                    <% if (success && success.length > 0) { %>
+                                        <div class="alert alert-success animate__animated animate__fadeIn">
+                                            <i class="fas fa-check-circle mr-2"></i> <%= success %>
+                                        </div>
+                                    <% } %>
+        
+                                    <!-- Search and Add Tenant -->
+                                    <div class="row mb-4 align-items-center">
+                                        <div class="col-12 col-md-6 mb-2 mb-md-0">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
                                                 </div>
+                                                <input type="text" id="tenantSearch" class="form-control custom-input" placeholder="Search by name, email, or property">
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6 text-md-right">
+                                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addTenantModal">
+                                                <i class="fas fa-user-plus mr-2"></i> Add New Tenant
+                                            </button>
+                                        </div>
+                                    </div>
+        
+                                    <!-- Tenants Table -->
+                                    <div class="table-responsive">
+                                        <table id="tenantTable" class="table table-striped table-hover custom-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Name</th>
+                                                    <th>Email</th>
+                                                    <th>Phone</th>
+                                                    <th>Property</th>
+                                                    <th>Unit</th>
+                                                    <th>Door</th>
+                                                    <th>Lease Period</th>
+                                                    <th>Rent Paid</th>
+                                                    <th>Utility Paid</th>
+                                                    <th>Wallet</th>
+                                                    <th>Arrears</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% tenants.forEach((tenant, index) => { %>
+                                                    <tr style="cursor: pointer;" onclick="window.location.href='/tenancy-manager/tenant-report/<%= tenant._id %>'; event.stopPropagation();">
+                                                        <td><%= (index + 1) + ((currentPage - 1) * perPage) %></td>
+                                                        <td><%= tenant.name %></td>
+                                                        <td><%= tenant.email %></td>
+                                                        <td><%= tenant.phone %></td>
+                                                        <td><%= tenant.property ? tenant.property.name : 'N/A' %></td>
+                                                        <td><%= tenant.unit ? tenant.unit.unitType : 'N/A' %></td>
+                                                        <td><%= tenant.doorNumber || 'N/A' %></td>
+                                                        <td><%= new Date(tenant.leaseStartDate).toLocaleDateString() %> - <%= new Date(tenant.leaseEndDate).toLocaleDateString() %></td>
+                                                        <td>Ksh.<%= tenant.rentPaid ? tenant.rentPaid.toFixed(2) : "0.00" %></td>
+                                                        <td>Ksh.<%= tenant.utilityPaid ? tenant.utilityPaid.toFixed(2) : "0.00" %></td>
+                                                        <td>Ksh.<%= tenant.walletBalance ? tenant.walletBalance.toFixed(2) : "0.00" %></td>
+                                                        <td>Ksh.<%= tenant.outstandingPayments ? tenant.outstandingPayments.toFixed(2) : "0.00" %></td>
+                                                        <td>
+                                                            <span class="badge <%= tenant.leaseStatus === 'active' ? 'badge-success' : tenant.leaseStatus === 'inactive' ? 'badge-danger' : 'badge-warning' %>">
+                                                                <%= tenant.leaseStatus || 'N/A' %>
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                <% }); %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+        
+                                    <!-- Pagination -->
+                                    <div class="d-flex justify-content-between align-items-center mt-4">
+                                        <div class="text-muted">
+                                            Showing <%= ((currentPage - 1) * perPage + 1) %> to <%= Math.min(currentPage * perPage, totalTenants) %> of <%= totalTenants %> tenants
+                                        </div>
+                                        <div class="pagination-container">
+                                            <% if (currentPage > 1) { %>
+                                                <a href="/tenancy-manager/tenants?page=<%= currentPage - 1 %>" class="btn btn-outline-primary pagination-btn"><i class="fas fa-arrow-left"></i></a>
+                                            <% } %>
+                                            <div class="pagination-buttons">
+                                                <% for (let i = 1; i <= totalPages; i++) { %>
+                                                    <a href="/tenancy-manager/tenants?page=<%= i %>" class="btn <%= currentPage === i ? 'btn-primary' : 'btn-outline-primary' %> pagination-btn"><%= i %></a>
                                                 <% } %>
-
-                                                    <!-- Search bar for filtering tenants -->
-                                                    <div class="row mb-4">
-                                                        <div class="col-12 col-md-6">
-                                                            <input type="text" id="tenantSearch" class="form-control"
-                                                                placeholder="Search tenant by name, email, or property">
-                                                        </div>
-                                                        <button type="button" class="btn btn-dark w-30"
-                                                            data-toggle="modal" data-target="#addTenantModal"
-                                                            style="background-color: #003366; color: #ffffff;">
-                                                            Add New Tenant
-                                                        </button>
-                                                    </div>
-                                                    <!-- Section to display the tenant results dynamically -->
-                                                    <div id="tenantResults">
-                                                        <!-- The tenant table will be dynamically populated here -->
-                                                    </div>
-
-                                                    <!-- Tenants Table -->
-                                                    <div class="table-responsive">
-                                                        <table id="tenantTable"
-                                                            class="table table-bordered table-striped table-hover table-sm small-table">
-                                                            <thead class="text-center"
-                                                                style="background-color: #00172f; color: white;">
-                                                                <tr>
-                                                                    <th>#</th>
-                                                                    <th>Name</th>
-                                                                    <th>Email</th>
-                                                                    <th>Phone</th>
-                                                                    <th>Property</th>
-                                                                    <th>Unit</th>
-                                                                    <th>Door</th>
-                                                                    <th>Lease Period</th>
-                                                                    <th>Rent Paid</th>
-                                                                    <th>Utility Paid</th>
-                                                                    <th>Wallet</th>
-                                                                    <th>Arrears</th>
-                                                                    <th>Status</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody class="text-center"
-                                                                style="background-color: #f8f9fa; color: black;">
-                                                                <% tenants.forEach((tenant, index)=> { %>
-                                                                    <tr style="cursor: pointer;" onclick="window.location.href='/tenancy-manager/tenant-report/<%= tenant._id %>'; 
-                            event.stopPropagation();">
-                                                                        <td>
-                                                                            <%= (index + 1) + ((currentPage - 1) *
-                                                                                perPage) %>
-                                                                        </td>
-                                                                        <td>
-                                                                            <%= tenant.name %>
-                                                                        </td>
-                                                                        <td>
-                                                                            <%= tenant.email %>
-                                                                        </td>
-                                                                        <td>
-                                                                            <%= tenant.phone %>
-                                                                        </td>
-                                                                        <td>
-                                                                            <%= tenant.property ? tenant.property.name
-                                                                                : 'N/A' %>
-                                                                        </td>
-                                                                        <td>
-                                                                            <%= tenant.unit ? tenant.unit.unitType
-                                                                                : 'N/A' %>
-                                                                        </td>
-                                                                        <td>
-                                                                            <%= tenant.doorNumber || 'N/A' %>
-                                                                        </td>
-                                                                        <td>
-                                                                            <%= new
-                                                                                Date(tenant.leaseStartDate).toLocaleDateString()
-                                                                                %> -
-                                                                                <%= new
-                                                                                    Date(tenant.leaseEndDate).toLocaleDateString()
-                                                                                    %>
-                                                                        </td>
-                                                                        <td>Ksh.<%= tenant.rentPaid ?
-                                                                                tenant.rentPaid.toFixed(2) : "0.00" %>
-                                                                        </td>
-                                                                        <td>Ksh.<%= tenant.utilityPaid ?
-                                                                                tenant.utilityPaid.toFixed(2) : "0.00"
-                                                                                %>
-                                                                        </td>
-                                                                        <td>Ksh.<%= tenant.walletBalance ?
-                                                                                tenant.walletBalance.toFixed(2) : "0.00"
-                                                                                %>
-                                                                        </td>
-                                                                        <td>Ksh.<%= tenant.outstandingPayments ?
-                                                                                tenant.outstandingPayments.toFixed(2)
-                                                                                : "0.00" %>
-                                                                        </td>
-                                                                        <td>
-                                                                            <%= tenant.leaseStatus || 'N/A' %>
-                                                                        </td>
-
-                                                                    </tr>
-
-                                                                    <% }) %>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                    <!-- /.table-responsive -->
-
-                                                    <!-- Pagination controls -->
-                                                    <div class="d-flex justify-content-between mt-3">
-                                                        <div>
-                                                            <p>Showing <%= ((currentPage - 1) * perPage + 1) %> to
-                                                                    <%= Math.min(currentPage * perPage, totalTenants) %>
-                                                                        of <%= totalTenants %> tenants</p>
-                                                        </div>
-                                                        <div>
-                                                            <div class="pagination-container text-center my-4">
-                                                                <!-- Previous Button -->
-                                                                <% if (currentPage> 1) { %>
-                                                                    <a href="/tenancy-manager/tenants?page=<%= currentPage - 1 %>"
-                                                                        class="btn btn-primary mr-2 pagination-btn"
-                                                                        data-toggle="tooltip" data-placement="top"
-                                                                        title="Previous Page">
-                                                                        <i class="fas fa-arrow-left"></i> Previous
-                                                                    </a>
-                                                                    <% } %>
-
-                                                                        <!-- Page Numbers -->
-                                                                        <div class="pagination-buttons">
-                                                                            <% for (let i=1; i <=totalPages; i++) { %>
-                                                                                <a href="/tenancy-manager/tenants?page=<%= i %>"
-                                                                                    class="btn <%= currentPage === i ? 'btn-primary active' : 'btn-outline-primary' %> pagination-btn"
-                                                                                    data-toggle="tooltip"
-                                                                                    data-placement="top"
-                                                                                    title="Page <%= i %>">
-                                                                                    <%= i %>
-                                                                                </a>
-                                                                                <% } %>
-                                                                        </div>
-
-                                                                        <!-- Next Button -->
-                                                                        <% if (currentPage < totalPages) { %>
-                                                                            <a href="/tenancy-manager/tenants?page=<%= currentPage + 1 %>"
-                                                                                class="btn btn-primary ml-2 pagination-btn"
-                                                                                data-toggle="tooltip"
-                                                                                data-placement="top" title="Next Page">
-                                                                                Next <i class="fas fa-arrow-right"></i>
-                                                                            </a>
-                                                                            <% } %>
-                                                            </div>
-                                                            <style>
-                                                                .pagination-container {
-                                                                    display: flex;
-                                                                    justify-content: center;
-                                                                    align-items: center;
-                                                                    gap: 10px;
-                                                                }
-
-                                                                .pagination-btn {
-                                                                    font-size: 10px;
-                                                                    padding: 10px 20px;
-                                                                    transition: all 0.3s ease-in-out;
-                                                                }
-
-                                                                .pagination-btn:hover {
-                                                                    transform: scale(1.05);
-                                                                    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-                                                                }
-
-                                                                .pagination-btn:focus {
-                                                                    outline: none;
-                                                                    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-                                                                }
-
-                                                                .pagination-buttons {
-                                                                    display: flex;
-                                                                    gap: 5px;
-                                                                }
-
-                                                                .pagination-btn.active {
-                                                                    background-color: #003366;
-                                                                    color: white;
-                                                                    font-weight: bold;
-                                                                }
-
-                                                                .pagination-btn.btn-outline-primary {
-                                                                    background-color: white;
-                                                                    border: 2px solid #003366;
-                                                                    color: #003366;
-                                                                }
-
-                                                                .pagination-btn.btn-outline-primary:hover {
-                                                                    background-color: #0057ae;
-                                                                    color: white;
-                                                                }
-
-                                                                .pagination-btn i {
-                                                                    margin-right: 8px;
-                                                                }
-
-                                                                /* Add custom spacing for smaller screen sizes */
-                                                                @media (max-width: 768px) {
-                                                                    .pagination-btn {
-                                                                        font-size: 14px;
-                                                                        padding: 8px 16px;
-                                                                    }
-                                                                }
-                                                            </style>
-                                                        </div>
-                                                    </div>
+                                            </div>
+                                            <% if (currentPage < totalPages) { %>
+                                                <a href="/tenancy-manager/tenants?page=<%= currentPage + 1 %>" class="btn btn-outline-primary pagination-btn"><i class="fas fa-arrow-right"></i></a>
+                                            <% } %>
+                                        </div>
+                                    </div>
                                 </div>
-                                <!-- /.card-body -->
                             </div>
-                            <!-- /.card -->
                         </div>
-                        <!-- /.col -->
                     </div>
-                    <!-- /.row -->
                 </div>
-                <!-- /.container-fluid -->
             </section>
-            <!-- /.content -->
-
-            <!-- Modal Structure -->
-            <div class="modal fade" id="addTenantModal" tabindex="-1" role="dialog"
-                aria-labelledby="addTenantModalLabel" aria-hidden="true">
+        
+            <!-- Add Tenant Modal -->
+            <div class="modal fade" id="addTenantModal" tabindex="-1" role="dialog" aria-labelledby="addTenantModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header" style="color: #003366;">
-                            <h5 class="modal-title" id="addTenantModalLabel">Add New Tenant</h5>
+                    <div class="modal-content custom-modal">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addTenantModalLabel"><i class="fas fa-user-plus mr-2"></i> Add New Tenant</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-
                         <div class="modal-body">
-
-                            <% if (error && error.length> 0) { %>
-                                <div class="alert alert-danger" role="alert">
-                                    <%= error %>
+                            <% if (error && error.length > 0) { %>
+                                <div class="alert alert-danger animate__animated animate__fadeIn">
+                                    <i class="fas fa-exclamation-circle mr-2"></i> <%= error %>
                                 </div>
-                                <% } %>
-
-                                    <form action="/tenancy-manager/tenant/new" method="POST">
-                                        <div class="row">
-                                            <!-- Left Column -->
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="tenantName">Tenant Name</label>
-                                                    <input type="text" class="form-control" id="tenantName" name="name"
-                                                        required>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="tenantEmail">Tenant Email</label>
-                                                    <input type="email" class="form-control" id="tenantEmail"
-                                                        name="email" required>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="tenantPhone">Tenant Phone Number</label>
-                                                    <input type="text" class="form-control" id="tenantPhone"
-                                                        name="phone" required>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="leaseStartDate">Lease Start Date</label>
-                                                    <input type="date" class="form-control" id="leaseStartDate"
-                                                        name="leaseStartDate" required>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="leaseEndDate">Lease End Date</label>
-                                                    <input type="date" class="form-control" id="leaseEndDate"
-                                                        name="leaseEndDate" required>
-                                                </div>
-
-                                            </div>
-
-                                            <!-- Right Column -->
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="tenantDoorNumber">Door Number</label>
-                                                    <input type="text" class="form-control" id="tenantDoorNumber"
-                                                        name="doorNumber" placeholder="e.g B-20" required>
-                                                </div>
-
-                                                <div class="form-group">
-                                                    <label for="propertySelection">Property</label>
-                                                    <select class="form-control" id="propertySelection" name="property"
-                                                        required>
-                                                        <option value="">Select Property</option>
-                                                        <% properties.forEach(property=> { %>
-                                                            <option value="<%= property._id %>">
-                                                                <%= property.name %>
-                                                            </option>
-                                                            <% }); %>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="unitSelection">Unit</label>
-                                                    <select class="form-control" id="unitSelection" name="unitId"
-                                                        required>
-                                                        <option value="">Select Unit</option>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="utilitiesAmount">Utilities</label>
-                                                    <input type="number" class="form-control" id="utilitiesAmount"
-                                                        name="utilities" required min="0" step="0.01" readonly>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="tenantRentPaid">Deposit</label>
-                                                    <input type="number" class="form-control" id="tenantRentPaid"
-                                                        name="deposit" required min="0" step="0.01" readonly>
-                                                </div>
-                                            </div>
+                            <% } %>
+                            <form action="/tenancy-manager/tenant/new" method="POST" class="modern-form">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="tenantName">Tenant Name</label>
+                                            <input type="text" class="form-control custom-input" id="tenantName" name="name" required>
                                         </div>
-                                        <script>
-                                            document.addEventListener('DOMContentLoaded', function () {
-                                                const propertySelect = document.getElementById('propertySelection');
-                                                const unitSelect = document.getElementById('unitSelection');
-                                                const depositInput = document.getElementById('tenantRentPaid');
-                                                const utilitiesInput = document.getElementById('utilitiesAmount');
-
-                                                propertySelect.addEventListener('change', async function () {
-                                                    const propertyId = this.value;
-
-                                                    // Clear previous unit options and reset inputs
-                                                    unitSelect.innerHTML = '<option value="">Select Unit</option>';
-                                                    depositInput.value = '';
-                                                    utilitiesInput.value = '';
-
-                                                    if (propertyId) {
-                                                        try {
-                                                            // Adjusted API endpoint
-                                                            const response = await fetch(`/tenancy-manager/units/${propertyId}`);
-
-                                                            if (!response.ok) {
-                                                                const errorData = await response.json();
-                                                                throw new Error(`Failed to fetch units: ${response.statusText} - ${errorData.error || ''}`);
-                                                            }
-
-                                                            const units = await response.json();
-
-                                                            // Check if the data structure is correct
-                                                            if (Array.isArray(units) && units.length > 0) {
-                                                                units.forEach(unit => {
-                                                                    const option = document.createElement('option');
-                                                                    option.value = unit._id;
-                                                                    option.textContent = unit.unitType;
-                                                                    option.dataset.deposit = unit.deposit || 0;
-                                                                    const totalUtilities = (unit.utilities || []).reduce((sum, utility) => sum + utility.amount, 0);
-                                                                    option.dataset.utilities = totalUtilities;
-
-                                                                    unitSelect.appendChild(option);
-                                                                });
-                                                            } else {
-                                                                console.warn('No units found or incorrect data structure:', units);
-                                                                alert('No units found for the selected property.');
-                                                            }
-                                                        } catch (error) {
-                                                            console.error('Error fetching units:', error);
-                                                            alert(`Failed to fetch units. Error: ${error.message}`);
-                                                        }
-                                                    }
-                                                });
-
-                                                unitSelect.addEventListener('change', function () {
-                                                    const selectedOption = this.options[this.selectedIndex];
-                                                    const depositAmount = selectedOption?.dataset.deposit || 0;
-                                                    const utilitiesAmount = selectedOption?.dataset.utilities || 0;
-                                                    depositInput.value = depositAmount;
-                                                    utilitiesInput.value = utilitiesAmount;
-                                                });
-                                            });
-
-                                            // Change button to "Processing..." on form submission
-                                            document.querySelector('form').addEventListener('submit', function (event) {
-                                                const submitButton = this.querySelector('button[type="submit"]');
-                                                submitButton.disabled = true;
-                                                submitButton.textContent = 'Processing...';
-                                            });
-                                        </script>
-
-
-                                        <button type="submit" class="btn btn-dark w-100"
-                                            style="background-color: #003366; color: #ffffff;">Add Tenant</button>
-                                    </form>
+                                        <div class="form-group">
+                                            <label for="tenantEmail">Email</label>
+                                            <input type="email" class="form-control custom-input" id="tenantEmail" name="email" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="tenantPhone">Phone Number</label>
+                                            <input type="text" class="form-control custom-input" id="tenantPhone" name="phone" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="leaseStartDate">Lease Start Date</label>
+                                            <input type="date" class="form-control custom-input" id="leaseStartDate" name="leaseStartDate" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="leaseEndDate">Lease End Date</label>
+                                            <input type="date" class="form-control custom-input" id="leaseEndDate" name="leaseEndDate" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="tenantDoorNumber">Door Number</label>
+                                            <input type="text" class="form-control custom-input" id="tenantDoorNumber" name="doorNumber" placeholder="e.g., B-20" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="propertySelection">Property</label>
+                                            <select class="form-control custom-select" id="propertySelection" name="property" required>
+                                                <option value="">Select Property</option>
+                                                <% properties.forEach(property => { %>
+                                                    <option value="<%= property._id %>"><%= property.name %></option>
+                                                <% }); %>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="unitSelection">Unit</label>
+                                            <select class="form-control custom-select" id="unitSelection" name="unitId" required>
+                                                <option value="">Select Unit</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="utilitiesAmount">Utilities</label>
+                                            <input type="number" class="form-control custom-input" id="utilitiesAmount" name="utilities" required min="0" step="0.01" readonly>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="tenantRentPaid">Deposit</label>
+                                            <input type="number" class="form-control custom-input" id="tenantRentPaid" name="deposit" required min="0" step="0.01" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-save mr-2"></i> Add Tenant</button>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
-
-
-            <style>
-                @media (max-width: 476px) {
-                    .modal-content {
-                        padding: 5px;
-                    }
-
-                    .modal-title {
-                        font-size: 0.9rem;
-                    }
-
-                    .form-group label {
-                        font-size: 0.6rem;
-                    }
-
-                    .form-control {
-                        font-size: 0.6rem;
-                    }
-
-                    .btn {
-                        font-size: 0.6rem;
-                    }
-
-
-                    .modal-dialog {
-                        max-width: 100%;
-                        max-height: fit-content;
-                    }
-
-
-                }
-            </style>
-
-            <!-- Toastr JS -->
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
-
-
-            <script>// Function for filtering tenants in the table
-                document.getElementById('tenantSearch').addEventListener('input', function () {
-                    const filter = this.value.toLowerCase();
-                    const rows = document.querySelectorAll('table tbody tr');
-
-                    // Loop through each row and toggle its visibility based on the search filter
-                    rows.forEach(row => {
-                        const tenantCells = row.querySelectorAll('td');
-                        let rowVisible = false; // Track visibility state
-
-                        // Check each cell's text against the filter
-                        tenantCells.forEach(cell => {
-                            if (cell.textContent.toLowerCase().includes(filter)) {
-                                rowVisible = true; // Set to true if any cell matches
-                            }
-                        });
-
-                        // Show or hide the row based on visibility state
-                        row.style.display = rowVisible ? '' : 'none';
-                    });
-                });
-
-                // Function to open Edit Modal and populate the fields with tenant data
-                function openEditModal(id, name, email, phone) {
-                    // Populate edit form fields
-                    document.getElementById('tenantName').value = name;
-                    document.getElementById('tenantEmail').value = email;
-                    document.getElementById('tenantPhone').value = phone;
-
-                    // Set form action dynamically to include tenant ID
-                    document.getElementById('editTenantForm').action = `/tenancy-manager/tenants/edit/${id}`;
-
-                    // Open the modal
-                    $('#editTenantModal').modal('show');
-                }
-
-                // Function to open Delete Modal and show tenant name
-                function openDeleteModal(id, name) {
-                    // Set the tenant name in the confirmation message
-                    document.getElementById('deleteTenantName').textContent = name;
-
-                    // Set form action dynamically to include tenant ID
-                    document.getElementById('deleteTenantForm').action = `/tenancy-manager/tenants/delete/${id}`;
-
-                    // Open the modal
-                    $('#deleteTenantModal').modal('show');
-                }
-
-                // Enable Bootstrap tooltips
-                $(function () {
-                    $('[data-toggle="tooltip"]').tooltip();
-                });
-            </script>
-
-
-
-
+        
             <!-- Control Sidebar -->
-            <aside class="control-sidebar control-sidebar-dark">
-                <!-- Control sidebar content goes here -->
-            </aside>
-            <!-- /.control-sidebar -->
-
+            <aside class="control-sidebar control-sidebar-dark"></aside>
+        
             <!-- Main Footer -->
             <footer class="main-footer">
-                <strong>Copyright &copy; 2024-2025 <a href="https://leasecaptain.com/">Lease Captain</a></strong>
+                <strong>Copyright © 2024-2025 <a href="https://leasecaptain.com/">Lease Captain</a></strong>
                 All rights reserved.
                 <div class="float-right d-none d-sm-inline-block">
                     <b>Version</b> 1.0.2
                 </div>
             </footer>
         </div>
-        <!-- ./wrapper -->
+        
+        <style>
+            :root {
+                --primary: #003366;
+                --secondary: #63b3ed;
+                --success: #28a745;
+                --warning: #ffc107;
+                --danger: #dc3545;
+                --background: #f4f6f9;
+                --card-bg: #ffffff;
+            }
+        
+            .content-wrapper {
+                background: var(--background);
+                padding-bottom: 20px;
+            }
+        
+            .custom-card {
+                border: none;
+                border-radius: 10px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                overflow: hidden;
+            }
+        
+            .card-header {
+                background: var(--primary);
+                color: white;
+                padding: 15px;
+                font-size: 1.5rem;
+                font-weight: 600;
+            }
+        
+            .card-body {
+                padding: 20px;
+            }
+        
+            .alert {
+                border-radius: 8px;
+                padding: 15px;
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+        
+            .alert-danger { background: var(--danger); color: white; }
+            .alert-success { background: var(--success); color: white; }
+        
+            .custom-input, .custom-select {
+                border: 2px solid #e2e8f0;
+                border-radius: 6px;
+                padding: 10px;
+                transition: border-color 0.3s ease;
+            }
+        
+            .custom-input:focus, .custom-select:focus {
+                border-color: var(--primary);
+                outline: none;
+                box-shadow: 0 0 5px rgba(0,51,102,0.3);
+            }
+        
+            .btn-primary {
+                background: var(--primary);
+                border: none;
+                padding: 10px 20px;
+                font-weight: 600;
+                transition: background 0.3s ease;
+            }
+        
+            .btn-primary:hover {
+                background: #002244;
+            }
+        
+            .custom-table {
+                background: var(--card-bg);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+        
+            .custom-table thead {
+                background: var(--primary);
+                color: white;
+            }
+        
+            .custom-table th, .custom-table td {
+                padding: 12px;
+                text-align: center;
+                vertical-align: middle;
+            }
+        
+            .custom-table tbody tr:hover {
+                background: #f8f9fa;
+                transition: background 0.2s ease;
+            }
+        
+            .badge {
+                padding: 6px 12px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+        
+            .badge-success { background: var(--success); }
+            .badge-warning { background: var(--warning); color: #212529; }
+            .badge-danger { background: var(--danger); }
+        
+            .pagination-container {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+        
+            .pagination-btn {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+                transition: all 0.3s ease;
+            }
+        
+            .pagination-btn:hover {
+                transform: scale(1.05);
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+        
+            .pagination-btn.btn-primary {
+                background: var(--primary);
+                color: white;
+            }
+        
+            .pagination-btn.btn-outline-primary {
+                border: 2px solid var(--primary);
+                color: var(--primary);
+            }
+        
+            .pagination-btn.btn-outline-primary:hover {
+                background: var(--primary);
+                color: white;
+            }
+        
+            .custom-modal {
+                border-radius: 10px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            }
+        
+            .modal-header {
+                background: var(--primary);
+                color: white;
+            }
+        
+            .modern-form {
+                display: grid;
+                gap: 15px;
+            }
+        
+            @media (max-width: 768px) {
+                .card-header { font-size: 1.25rem; }
+                .custom-table th, .custom-table td { font-size: 0.85rem; padding: 8px; }
+                .pagination-btn { font-size: 0.8rem; padding: 6px 10px; }
+                .modal-lg { max-width: 90%; }
+            }
+        
+            @media (max-width: 476px) {
+                .modal-content { padding: 10px; }
+                .modal-title { font-size: 1rem; }
+                .form-group label { font-size: 0.8rem; }
+                .custom-input, .custom-select { font-size: 0.9rem; }
+                .btn { font-size: 0.9rem; }
+            }
+        </style>
+        
+        <script src="https://kit.fontawesome.com/your-fontawesome-kit.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+        
+        <script>
+            // Tenant Search
+            document.getElementById('tenantSearch').addEventListener('input', function() {
+                const filter = this.value.toLowerCase();
+                const rows = document.querySelectorAll('#tenantTable tbody tr');
+                rows.forEach(row => {
+                    const text = Array.from(row.querySelectorAll('td')).map(cell => cell.textContent.toLowerCase()).join(' ');
+                    row.style.display = text.includes(filter) ? '' : 'none';
+                });
+            });
+        
+            // Unit Selection Logic
+            document.addEventListener('DOMContentLoaded', function() {
+                const propertySelect = document.getElementById('propertySelection');
+                const unitSelect = document.getElementById('unitSelection');
+                const depositInput = document.getElementById('tenantRentPaid');
+                const utilitiesInput = document.getElementById('utilitiesAmount');
+        
+                propertySelect.addEventListener('change', async function() {
+                    const propertyId = this.value;
+                    unitSelect.innerHTML = '<option value="">Select Unit</option>';
+                    depositInput.value = '';
+                    utilitiesInput.value = '';
+        
+                    if (propertyId) {
+                        try {
+                            const response = await fetch(`/tenancy-manager/units/${propertyId}`);
+                            if (!response.ok) throw new Error('Failed to fetch units');
+                            const units = await response.json();
+        
+                            units.forEach(unit => {
+                                const option = document.createElement('option');
+                                option.value = unit._id;
+                                option.textContent = unit.unitType;
+                                option.dataset.deposit = unit.deposit || 0;
+                                option.dataset.utilities = (unit.utilities || []).reduce((sum, utility) => sum + utility.amount, 0);
+                                unitSelect.appendChild(option);
+                            });
+                        } catch (error) {
+                            console.error('Error fetching units:', error);
+                            toastr.error('Failed to load units');
+                        }
+                    }
+                });
+        
+                unitSelect.addEventListener('change', function() {
+                    const selectedOption = this.options[this.selectedIndex];
+                    depositInput.value = selectedOption.dataset.deposit || 0;
+                    utilitiesInput.value = selectedOption.dataset.utilities || 0;
+                });
+        
+                document.querySelector('#addTenantModal form').addEventListener('submit', function() {
+                    const submitButton = this.querySelector('button[type="submit"]');
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+                });
+            });
+        
+            // Tooltips
+            $(function() {
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+        </script>
 
         <!-- REQUIRED SCRIPTS -->
         <!-- jQuery -->

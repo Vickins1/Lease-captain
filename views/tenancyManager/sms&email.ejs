@@ -60,23 +60,11 @@
                     </div>
                 </li>
 
-                <!-- Messages Dropdown Menu -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link" data-toggle="dropdown" href="#">
-                        <i class="far fa-comments"></i>
-                        <span class="badge badge-danger navbar-badge">3</span>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
-                    </div>
-                </li>
+           
                 <!-- Notifications Dropdown Menu -->
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
                         <i class="far fa-bell"></i>
-                        <span class="badge badge-warning navbar-badge">15</span>
                     </a>
 
                 </li>
@@ -173,12 +161,6 @@
                     <a href="/maintenance-requests" class="nav-link">
                         <i class="far fa-circle nav-icon"></i>
                         <p>Maintenance Requests</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/tenancy-manager/tenant-reports" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Tenant Reports</p>
                     </a>
                 </li>
             </ul>
@@ -359,442 +341,394 @@
 
         </aside>
 
-
-    <div class="container mt-4">
-        <h3 class="text-center"><strong>Notifications Management</strong></h3>
-    
-        <!-- Error Message -->
-        <% if (error && error.length > 0) { %>
-            <div class="alert error-message">
-                <%= error %>
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <div class="content-header">
+                <div class="container-fluid">
+                    <header class="header">
+                        <h1 class="header-title">Notifications Dashboard</h1>
+                        <p class="header-subtitle">Manage tenant communications with ease</p>
+                    </header>
+                </div><!-- /.container-fluid -->
             </div>
-        <% } %>
-    
-        <!-- Success Message -->
-        <% if (success && success.length > 0) { %>
-            <div class="alert success-message">
-                <%= success %>
-            </div>
-        <% } %>
-
         
-        <h1>Resend Reminders</h1>
-        <form id="reminderForm">
-          <label for="reminderOption">Send Reminder To:</label>
-          <select id="reminderOption" required>
-            <option value="all">All Tenants</option>
-            <option value="single">Single Tenant</option>
-          </select>
-      
-          <div id="tenantDropdown" style="display: none;">
-            <label for="tenantId">Select Tenant:</label>
-            <select id="tenantId">
-              <option value="" disabled selected>Loading tenants...</option>
-            </select>
-          </div>
-      
-          <button type="submit">Send Reminder</button>
-        </form>
-      
-        <script>
-          const form = document.getElementById('reminderForm');
-          const reminderOption = document.getElementById('reminderOption');
-          const tenantDropdown = document.getElementById('tenantDropdown');
-          const tenantIdSelect = document.getElementById('tenantId');
-      
-          // Show or hide Tenant dropdown based on selected option
-          reminderOption.addEventListener('change', () => {
-            if (reminderOption.value === 'single') {
-              tenantDropdown.style.display = 'block';
-              loadTenants(); // Fetch tenants from the backend
-            } else {
-              tenantDropdown.style.display = 'none';
+            <!-- Main content -->
+            <section class="content">
+                <div class="container-fluid">
+                    <!-- Messages Section -->
+                    <section class="messages-section">
+                        <% if (error && error.length > 0) { %>
+                            <div class="alert alert-error animate__animated animate__fadeIn">
+                                <span class="alert-icon">⚠️</span>
+                                <%= error %>
+                            </div>
+                        <% } %>
+                        <% if (success && success.length > 0) { %>
+                            <div class="alert alert-success animate__animated animate__fadeIn">
+                                <span class="alert-icon">✅</span>
+                                <%= success %>
+                            </div>
+                        <% } %>
+                    </section>
+        
+                    <!-- Quick Actions -->
+                    <section class="quick-actions">
+                        <div class="card quick-action-card" onclick="showModal('reminderModal')">
+                            <i class="fas fa-bell"></i>
+                            <h3>Create Reminder</h3>
+                            <p>Schedule new notifications</p>
+                        </div>
+                        <div class="card quick-action-card" id="resendTrigger">
+                            <i class="fas fa-redo"></i>
+                            <h3>Resend Reminders</h3>
+                            <p>Resend to tenants</p>
+                        </div>
+                        <div class="card quick-action-card" id="messageTrigger">
+                            <i class="fas fa-envelope"></i>
+                            <h3>Send Message</h3>
+                            <p>Broadcast to all</p>
+                        </div>
+                    </section>
+        
+                    <!-- Resend Reminders Form -->
+                    <section class="form-section" id="resendSection" style="display: none;">
+                        <div class="card form-card">
+                            <h2>Resend Reminders</h2>
+                            <form id="reminderForm" class="modern-form">
+                                <div class="form-group">
+                                    <label>Send Reminder To:</label>
+                                    <select id="reminderOption" class="form-select" required>
+                                        <option value="all">All Tenants</option>
+                                        <option value="single">Specific Tenant</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" id="tenantDropdown" style="display: none;">
+                                    <label>Select Tenant:</label>
+                                    <select id="tenantId" class="form-select">
+                                        <option value="" disabled selected>Loading tenants...</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Send Now</button>
+                            </form>
+                        </div>
+                    </section>
+        
+                    <!-- Manual Message Form -->
+                    <section class="form-section" id="messageSection" style="display: none;">
+                        <div class="card form-card">
+                            <h2>Broadcast Message</h2>
+                            <form id="manualSendAllForm" class="modern-form">
+                                <div class="form-group">
+                                    <label>Message Type:</label>
+                                    <select name="messageType" class="form-select" required>
+                                        <option value="sms">SMS</option>
+                                        <option value="email">Email</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Message Content:</label>
+                                    <textarea name="message" rows="4" placeholder="Type your message here..." required class="form-textarea"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Send to All</button>
+                            </form>
+                        </div>
+                    </section>
+        
+                    <!-- Reminder Modal -->
+                    <div id="reminderModal" class="modal">
+                        <div class="modal-content animate__animated animate__zoomIn">
+                            <span class="modal-close" onclick="closeModal('reminderModal')">×</span>
+                            <h2>Create New Reminder</h2>
+                            <form action="/reminders/create" method="POST" class="modern-form">
+                                <div class="form-group">
+                                    <label>Title:</label>
+                                    <input type="text" name="title" placeholder="Reminder title" required class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label>Message:</label>
+                                    <textarea name="message" rows="3" placeholder="Your reminder message" required class="form-textarea"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Schedule:</label>
+                                    <input type="datetime-local" name="sendAt" required class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label>Frequency:</label>
+                                    <select name="frequency" class="form-select" required>
+                                        <option value="" disabled selected>Choose frequency</option>
+                                        <option value="once">One Time</option>
+                                        <option value="daily">Daily</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Create Reminder</button>
+                            </form>
+                        </div>
+                    </div>
+                </div><!-- /.container-fluid -->
+            </section><!-- /.content -->
+        </div><!-- /.content-wrapper -->
+        
+        <style>
+            :root {
+                --primary: #003366;
+                --secondary: #63b3ed;
+                --success: #48bb78;
+                --error: #f56565;
+                --background: #f7fafc;
+                --card-bg: #ffffff;
             }
-          });
-      
-          // Fetch tenants from the backend
-          function loadTenants() {
-            fetch('/api/tenants') // Replace with your actual API endpoint
-              .then((response) => {
-                if (!response.ok) {
-                  throw new Error('Failed to fetch tenants');
+        
+            .content-wrapper {
+                background-color: var(--background);
+                padding-bottom: 20px;
+            }
+        
+            .content-header {
+                padding: 15px 0;
+            }
+        
+            .header {
+                text-align: center;
+                padding: 20px;
+                background: linear-gradient(135deg, var(--primary), var(--secondary));
+                color: white;
+                border-radius: 10px;
+                margin-bottom: 20px;
+            }
+        
+            .header-title {
+                margin: 0;
+                font-size: 2.5rem;
+                font-weight: 700;
+            }
+        
+            .header-subtitle {
+                margin: 5px 0 0;
+                font-size: 1.1rem;
+                opacity: 0.9;
+            }
+        
+            .alert {
+                padding: 15px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+        
+            .alert-error { background: var(--error); color: white; }
+            .alert-success { background: var(--success); color: white; }
+            .alert-icon { font-size: 1.2rem; }
+        
+            .quick-actions {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 20px;
+                margin-bottom: 30px;
+            }
+        
+            .quick-action-card {
+                background: var(--card-bg);
+                padding: 20px;
+                border-radius: 10px;
+                text-align: center;
+                cursor: pointer;
+                transition: transform 0.2s, box-shadow 0.2s;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            }
+        
+            .quick-action-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            }
+        
+            .quick-action-card i {
+                font-size: 2rem;
+                color: var(--primary);
+                margin-bottom: 10px;
+            }
+        
+            .form-section {
+                margin-bottom: 30px;
+            }
+        
+            .form-card {
+                background: var(--card-bg);
+                padding: 25px;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            }
+        
+            .modern-form {
+                display: grid;
+                gap: 15px;
+            }
+        
+            .form-group label {
+                font-weight: 600;
+                color: #2d3748;
+                margin-bottom: 5px;
+                display: block;
+            }
+        
+            .form-input, .form-select, .form-textarea {
+                width: 100%;
+                padding: 10px;
+                border: 2px solid #e2e8f0;
+                border-radius: 6px;
+                font-size: 1rem;
+                transition: border-color 0.2s Ascendantly all;
+                transition: all 0.3s ease-in-out;
+            }
+        
+            .form-input:focus, .form-select:focus, .form-textarea:focus {
+                border-color: var(--primary);
+                outline: none;
+            }
+        
+            .btn-primary {
+                background: var(--primary);
+                color: white;
+                padding: 12px 20px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: 600;
+                transition: background 0.2s;
+            }
+        
+            .btn-primary:hover {
+                background: #2b6cb0;
+            }
+        
+            .modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                align-items: center;
+                justify-content: center;
+                z-index: 1050; /* Ensure it appears above other content */
+            }
+        
+            .modal-content {
+                background: white;
+                padding: 30px;
+                border-radius: 10px;
+                max-width: 500px;
+                width: 90%;
+                position: relative;
+            }
+        
+            .modal-close {
+                position: absolute;
+                top: 10px;
+                right: 15px;
+                font-size: 1.5rem;
+                cursor: pointer;
+                color: #718096;
+            }
+        
+            @media (max-width: 768px) {
+                .header-title { font-size: 2rem; }
+                .quick-action-card { padding: 15px; }
+                .form-card { padding: 20px; }
+            }
+        </style>
+        
+        <script src="https://kit.fontawesome.com/your-fontawesome-kit.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+        
+        <script>
+            // Toggle sections
+            document.getElementById('resendTrigger').addEventListener('click', () => {
+                document.getElementById('resendSection').style.display = 'block';
+                document.getElementById('messageSection').style.display = 'none';
+            });
+        
+            document.getElementById('messageTrigger').addEventListener('click', () => {
+                document.getElementById('messageSection').style.display = 'block';
+                document.getElementById('resendSection').style.display = 'none';
+            });
+        
+            // Reminder Form Logic
+            const reminderForm = document.getElementById('reminderForm');
+            const reminderOption = document.getElementById('reminderOption');
+            const tenantDropdown = document.getElementById('tenantDropdown');
+        
+            reminderOption.addEventListener('change', () => {
+                tenantDropdown.style.display = reminderOption.value === 'single' ? 'block' : 'none';
+                if (reminderOption.value === 'single') loadTenants();
+            });
+        
+            async function loadTenants() {
+                try {
+                    const response = await fetch('/api/tenants');
+                    if (!response.ok) throw new Error('Network error');
+                    const tenants = await response.json();
+                    document.getElementById('tenantId').innerHTML = tenants
+                        .map(t => `<option value="${t.id}">${t.name} (${t.email})</option>`)
+                        .join('');
+                } catch (error) {
+                    document.getElementById('tenantId').innerHTML = '<option value="" disabled>Error loading tenants</option>';
                 }
-                return response.json();
-              })
-              .then((tenants) => {
-                // Populate the dropdown with tenants
-                tenantIdSelect.innerHTML = tenants
-                  .map(
-                    (tenant) =>
-                      `<option value="${tenant.id}">${tenant.name} (${tenant.email})</option>`
-                  )
-                  .join('');
-              })
-              .catch((error) => {
-                tenantIdSelect.innerHTML = `<option value="" disabled>Error loading tenants</option>`;
-                console.error('Error:', error.message);
-              });
-          }
-          </script>
-
-<!-- Manual SMS/Email Section -->
-<div class="sms-section mt-5">
-    <h5>Send Message to All Tenants</h5>
-    <form id="manualSendAllForm" method="POST" class="sms-form">
-        <div class="form-group">
-            <label for="messageType">Message Type</label>
-            <select id="messageType" name="messageType" required>
-                <option value="sms">SMS</option>
-                <option value="email">Email</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="message">Message</label>
-            <textarea id="message" name="message" rows="3" placeholder="Enter your message" required></textarea>
-        </div>
-        <button type="submit" class="btn send-button">Send Message</button>
-    </form>
-</div>
-
-<script>
-    // Handle form submission
-    document.getElementById('manualSendAllForm').addEventListener('submit', async (event) => {
-        event.preventDefault();
-
-        // Gather form data
-        const formData = new FormData(event.target);
-        const data = Object.fromEntries(formData.entries());
-
-        try {
-            // Send POST request to the backend
-            const response = await fetch('/manual-send-all', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+            }
+        
+            // Manual Send Form
+            document.getElementById('manualSendAllForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const data = Object.fromEntries(new FormData(e.target));
+                try {
+                    const response = await fetch('/manual-send-all', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    const result = await response.json();
+                    alert(response.ok ? 'Message sent successfully!' : `Error: ${result.error}`);
+                } catch (error) {
+                    alert('Network error occurred. Please try again.');
+                }
+            });
+        
+            // Resend Reminders Form
+            reminderForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const reminderOption = document.getElementById('reminderOption').value;
+                const tenantId = document.getElementById('tenantId').value;
+                const data = { reminderOption };
+                if (reminderOption === 'single') data.tenantId = tenantId;
+        
+                try {
+                    const response = await fetch('/reminders/resend', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    const result = await response.json();
+                    alert(response.ok ? 'Reminders resent successfully!' : `Error: ${result.error}`);
+                } catch (error) {
+                    alert('Network error occurred. Please try again.');
+                }
             });
 
-            if (response.ok) {
-                alert('Message sent successfully to all tenants!');
-            } else {
-                const result = await response.json();
-                alert(`Failed to send message: ${result.error || 'An unknown error occurred'}`);
+        
+            // Modal Controls
+            function showModal(modalId) {
+                document.getElementById(modalId).style.display = 'flex';
             }
-        } catch (error) {
-            console.error('Error sending message:', error);
-            alert('An error occurred while sending the message. Please try again later.');
-        }
-    });
-</script>
-
-    
-    
-    <!-- Reminder Creation Modal -->
-    <div id="reminderModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('reminderModal')">&times;</span>
-            <h5>Create New Reminder</h5>
-            <form action="/reminders/create" method="POST">
-                
-                <div class="form-group">
-                    <label for="title">Reminder Title</label>
-                    <input type="text" id="title" name="title" placeholder="Enter reminder title" required>
-                </div>
-                <div class="form-group">
-                    <label for="message">Message</label>
-                    <textarea id="message" name="message" rows="3" placeholder="Enter reminder message" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="sendAt">Send At</label>
-                    <input type="datetime-local" id="sendAt" name="sendAt" required>
-                </div>
-                <div class="form-group">
-                    <label for="frequency">Frequency</label>
-                    <select id="frequency" name="frequency" required>
-                        <option value="" disabled selected>Select frequency</option>
-                        <option value="once">Once</option>
-                        <option value="daily">Daily</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="monthly">Monthly</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn save-button">Create Reminder</button>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Custom CSS -->
-    <style>
-
-        .text-center {
-            text-align: center;
-        }
-
-        .alert {
-            padding: 10px;
-            margin: 15px 0;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .error-message {
-            background-color: #f8d7da;
-            color: #721c24;
-            border-left: 4px solid #f5c6cb;
-        }
-
-        .success-message {
-            background-color: #d4edda;
-            color: #155724;
-            border-left: 4px solid #c3e6cb;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 30px;
-        }
-
-        .btn {
-            padding: 12px 18px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease;
-        }
-
-        .create-button {
-            background-color: #003366;
-            color: white;
-        }
-
-        .create-button:hover {
-            background-color: #004080;
-        }
-
-        .edit-button {
-            background-color: #28a745;
-            color: white;
-            font-size: 8px;
-        }
-
-        .edit-button:hover {
-            background-color: #218838;
-        }
-
-        .delete-button {
-            background-color: #9b000f;
-            color: white;
-            font-size: 8px;
-        }
-
-        .delete-button:hover {
-            background-color: #c82333;
-        }
-
-        .send-button {
-            background-color: #28a745;
-            color: white;
-            width: 100%;
-        }
-
-        .send-button:hover {
-            background-color: #218838;
-        }
-
-        .table-wrapper {
-            overflow-x: auto;
-            margin-top: 20px;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-
-        .custom-table {
-            width: 100%;
-            border-collapse: collapse;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .custom-table th,
-        .custom-table td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .custom-table th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-
-        .custom-table td {
-            background-color: #fff;
-            color: #333;
-        }
-
-        .custom-table td.actions {
-            display: flex;
-            gap: 5px;
-        }
-
-        .form-group {
-            margin-bottom: 10px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-        }
-
-        .sms-section {
-            margin-top: 50px;
-            padding: 20px;
-            background-color: #f1f1f1;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            max-width: 600px;
-            width: 100%;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transition: opacity 0.3s ease;
-        }
-
-        .close {
-            float: right;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #333;
-        }
-
-        .close:hover {
-            color: #000;
-        }
-
-        .save-button {
-            background-color: #003366;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .save-button:hover {
-            background-color: #003366;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .section-header {
-                flex-direction: column;
-                align-items: flex-start;
-                margin-top: 20px;
+        
+            function closeModal(modalId) {
+                document.getElementById(modalId).style.display = 'none';
             }
-
-            .btn {
-                width: 100%;
-                margin-top: 10px;
-                font-size: 10px;
-            }
-
-            .custom-table th,
-            .custom-table td {
-                font-size: 0.55rem;
-                padding: 5px;
-            }
-
-            .container {
-                margin: 20px auto;
-            }
-        }
-    </style>
-
-    
-    <!-- Script to Show/Hide Modals -->
-    <script>
-        function showModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.style.display = 'flex';
-            }
-        }
-    
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.style.display = 'none';
-            }
-        }
-    
-        document.getElementById('type').addEventListener('change', function () {
-            if (this.value === 'email') {
-                document.getElementById('subjectGroup').style.display = 'block';
-            } else {
-                document.getElementById('subjectGroup').style.display = 'none';
-            }
-        });
-    </script>
-    
-
-
-
-                       <!-- Control Sidebar -->
-    <aside class="control-sidebar control-sidebar-dark">
-        <!-- Control sidebar content goes here -->
-      </aside>
-      <!-- /.control-sidebar -->
-  
-      <!-- Main Footer -->
-      <footer class="main-footer">
-        <strong>Copyright &copy; 2024-2025 <a href="https://leasecaptain.com/">Lease Captain</a></strong>
-        All rights reserved.
-        <div class="float-right d-none d-sm-inline-block">
-          <b>Version</b> 1.0.2
-        </div>
-      </footer>
-    </div>
-    <!-- ./wrapper -->
-  
+        </script>
     <!-- REQUIRED SCRIPTS -->
     <!-- jQuery -->
     <script src="/plugins/jquery/jquery.min.js"></script>

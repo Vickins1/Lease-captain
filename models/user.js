@@ -118,7 +118,7 @@ userSchema.methods.getPaymentStatus = async function() {
 
 // Attach the passport-local-mongoose plugin
 userSchema.plugin(passportLocalMongoose, {
-  usernameField: 'username' 
+  usernameField: 'email' 
 });
 
 // Export the user model

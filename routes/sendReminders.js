@@ -2,12 +2,13 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 const nodemailer = require('nodemailer');
-const Reminder = require('../models/reminder');
-const Tenant = require('../models/tenant');
-const TopUp = require('../models/topups');
-const { checkRole, isTenancyManager } = require('../middleware');
+const Tenant = require('../models/tenant'); 
+const Reminder = require('../models/reminder'); 
 
-// Function to send reminder via SMS using Umeskia Softwares API
+// Middleware to parse JSON bodies
+router.use(express.json());
+
+// Function to send SMS via Umeskia Softwares API
 async function sendReminderSMS(recipientPhone, title, message) {
     try {
         const smsContent = `Reminder: ${title}\n${message}`;
@@ -21,28 +22,26 @@ async function sendReminderSMS(recipientPhone, title, message) {
             message: smsContent,
             phone: recipientPhone
         }, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers: { 'Content-Type': 'application/json' }
         });
 
         if (response.data.success === '200') {
             console.log(`SMS sent successfully to ${recipientPhone}:`, response.data);
+            return true;
         } else {
             console.error(`Error sending SMS: ${response.data.massage}`);
             throw new Error('Failed to send SMS');
         }
     } catch (error) {
-        console.error('Error sending reminder SMS:', error.response ? error.response.data : error.message);
-        throw new Error('Failed to send reminder SMS');
+        console.error('Error sending SMS:', error.response ? error.response.data : error.message);
+        throw error;
     }
 }
 
-// Function to send reminder via email using Nodemailer
-async function sendReminderEmailNodemailer(recipientEmail, title, message) {
+// Function to send email via Nodemailer
+async function sendReminderEmail(recipientEmail, title, message) {
     try {
         const emailContent = `Reminder: ${title}\n${message}`;
-
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -59,198 +58,167 @@ async function sendReminderEmailNodemailer(recipientEmail, title, message) {
         };
 
         const info = await transporter.sendMail(mailOptions);
-        console.log(`Reminder email sent to ${recipientEmail}: ${info.messageId}`);
+        console.log(`Email sent to ${recipientEmail}: ${info.messageId}`);
+        return true;
     } catch (error) {
-        console.error('Error sending reminder email with Nodemailer:', error);
-        throw new Error('Failed to send reminder email');
+        console.error('Error sending email:', error);
+        throw error;
     }
 }
 
-// Function to send reminders to tenants via SMS or email
-async function sendRemindersToTenants(req, res) {
+// GET /api/tenants - Fetch all tenants
+router.get('/api/tenants', async (req, res) => {
     try {
-        const reminders = await Reminder.find({ userId: req.user._id }).populate('templateId');
-
-        if (reminders.length === 0) {
-            req.flash('error', 'No reminders found for the logged-in user.');
-            return res.redirect('/sms&email');
+        const tenants = await Tenant.find({}, 'id name email phone'); // Include phone for SMS
+        if (!tenants || tenants.length === 0) {
+            return res.status(404).json({ error: 'No tenants found' });
         }
 
-        for (const reminder of reminders) {
-            const tenants = await Tenant.find({ owner: req.user._id });
+        const tenantData = tenants.map(tenant => ({
+            id: tenant.id,
+            name: tenant.name,
+            email: tenant.email,
+            phone: tenant.phone
+        }));
 
-            if (tenants.length === 0) {
-                console.log(`No tenants found for the reminder with title: ${reminder.title}`);
-                continue;
+        res.status(200).json(tenantData);
+    } catch (error) {
+        console.error('Error fetching tenants:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// POST /manual-send-all - Send message to all tenants
+router.post('/manual-send-all', async (req, res) => {
+    try {
+        const { messageType, message } = req.body;
+
+        if (!messageType || !message) {
+            return res.status(400).json({ error: 'Message type and content are required' });
+        }
+
+        if (!['sms', 'email'].includes(messageType)) {
+            return res.status(400).json({ error: 'Invalid message type' });
+        }
+
+        const tenants = await Tenant.find({}, 'id name email phone');
+        if (!tenants || tenants.length === 0) {
+            return res.status(404).json({ error: 'No tenants found' });
+        }
+
+        const sendPromises = tenants.map(tenant => {
+            if (messageType === 'sms' && tenant.phone) {
+                return sendReminderSMS(tenant.phone, 'Broadcast Message', message);
+            } else if (messageType === 'email' && tenant.email) {
+                return sendReminderEmail(tenant.email, 'Broadcast Message', message);
             }
+            return Promise.resolve(); // Skip if no contact info
+        });
 
-            for (const tenant of tenants) {
+        await Promise.all(sendPromises);
+        res.status(200).json({ message: `Messages sent successfully via ${messageType}` });
+    } catch (error) {
+        console.error('Error sending broadcast:', error);
+        res.status(500).json({ error: 'Failed to send messages' });
+    }
+});
+
+// POST /reminders/create - Create a new reminder
+router.post('/reminders/create', async (req, res) => {
+    try {
+        const { title, message, sendAt, frequency } = req.body;
+
+        if (!title || !message || !sendAt || !frequency) {
+            return res.status(400).json({ error: 'All fields are required' });
+        }
+
+        const validFrequencies = ['once', 'daily', 'weekly', 'monthly'];
+        if (!validFrequencies.includes(frequency)) {
+            return res.status(400).json({ error: 'Invalid frequency' });
+        }
+
+        const reminder = new Reminder({
+            title,
+            message,
+            sendAt: new Date(sendAt),
+            frequency,
+            status: 'pending',
+            createdAt: new Date()
+        });
+
+        await reminder.save();
+        res.status(201).json({ message: 'Reminder created successfully', reminder });
+    } catch (error) {
+        console.error('Error creating reminder:', error);
+        res.status(500).json({ error: 'Failed to create reminder' });
+    }
+});
+
+// POST /reminders/resend - Resend reminders to tenants
+router.post('/reminders/resend', async (req, res) => {
+    try {
+        const { reminderOption, tenantId } = req.body;
+
+        if (!reminderOption) {
+            return res.status(400).json({ error: 'Reminder option is required' });
+        }
+
+        let tenants = [];
+        if (reminderOption === 'single') {
+            if (!tenantId) {
+                return res.status(400).json({ error: 'Tenant ID is required for single tenant' });
+            }
+            const tenant = await Tenant.findById(tenantId, 'id name email phone');
+            if (!tenant) {
+                return res.status(404).json({ error: 'Tenant not found' });
+            }
+            tenants = [tenant];
+        } else if (reminderOption === 'all') {
+            tenants = await Tenant.find({}, 'id name email phone');
+            if (!tenants || tenants.length === 0) {
+                return res.status(404).json({ error: 'No tenants found' });
+            }
+        } else {
+            return res.status(400).json({ error: 'Invalid reminder option' });
+        }
+
+        // Fetch pending reminders (you might want to filter by date or status)
+        const reminders = await Reminder.find({ status: 'pending' });
+        if (!reminders || reminders.length === 0) {
+            return res.status(404).json({ error: 'No pending reminders found' });
+        }
+
+        const sendPromises = [];
+        for (const tenant of tenants) {
+            for (const reminder of reminders) {
+                if (tenant.phone) {
+                    sendPromises.push(
+                        sendReminderSMS(tenant.phone, reminder.title, reminder.message)
+                            .then(() => {
+                                // Optionally update reminder status
+                                reminder.status = 'sent';
+                                return reminder.save();
+                            })
+                    );
+                }
                 if (tenant.email) {
-                    await sendReminderEmailNodemailer(tenant.email, reminder.title, reminder.message);
-                    console.log(`Email sent to tenant ${tenant.name} at ${tenant.email}`);
-                } else if (tenant.phone) {
-                    await sendReminderSMS(tenant.phone, reminder.title, reminder.message);
-                    console.log(`SMS sent to tenant ${tenant.name} at ${tenant.phone}`);
-                } else {
-                    console.error(`No contact information found for tenant ${tenant.name}`);
+                    sendPromises.push(
+                        sendReminderEmail(tenant.email, reminder.title, reminder.message)
+                            .then(() => {
+                                reminder.status = 'sent';
+                                return reminder.save();
+                            })
+                    );
                 }
             }
         }
 
-        req.flash('success', 'Reminders sent successfully to all tenants.');
-        res.redirect('/sms&email');
+        await Promise.all(sendPromises);
+        res.status(200).json({ message: 'Reminders resent successfully' });
     } catch (error) {
-        console.error('Error sending reminders to tenants:', error);
-        req.flash('error', 'Error sending reminders to tenants.');
-        res.redirect('/sms&email');
-    }
-}
-
-// Route to trigger sending reminders
-router.post('/reminders/send', isTenancyManager, sendRemindersToTenants);
-
-// Function to fetch SMS credit balance using Umeskia Softwares API
-async function checkSMSCreditBalance() {
-    try {
-        const smsCreditUrl = 'https://api.umeskiasoftwares.com/api/v1/smsbalance';
-        const response = await axios.post(smsCreditUrl, {
-            api_key: process.env.UMS_API_KEY,
-            email: process.env.UMS_EMAIL
-        }, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (response.data.success === '200') {
-            const creditBalance = response.data.creditBalance;
-            console.log(`Current SMS credit balance: ${creditBalance}`);
-            return creditBalance;
-        } else {
-            console.error('Error fetching SMS credit balance:', response.data.message);
-            throw new Error('Failed to fetch SMS credit balance');
-        }
-    } catch (error) {
-        console.error('Error fetching SMS credit balance:', error.response ? error.response.data : error.message);
-        throw new Error('Failed to fetch SMS credit balance');
-    }
-}
-
-// Route to display SMS credit balance to the user
-router.get('/sms/credit-balance', async (req, res) => {
-    try {
-        const creditBalance = await checkSMSCreditBalance();
-        res.render('smsCreditBalance', {
-            creditBalance,
-            success: req.flash('success'),
-            error: req.flash('error')
-        });
-    } catch (error) {
-        console.error('Error displaying SMS credit balance:', error);
-        req.flash('error', 'Error fetching SMS credit balance.');
-        res.redirect('/sms&email');
+        console.error('Error resending reminders:', error);
+        res.status(500).json({ error: 'Failed to resend reminders' });
     }
 });
-
-// Route to handle SMS top-up requests
-router.post('/topups', isTenancyManager, async (req, res) => {
-    const { amount, phone } = req.body;
-
-    if (!amount || !phone) {
-        req.flash('error', 'Please provide both the amount and the phone number.');
-        return res.redirect('/top-ups');
-    }
-
-    try {
-        const payload = {
-            api_key: process.env.UMS_API_KEY,
-            email: process.env.UMS_EMAIL,
-            Sender_Id: process.env.UMS_SENDER_ID || 'UMS_SMS',
-            amount,
-            phone
-        };
-
-        const response = await axios.post('https://api.umeskiasoftwares.com/api/v1/sms', payload, {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        if (response.data.success === '200') {
-            const newTopUp = new TopUp({
-                amount,
-                phone,
-                createdBy: req.user._id
-            });
-            await newTopUp.save();
-
-            req.flash('success', 'SMS top-up successful!');
-            res.redirect('/sms&email');
-        } else {
-            req.flash('error', 'Top-up failed: ' + response.data.message);
-            res.redirect('/sms&email');
-        }
-    } catch (error) {
-        console.error('Error during SMS top-up:', error);
-        req.flash('error', 'Something went wrong during the SMS top-up. Please try again.');
-        res.redirect('/sms&email');
-    }
-});
-
-router.post('/topups/:id/delete', isTenancyManager, async (req, res) => {
-    try {
-        const { id } = req.params;
-        await TopUp.findByIdAndDelete(id);
-        req.flash('success', 'Top-up deleted successfully.');
-        res.redirect('/sms&email');
-    } catch (error) {
-        console.error('Error deleting top-up:', error);
-        req.flash('error', 'Error deleting the top-up.');
-        res.redirect('/sms&email');
-    }
-});
-
-// Route to send SMS manually
-router.post('/send-sms', isTenancyManager, async (req, res) => {
-       const { phone, smsMessage } = req.body;
-   
-       // Check if phone and message are provided
-       if (!phone || !smsMessage) {
-           req.flash('error', 'Please provide both the phone number and the message.');
-           return res.redirect('/sms&email');
-       }
-   
-       try {
-           // Prepare SMS data
-           const payload = {
-               api_key: process.env.UMS_API_KEY,
-               email: process.env.UMS_EMAIL,
-               Sender_Id: process.env.UMS_SENDER_ID || 'UMS_SMS',
-               message: smsMessage,
-               phone: phone
-           };
-   
-           // Send the SMS using Umeskia API
-           const smsApiUrl = 'https://api.umeskiasoftwares.com/api/v1/sms';
-           const response = await axios.post(smsApiUrl, payload, {
-               headers: {
-                   'Content-Type': 'application/json',
-               },
-           });
-   
-           // Check if the SMS was sent successfully
-           if (response.data.success === '200') {
-               req.flash('success', `SMS sent successfully to ${phone}.`);
-           } else {
-               req.flash('error', `Failed to send SMS: ${response.data.massage}`);
-           }
-           res.redirect('/sms&email');
-       } catch (error) {
-           console.error('Error sending SMS manually:', error);
-           req.flash('error', 'Failed to send SMS. Please try again.');
-           res.redirect('/sms&email');
-       }
-   });
-   
 
 module.exports = router;

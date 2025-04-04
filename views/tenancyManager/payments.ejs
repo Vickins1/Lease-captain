@@ -163,12 +163,6 @@
                         <p>Maintenance Requests</p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="/tenancy-manager/tenant-reports" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Tenant Reports</p>
-                    </a>
-                </li>
             </ul>
         </li>
 
@@ -347,7 +341,6 @@
             <!-- /.sidebar -->
 
         </aside>
-
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <!-- Main content -->
@@ -355,25 +348,24 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
-                    <div class="card">
+                    <div class="card custom-card">
                         <div class="card-header">
-                            <h3 class="card-title">Transactions</h3>
+                            <h3 class="card-title"><i class="fas fa-exchange-alt mr-2"></i> Transactions</h3>
                         </div>
-
-                        <!-- Search Form -->
-                        <div class="card-body py-3">
-                            <div class="input-group mb-3" style="max-width: 400px; margin: 0 auto;">
-                                <input type="text" id="searchInput" class="form-control" 
-                                       placeholder="Search by Tenant Name or Property" 
-                                       aria-label="Search transactions">
-                                <div class="input-group-append">
+                        <div class="card-body py-4">
+                            <!-- Search Form -->
+                            <div class="input-group mb-4" style="max-width: 500px; margin: 0 auto;">
+                                <div class="input-group-prepend">
                                     <span class="input-group-text"><i class="fas fa-search"></i></span>
                                 </div>
+                                <input type="text" id="searchInput" class="form-control custom-input" 
+                                       placeholder="Search by Tenant Name or Property" 
+                                       aria-label="Search transactions">
                             </div>
 
                             <!-- Table -->
                             <div class="table-responsive">
-                                <table id="paymentsTable" class="table table-bordered table-hover table-striped">
+                                <table id="paymentsTable" class="table table-striped table-hover custom-table">
                                     <thead>
                                         <tr>
                                             <th>#</th>
@@ -382,10 +374,10 @@
                                             <th>Property</th>
                                             <th>Unit</th>
                                             <th>Door</th>
-                                            <th>Payment Type</th>
-                                            <th>Total Amount</th>
+                                            <th>Type</th>
+                                            <th>Amount</th>
                                             <th>Date Paid</th>
-                                            <th>Payment Method</th>
+                                            <th>Method</th>
                                             <th>Status</th>
                                         </tr>
                                     </thead>
@@ -404,12 +396,12 @@
                                                 <td><%= payment.datePaid ? new Date(payment.datePaid).toLocaleDateString() : 'N/A' %></td>
                                                 <td><%= payment.method || 'N/A' %></td>
                                                 <td>
-                                                    <span class="<%= payment.status === 'completed' ? 'text-success' : 
-                                                                    payment.status === 'pending' ? 'text-warning' : 
-                                                                    payment.status === 'failed' ? 'text-danger' : 'text-secondary' %>">
+                                                    <span class="badge <%= payment.status === 'completed' ? 'badge-success' : 
+                                                                          payment.status === 'pending' ? 'badge-warning' : 
+                                                                          payment.status === 'failed' ? 'badge-danger' : 'badge-secondary' %>">
                                                         <i class="fas <%= payment.status === 'completed' ? 'fa-check-circle' : 
                                                                          payment.status === 'pending' ? 'fa-hourglass-half' : 
-                                                                         payment.status === 'failed' ? 'fa-times-circle' : 'fa-question-circle' %>"></i>
+                                                                         payment.status === 'failed' ? 'fa-times-circle' : 'fa-question-circle' %> mr-1"></i>
                                                         <%= payment.status || 'N/A' %>
                                                     </span>
                                                 </td>
@@ -419,25 +411,19 @@
                                 </table>
                             </div>
                         </div>
-                        <!-- /.card-body -->
                     </div>
-                    <!-- /.card -->
                 </div>
-                <!-- /.col -->
             </div>
-            <!-- /.row -->
         </div>
-        <!-- /.container-fluid -->
     </section>
-    <!-- /.content -->
 
     <!-- Pagination -->
-    <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center custom-pagination">
             <% if (currentPage > 1) { %>
                 <li class="page-item">
                     <a class="page-link" href="/tenancy-manager/payments?page=<%= currentPage - 1 %>" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
+                        <i class="fas fa-arrow-left"></i>
                     </a>
                 </li>
             <% } %>
@@ -449,70 +435,161 @@
             <% if (currentPage < totalPages) { %>
                 <li class="page-item">
                     <a class="page-link" href="/tenancy-manager/payments?page=<%= currentPage + 1 %>" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
+                        <i class="fas fa-arrow-right"></i>
                     </a>
                 </li>
             <% } %>
         </ul>
     </nav>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <strong>Copyright © 2024-2025 <a href="https://leasecaptain.com/">Lease Captain</a></strong>
+        All rights reserved.
+        <div class="float-right d-none d-sm-inline-block">
+            <b>Version</b> 1.0.2
+        </div>
+    </footer>
 </div>
 
 <style>
-    /* Responsive Table and Form Styling */
-    .table-responsive {
-        overflow-x: auto;
+    :root {
+        --primary: #003366;
+        --secondary: #63b3ed;
+        --success: #28a745;
+        --warning: #ffc107;
+        --danger: #dc3545;
+        --background: #f4f6f9;
+        --card-bg: #ffffff;
     }
 
-    .table th, .table td {
+    .content-wrapper {
+        background: var(--background);
+        padding-bottom: 20px;
+    }
+
+    .custom-card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: var(--primary);
+        color: white;
+        padding: 15px;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .input-group {
+        transition: all 0.3s ease;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .custom-input {
+        border: 2px solid #e2e8f0;
+        border-left: none;
+        padding: 10px;
+        transition: border-color 0.3s ease;
+    }
+
+    .custom-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 5px rgba(0,51,102,0.3);
+        outline: none;
+    }
+
+    .input-group-text {
+        background: var(--primary);
+        color: white;
+        border: 2px solid var(--primary);
+        border-right: none;
+    }
+
+    .custom-table {
+        background: var(--card-bg);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .custom-table thead {
+        background: var(--primary);
+        color: white;
+    }
+
+    .custom-table th, .custom-table td {
+        padding: 12px;
+        text-align: center;
         vertical-align: middle;
         white-space: nowrap;
     }
 
+    .custom-table tbody tr:hover {
+        background: #f8f9fa;
+        transition: background 0.2s ease;
+    }
+
+    .badge {
+        padding: 6px 12px;
+        border-radius: 12px;
+        font-weight: 600;
+    }
+
+    .badge-success { background: var(--success); }
+    .badge-warning { background: var(--warning); color: #212529; }
+    .badge-danger { background: var(--danger); }
+    .badge-secondary { background: #6c757d; }
+
+    .custom-pagination .page-link {
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        border-radius: 6px;
+        margin: 0 5px;
+        padding: 8px 12px;
+        transition: all 0.3s ease;
+    }
+
+    .custom-pagination .page-item.active .page-link {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+
+    .custom-pagination .page-link:hover {
+        background: var(--primary);
+        color: white;
+        transform: scale(1.05);
+    }
+
     @media (max-width: 768px) {
-        .input-group {
-            max-width: 100%;
-        }
-        .table th, .table td {
-            font-size: 12px;
-            padding: 6px;
-        }
-        .pagination .page-link {
-            font-size: 12px;
-            padding: 5px 10px;
-        }
+        .card-header { font-size: 1.25rem; }
+        .custom-table th, .custom-table td { font-size: 0.85rem; padding: 8px; }
+        .input-group { max-width: 100%; }
+        .custom-pagination .page-link { font-size: 0.9rem; padding: 6px 10px; }
     }
 
     @media (max-width: 576px) {
-        .table th, .table td {
-            font-size: 10px;
-            padding: 4px;
-        }
-        .pagination .page-link {
-            font-size: 10px;
-            padding: 4px 8px;
-        }
-        .input-group-text {
-            padding: 0.375rem 0.5rem;
-        }
-    }
-
-    /* Enhance Search Input */
-    .input-group {
-        transition: all 0.3s ease;
-    }
-    .form-control:focus {
-        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-        border-color: #007bff;
+        .custom-table th, .custom-table td { font-size: 0.75rem; padding: 6px; }
+        .custom-pagination .page-link { font-size: 0.8rem; padding: 4px 8px; }
+        .input-group-text { padding: 0.375rem 0.5rem; }
     }
 </style>
 
+<script src="https://kit.fontawesome.com/your-fontawesome-kit.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const searchInput = document.getElementById('searchInput');
         const tableBody = document.getElementById('paymentsTableBody');
         const rows = Array.from(tableBody.getElementsByTagName('tr'));
 
-        // Debounce function to limit filter execution
         const debounce = (func, delay) => {
             let timeoutId;
             return (...args) => {
@@ -521,7 +598,6 @@
             };
         };
 
-        // Filter function
         const filterTable = () => {
             const query = searchInput.value.trim().toLowerCase();
             rows.forEach(row => {
@@ -531,18 +607,15 @@
                 row.style.display = isMatch ? '' : 'none';
             });
 
-            // Update row numbers after filtering
             const visibleRows = rows.filter(row => row.style.display !== 'none');
             visibleRows.forEach((row, index) => {
                 row.cells[0].textContent = index + 1;
             });
         };
 
-        // Apply filter with debounce on input
         searchInput.addEventListener('input', debounce(filterTable, 300));
     });
 </script>
-
 
         <!-- Control Sidebar -->
         <aside class="control-sidebar control-sidebar-dark">

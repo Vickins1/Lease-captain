@@ -163,12 +163,6 @@
                         <p>Maintenance Requests</p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="/tenancy-manager/tenant-reports" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Tenant Reports</p>
-                    </a>
-                </li>
             </ul>
         </li>
 
@@ -347,304 +341,432 @@
 
 <!-- Content Wrapper -->
 <div class="content-wrapper">
-    <!-- Content Header -->
-     <div class="content-header">
+    <section class="content">
+        <div class="container-fluid mt-4">
+            <!-- Messages -->
+            <% if (error && error.length > 0) { %>
+                <div class="alert alert-danger animate__animated animate__fadeIn text-center">
+                    <i class="fas fa-exclamation-circle mr-2"></i> <%= error %>
+                </div>
+            <% } %>
+            <% if (success && success.length > 0) { %>
+                <div class="alert alert-success animate__animated animate__fadeIn text-center">
+                    <i class="fas fa-check-circle mr-2"></i> <%= success %>
+                </div>
+            <% } %>
 
-        <h2 class="text-center mt-4"><strong>Expenses</strong></h2>
+            <div class="card custom-card">
+                <div class="card-header">
+                    <h4 class="mb-0"><i class="fas fa-money-bill-wave mr-2"></i> Expenses</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+                        <!-- Search Form -->
+                        <form id="searchForm" action="/expenses" method="GET" class="form-inline mb-2 mb-md-0">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                </div>
+                                <input type="text" id="searchInput" name="search" class="form-control custom-input" 
+                                       placeholder="Search by name or category" value="<%= search || '' %>">
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-primary"><i class="fas fa-search mr-1"></i> Search</button>
+                                </div>
+                            </div>
+                        </form>
+                        <!-- Add Expense Button -->
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createExpenseModal">
+                            <i class="fas fa-plus mr-2"></i> Add Expense
+                        </button>
+                    </div>
 
-        <!-- Messages -->
-        <% if (error && error.length > 0) { %>
-            <div class="alert alert-danger text-center" role="alert" style="font-size: 0.9rem;">
-                <%= error %>
-            </div>
-        <% } %>
-        <% if (success && success.length > 0) { %>
-            <div class="alert alert-success text-center" role="alert" style="font-size: 0.9rem;">
-                <%= success %>
-            </div>
-        <% } %>
-
-
-
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <!-- Search Form -->
-            <form id="searchForm" action="/expenses" method="GET" class="form-inline">
-                <input type="text" id="searchInput" name="search" class="form-control mr-2"
-                       placeholder="Search by name or category" value="<%= search || '' %>">
-                <button type="submit" class="btn btn-dark">Search</button>
-            </form>
-        
-            <!-- Add Expense Button -->
-            <button type="button" class="btn btn-dark"
-                    data-toggle="modal" data-target="#createExpenseModal"
-                    style="background-color: #003366; color: #ffffff; transition: background-color 0.3s;">
-                Add Expense
-            </button>
-        </div>
-<!-- Expenses Table -->
-<div class="table-container position-relative">
-    <div class="table-responsive">
-        <table class="table table-sm table-striped table-hover table-bordered" id="expensesTable">
-            <thead class="text-center">
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Expense ID</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Category</th>
-                    <th scope="col">Amount</th>
-                    <th scope="col">Date</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Payment Method</th>
-                    <th scope="col">Receipt</th>
-                    <th scope="col">Tags</th>
-                    <th scope="col">Notes</th>
-                    <th scope="col">Actions</th> <!-- New column for actions -->
-                </tr>
-            </thead>
-            <tbody class="text-center">
-                <% if (expenses && expenses.length > 0) { %>
-                    <% expenses.forEach((expense, index) => { %>
-                        <tr data-expense-id="<%= expense.id || index %>">
-                            <td><%= (currentPage - 1) * pageSize + index + 1 %></td>
-                            <td><%= expense.expenseId || 'N/A' %></td>
-                            <td><%= expense.name || 'N/A' %></td>
-                            <td><%= expense.category || 'N/A' %></td>
-                            <td>Ksh.<%= Number(expense.amount || 0).toFixed(2) %></td>
-                            <td><%= expense.date ? new Date(expense.date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A' %></td>
-                            <td>
-                                <span class="badge bg-<%= expense.status === 'Pending' ? 'warning' : expense.status === 'Approved' ? 'success' : 'danger' %>">
-                                    <%= expense.status || 'N/A' %>
-                                </span>
-                            </td>
-                            <td><%= expense.paymentMethod || 'N/A' %></td>
-                            <td>
-                                <% if (expense.receipt) { %>
-                                    <a href="<%= expense.receipt %>" target="_blank">View</a>
+                    <!-- Expenses Table -->
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover custom-table" id="expensesTable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Expense ID</th>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Method</th>
+                                    <th>Receipt</th>
+                                    <th>Tags</th>
+                                    <th>Notes</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (expenses && expenses.length > 0) { %>
+                                    <% expenses.forEach((expense, index) => { %>
+                                        <tr data-expense-id="<%= expense.id || index %>">
+                                            <td><%= (currentPage - 1) * pageSize + index + 1 %></td>
+                                            <td><%= expense.expenseId || 'N/A' %></td>
+                                            <td><%= expense.name || 'N/A' %></td>
+                                            <td><%= expense.category || 'N/A' %></td>
+                                            <td>Ksh.<%= Number(expense.amount || 0).toFixed(2) %></td>
+                                            <td><%= expense.date ? new Date(expense.date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A' %></td>
+                                            <td>
+                                                <span class="badge <%= expense.status === 'Pending' ? 'badge-warning' : 
+                                                                      expense.status === 'Approved' ? 'badge-success' : 'badge-danger' %>">
+                                                    <%= expense.status || 'N/A' %>
+                                                </span>
+                                            </td>
+                                            <td><%= expense.paymentMethod || 'N/A' %></td>
+                                            <td>
+                                                <% if (expense.receipt) { %>
+                                                    <a href="<%= expense.receipt %>" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></a>
+                                                <% } else { %>
+                                                    N/A
+                                                <% } %>
+                                            </td>
+                                            <td><%= expense.tags && expense.tags.length > 0 ? expense.tags.join(', ') : 'N/A' %></td>
+                                            <td><%= expense.notes || 'N/A' %></td>
+                                            <td>
+                                                <form action="/expenses/delete/<%= expense._id %>" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this expense?');">
+                                                    <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
                                 <% } else { %>
-                                    N/A
+                                    <tr><td colspan="12" class="text-center text-muted">No expenses found</td></tr>
                                 <% } %>
-                            </td>
-                            <td><%= expense.tags && expense.tags.length > 0 ? expense.tags.join(', ') : 'N/A' %></td>
-                            <td><%= expense.notes || 'N/A' %></td>
-                            <td>
-                                <form action="/expenses/delete/<%= expense._id %>" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this expense?');">
-                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                    <% }); %>
-                <% } else { %>
-                    <tr><td colspan="12">No expenses found</td></tr>
-                <% } %>
-            </tbody>
-        </table>
-    </div>
-</div>
+                            </tbody>
+                        </table>
+                    </div>
 
-<% if (totalPages > 0) { %>
-    <nav aria-label="Expenses page navigation">
-        <ul class="pagination justify-content-center">
-            <!-- Previous Button -->
-            <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
-                <a class="page-link" href="<%= currentPage > 1 ? `/expenses?page=${currentPage - 1}&search=${encodeURIComponent(search || '')}` : '#' %>" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
+                    <!-- Pagination -->
+                    <% if (totalPages > 0) { %>
+                        <nav aria-label="Expenses page navigation" class="mt-4">
+                            <ul class="pagination justify-content-center custom-pagination">
+                                <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                                    <a class="page-link" href="<%= currentPage > 1 ? `/expenses?page=${currentPage - 1}&search=${encodeURIComponent(search || '')}` : '#' %>" aria-label="Previous">
+                                        <i class="fas fa-arrow-left"></i>
+                                    </a>
+                                </li>
+                                <% 
+                                    const maxPagesToShow = 5;
+                                    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+                                    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+                                    if (endPage - startPage + 1 < maxPagesToShow) {
+                                        startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                                    }
+                                %>
+                                <% if (startPage > 1) { %>
+                                    <li class="page-item">
+                                        <a class="page-link" href="/expenses?page=1&search=<%= encodeURIComponent(search || '') %>">1</a>
+                                    </li>
+                                    <% if (startPage > 2) { %>
+                                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                                    <% } %>
+                                <% } %>
+                                <% for (let i = startPage; i <= endPage; i++) { %>
+                                    <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                        <a class="page-link" href="/expenses?page=<%= i %>&search=<%= encodeURIComponent(search || '') %>"><%= i %></a>
+                                    </li>
+                                <% } %>
+                                <% if (endPage < totalPages) { %>
+                                    <% if (endPage < totalPages - 1) { %>
+                                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                                    <% } %>
+                                    <li class="page-item">
+                                        <a class="page-link" href="/expenses?page=<%= totalPages %>&search=<%= encodeURIComponent(search || '') %>"><%= totalPages %></a>
+                                    </li>
+                                <% } %>
+                                <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                                    <a class="page-link" href="<%= currentPage < totalPages ? `/expenses?page=${currentPage + 1}&search=${encodeURIComponent(search || '')}` : '#' %>" aria-label="Next">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    <% } else if (expenses.length === 0) { %>
+                        <p class="text-center text-muted mt-3">No expenses found for the current search.</p>
+                    <% } %>
 
-            <!-- Page Numbers (Dynamic Range) -->
-            <% 
-                const maxPagesToShow = 5;
-                let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
-                let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
-                if (endPage - startPage + 1 < maxPagesToShow) {
-                    startPage = Math.max(1, endPage - maxPagesToShow + 1);
-                }
-            %>
-            <% if (startPage > 1) { %>
-                <li class="page-item">
-                    <a class="page-link" href="/expenses?page=1&search=<%= encodeURIComponent(search || '') %>">1</a>
-                </li>
-                <% if (startPage > 2) { %>
-                    <li class="page-item disabled"><span class="page-link">...</span></li>
-                <% } %>
-            <% } %>
-            <% for (let i = startPage; i <= endPage; i++) { %>
-                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                    <a class="page-link" href="/expenses?page=<%= i %>&search=<%= encodeURIComponent(search || '') %>"><%= i %></a>
-                </li>
-            <% } %>
-            <% if (endPage < totalPages) { %>
-                <% if (endPage < totalPages - 1) { %>
-                    <li class="page-item disabled"><span class="page-link">...</span></li>
-                <% } %>
-                <li class="page-item">
-                    <a class="page-link" href="/expenses?page=<%= totalPages %>&search=<%= encodeURIComponent(search || '') %>"><%= totalPages %></a>
-                </li>
-            <% } %>
-
-            <!-- Next Button -->
-            <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
-                <a class="page-link" href="<%= currentPage < totalPages ? `/expenses?page=${currentPage + 1}&search=${encodeURIComponent(search || '')}` : '#' %>" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-<% } else if (expenses.length === 0) { %>
-    <p class="text-center text-muted">No expenses found for the current search.</p>
-<% } %>
-<style>
-    .pagination .page-link {
-    color: #003366;
-    border-radius: 5px;
-    margin: 0 2px;
-}
-.pagination .page-item.active .page-link {
-    background-color: #003366;
-    border-color: #003366;
-    color: white;
-}
-.pagination .page-item.disabled .page-link {
-    color: #6c757d;
-    pointer-events: none;
-}
-</style>
-
-<div class="modern-card mb-4">
-    <div class="card-header">
-        <h5 class="mb-0">Total Expenses</h5>
-    </div>
-    <div class="card-body">
-        <p class="lead">Ksh. <%= totalExpensesAmount.toFixed(2) %></p>
-    </div>
-</div>
-<!-- Create Expense Modal -->
-<div class="modal fade" 
-     id="createExpenseModal" 
-     tabindex="-1" 
-     aria-labelledby="createExpenseModalLabel" 
-     aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="createExpenseModalLabel">Create New Expense</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close">X</button>
+                    <!-- Total Expenses -->
+                    <div class="card modern-card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-calculator mr-2"></i> Total Expenses</h5>
+                        </div>
+                        <div class="card-body">
+                            <h4 class="lead"><strong>Ksh. <%= totalExpensesAmount.toFixed(2) %></strong></h4>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <form action="/expenses" method="POST" id="createExpenseForm" enctype="multipart/form-data">
-                <div class="modal-body">
-                    <div class="form-group mb-3">
-                        <label for="expenseName" class="form-label">Expense Name</label>
-                        <input type="text" class="form-control" id="expenseName" name="name" required>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="category" class="form-label">Category</label>
-                        <input type="text" class="form-control" id="category" name="category" required>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="amount" class="form-label">Amount</label>
-                        <input type="number" 
-                               class="form-control" 
-                               id="amount" 
-                               name="amount" 
-                               min="0" 
-                               step="0.01" 
-                               required 
-                               oninput="this.value = Math.abs(this.value)">
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="date" class="form-label">Date</label>
-                        <input type="date" 
-                               class="form-control" 
-                               id="date" 
-                               name="date" 
-                               required 
-                               max="<%= new Date().toISOString().split('T')[0] %>">
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="status" class="form-label">Status</label>
-                        <select class="form-control" id="status" name="status" required>
-                            <option value="Pending">Pending</option>
-                            <option value="Approved">Approved</option>
-                            <option value="Rejected">Rejected</option>
-                        </select>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="paymentMethod" class="form-label">Payment Method</label>
-                        <select class="form-control" id="paymentMethod" name="paymentMethod" required>
-                            <option value="Cash">Cash</option>
-                            <option value="Credit Card">Credit Card</option>
-                            <option value="Debit Card">Debit Card</option>
-                            <option value="Mobile Payment">Mobile Payment</option>
-                            <option value="Bank Transfer">Bank Transfer</option>
-                        </select>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="receipt" class="form-label">Receipt (Optional)</label>
-                        <input type="file" class="form-control" id="receipt" name="receipt" accept="image/*,application/pdf">
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="tags" class="form-label">Tags (comma-separated, optional)</label>
-                        <input type="text" class="form-control" id="tags" name="tags" placeholder="e.g., Business, Travel">
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="notes" class="form-label">Notes (Optional)</label>
-                        <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
-                    </div>
+        </div>
+    </section>
+
+    <!-- Create Expense Modal -->
+    <div class="modal fade" id="createExpenseModal" tabindex="-1" aria-labelledby="createExpenseModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content custom-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createExpenseModalLabel"><i class="fas fa-plus-circle mr-2"></i> Create New Expense</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Create Expense</button>
-                </div>
-            </form>
+                <form action="/expenses" method="POST" id="createExpenseForm" enctype="multipart/form-data">
+                    <div class="modal-body modern-form">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="expenseName">Expense Name</label>
+                                    <input type="text" class="form-control custom-input" id="expenseName" name="name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="category">Category</label>
+                                    <input type="text" class="form-control custom-input" id="category" name="category" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="amount">Amount (Ksh)</label>
+                                    <input type="number" class="form-control custom-input" id="amount" name="amount" min="0" step="0.01" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="date">Date</label>
+                                    <input type="date" class="form-control custom-input" id="date" name="date" required max="<%= new Date().toISOString().split('T')[0] %>">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="status">Status</label>
+                                    <select class="form-control custom-select" id="status" name="status" required>
+                                        <option value="Pending">Pending</option>
+                                        <option value="Approved">Approved</option>
+                                        <option value="Rejected">Rejected</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="paymentMethod">Payment Method</label>
+                                    <select class="form-control custom-select" id="paymentMethod" name="paymentMethod" required>
+                                        <option value="Cash">Cash</option>
+                                        <option value="Credit Card">Credit Card</option>
+                                        <option value="Debit Card">Debit Card</option>
+                                        <option value="Mobile Payment">Mobile Payment</option>
+                                        <option value="Bank Transfer">Bank Transfer</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="receipt">Receipt (Optional)</label>
+                                    <input type="file" class="form-control custom-input" id="receipt" name="receipt" accept="image/*,application/pdf">
+                                </div>
+                                <div class="form-group">
+                                    <label for="tags">Tags (comma-separated)</label>
+                                    <input type="text" class="form-control custom-input" id="tags" name="tags" placeholder="e.g., Business, Travel">
+                                </div>
+                                <div class="form-group">
+                                    <label for="notes">Notes</label>
+                                    <textarea class="form-control custom-input" id="notes" name="notes" rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-2"></i> Create Expense</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
+
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark"></aside>
+
+    <!-- Main Footer -->
+    <footer class="main-footer">
+        <strong>Copyright © 2024-2025 <a href="https://leasecaptain.com/">Lease Captain</a></strong>
+        All rights reserved.
+        <div class="float-right d-none d-sm-inline-block">
+            <b>Version</b> 1.0.2
+        </div>
+    </footer>
 </div>
 
-<!-- Optional JavaScript for Modal Reset -->
-<script>
-    document.getElementById('createExpenseModal').addEventListener('hidden.bs.modal', function () {
-        document.getElementById('createExpenseForm').reset();
-    });
-</script>
-
-<!-- Optional JavaScript for Modal Reset -->
-<script>
-    document.getElementById('createExpenseModal').addEventListener('hidden.bs.modal', function () {
-        document.getElementById('createExpenseForm').reset();
-    });
-</script>
-
-<!-- Suggested CSS (to be moved to an external file) -->
 <style>
-    .modal-header {
-        background-color: #00172f;
-        color: white;
+    :root {
+        --primary: #003366;
+        --secondary: #0d5283;
+        --success: #28a745;
+        --warning: #ffc107;
+        --danger: #dc3545;
+        --background: #f4f6f9;
+        --card-bg: #ffffff;
     }
+
+    .content-wrapper {
+        background: var(--background);
+        padding-bottom: 20px;
+    }
+
+    .custom-card {
+        border: none;
+        border-radius: 5px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: var(--primary);
+        color: white;
+        padding: 7px;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .alert {
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .alert-danger { background: var(--danger); color: white; }
+    .alert-success { background: var(--success); color: white; }
+
     .btn-primary {
-        background-color: #003366;
-        border-color: #003366;
+        background: var(--primary);
+        border: none;
+        padding: 10px 20px;
+        font-weight: 600;
+        transition: background 0.3s ease;
     }
-    .btn-dark {
-        background-color: #00172f;
+
+    .btn-primary:hover {
+        background: #002244;
+    }
+
+    .custom-input, .custom-select {
+        border: 2px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 10px;
+        transition: border-color 0.3s ease;
+    }
+
+    .custom-input:focus, .custom-select:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 5px rgba(0,51,102,0.3);
+    }
+
+    .input-group-text {
+        background: var(--primary);
+        color: white;
+        border: 2px solid var(--primary);
+        border-right: none;
+    }
+
+    .custom-table {
+        background: var(--card-bg);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .custom-table thead {
+        background: var(--primary);
         color: white;
     }
-    thead {
-        background-color: #00172f;
+
+    .custom-table th, .custom-table td {
+        padding: 12px;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .custom-table tbody tr:hover {
+        background: #f8f9fa;
+        transition: background 0.2s ease;
+    }
+
+    .badge {
+        padding: 6px 12px;
+        border-radius: 12px;
+        font-weight: 600;
+    }
+
+    .badge-success { background: var(--success); }
+    .badge-warning { background: var(--warning); color: #212529; }
+    .badge-danger { background: var(--danger); }
+
+    .custom-pagination .page-link {
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        border-radius: 6px;
+        margin: 0 5px;
+        padding: 8px 12px;
+        transition: all 0.3s ease;
+    }
+
+    .custom-pagination .page-item.active .page-link {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+
+    .custom-pagination .page-link:hover {
+        background: var(--primary);
+        color: white;
+        transform: scale(1.05);
+    }
+
+    .modern-card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .modern-card .card-header {
+        background: var(--secondary);
         color: white;
     }
-    table {
-        border: 1px solid #003366;
+
+    .custom-modal {
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     }
-    tbody {
-        background-color: white;
-        color: black;
+
+    .modal-header {
+        background: var(--primary);
+        color: white;
+    }
+
+    .modern-form {
+        display: grid;
+        gap: 15px;
+    }
+
+    @media (max-width: 768px) {
+        .card-header { font-size: 1.25rem; }
+        .custom-table th, .custom-table td { font-size: 0.85rem; padding: 8px; }
+        .custom-pagination .page-link { font-size: 0.9rem; padding: 6px 10px; }
+        .modal-lg { max-width: 90%; }
+    }
+
+    @media (max-width: 576px) {
+        .custom-table th, .custom-table td { font-size: 0.75rem; padding: 6px; }
+        .btn { font-size: 0.8rem; padding: 6px 12px; }
+        .custom-input, .custom-select { font-size: 0.9rem; }
+        .form-inline { width: 100%; }
+        .input-group { width: 100%; margin-bottom: 10px; }
     }
 </style>
 
-</div>
-
-<!-- Control Sidebar -->
-<aside class="control-sidebar control-sidebar-dark"></aside>
+<script src="https://kit.fontawesome.com/your-fontawesome-kit.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -652,7 +774,6 @@
         const searchForm = document.getElementById('searchForm');
         let debounceTimer;
 
-        // Client-side filtering with debounce
         function filterExpenses(searchTerm) {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
@@ -660,19 +781,22 @@
                 const term = searchTerm.trim().toLowerCase();
 
                 rows.forEach(row => {
-                    const expenseName = row.children[1].textContent.toLowerCase();
-                    const category = row.children[2].textContent.toLowerCase();
+                    const expenseName = row.children[2].textContent.toLowerCase();
+                    const category = row.children[3].textContent.toLowerCase();
                     const shouldShow = expenseName.includes(term) || category.includes(term);
                     row.style.display = shouldShow ? '' : 'none';
+                });
+
+                // Update row numbers
+                const visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
+                visibleRows.forEach((row, index) => {
+                    row.children[0].textContent = index + 1;
                 });
             }, 300);
         }
 
-        // Event listeners
         if (searchInput) {
             searchInput.addEventListener('input', (e) => filterExpenses(e.target.value));
-            
-            // Preserve search term on page load
             const urlParams = new URLSearchParams(window.location.search);
             const searchTerm = urlParams.get('search');
             if (searchTerm) {
@@ -681,7 +805,6 @@
             }
         }
 
-        // Form validation
         const expenseForm = document.getElementById('createExpenseForm');
         if (expenseForm) {
             expenseForm.addEventListener('submit', (e) => {
@@ -689,23 +812,15 @@
                 if (amount.value < 0) {
                     e.preventDefault();
                     alert('Amount cannot be negative');
-                    return false;
                 }
             });
         }
+
+        $('#createExpenseModal').on('hidden.bs.modal', function () {
+            document.getElementById('createExpenseForm').reset();
+        });
     });
 </script>
-
-  <!-- Main Footer -->
-  <footer class="main-footer">
-    <strong>Copyright &copy; 2024-2025 <a href="https://leasecaptain.com/">Lease Captain</a></strong>
-    All rights reserved.
-    <div class="float-right d-none d-sm-inline-block">
-      <b>Version</b> 1.0.2
-    </div>
-  </footer>
-</div>
-<!-- ./wrapper -->
 
 <!-- REQUIRED SCRIPTS -->
 <!-- jQuery -->

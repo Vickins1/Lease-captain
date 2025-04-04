@@ -162,12 +162,6 @@
                         <p>Maintenance Requests</p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="/tenancy-manager/tenant-reports" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Tenant Reports</p>
-                    </a>
-                </li>
             </ul>
         </li>
 
@@ -348,256 +342,382 @@
         <div class="content-wrapper">
             <section class="content">
                 <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12">
-                    <h2 class="text-center" style="color: #00172f;">
-                        <i class="fas fa-file-alt"></i> Reports & Invoices
-                    </h2>
-                    <p class="text-center">Analyze your property performance and manage invoices effortlessly.</p>
-                </div>
-            </div>
+                    <!-- Header -->
+                    <div class="row mb-4">
+                        <div class="col-12 text-center">
+                            <header class="dashboard-header">
+                                <h1 class="header-title"><i class="fas fa-file-alt mr-2"></i> Reports & Invoices</h1>
+                                <p class="header-subtitle">Gain insights and manage finances with precision</p>
+                            </header>
+                        </div>
+                    </div>
         
-            <!-- Tabs -->
-<ul class="nav nav-tabs mb-4" id="reportsInvoicesTab" role="tablist">
-    <li class="nav-item">
-        <a class="nav-link active" id="reports-tab" data-toggle="tab" href="#reports" role="tab" aria-controls="reports" aria-selected="true">
-            <i class="fas fa-chart-line"></i> Reports
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="invoices-tab" data-toggle="tab" href="#invoices" role="tab" aria-controls="invoices" aria-selected="false">
-            <i class="fas fa-file-invoice"></i> Invoices
-        </a>
-    </li>
-</ul>
+                    <!-- Tabs -->
+                    <ul class="nav nav-tabs custom-tabs mb-4" id="reportsInvoicesTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="reports-tab" data-toggle="tab" href="#reports" role="tab" aria-controls="reports" aria-selected="true">
+                                <i class="fas fa-chart-line mr-2"></i> Reports
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="invoices-tab" data-toggle="tab" href="#invoices" role="tab" aria-controls="invoices" aria-selected="false">
+                                <i class="fas fa-file-invoice mr-2"></i> Invoices
+                            </a>
+                        </li>
+                    </ul>
         
-            <div class="tab-content" id="reportsInvoicesTabContent">
-               <!-- Reports Section -->
-        <div class="tab-pane fade show active" id="reports" role="tabpanel" aria-labelledby="reports-tab">
-            <h4 class="text-center"><i class="fas fa-chart-pie"></i> Property Reports</h4>
-
-            <!-- Messages -->
-            <% if (error && error.length > 0) { %>
-                <div class="alert alert-danger text-center" role="alert"><%= error %></div>
-            <% } %>
-            <% if (success && success.length > 0) { %>
-                <div class="alert alert-success text-center" role="alert"><%= success %></div>
-            <% } %>
-
-            <!-- Filter Form -->
-            <form method="GET" action="/reports-invoices" class="mb-4">
-                <div class="row">
-                    <div class="col-md-4">
-                        <label for="propertySelect" class="small">Property:</label>
-                        <select class="form-control form-control-sm" id="propertySelect" name="property">
-                            <option value="all" <%= selectedProperty === 'all' ? 'selected' : '' %>>All Properties</option>
-                            <% properties.forEach(prop => { %>
-                                <option value="<%= prop.name %>" <%= selectedProperty === prop.name ? 'selected' : '' %>><%= prop.name %></option>
-                            <% }); %>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="reportDateRange" class="small">Date Range:</label>
-                        <input type="date" class="form-control form-control-sm" id="reportDateFrom" name="dateFrom" value="<%= dateFrom %>">
-                        <input type="date" class="form-control form-control-sm mt-2" id="reportDateTo" name="dateTo" value="<%= dateTo %>">
-                    </div>
-                    <div class="col-md-4 d-flex align-items-end">
-                        <button type="submit" class="btn btn-dark btn-sm w-100" style="background-color: #003366;">
-                            <i class="fas fa-file-export"></i> Generate
-                        </button>
-                    </div>
-                </div>
-            </form>
-
-            <!-- Reports Table -->
-            <div class="table-responsive">
-                <table class="table table-sm table-striped table-hover table-bordered">
-                    <thead class="text-center" style="background-color: #00172f; color: white;">
-                        <tr>
-                            <th>#</th>
-                            <th>Property</th>
-                            <th>Occupancy Rate</th>
-                            <th>Rent Collected</th>
-                            <th>Pending Payments</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-center">
-                        <% reports.forEach((report, index) => { %>
-                            <tr>
-                                <td><%= index + 1 %></td>
-                                <td><%= report.propertyName || 'Unnamed Property' %></td>
-                                <td>
-                                    <% if (report.occupancyRate !== undefined && report.occupancyRate !== null) { %>
-                                        <%= Number(report.occupancyRate).toFixed(2) %>%
-                                    <% } else { %>
-                                        N/A
+                    <!-- Tab Content -->
+                    <div class="tab-content" id="reportsInvoicesTabContent">
+                        <!-- Reports Section -->
+                        <div class="tab-pane fade show active" id="reports" role="tabpanel" aria-labelledby="reports-tab">
+                            <div class="card custom-card">
+                                <div class="card-header">
+                                    <h4><i class="fas fa-chart-pie mr-2"></i> Property Performance Reports</h4>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Messages -->
+                                    <% if (error && error.length > 0) { %>
+                                        <div class="alert alert-danger animate__animated animate__fadeIn">
+                                            <i class="fas fa-exclamation-circle mr-2"></i> <%= error %>
+                                        </div>
                                     <% } %>
-                                </td>
-                                <td>Ksh.<%= Number(report.totalRentCollected || 0).toFixed(2) %></td>
-                                <td>Ksh.<%= Number(report.pendingPayments || 0).toFixed(2) %></td>
-                            </tr>
-                        <% }); %>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                                    <% if (success && success.length > 0) { %>
+                                        <div class="alert alert-success animate__animated animate__fadeIn">
+                                            <i class="fas fa-check-circle mr-2"></i> <%= success %>
+                                        </div>
+                                    <% } %>
         
-                <!-- Invoices Section -->
-<div class="tab-pane fade" id="invoices" role="tabpanel" aria-labelledby="invoices-tab">
-    <h4 class="text-center"><i class="fas fa-calculator"></i> Invoice Management</h4>
-
-    <!-- Filter Form -->
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <label for="invoiceDateRange" class="small">Date Range:</label>
-            <input type="date" class="form-control form-control-sm" id="invoiceDateFrom">
-            <input type="date" class="form-control form-control-sm mt-2" id="invoiceDateTo">
-        </div>
-        <div class="col-md-4">
-            <label for="invoiceStatus" class="small">Status:</label>
-            <select class="form-control form-control-sm" id="invoiceStatus">
-                <option value="all">All</option>
-                <option value="paid">Paid</option>
-                <option value="pending">Pending</option>
-                <option value="overdue">Overdue</option>
-            </select>
-        </div>
-        <div class="col-md-4 d-flex align-items-end">
-            <button class="btn btn-dark btn-sm w-100" style="background-color: #003366;" id="filterInvoices">
-                <i class="fas fa-filter"></i> Filter
-            </button>
-        </div>
-    </div>
-
-<!-- Invoices Table -->
-<div class="table-responsive">
-    <table class="table table-bordered table-hover" id="invoicesTable">
-        <thead style="background-color: #00172f; color: white;">
-            <tr>
-                <th>Invoice #</th>
-                <th>Transaction ID</th>
-                <th>Amount</th>
-                <th>Billing Period</th>
-                <th>Status</th>
-                <th>Due Date</th>
-                <th>Time</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% invoices.forEach(invoice => { %>
-                <tr data-due-date="<%= invoice.dueDate %>" data-status="<%= invoice.status %>">
-                    <td><%= invoice.invoiceNumber %></td>
-                    <td><%= invoice.transactionId || 'N/A' %></td>
-                    <td>Ksh.<%= invoice.amount.toFixed(2) %></td>
-                    <td><%= invoice.billingPeriod.charAt(0).toUpperCase() + invoice.billingPeriod.slice(1) %></td>
-                    <td>
-                        <span class="badge <%= invoice.status === 'paid' ? 'badge-success' : invoice.status === 'overdue' ? 'badge-danger' : 'badge-warning' %>">
-                            <%= invoice.status %>
-                        </span>
-                    </td>
-                    <td><%= new Date(invoice.dueDate).toLocaleDateString() %></td>
-                    <td><%= new Date(invoice.time).toLocaleString() %></td> <!-- Display time -->
-                    <td>
-                        <% if (invoice.status === 'pending') { %>
-                            <form action="/invoices/pay/<%= invoice._id %>" method="POST" style="display:inline;">
-                                <button class="btn btn-success btn-sm" type="submit">Pay</button>
-                            </form>
-                        <% } %>
-                        <a href="/invoices/download/<%= invoice._id %>" class="btn btn-info btn-sm">
-                            <i class="fas fa-download"></i>
-                        </a>
-                    </td>
-                </tr>
-            <% }); %>
-        </tbody>
-    </table>
-</div>
-
-<!-- JavaScript for Filtering -->
-<script>
-    document.getElementById('filterInvoices').addEventListener('click', function(e) {
-        e.preventDefault(); // Prevent any default form submission behavior
-
-        // Get filter values
-        const dateFrom = document.getElementById('invoiceDateFrom').value;
-        const dateTo = document.getElementById('invoiceDateTo').value;
-        const status = document.getElementById('invoiceStatus').value;
-
-        // Convert filter dates to Date objects (if provided)
-        const fromDate = dateFrom ? new Date(dateFrom) : null;
-        const toDate = dateTo ? new Date(dateTo) : null;
-
-        // Get all invoice rows
-        const rows = document.querySelectorAll('#invoicesTable tbody tr');
-
-        rows.forEach(row => {
-            const dueDateStr = row.getAttribute('data-due-date'); // ISO string from data attribute
-            const rowStatus = row.getAttribute('data-status');
-            const dueDate = new Date(dueDateStr);
-
-            // Filter conditions
-            let showRow = true;
-
-            // Date range filter
-            if (fromDate && dueDate < fromDate) {
-                showRow = false;
-            }
-            if (toDate && dueDate > toDate) {
-                showRow = false;
-            }
-
-            // Status filter
-            if (status !== 'all' && rowStatus !== status) {
-                showRow = false;
-            }
-
-            // Show or hide the row
-            row.style.display = showRow ? '' : 'none';
-        });
-    });
-</script>
-
-<style>
-    .badge-success { background-color: #28a745; }
-    .badge-warning { background-color: #ffc107; }
-    .badge-danger { background-color: #dc3545; }
-    @media (max-width: 576px) {
-        .table th, .table td { font-size: 0.8rem; }
-        .btn-sm { font-size: 0.7rem; }
-    }
-</style>
-            </div>
-        </div>
-
+                                    <!-- Filter Form -->
+                                    <form method="GET" action="/reports-invoices" class="filter-form mb-4">
+                                        <div class="row align-items-end">
+                                            <div class="col-md-4">
+                                                <label for="propertySelect">Property</label>
+                                                <select class="form-control custom-select" id="propertySelect" name="property">
+                                                    <option value="all" <%= selectedProperty === 'all' ? 'selected' : '' %>>All Properties</option>
+                                                    <% properties.forEach(prop => { %>
+                                                        <option value="<%= prop.name %>" <%= selectedProperty === prop.name ? 'selected' : '' %>><%= prop.name %></option>
+                                                    <% }); %>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label>Date Range</label>
+                                                <input type="date" class="form-control custom-input" id="reportDateFrom" name="dateFrom" value="<%= dateFrom %>">
+                                                <input type="date" class="form-control custom-input mt-2" id="reportDateTo" name="dateTo" value="<%= dateTo %>">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-file-export mr-2"></i> Generate Report</button>
+                                            </div>
+                                        </div>
+                                    </form>
+        
+                                    <!-- Reports Table -->
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover custom-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Property</th>
+                                                    <th>Occupancy</th>
+                                                    <th>Rent Collected</th>
+                                                    <th>Pending</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% reports.forEach((report, index) => { %>
+                                                    <tr>
+                                                        <td><%= index + 1 %></td>
+                                                        <td><%= report.propertyName || 'Unnamed Property' %></td>
+                                                        <td><%= report.occupancyRate ? Number(report.occupancyRate).toFixed(2) + '%' : 'N/A' %></td>
+                                                        <td>Ksh.<%= Number(report.totalRentCollected || 0).toFixed(2) %></td>
+                                                        <td>Ksh.<%= Number(report.pendingPayments || 0).toFixed(2) %></td>
+                                                    </tr>
+                                                <% }); %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <!-- Invoices Section -->
+                        <div class="tab-pane fade" id="invoices" role="tabpanel" aria-labelledby="invoices-tab">
+                            <div class="card custom-card">
+                                <div class="card-header">
+                                    <h4><i class="fas fa-calculator mr-2"></i> Invoice Management</h4>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Filter Form -->
+                                    <div class="row mb-4 align-items-end">
+                                        <div class="col-md-4">
+                                            <label>Date Range</label>
+                                            <input type="date" class="form-control custom-input" id="invoiceDateFrom">
+                                            <input type="date" class="form-control custom-input mt-2" id="invoiceDateTo">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="invoiceStatus">Status</label>
+                                            <select class="form-control custom-select" id="invoiceStatus">
+                                                <option value="all">All</option>
+                                                <option value="paid">Paid</option>
+                                                <option value="pending">Pending</option>
+                                                <option value="overdue">Overdue</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <button class="btn btn-primary btn-block" id="filterInvoices"><i class="fas fa-filter mr-2"></i> Filter Invoices</button>
+                                        </div>
+                                    </div>
+        
+                                    <!-- Invoices Table -->
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover custom-table" id="invoicesTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Invoice #</th>
+                                                    <th>Transaction ID</th>
+                                                    <th>Amount</th>
+                                                    <th>Billing Period</th>
+                                                    <th>Status</th>
+                                                    <th>Due Date</th>
+                                                    <th>Time</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% invoices.forEach(invoice => { %>
+                                                    <tr data-due-date="<%= invoice.dueDate %>" data-status="<%= invoice.status %>">
+                                                        <td><%= invoice.invoiceNumber %></td>
+                                                        <td><%= invoice.transactionId || 'N/A' %></td>
+                                                        <td>Ksh.<%= invoice.amount.toFixed(2) %></td>
+                                                        <td><%= invoice.billingPeriod.charAt(0).toUpperCase() + invoice.billingPeriod.slice(1) %></td>
+                                                        <td>
+                                                            <span class="badge <%= invoice.status === 'paid' ? 'badge-success' : invoice.status === 'overdue' ? 'badge-danger' : 'badge-warning' %>">
+                                                                <%= invoice.status %>
+                                                            </span>
+                                                        </td>
+                                                        <td><%= new Date(invoice.dueDate).toLocaleDateString() %></td>
+                                                        <td><%= new Date(invoice.time).toLocaleString() %></td>
+                                                        <td>
+                                                            <% if (invoice.status === 'pending') { %>
+                                                                <form action="/invoices/pay/<%= invoice._id %>" method="POST" style="display:inline;">
+                                                                    <button class="btn btn-success btn-sm" type="submit"><i class="fas fa-money-check-alt mr-1"></i> Pay</button>
+                                                                </form>
+                                                            <% } %>
+                                                            <a href="/invoices/download/<%= invoice._id %>" class="btn btn-info btn-sm">
+                                                                <i class="fas fa-download"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                <% }); %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /.container-fluid -->
+            </section><!-- /.content -->
+        
+            <!-- Control Sidebar -->
+            <aside class="control-sidebar control-sidebar-dark"></aside>
+        
+            <!-- Main Footer -->
+            <footer class="main-footer">
+                <strong>Copyright © 2024-2025 <a href="https://leasecaptain.com/">Lease Captain</a></strong>
+                All rights reserved.
+                <div class="float-right d-none d-sm-inline-block">
+                    <b>Version</b> 1.0.2
+                </div>
+            </footer>
+        </div><!-- /.content-wrapper -->
         
         <style>
-            .badge-success { background-color: #28a745; }
-            .badge-warning { background-color: #ffc107; }
-            .badge-danger { background-color: #dc3545; }
-            @media (max-width: 576px) {
-                .nav-tabs .nav-link { font-size: 0.9rem; padding: 0.5rem; }
-                .btn-sm { font-size: 0.7rem; }
+            :root {
+                --primary: #003366;
+                --secondary: #63b3ed;
+                --success: #28a745;
+                --warning: #ffc107;
+                --danger: #dc3545;
+                --background: #f4f6f9;
+                --card-bg: #ffffff;
+            }
+        
+            .content-wrapper {
+                background: var(--background);
+                padding-bottom: 20px;
+            }
+        
+            .dashboard-header {
+                background: linear-gradient(135deg, var(--primary), var(--secondary));
+                padding: 20px;
+                border-radius: 5px;
+                color: white;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            }
+        
+            .header-title {
+                font-size: 2.5rem;
+                font-weight: 700;
+                margin: 0;
+            }
+        
+            .header-subtitle {
+                font-size: 1.1rem;
+                opacity: 0.9;
+                margin: 5px 0 0;
+            }
+        
+            .custom-tabs {
+                border-bottom: 2px solid var(--primary);
+            }
+        
+            .custom-tabs .nav-link {
+                color: var(--primary);
+                font-weight: 600;
+                padding: 10px 20px;
+                transition: all 0.3s ease;
+            }
+        
+            .custom-tabs .nav-link:hover, .custom-tabs .nav-link.active {
+                background: var(--primary);
+                color: white;
+                border-radius: 5px 5px 0 0;
+            }
+        
+            .custom-card {
+                background: var(--card-bg);
+                border: none;
+                border-radius: 5px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                overflow: hidden;
+            }
+        
+            .card-header {
+                background: var(--primary);
+                color: white;
+                padding: 15px;
+                font-size: 1.25rem;
+                font-weight: 600;
+            }
+        
+            .card-body {
+                padding: 20px;
+            }
+        
+            .alert {
+                border-radius: 5 px;
+                padding: 15px;
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+        
+            .alert-danger { background: var(--danger); color: white; }
+            .alert-success { background: var(--success); color: white; }
+        
+            .filter-form label {
+                font-weight: 600;
+                color: #2d3748;
+                margin-bottom: 5px;
+            }
+        
+            .custom-select, .custom-input {
+                border: 2px solid #e2e8f0;
+                border-radius: 4px;
+                padding: 8px;
+                transition: border-color 0.3s ease;
+            }
+        
+            .custom-select:focus, .custom-input:focus {
+                border-color: var(--primary);
+                outline: none;
+                box-shadow: 0 0 5px rgba(0,51,102,0.3);
+            }
+        
+            .btn-primary {
+                background: var(--primary);
+                border: none;
+                padding: 10px 15px;
+                font-weight: 600;
+                transition: background 0.3s ease;
+            }
+        
+            .btn-primary:hover {
+                background: #002244;
+            }
+        
+            .custom-table {
+                background: var(--card-bg);
+                border-radius: 5px;
+                overflow: hidden;
+            }
+        
+            .custom-table thead {
+                background: var(--primary);
+                color: white;
+            }
+        
+            .custom-table th, .custom-table td {
+                padding: 12px;
+                text-align: center;
+                vertical-align: middle;
+            }
+        
+            .custom-table tbody tr:hover {
+                background: #f8f9fa;
+                transition: background 0.2s ease;
+            }
+        
+            .badge {
+                padding: 6px 12px;
+                border-radius: 12px;
+                font-weight: 600;
+            }
+        
+            .badge-success { background: var(--success); }
+            .badge-warning { background: var(--warning); color: #212529; }
+            .badge-danger { background: var(--danger); }
+        
+            .btn-sm {
+                padding: 5px 10px;
+                font-size: 0.9rem;
+            }
+        
+            @media (max-width: 768px) {
+                .header-title { font-size: 2rem; }
+                .custom-table th, .custom-table td { font-size: 0.85rem; padding: 8px; }
+                .btn-sm { font-size: 0.8rem; }
+                .filter-form .col-md-4 { margin-bottom: 15px; }
             }
         </style>
-        </div>
-
-
-       <!-- Control Sidebar -->
-    <aside class="control-sidebar control-sidebar-dark">
-        <!-- Control sidebar content goes here -->
-      </aside>
-      <!-- /.control-sidebar -->
-  
-      <!-- Main Footer -->
-      <footer class="main-footer">
-        <strong>Copyright &copy; 2024-2025 <a href="https://leasecaptain.com/">Lease Captain</a></strong>
-        All rights reserved.
-        <div class="float-right d-none d-sm-inline-block">
-          <b>Version</b> 1.0.2
-        </div>
-      </footer>
-    </div>
+        
+        <script src="https://kit.fontawesome.com/your-fontawesome-kit.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+        
+        <script>
+            document.getElementById('filterInvoices').addEventListener('click', function(e) {
+                e.preventDefault();
+                const dateFrom = document.getElementById('invoiceDateFrom').value;
+                const dateTo = document.getElementById('invoiceDateTo').value;
+                const status = document.getElementById('invoiceStatus').value;
+                const fromDate = dateFrom ? new Date(dateFrom) : null;
+                const toDate = dateTo ? new Date(dateTo) : null;
+                const rows = document.querySelectorAll('#invoicesTable tbody tr');
+        
+                rows.forEach(row => {
+                    const dueDate = new Date(row.getAttribute('data-due-date'));
+                    const rowStatus = row.getAttribute('data-status');
+                    let showRow = true;
+        
+                    if (fromDate && dueDate < fromDate) showRow = false;
+                    if (toDate && dueDate > toDate) showRow = false;
+                    if (status !== 'all' && rowStatus !== status) showRow = false;
+        
+                    row.style.display = showRow ? '' : 'none';
+                });
+            });
+        </script>
     <!-- ./wrapper -->
   
     <!-- REQUIRED SCRIPTS -->

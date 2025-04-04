@@ -351,8 +351,7 @@ router.get('/login', (req, res) => {
 });
 
 router.post('/login', (req, res, next) => {
-  const { username, password } = req.body;
-
+  const { email, password } = req.body; 
   // Rate limiting to prevent brute force using session
   const loginKey = `login_attempts_${req.ip}`;
   const MAX_ATTEMPTS = 5;
