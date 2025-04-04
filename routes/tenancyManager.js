@@ -12,6 +12,9 @@ const User = require('../models/user');
 const PropertyUnit = require('../models/unit');
 const Expense = require('../models/expense');
 const Role = require('../models/role');
+const Lease = require('../models/lease');
+const LeaseTemplate = require('../models/leaseTemplate');
+const LeaseReport = require('../models/leaseReport');
 const MaintenanceRequest = require('../models/maintenanceRequest');
 const Account = require('../models/account');
 const Invoice = require('../models/invoice');
@@ -2643,5 +2646,28 @@ router.post('/expenses/delete/:id', async (req, res) => {
         res.redirect('/expenses');
     }
 });
+
+// Leases Page
+router.get('/tenancy-manager/leases', ensureAuthenticated, async (req, res) => {
+    const leases = await Lease.find();
+    res.render('tenancyManager/leases', { leases,  currentUser: req.user });
+  });
+  
+  // Lease Templates Page
+  router.get('/tenancy-manager/lease-templates', ensureAuthenticated, async (req, res) => {
+    const templates = await LeaseTemplate.find();
+    res.render('tenancyManager/lease-templates', { templates, currentUser: req.user });
+  });
+  
+  // Lease Reports Page
+  router.get('/tenancy-manager/lease-reports', ensureAuthenticated, async (req, res) => {
+    const reports = await LeaseReport.find().populate('leaseId');
+    const activeLeases = await Lease.countDocuments({ status: 'Active' });
+    const expiringSoon = await Lease.countDocuments({ endDate: { $lte: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) } });
+    const expiredLeases = await Lease.countDocuments({ status: 'Expired' });
+    const totalRevenue = reports.reduce((sum, report) => sum + report.revenue, 0);
+  
+    res.render('tenancyManager/lease-reports', { reports, currentUser: req.user, activeLeases, expiringSoon, expiredLeases, totalRevenue });
+  });
 
 module.exports = router;

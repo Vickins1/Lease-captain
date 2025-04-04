@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lease Captain | Dashboard</title>
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&amp;display=fallback">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/dist/css/adminlte.min2167.css?v=3.2.0">
+    <link rel="icon" type="image/png" sizes="56x56" href="/assets/images/1.png">
+</head>
+
+<body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
+    <div class="wrapper">
+
+        <!-- Preloader -->
+        <div class="preloader flex-column justify-content-center align-items-center">
+            <img class="animation__wobble" src="/assets/images/2.png" alt="AdminLTELogo" height="150" width="150">
+        </div>
+
+             <!-- Navbar -->
+             <nav class="main-header navbar navbar-expand navbar-light">
+                <!-- Left navbar links -->
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                    </li>
+                </ul>
+    
+                <!-- Right navbar links -->
+                <ul class="navbar-nav ml-auto">
+                    <!-- Navbar Search -->
+                    <li class="nav-item">
+                        <a class="nav-link" data-widget="navbar-search" href="#" role="button">
+                            <i class="fas fa-search"></i>
+                        </a>
+                        <div class="navbar-search-block">
+                            <form class="form-inline">
+                                <div class="input-group input-group-sm">
+                                    <input class="form-control form-control-navbar" type="search" placeholder="Search"
+                                        aria-label="Search">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-navbar" type="submit">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                        <button class="btn btn-navbar" type="button" data-widget="navbar-search">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </li>
+    
+                    <!-- Notifications Dropdown Menu -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link" data-toggle="dropdown" href="#">
+                            <i class="far fa-bell"></i>
+                            <span class="badge badge-warning navbar-badge"></span>
+                        </a>
+    
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+                            <i class="fas fa-expand-arrows-alt"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item ">
+                        <a href="/logout" class="nav-link" role="button">
+                            <i class="nav-icon fas fa-sign-out-alt"></i>
+                        </a>
+                    </li>
+    
+                </ul>
+            </nav>
+            <!-- /.navbar -->
+
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-light-primary elevation-4">
+            <!-- Brand Logo -->
+            <a href="/" class="brand-link">
+                <img src="/assets/images/2.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+                    style="opacity: .8">
+                <h4 class="brand-text font-weight-bold"><strong>Lease Captain</strong></h4>
+            </a>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Sidebar user panel (optional) -->
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                    <div class="image">
+                        <img src="/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+                    </div>
+                    <div class="info">
+                        <a href="#" class="d-block" aria-haspopup="true" aria-expanded="false">
+                            <span>Welcome,</span>
+                            <strong>
+                                <%= currentUser.username %>
+                            </strong>
+                        </a>
+                    </div>
+                </div>
+
+               <!-- Sidebar Menu -->
+<nav class="mt-2">
+    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        <!-- Dashboard -->
+        <li class="nav-item">
+            <a href="/dashboard" class="nav-link active" style="background-color: #003366; color: #ffffff;">
+                <i class="nav-icon fas fa-tachometer-alt"></i>
+                <p>Dashboard</p>
+            </a>
+        </li>
+
+        <!-- Property Management -->
+        <li class="nav-header"><strong>PROPERTY MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/properties" class="nav-link">
+                <i class="nav-icon fas fa-building"></i>
+                <p>Properties</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/property/units" class="nav-link">
+                <i class="nav-icon fas fa-cogs"></i>
+                <p>Property Units</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/propertyListing" class="nav-link">
+                <i class="nav-icon fas fa-list-alt"></i>
+                <p>List Properties</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-chart-line"></i>
+                <p>
+                    Tenant Management
+                    <i class="right fas fa-angle-left"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="/tenancy-manager/tenants" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Tenants</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/maintenance-requests" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Maintenance Requests</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Land Management -->
+        <li class="nav-header"><strong>LAND MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/lands" class="nav-link">
+                <i class="nav-icon fas fa-map"></i>
+                <p>Registered Lands</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/land-parcels" class="nav-link">
+                <i class="nav-icon fas fa-th-large"></i>
+                <p>Land Parcels</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/land-reports" class="nav-link">
+                <i class="nav-icon fas fa-chart-area"></i>
+                <p>Land Reports</p>
+            </a>
+        </li>
+
+        <!-- Lease Management -->
+        <li class="nav-header"><strong>LEASE MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/leases" class="nav-link">
+                <i class="nav-icon fas fa-file-contract"></i>
+                <p>Leases</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/lease-templates" class="nav-link">
+                <i class="nav-icon fas fa-file-alt"></i>
+                <p>Lease Templates</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/lease-reports" class="nav-link">
+                <i class="nav-icon fas fa-chart-bar"></i>
+                <p>Lease Reports</p>
+            </a>
+        </li>
+
+        <!-- Vehicle Management -->
+        <li class="nav-header"><strong>VEHICLE MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/vehicles" class="nav-link">
+                <i class="nav-icon fas fa-car"></i>
+                <p>Registered Vehicles</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/vehicle-parking" class="nav-link">
+                <i class="nav-icon fas fa-parking"></i>
+                <p>Parking Spaces</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/vehicle-reports" class="nav-link">
+                <i class="nav-icon fas fa-clipboard-list"></i>
+                <p>Vehicle Reports</p>
+            </a>
+        </li>
+
+        <!-- Finance -->
+        <li class="nav-header"><strong>FINANCE MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/payments" class="nav-link">
+                <i class="nav-icon fas fa-money-bill-wave"></i>
+                <p>Payment Transactions</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/reports-invoices" class="nav-link">
+                <i class="nav-icon fas fa-file-invoice"></i>
+                <p>Reports & Invoices</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/expenses" class="nav-link">
+                <i class="nav-icon fas fa-wallet"></i>
+                <p>Expense Tracking</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/budget-planning" class="nav-link">
+                <i class="nav-icon fas fa-chart-pie"></i>
+                <p>Budget Planning</p>
+            </a>
+        </li>
+
+        <!-- Notifications -->
+        <li class="nav-header"><strong>NOTIFICATION MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/sms&email" class="nav-link">
+                <i class="nav-icon fas fa-sms"></i>
+                <p>SMS & Email</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/sms&email" class="nav-link">
+                <i class="nav-icon fas fa-credit-card"></i>
+                <p>Credit Top-up</p>
+            </a>
+        </li>
+
+        <!-- Staff Management -->
+        <li class="nav-header"><strong>STAFF MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/staff-directory" class="nav-link">
+                <i class="nav-icon fas fa-user-tie"></i>
+                <p>Staff Directory</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/staff-attendance" class="nav-link">
+                <i class="nav-icon fas fa-calendar-check"></i>
+                <p>Attendance</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/staff-payroll" class="nav-link">
+                <i class="nav-icon fas fa-file-invoice-dollar"></i>
+                <p>Payroll</p>
+            </a>
+        </li>
+
+        <!-- Account Management -->
+        <li class="nav-header"><strong>ACCOUNT MANAGEMENT</strong></li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/profile" class="nav-link">
+                <i class="nav-icon fas fa-user"></i>
+                <p>Profile Settings</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/tenancy-manager/security" class="nav-link">
+                <i class="nav-icon fas fa-lock"></i>
+                <p>Security Settings</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/connect" class="nav-link">
+                <i class="nav-icon fas fa-link"></i>
+                <p>Payment Gateway</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/users" class="nav-link">
+                <i class="nav-icon fas fa-users"></i>
+                <p>User Accounts</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/upgrade-subscription" class="nav-link">
+                <i class="nav-icon fas fa-arrow-circle-up"></i>
+                <p>Upgrade Subscription</p>
+            </a>
+        </li>
+        <!-- Support -->
+        <li class="nav-item mt-auto">
+            <a href="/contacts" class="nav-link d-flex align-items-center justify-content-center"
+                style="background-color: #003366; color: #ffffff; border-radius: 5px; margin: 10px;">
+                <i class="fas fa-headset mr-2"></i>
+                <p>Support</p>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+
+            </div>
+
+            <!-- /.sidebar -->
+
+        </aside>
+
+        <div class="content-wrapper">
+              <div class="content-header">
+                  <div class="container-fluid">
+                      <div class="row mb-2">
+                          <div class="col-sm-6">
+                              <h1 class="m-0">Parking Spaces</h1>
+                          </div>
+                          <div class="col-sm-6">
+                              <button class="btn btn-primary float-right" data-toggle="modal" data-target="#newParkingModal">
+                                  <i class="fas fa-plus"></i> Add Parking Space
+                              </button>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+  
+              <section class="content">
+                  <div class="container-fluid">
+                      <div class="card">
+                          <div class="card-header">
+                              <h3 class="card-title">Parking Space List</h3>
+                          </div>
+                          <div class="card-body p-0">
+                              <table class="table table-striped">
+                                  <thead>
+                                      <tr>
+                                          <th>Space Number</th>
+                                          <th>Vehicle</th>
+                                          <th>Location</th>
+                                          <th>Status</th>
+                                          <th>Actions</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      <% parkingSpaces.forEach(space => { %>
+                                          <tr>
+                                              <td><%= space.spaceNumber %></td>
+                                              <td><%= space.vehicleId ? space.vehicleId.licensePlate : 'None' %></td>
+                                              <td><%= space.location %></td>
+                                              <td>
+                                                  <span class="badge <%= space.status === 'Available' ? 'badge-success' : 'badge-info' %>">
+                                                      <%= space.status %>
+                                                  </span>
+                                              </td>
+                                              <td>
+                                                  <a href="#" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
+                                                  <a href="#" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
+                                              </td>
+                                          </tr>
+                                      <% }) %>
+                                  </tbody>
+                              </table>
+                          </div>
+                      </div>
+                  </div>
+              </section>
+          </div>
+  
+          <!-- New Parking Space Modal -->
+          <div class="modal fade" id="newParkingModal">
+              <div class="modal-dialog modal-lg">
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          <h4 class="modal-title">Add New Parking Space</h4>
+                          <button type="button" class="close" data-dismiss="modal">×</button>
+                      </div>
+                      <div class="modal-body">
+                          <form action="/tenancy-manager/vehicle-parking" method="POST">
+                              <div class="form-group">
+                                  <label>Space Number</label>
+                                  <input type="text" name="spaceNumber" class="form-control" required>
+                              </div>
+                              <div class="form-group">
+                                  <label>Vehicle (Optional)</label>
+                                  <select name="vehicleId" class="form-control">
+                                      <option value="">None</option>
+                                      <% vehicles.forEach(vehicle => { %>
+                                          <option value="<%= vehicle._id %>"><%= vehicle.licensePlate %></option>
+                                      <% }) %>
+                                  </select>
+                              </div>
+                              <div class="form-group">
+                                  <label>Location</label>
+                                  <input type="text" name="location" class="form-control" required>
+                              </div>
+                              <button type="submit" class="btn btn-primary">Save Parking Space</button>
+                          </form>
+                      </div>
+                  </div>
+              </div>
+          </div>
+<!-- Control Sidebar -->
+<aside class="control-sidebar control-sidebar-dark">
+       <!-- Control sidebar content goes here -->
+     </aside>
+     <!-- /.control-sidebar -->
+   
+     <!-- Main Footer -->
+     <footer class="main-footer">
+       <strong>Copyright &copy; 2024-2025 <a href="https://leasecaptain.com/">Lease Captain</a></strong>
+       All rights reserved.
+       <div class="float-right d-none d-sm-inline-block">
+         <b>Version</b> 1.0.2
+       </div>
+     </footer>
+   </div>
+   <!-- ./wrapper -->
+   
+   <!-- REQUIRED SCRIPTS -->
+   <!-- jQuery -->
+   <script src="/plugins/jquery/jquery.min.js"></script>
+   <!-- Bootstrap -->
+   <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+   <!-- overlayScrollbars -->
+   <script src="/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+   <!-- AdminLTE App -->
+   <script src="/dist/js/adminlte2167.js?v=3.2.0"></script>
+   
+   <!-- PAGE PLUGINS -->
+   <!-- jQuery Mapael -->
+   <script src="/plugins/jquery-mousewheel/jquery.mousewheel.js"></script>
+   <script src="/plugins/raphael/raphael.min.js"></script>
+   <script src="/plugins/jquery-mapael/jquery.mapael.min.js"></script>
+   <script src="/plugins/jquery-mapael/maps/usa_states.min.js"></script>
+   <!-- ChartJS -->
+   <script src="/plugins/chart.js/Chart.min.js"></script>
+   
+   <script src="/dist/js/demo.js"></script>
+   <script src="/dist/js/pages/dashboard2.js"></script>
+   </body>
+   </html>

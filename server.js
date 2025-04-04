@@ -7,6 +7,7 @@ const methodOverride = require('method-override');
 const User = require('./models/user');
 const PropertyList = require('./models/propertyList');
 const tenancyManagerRoutes = require('./routes/tenancyManager');
+const indexRoutes = require('./routes/index');
 const propertyRoutes = require('./routes/properties');
 const tenantRoutes = require('./routes/tenant');
 const tenantPortalRoutes = require('./routes/tenantPortal');
@@ -91,6 +92,7 @@ app.use('/', tenantRoutes);
 app.use('/', tenantPortalRoutes);
 app.use('/', paymentGatewayRoutes);
 app.use('/', sendRemindersRoutes);
+app.use('/', indexRoutes);
 
 // GET: Landing Page with Search
 app.get('/', async (req, res) => {
