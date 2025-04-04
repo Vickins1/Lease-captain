@@ -347,7 +347,7 @@
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-sm-6">
-                            <h1 class="m-0">Land Reports</h1>
+                            <h1 class="m-0">Lease Reports</h1>
                         </div>
                         <div class="col-sm-6">
                             <button class="btn btn-info float-right"><i class="fas fa-download"></i> Export Report</button>
@@ -358,28 +358,36 @@
 
             <section class="content">
                 <div class="container-fluid">
-                    <!-- Info Boxes -->
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="info-box bg-success">
                                 <span class="info-box-icon"><i class="fas fa-check"></i></span>
                                 <div class="info-box-content">
-                                    <span class="info-box-text">Available Lands</span>
-                                    <span class="info-box-number"><%= availableLands %></span>
+                                    <span class="info-box-text">Active Leases</span>
+                                    <span class="info-box-number"><%= activeLeases %></span>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="info-box bg-info">
-                                <span class="info-box-icon"><i class="fas fa-map"></i></span>
+                        <div class="col-md-3">
+                            <div class="info-box bg-warning">
+                                <span class="info-box-icon"><i class="fas fa-exclamation"></i></span>
                                 <div class="info-box-content">
-                                    <span class="info-box-text">Leased Lands</span>
-                                    <span class="info-box-number"><%= leasedLands %></span>
+                                    <span class="info-box-text">Expiring Soon</span>
+                                    <span class="info-box-number"><%= expiringSoon %></span>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="info-box bg-primary">
+                        <div class="col-md-3">
+                            <div class="info-box bg-danger">
+                                <span class="info-box-icon"><i class="fas fa-times"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Expired Leases</span>
+                                    <span class="info-box-number"><%= expiredLeases %></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="info-box bg-info">
                                 <span class="info-box-icon"><i class="fas fa-money-bill"></i></span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">Total Revenue</span>
@@ -389,12 +397,11 @@
                         </div>
                     </div>
 
-                    <!-- Charts -->
                     <div class="row">
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header">
-                                    <h3 class="card-title">Land Status Distribution</h3>
+                                    <h3 class="card-title">Lease Status Distribution</h3>
                                 </div>
                                 <div class="card-body">
                                     <canvas id="pieChart" style="min-height: 250px;"></canvas>
@@ -410,41 +417,6 @@
                                     <canvas id="lineChart" style="min-height: 250px;"></canvas>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Lands Table -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Land Details</h3>
-                        </div>
-                        <div class="card-body p-0">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Location</th>
-                                        <th>Size (Acres)</th>
-                                        <th>Owner</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <% lands.forEach(land => { %>
-                                        <tr>
-                                            <td><%= land.name %></td>
-                                            <td><%= land.location %></td>
-                                            <td><%= land.size %></td>
-                                            <td><%= land.owner %></td>
-                                            <td>
-                                                <span class="badge <%= land.status === 'Available' ? 'badge-success' : land.status === 'Leased' ? 'badge-info' : 'badge-warning' %>">
-                                                    <%= land.status %>
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    <% }) %>
-                                </tbody>
-                            </table>
                         </div>
                     </div>
                 </div>
