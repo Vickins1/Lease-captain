@@ -30,6 +30,7 @@ const multer = require('multer');
 const moment = require('moment');
 const EventEmitter = require('events');
 const paymentEvents = new EventEmitter();
+
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -1447,7 +1448,7 @@ router.get('/tenancy-manager/payments', isTenancyManager, async (req, res) => {
                 path: 'tenant',
                 populate: [
                     { path: 'property', select: 'name' },
-                    { path: 'unit', select: 'name' }
+                    { path: 'unit', select: 'unitType' }
                 ]
             })
             .skip((currentPage - 1) * pageSize)
@@ -1460,8 +1461,8 @@ router.get('/tenancy-manager/payments', isTenancyManager, async (req, res) => {
         res.render('tenancyManager/payments', {
             title: 'Manage Payments',
             payments,
-            tenants,   // Pass tenants data to the view
-            properties, // Pass properties data to the view
+            tenants, 
+            properties,
             currentPage,
             totalPages,
             pageSize,
@@ -2113,7 +2114,6 @@ router.post('/reminders/create', isTenancyManager, async (req, res) => {
     }
 });
 
-
 // Route to edit an existing reminder
 router.post('/reminders/edit/:id', isTenancyManager, async (req, res) => {
     try {
@@ -2378,6 +2378,7 @@ router.post('/tenancy-manager/propertyListing/add', ensureAuthenticated, upload.
     }
 });
 
+// POST: Edit Property
 router.post('/tenancy-manager/propertyListing/edit/:id', ensureAuthenticated, upload.array('images', 5), async (req, res) => {
     try {
         const propertyId = req.params.id;
@@ -2528,6 +2529,7 @@ router.post('/tenancy-manager/propertyListing/delete', ensureAuthenticated, asyn
     }
 });
 
+// GET: Expense Page
 router.get('/expenses', async (req, res) => {
     try {
         const pageSize = 10;
@@ -2654,13 +2656,13 @@ router.get('/tenancy-manager/leases', ensureAuthenticated, async (req, res) => {
   });
   
   // Lease Templates Page
-  router.get('/tenancy-manager/lease-templates', ensureAuthenticated, async (req, res) => {
+router.get('/tenancy-manager/lease-templates', ensureAuthenticated, async (req, res) => {
     const templates = await LeaseTemplate.find();
     res.render('tenancyManager/lease-templates', { templates, currentUser: req.user });
   });
   
   // Lease Reports Page
-  router.get('/tenancy-manager/lease-reports', ensureAuthenticated, async (req, res) => {
+router.get('/tenancy-manager/lease-reports', ensureAuthenticated, async (req, res) => {
     const reports = await LeaseReport.find().populate('leaseId');
     const activeLeases = await Lease.countDocuments({ status: 'Active' });
     const expiringSoon = await Lease.countDocuments({ endDate: { $lte: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) } });
