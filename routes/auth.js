@@ -2,11 +2,32 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const User = require('../models/user');
-const { isAuthenticated } = require('../middleware');
-const useragent = require('useragent');
+const dns = require('dns');
+const rateLimit = require('express-rate-limit');
+const { RecaptchaV3 } = require('express-recaptcha');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+
+// Rate limiter for signup attempts
+const signupLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, 
+  max: 5,
+  message: 'Too many signup attempts from this IP, please try again after 15 minutes'
+});
+
+// Initialize reCAPTCHA 
+const recaptcha = new RecaptchaV3('YOUR_SITE_KEY', 'YOUR_SECRET_KEY', {
+  action: 'tenancyManager/signup'
+});
+
+// List of disposable email domains 
+const disposableDomains = new Set([
+  'mailinator.com',
+  'tempmail.com',
+  'guerrillamail.com',
+  '10minutemail.com'
+]);
 
 // Google OAuth Routes
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
@@ -32,152 +53,136 @@ router.get('/signup', (req, res) => {
   res.render('tenancyManager/signup', { errors: { error: error.length > 0 ? error[0] : null } });
 });
 
-router.post('/signup', async (req, res) => {
-  const { username, email, password, phone, plan, 'confirm-password': confirmPassword } = req.body;
-
-  try {
-    const errors = [];
-
-    // Username validation
-    if (!username) {
-      errors.push('Username is required');
-    } else if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
-      errors.push('Username must be 3-20 characters and contain only letters, numbers, or underscores');
-    }
-
-    // Email validation
-    if (!email) {
-      errors.push('Email is required');
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      errors.push('Please enter a valid email address');
-    }
-
-    // Phone validation
-    if (!phone) {
-      errors.push('Phone number is required');
-    } else if (!/^\+?[1-9]\d{1,14}$/.test(phone)) {
-      errors.push('Please enter a valid phone number');
-    }
-
-    // Password validation
-    if (!password) {
-      errors.push('Password is required');
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}/.test(password)) {
-      errors.push('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character, and be at least 8 characters');
-    }
-
-    // Confirm Password validation
-    if (!confirmPassword) {
-      errors.push('Confirm password is required');
-    } else if (password !== confirmPassword) {
-      errors.push('Passwords do not match');
-    }
-
-    // Plan validation
-    const validPlans = [
-      'Basic',
-      'Standard-Monthly', 'Standard-Yearly',
-      'Pro-Monthly', 'Pro-Yearly',
-      'Advanced-Monthly', 'Advanced-Yearly',
-      'Enterprise-Monthly', 'Enterprise-Yearly',
-      'Premium'
-    ];
-    if (!plan) {
-      errors.push('Plan selection is required');
-    } else if (!validPlans.includes(plan)) {
-      errors.push('Invalid plan selected');
-    }
-
-    if (errors.length > 0) {
-      req.flash('error', errors.join('. '));
-      return res.render('signup', {
-        error: errors.join('. '),
-        username,
-        email,
-        phone,
-        plan
-      });
-    }
-
-    // Determine billing period based on plan name
-    let billingPeriod = 'monthly'; // Default to monthly
-    if (plan.includes('Yearly')) {
-      billingPeriod = 'yearly';
-    }
-
-    // Check for existing user
-    const existingUser = await User.findOne({ $or: [{ email }, { phone }, { username }] });
-    if (existingUser) {
-      req.flash('error', 'Email, phone, or username is already registered.');
-      return res.redirect('/signup');
-    }
-
-    // Verify email domain
-    const emailDomain = email.split('@')[1];
-    if (!emailDomain) {
-      req.flash('error', 'Invalid email format');
-      return res.redirect('/signup');
-    }
+router.post('/signup', 
+  signupLimiter,
+  recaptcha.middleware.verify,
+  async (req, res) => {
+    const { username, email, password, phone, plan, 'confirm-password': confirmPassword, 'g-recaptcha-response': recaptchaResponse } = req.body;
 
     try {
-      const mxRecords = await dns.promises.resolveMx(emailDomain);
-      if (!mxRecords || mxRecords.length === 0) {
-        req.flash('error', 'Email domain does not have valid mail servers.');
-        return res.redirect('/signup');
-      }
-    } catch (dnsErr) {
-      if (dnsErr.code === 'ENOTFOUND' || dnsErr.code === 'ENODATA') {
-        req.flash('error', 'Email domain does not exist or has no mail servers.');
-        return res.redirect('/signup');
-      }
-    }
-
-    const tenantsLimit = getTenantsCount(plan);
-    const planAmount = planRates[plan] || 0;
-
-    const user = new User({
-      username,
-      email: email.toLowerCase(),
-      phone,
-      password,
-      plan,
-      tenantsLimit,
-      isVerified: false,
-      verificationToken: crypto.randomBytes(32).toString('hex'),
-      paymentStatus: {
-        transactionId: null,
-        amount: planAmount,
-        status: 'pending',
-        billingPeriod: billingPeriod // Now correctly setting the billing period
-      },
-      signupIp: req.ip,
-      signupTimestamp: new Date(),
-      failedAttempts: 0
-    });
-
-    await User.register(user, password)
-      .then(async () => {
-        try {
-          await sendWelcomeEmail(email, username, user.verificationToken);
-          await sendWelcomeSMS(phone, username);
-          req.flash('success', 'Successfully signed up! Please check your email or spam to verify your account.');
-          res.redirect('/login');
-        } catch (emailErr) {
-          console.error('Email sending failed:', emailErr);
-          req.flash('success', 'Successfully signed up! Verification email failed to send, please contact support.');
-          res.redirect('/login');
+      const errors = [];
+      if (!req.recaptcha.error) {
+        const score = req.recaptcha.data.score;
+        if (score < 0.5) {
+          errors.push('Failed bot verification. Please try again.');
         }
-      })
-      .catch(err => {
-        throw new Error('Registration failed: ' + err.message);
+      } else {
+        errors.push('reCAPTCHA verification failed: ' + req.recaptcha.error);
+      }
+
+      // Rest of the validation logic remains unchanged
+      if (!username) errors.push('Username is required');
+      else if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) errors.push('Username must be 3-20 characters and contain only letters, numbers, or underscores');
+
+      if (!email) errors.push('Email is required');
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.push('Please enter a valid email address');
+      else {
+        const emailDomain = email.split('@')[1];
+        if (disposableDomains.has(emailDomain)) errors.push('Temporary or disposable email addresses are not allowed');
+        try {
+          const emailRepResponse = await axios.get(`https://emailrep.io/${email}`);
+          if (emailRepResponse.data.suspicious || emailRepResponse.data.disposable) errors.push('This email address is flagged as suspicious or temporary');
+        } catch (repErr) {
+          console.error('Email reputation check failed:', repErr);
+        }
+      }
+
+      if (!phone) errors.push('Phone number is required');
+      else if (!/^\+?[1-9]\d{1,14}$/.test(phone)) errors.push('Please enter a valid phone number');
+
+      if (!password) errors.push('Password is required');
+      else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])(?!.*\s).{8,}$/.test(password)) errors.push('Password must be at least 8 characters, contain uppercase, lowercase, number, special character, and no spaces');
+
+      if (!confirmPassword) errors.push('Confirm password is required');
+      else if (password !== confirmPassword) errors.push('Passwords do not match');
+
+      const validPlans = ['Basic', 'Standard-Monthly', 'Standard-Yearly', 'Pro-Monthly', 'Pro-Yearly', 'Advanced-Monthly', 'Advanced-Yearly', 'Enterprise-Monthly', 'Enterprise-Yearly', 'Premium'];
+      if (!plan) errors.push('Plan selection is required');
+      else if (!validPlans.includes(plan)) errors.push('Invalid plan selected');
+
+      if (errors.length > 0) {
+        req.flash('error', errors.join('. '));
+        return res.render('signup', { error: errors.join('. '), username, email, phone, plan });
+      }
+
+      let billingPeriod = 'monthly';
+      if (plan.includes('Yearly')) billingPeriod = 'yearly';
+
+      const existingUser = await User.findOne({ 
+        $or: [
+          { email: email.toLowerCase() },
+          { phone },
+          { username },
+          { signupIp: req.ip, signupTimestamp: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } }
+        ]
+      });
+      if (existingUser) {
+        req.flash('error', 'Email, phone, username, or IP address already registered recently.');
+        return res.redirect('/signup');
+      }
+
+      const emailDomain = email.split('@')[1];
+      try {
+        const mxRecords = await dns.promises.resolveMx(emailDomain);
+        if (!mxRecords || mxRecords.length === 0) {
+          req.flash('error', 'Email domain does not have valid mail servers.');
+          return res.redirect('/signup');
+        }
+      } catch (dnsErr) {
+        if (dnsErr.code === 'ENOTFOUND' || dnsErr.code === 'ENODATA') {
+          req.flash('error', 'Email domain does not exist or has no mail servers.');
+          return res.redirect('/signup');
+        }
+        throw dnsErr;
+      }
+
+      const tenantsLimit = getTenantsCount(plan);
+      const planAmount = planRates[plan] || 0;
+
+      const user = new User({
+        username,
+        email: email.toLowerCase(),
+        phone,
+        password,
+        plan,
+        tenantsLimit,
+        isVerified: false,
+        verificationToken: crypto.randomBytes(32).toString('hex'),
+        paymentStatus: {
+          transactionId: null,
+          amount: planAmount,
+          status: 'pending',
+          billingPeriod: billingPeriod 
+        },
+        signupIp: req.ip,
+        signupTimestamp: new Date(),
+        failedAttempts: 0,
+        lastSignupAttempt: new Date()
       });
 
-  } catch (err) {
-    console.error('Signup error:', err);
-    req.flash('error', 'An unexpected error occurred. Please try again.');
-    res.redirect('/signup');
-  }
-});
+      await User.register(user, password)
+        .then(async () => {
+          try {
+            await sendWelcomeEmail(email, username, user.verificationToken);
+            await sendWelcomeSMS(phone, username);
+            req.flash('success', 'Successfully signed up! Please check your email or spam to verify your account.');
+            res.redirect('/login');
+          } catch (emailErr) {
+            console.error('Email sending failed:', emailErr);
+            req.flash('success', 'Successfully signed up! Verification email failed to send, please contact support.');
+            res.redirect('/login');
+          }
+        })
+        .catch(err => {
+          throw new Error('Registration failed: ' + err.message);
+        });
+
+    } catch (err) {
+      console.error('Signup error:', err);
+      req.flash('error', 'An unexpected error occurred. Please try again.');
+      res.redirect('/signup');
+    }
+  });
 
 const planRates = {
   'Basic': 0,
@@ -441,8 +446,16 @@ router.post('/login', (req, res, next) => {
   })(req, res, next);
 });
 
+// Authentication middleware
+const ensureAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+      return next();
+  }
+  res.redirect('/login');
+};
+
 // Logout route
-router.get('/logout', isAuthenticated, (req, res, next) => {
+router.get('/logout', ensureAuthenticated, (req, res, next) => {
   req.logout((err) => {
     if (err) {
       return next(err);

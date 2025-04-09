@@ -9,6 +9,9 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   <link rel="icon" href="/images/icon.png" type="image/png">
+  <!-- reCAPTCHA v3 Script -->
+  <script src="https://www.google.com/recaptcha/api.js?render=6Ld3JBArAAAAAP5bZwzmvDlNyAsgOKF5XpA5j1H8" async
+    defer></script>
   <style>
     body {
       background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -245,88 +248,122 @@
     <h1><i class="fas fa-user-plus mr-2"></i> <strong>Create Your Account</strong></h1>
 
     <!-- Error Message -->
-    <% if (error && error.length > 0) { %>
+    <% if (error && error.length> 0) { %>
       <div class="alert alert-danger">
         <%= error %>
       </div>
-    <% } %>
+      <% } %>
 
-    <!-- Success Message -->
-    <% if (success && success.length > 0) { %>
-      <div class="alert alert-success">
-        <%= success %>
+        <!-- Success Message -->
+        <% if (success && success.length> 0) { %>
+          <div class="alert alert-success">
+            <%= success %>
+          </div>
+          <% } %>
+
+            <form id="signupForm" action="/signup" method="POST" novalidate>
+              <div class="form-group">
+                <label for="username" class="form-label"><i class="fas fa-user mr-1"></i> Username</label>
+                <input type="text" name="username" id="username" placeholder="e.g., John123"
+                  value="<%= typeof username !== 'undefined' ? username : '' %>" pattern="^[a-zA-Z0-9_]{3,20}$"
+                  title="Username must be 3-20 characters and contain only letters, numbers, or underscores" required>
+                <small class="error" id="usernameError"></small>
+              </div>
+
+              <div class="form-group">
+                <label for="email" class="form-label"><i class="fas fa-envelope mr-1"></i> Email</label>
+                <input type="email" name="email" id="email" placeholder="e.g., example@domain.com"
+                  value="<%= typeof email !== 'undefined' ? email : '' %>" pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+                  title="Enter a valid email address" required>
+                <small class="error" id="emailError"></small>
+              </div>
+
+              <div class="form-group">
+                <label for="phone" class="form-label"><i class="fas fa-phone mr-1"></i> Phone Number</label>
+                <input type="tel" name="phone" id="phone" placeholder="e.g., +254768123456"
+                  value="<%= typeof phone !== 'undefined' ? phone : '' %>" pattern="^\+?[1-9]\d{1,14}$"
+                  title="Enter a valid phone number (e.g., +254768123456)" required>
+                <small class="error" id="phoneError"></small>
+              </div>
+
+              <div class="form-group">
+                <label for="password" class="form-label"><i class="fas fa-lock mr-1"></i> Password</label>
+                <input type="password" name="password" id="password" placeholder="Create your password"
+                  pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}"
+                  title="Password must be at least 8 characters and include an uppercase letter, lowercase letter, number, and special character"
+                  required>
+                <small class="error" id="passwordError"></small>
+              </div>
+
+              <div class="form-group">
+                <label for="confirm-password" class="form-label"><i class="fas fa-lock mr-1"></i> Confirm
+                  Password</label>
+                <input type="password" name="confirm-password" id="confirm-password" placeholder="Confirm password"
+                  required>
+                <small class="error" id="confirmPasswordError"></small>
+              </div>
+
+              <div class="form-group">
+                <label for="plan" class="form-label"><i class="fas fa-layer-group mr-1"></i> Select Your Plan</label>
+                <select name="plan" id="plan" required>
+                  <option value="Basic" <%=typeof plan !=='undefined' && plan==='Basic' ? 'selected' : '' %>>Demo (5
+                    Units) - Free</option>
+                  <option value="Standard-Monthly" <%=typeof plan !=='undefined' && plan==='Standard-Monthly'
+                    ? 'selected' : '' %>>Standard (Up to 20 Units) - Ksh. 1,499/month</option>
+                  <option value="Standard-Yearly" <%=typeof plan !=='undefined' && plan==='Standard-Yearly' ? 'selected'
+                    : '' %>>Standard (Up to 20 Units) - Ksh. 14,390/year (Save 20%)</option>
+                  <option value="Pro-Monthly" <%=typeof plan !=='undefined' && plan==='Pro-Monthly' ? 'selected' : '' %>
+                    >Pro (Up to 50 Units) - Ksh. 2,999/month</option>
+                  <option value="Pro-Yearly" <%=typeof plan !=='undefined' && plan==='Pro-Yearly' ? 'selected' : '' %>
+                    >Pro (Up to 50 Units) - Ksh. 28,790/year (Save 20%)</option>
+                  <option value="Advanced-Monthly" <%=typeof plan !=='undefined' && plan==='Advanced-Monthly'
+                    ? 'selected' : '' %>>Advanced (Up to 100 Units) - Ksh. 4,499/month</option>
+                  <option value="Advanced-Yearly" <%=typeof plan !=='undefined' && plan==='Advanced-Yearly' ? 'selected'
+                    : '' %>>Advanced (Up to 100 Units) - Ksh. 43,190/year (Save 20%)</option>
+                  <option value="Enterprise-Monthly" <%=typeof plan !=='undefined' && plan==='Enterprise-Monthly'
+                    ? 'selected' : '' %>>Enterprise (Up to 150 Units) - Ksh. 6,999/month</option>
+                  <option value="Enterprise-Yearly" <%=typeof plan !=='undefined' && plan==='Enterprise-Yearly'
+                    ? 'selected' : '' %>>Enterprise (Up to 150 Units) - Ksh. 67,190/year (Save 20%)</option>
+                  <option value="Premium" <%=typeof plan !=='undefined' && plan==='Premium' ? 'selected' : '' %>>Premium
+                    (Unlimited Units) - Contact Us</option>
+                </select>
+              </div>
+
+              <!-- Hidden reCAPTCHA token field -->
+              <input type="hidden" name="g-recaptcha-response" id="recaptchaResponse">
+
+              <button type="submit" id="signupButton" class="btn-submit">
+                <i class="fas fa-user-plus mr-2"></i> Sign Up
+              </button>
+            </form>
+
+            <div class="sign-up-link">
+              <p>Already have an account? <a href="/login"><i class="fas fa-sign-in-alt mr-1"></i>
+                  <strong>Login</strong></a></p>
+            </div>
+  </div>
+
+  <!-- reCAPTCHA Verification Modal -->
+  <div class="modal fade" id="recaptchaModal" tabindex="-1" aria-labelledby="recaptchaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="recaptchaModalLabel"><i class="fas fa-shield-alt mr-2"></i> Verify You’re Not a
+            Bot</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Please wait while we verify your submission...</p>
+          <div id="recaptchaStatus" class="mt-3">
+            <i class="fas fa-spinner fa-spin"></i> Verifying...
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
       </div>
-    <% } %>
-
-    <form id="signupForm" action="/signup" method="POST" novalidate>
-      <div class="form-group">
-        <label for="username" class="form-label"><i class="fas fa-user mr-1"></i> Username</label>
-        <input type="text" name="username" id="username" placeholder="e.g., John123" 
-               value="<%= typeof username !== 'undefined' ? username : '' %>"
-               pattern="^[a-zA-Z0-9_]{3,20}$" 
-               title="Username must be 3-20 characters and contain only letters, numbers, or underscores" 
-               required>
-        <small class="error" id="usernameError"></small>
-      </div>
-
-      <div class="form-group">
-        <label for="email" class="form-label"><i class="fas fa-envelope mr-1"></i> Email</label>
-        <input type="email" name="email" id="email" placeholder="e.g., example@domain.com" 
-               value="<%= typeof email !== 'undefined' ? email : '' %>"
-               pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$" 
-               title="Enter a valid email address" 
-               required>
-        <small class="error" id="emailError"></small>
-      </div>
-
-      <div class="form-group">
-        <label for="phone" class="form-label"><i class="fas fa-phone mr-1"></i> Phone Number</label>
-        <input type="tel" name="phone" id="phone" placeholder="e.g., +254768123456" 
-               value="<%= typeof phone !== 'undefined' ? phone : '' %>"
-               pattern="^\+?[1-9]\d{1,14}$" 
-               title="Enter a valid phone number (e.g., +254768123456)" 
-               required>
-        <small class="error" id="phoneError"></small>
-      </div>
-
-      <div class="form-group">
-        <label for="password" class="form-label"><i class="fas fa-lock mr-1"></i> Password</label>
-        <input type="password" name="password" id="password" placeholder="Create your password" 
-               pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}" 
-               title="Password must be at least 8 characters and include an uppercase letter, lowercase letter, number, and special character" 
-               required>
-        <small class="error" id="passwordError"></small>
-      </div>
-
-      <div class="form-group">
-        <label for="confirm-password" class="form-label"><i class="fas fa-lock mr-1"></i> Confirm Password</label>
-        <input type="password" name="confirm-password" id="confirm-password" placeholder="Confirm password" required>
-        <small class="error" id="confirmPasswordError"></small>
-      </div>
-
-      <div class="form-group">
-        <label for="plan" class="form-label"><i class="fas fa-layer-group mr-1"></i> Select Your Plan</label>
-        <select name="plan" id="plan" required>
-          <option value="Basic" <%= typeof plan !== 'undefined' && plan === 'Basic' ? 'selected' : '' %>>Demo (5 Units) - Free</option>
-          <option value="Standard-Monthly" <%= typeof plan !== 'undefined' && plan === 'Standard-Monthly' ? 'selected' : '' %>>Standard (Up to 20 Units) - Ksh. 1,499/month</option>
-          <option value="Standard-Yearly" <%= typeof plan !== 'undefined' && plan === 'Standard-Yearly' ? 'selected' : '' %>>Standard (Up to 20 Units) - Ksh. 14,390/year (Save 20%)</option>
-          <option value="Pro-Monthly" <%= typeof plan !== 'undefined' && plan === 'Pro-Monthly' ? 'selected' : '' %>>Pro (Up to 50 Units) - Ksh. 2,999/month</option>
-          <option value="Pro-Yearly" <%= typeof plan !== 'undefined' && plan === 'Pro-Yearly' ? 'selected' : '' %>>Pro (Up to 50 Units) - Ksh. 28,790/year (Save 20%)</option>
-          <option value="Advanced-Monthly" <%= typeof plan !== 'undefined' && plan === 'Advanced-Monthly' ? 'selected' : '' %>>Advanced (Up to 100 Units) - Ksh. 4,499/month</option>
-          <option value="Advanced-Yearly" <%= typeof plan !== 'undefined' && plan === 'Advanced-Yearly' ? 'selected' : '' %>>Advanced (Up to 100 Units) - Ksh. 43,190/year (Save 20%)</option>
-          <option value="Enterprise-Monthly" <%= typeof plan !== 'undefined' && plan === 'Enterprise-Monthly' ? 'selected' : '' %>>Enterprise (Up to 150 Units) - Ksh. 6,999/month</option>
-          <option value="Enterprise-Yearly" <%= typeof plan !== 'undefined' && plan === 'Enterprise-Yearly' ? 'selected' : '' %>>Enterprise (Up to 150 Units) - Ksh. 67,190/year (Save 20%)</option>
-          <option value="Premium" <%= typeof plan !== 'undefined' && plan === 'Premium' ? 'selected' : '' %>>Premium (Unlimited Units) - Contact Us</option>
-        </select>
-      </div>
-
-      <button type="submit" id="signupButton" class="btn-submit">
-        <i class="fas fa-user-plus mr-2"></i> Sign Up
-      </button>
-    </form>
-
-    <div class="sign-up-link">
-      <p>Already have an account? <a href="/login"><i class="fas fa-sign-in-alt mr-1"></i> <strong>Login</strong></a></p>
     </div>
   </div>
 
@@ -348,7 +385,10 @@
     const password = document.getElementById('password');
     const confirmPassword = document.getElementById('confirm-password');
     const planDetails = JSON.parse(document.getElementById('plan-details').value);
-  
+    const recaptchaModal = $('#recaptchaModal');
+    const recaptchaStatus = document.getElementById('recaptchaStatus');
+    const RECAPTCHA_SITE_KEY = '6Ld3JBArAAAAAP5bZwzmvDlNyAsgOKF5XpA5j1H8';
+
     // Real-time validation (unchanged)
     const validateField = (field, regex, errorElement, errorMessage) => {
       field.addEventListener('input', () => {
@@ -359,35 +399,35 @@
         }
       });
     };
-  
+
     validateField(
       document.getElementById('username'),
       /^[a-zA-Z0-9_]{3,20}$/,
       document.getElementById('usernameError'),
       'Username must be 3-20 characters and contain only letters, numbers, or underscores'
     );
-  
+
     validateField(
       document.getElementById('email'),
       /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
       document.getElementById('emailError'),
       'Enter a valid email address'
     );
-  
+
     validateField(
       document.getElementById('phone'),
       /^\+?[1-9]\d{1,14}$/,
       document.getElementById('phoneError'),
       'Enter a valid phone number (e.g., +254768123456)'
     );
-  
+
     validateField(
       password,
       /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}/,
       document.getElementById('passwordError'),
       'Password must be 8+ characters with an uppercase, lowercase, number, and special character'
     );
-  
+
     confirmPassword.addEventListener('input', () => {
       const errorElement = document.getElementById('confirmPasswordError');
       if (password.value !== confirmPassword.value) {
@@ -396,7 +436,7 @@
         errorElement.textContent = '';
       }
     });
-  
+
     // Form submission handling (unchanged)
     signupForm.addEventListener('submit', (e) => {
       const errors = [];
@@ -415,7 +455,7 @@
       if (password.value !== confirmPassword.value) {
         errors.push('Passwords do not match');
       }
-  
+
       if (errors.length > 0) {
         e.preventDefault();
         alert(errors.join('. '));
@@ -423,8 +463,39 @@
         signupButton.disabled = true;
         signupButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
       }
+      // Show the modal
+      recaptchaModal.modal('show');
+      recaptchaStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+
+      grecaptcha.ready(() => {
+        grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'tenancyManager/signup' })
+          .then((token) => {
+            document.getElementById('recaptchaResponse').value = token;
+            recaptchaStatus.innerHTML = '<i class="fas fa-check-circle text-success"></i> Verification complete! Submitting...';
+            setTimeout(() => {
+              signupForm.submit(); // Submit the form with the token
+            }, 1000); // Brief delay for user feedback
+          })
+          .catch((error) => {
+            console.error('reCAPTCHA error:', error);
+            recaptchaStatus.innerHTML = '<i class="fas fa-exclamation-triangle text-danger"></i> Verification failed. Please try again.';
+            signupButton.disabled = false;
+            signupButton.innerHTML = '<i class="fas fa-user-plus mr-2"></i> Sign Up';
+            setTimeout(() => {
+              recaptchaModal.modal('hide');
+            }, 2000);
+          });
+      });
+
+      // Reset button state if modal is closed manually
+      recaptchaModal.on('hidden.bs.modal', () => {
+        if (!document.getElementById('recaptchaResponse').value) {
+          signupButton.disabled = false;
+          signupButton.innerHTML = '<i class="fas fa-user-plus mr-2"></i> Sign Up';
+        }
+      });
     });
-  
+
     // Preselect plan from URL parameter
     const urlParams = new URLSearchParams(window.location.search);
     const selectedPlan = urlParams.get('plan');
@@ -437,4 +508,5 @@
     }
   </script>
 </body>
+
 </html>
