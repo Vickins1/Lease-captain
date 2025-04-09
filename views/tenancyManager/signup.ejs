@@ -239,6 +239,125 @@
         max-width: 100px;
       }
     }
+
+    /* Modal-specific styles */
+    .modal-content {
+      border-radius: 15px;
+      border: none;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      background: #fff;
+      overflow: hidden;
+      border-top: 5px solid #003366;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .modal-header {
+      background: linear-gradient(90deg, #003366, #0066cc);
+      color: white;
+      border-bottom: none;
+      padding: 15px 20px;
+    }
+
+    .modal-title {
+      font-weight: 700;
+      font-size: 1.2rem;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+    }
+
+    .modal-header .close {
+      color: white;
+      opacity: 0.8;
+      text-shadow: none;
+      font-size: 1.5rem;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-header .close:hover {
+      opacity: 1;
+    }
+
+    .modal-body {
+      padding: 20px;
+      color: #333;
+      font-size: 0.95rem;
+      text-align: center;
+    }
+
+    .modal-body p {
+      margin-bottom: 15px;
+      font-weight: 500;
+      color: #003366;
+    }
+
+    #recaptchaStatus {
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    #recaptchaStatus i {
+      margin-right: 8px;
+    }
+
+    #recaptchaStatus.text-success {
+      color: #28a745;
+    }
+
+    #recaptchaStatus.text-danger {
+      color: #dc3545;
+    }
+
+    .modal-footer {
+      border-top: none;
+      padding: 10px 20px;
+      justify-content: center;
+    }
+
+    .modal-footer .btn-secondary {
+      background: #6c757d;
+      border: none;
+      border-radius: 25px;
+      padding: 8px 20px;
+      font-weight: 600;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+
+    .modal-footer .btn-secondary:hover {
+      background: #5a6268;
+      transform: translateY(-2px);
+    }
+
+    /* Animation for modal appearance */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 576px) {
+      .modal-dialog {
+        margin: 10px;
+      }
+      .modal-content {
+        border-radius: 10px;
+      }
+      .modal-header {
+        padding: 10px 15px;
+      }
+      .modal-title {
+        font-size: 1rem;
+      }
+      .modal-body {
+        padding: 15px;
+        font-size: 0.85rem;
+      }
+      .modal-footer .btn-secondary {
+        padding: 6px 15px;
+        font-size: 0.85rem;
+      }
+    }
   </style>
 </head>
 
@@ -343,15 +462,13 @@
             </div>
   </div>
 
-  <!-- reCAPTCHA Verification Modal -->
   <div class="modal fade" id="recaptchaModal" tabindex="-1" aria-labelledby="recaptchaModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="recaptchaModalLabel"><i class="fas fa-shield-alt mr-2"></i> Verify You’re Not a
-            Bot</h5>
+          <h5 class="modal-title" id="recaptchaModalLabel"><i class="fas fa-shield-alt mr-2"></i> Verify You’re Not a Bot</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+            <span aria-hidden="true">×</span>
           </button>
         </div>
         <div class="modal-body">
@@ -366,7 +483,6 @@
       </div>
     </div>
   </div>
-
   <!-- Inject plan data via hidden elements -->
   <div id="data-container" style="display: none;">
     <input type="hidden" id="plan-details" value='<%- JSON.stringify({
@@ -379,6 +495,10 @@
     }) %>'>
   </div>
 
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
   <script>
     const signupForm = document.getElementById('signupForm');
     const signupButton = document.getElementById('signupButton');
@@ -388,7 +508,7 @@
     const recaptchaModal = $('#recaptchaModal');
     const recaptchaStatus = document.getElementById('recaptchaStatus');
     const RECAPTCHA_SITE_KEY = '6Ld3JBArAAAAAP5bZwzmvDlNyAsgOKF5XpA5j1H8';
-
+  
     // Real-time validation (unchanged)
     const validateField = (field, regex, errorElement, errorMessage) => {
       field.addEventListener('input', () => {
@@ -399,35 +519,35 @@
         }
       });
     };
-
+  
     validateField(
       document.getElementById('username'),
       /^[a-zA-Z0-9_]{3,20}$/,
       document.getElementById('usernameError'),
       'Username must be 3-20 characters and contain only letters, numbers, or underscores'
     );
-
+  
     validateField(
       document.getElementById('email'),
       /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
       document.getElementById('emailError'),
       'Enter a valid email address'
     );
-
+  
     validateField(
       document.getElementById('phone'),
       /^\+?[1-9]\d{1,14}$/,
       document.getElementById('phoneError'),
       'Enter a valid phone number (e.g., +254768123456)'
     );
-
+  
     validateField(
       password,
       /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}/,
       document.getElementById('passwordError'),
       'Password must be 8+ characters with an uppercase, lowercase, number, and special character'
     );
-
+  
     confirmPassword.addEventListener('input', () => {
       const errorElement = document.getElementById('confirmPasswordError');
       if (password.value !== confirmPassword.value) {
@@ -436,9 +556,11 @@
         errorElement.textContent = '';
       }
     });
-
-    // Form submission handling (unchanged)
+  
+    // Form submission handling with reCAPTCHA modal
     signupForm.addEventListener('submit', (e) => {
+      e.preventDefault(); // Prevent immediate form submission
+  
       const errors = [];
       if (!/^[a-zA-Z0-9_]{3,20}$/.test(document.getElementById('username').value)) {
         errors.push('Invalid username');
@@ -455,25 +577,28 @@
       if (password.value !== confirmPassword.value) {
         errors.push('Passwords do not match');
       }
-
+  
       if (errors.length > 0) {
-        e.preventDefault();
         alert(errors.join('. '));
-      } else {
-        signupButton.disabled = true;
-        signupButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+        return;
       }
-      // Show the modal
+  
+      // Disable button and show loading state
+      signupButton.disabled = true;
+      signupButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+  
+      // Show reCAPTCHA modal
       recaptchaModal.modal('show');
       recaptchaStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
-
+  
       grecaptcha.ready(() => {
         grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'tenancyManager/signup' })
           .then((token) => {
             document.getElementById('recaptchaResponse').value = token;
             recaptchaStatus.innerHTML = '<i class="fas fa-check-circle text-success"></i> Verification complete! Submitting...';
             setTimeout(() => {
-              signupForm.submit(); // Submit the form with the token
+              recaptchaModal.modal('hide');
+              signupForm.submit(); // Submit the form after verification
             }, 1000); // Brief delay for user feedback
           })
           .catch((error) => {
@@ -486,7 +611,7 @@
             }, 2000);
           });
       });
-
+  
       // Reset button state if modal is closed manually
       recaptchaModal.on('hidden.bs.modal', () => {
         if (!document.getElementById('recaptchaResponse').value) {
@@ -495,14 +620,14 @@
         }
       });
     });
-
-    // Preselect plan from URL parameter
+  
+    // Preselect plan from URL parameter (unchanged)
     const urlParams = new URLSearchParams(window.location.search);
     const selectedPlan = urlParams.get('plan');
     if (selectedPlan) {
       const planSelect = document.getElementById('plan');
-      planSelect.value = selectedPlan; // Directly set the value from URL
-      if (!planSelect.value) { // If the value isn't found, fallback to a default
+      planSelect.value = selectedPlan;
+      if (!planSelect.value) {
         planSelect.value = 'Basic';
       }
     }

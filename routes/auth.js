@@ -23,38 +23,6 @@ const recaptcha = new RecaptchaV3(
   { action: 'tenancyManager/signup' }
 );
 
-// List of disposable email domains 
-const disposableDomains = new Set([
-  'mailinator.com',
-  'tempmail.com',
-  'guerrillamail.com',
-  '10minutemail.com'
-]);
-
-// Google OAuth Routes
-router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-
-router.get('/auth/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/login' }),
-  (req, res) => {
-    res.redirect('/dashboard');
-  }
-);
-
-router.get('/tenancyManager/dashboard', 
-  passport.authenticate('google', {
-    failureRedirect: '/login', 
-  }),
-  (req, res) => {
-    res.redirect('/verification');
-});
-
-// Signup route
-router.get('/signup', (req, res) => {
-  const error = req.flash('error');
-  res.render('tenancyManager/signup', { errors: { error: error.length > 0 ? error[0] : null } });
-});
-
 router.post('/signup', 
   signupLimiter,
   recaptcha.middleware.verify,
@@ -185,6 +153,39 @@ router.post('/signup',
       res.redirect('/signup');
     }
   });
+
+// List of disposable email domains 
+const disposableDomains = new Set([
+  'mailinator.com',
+  'tempmail.com',
+  'guerrillamail.com',
+  '10minutemail.com'
+]);
+
+// Google OAuth Routes
+router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+router.get('/auth/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  (req, res) => {
+    res.redirect('/dashboard');
+  }
+);
+
+router.get('/tenancyManager/dashboard', 
+  passport.authenticate('google', {
+    failureRedirect: '/login', 
+  }),
+  (req, res) => {
+    res.redirect('/verification');
+});
+
+// Signup route
+router.get('/signup', (req, res) => {
+  const error = req.flash('error');
+  res.render('tenancyManager/signup', { errors: { error: error.length > 0 ? error[0] : null } });
+});
+
 
 const planRates = {
   'Basic': 0,
