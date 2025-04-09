@@ -16,10 +16,12 @@ const signupLimiter = rateLimit({
   message: 'Too many signup attempts from this IP, please try again after 15 minutes'
 });
 
-// Initialize reCAPTCHA 
-const recaptcha = new RecaptchaV3('YOUR_SITE_KEY', 'YOUR_SECRET_KEY', {
-  action: 'tenancyManager/signup'
-});
+// Initialize reCAPTCHA v3 with .env variables
+const recaptcha = new RecaptchaV3(
+  process.env.RECAPTCHA_SITE_KEY,
+  process.env.RECAPTCHA_SECRET_KEY,
+  { action: 'tenancyManager/signup' }
+);
 
 // List of disposable email domains 
 const disposableDomains = new Set([
