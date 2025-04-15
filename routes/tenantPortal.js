@@ -362,7 +362,6 @@ router.get('/tenant/profile', async (req, res) => {
     }
 });
 
-
 // Route to render the agreement page
 router.get('/tenant/agreement', async (req, res) => {
     try {

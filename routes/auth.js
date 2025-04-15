@@ -4,43 +4,33 @@ const passport = require('passport');
 const User = require('../models/user');
 const dns = require('dns');
 const rateLimit = require('express-rate-limit');
-const { RecaptchaV3 } = require('express-recaptcha');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 
 // Rate limiter for signup attempts
 const signupLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, 
+  windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5,
   message: 'Too many signup attempts from this IP, please try again after 15 minutes'
 });
 
-// Initialize reCAPTCHA v3 with .env variables
-const recaptcha = new RecaptchaV3(
-  process.env.RECAPTCHA_SITE_KEY,
-  process.env.RECAPTCHA_SECRET_KEY,
-  { action: 'tenancyManager/signup' }
-);
-
 router.post('/signup', 
   signupLimiter,
-  recaptcha.middleware.verify,
   async (req, res) => {
-    const { username, email, password, phone, plan, 'confirm-password': confirmPassword, 'g-recaptcha-response': recaptchaResponse } = req.body;
+    const { username, email, password, phone, plan, 'confirm-password': confirmPassword, formLoadedAt } = req.body;
 
     try {
       const errors = [];
-      if (!req.recaptcha.error) {
-        const score = req.recaptcha.data.score;
-        if (score < 0.5) {
-          errors.push('Failed bot verification. Please try again.');
-        }
-      } else {
-        errors.push('reCAPTCHA verification failed: ' + req.recaptcha.error);
+
+      // Timestamp check (require at least 3 seconds)
+      const submissionTime = Date.now();
+      const loadTime = parseInt(formLoadedAt, 10);
+      if (!loadTime || submissionTime - loadTime < 3000) {
+        errors.push('Form submitted too quickly. Please try again.');
       }
 
-      // Rest of the validation logic remains unchanged
+      // Existing validation logic
       if (!username) errors.push('Username is required');
       else if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) errors.push('Username must be 3-20 characters and contain only letters, numbers, or underscores');
 
