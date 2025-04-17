@@ -13,14 +13,13 @@
     <!-- Meta Tags for SEO & Social Sharing -->
     <meta charset="UTF-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <meta name="description"
-        content="Discover Lease Captain, The Safest and Secure Way
+    <meta name="description" content="Discover Lease Captain, The Safest and Secure Way
         to Lease, Rent and Manage your properties! and many more features. Free demo available!">
     <meta name="author" content="Lease Captain Team">
     <meta name="robots" content="index, follow">
 
     <title>Lease Captain - Advanced Property And Lease Management Software</title>
- 
+
     <meta property="og:title" content="Lease Captain - Advanced Property Management Software">
     <meta property="og:description"
         content="Manage properties effortlessly with Lease Captain's powerful tenant and payment tracking features. Try our free demo today!">
@@ -66,26 +65,26 @@
 </head>
 
 <body>
-<!-- Preloader -->
-<div class="preloader">
-    <div class="circles">
-        <div class="circle1"></div>
-        <div class="circle2"></div>
-        <div class="circle3"></div>
-        <div class="circle4"></div>
-        <div class="circle5"></div>
-        <div class="circle6"></div>
-        <div class="circle7"></div>
-        <div class="circle8"></div>
-        <div class="circle9"></div>
-        <div class="circle10"></div>
-        <div class="circle11"></div>
-        <div class="circle12"></div>
-        <div class="circle13"></div>
-        <div class="circle14"></div>
-        <div class="circle15"></div>
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="circles">
+            <div class="circle1"></div>
+            <div class="circle2"></div>
+            <div class="circle3"></div>
+            <div class="circle4"></div>
+            <div class="circle5"></div>
+            <div class="circle6"></div>
+            <div class="circle7"></div>
+            <div class="circle8"></div>
+            <div class="circle9"></div>
+            <div class="circle10"></div>
+            <div class="circle11"></div>
+            <div class="circle12"></div>
+            <div class="circle13"></div>
+            <div class="circle14"></div>
+            <div class="circle15"></div>
+        </div>
     </div>
-</div>
 
 
 
@@ -110,7 +109,7 @@
                             </li>
                             <li><a href="#about">About</a></li>
                             <li><a href="#pricing">Pricing</a></li>
-                            
+
                             <li><a href="#">Blog <i class="bi bi-chevron-down"></i></a>
                                 <div class="sub-menu">
                                     <ul>
@@ -148,419 +147,477 @@
     <!-- End Header Area -->
     <!--==================================================-->
 
-  
-<!--==================================================-->
-<!-- Start Banner Area -->
-<!--==================================================-->
-<section class="banner-section">
-    <div class="banner-carousel owl-carousel">
-        <div class="slide-item one">
-            <div class="image-layer" style="background-image: url('assets/images/slider/slider1.jpg');"></div>
-            <div class="container">
-                <div class="row align-items-center">
-                    <!-- Content Column -->
-                    <div class="col-12 col-lg-6 order-2 order-lg-1">
-                        <div class="slider-content py-4 py-lg-0">
-                            <div class="slider-title-shape">
-                                <img src="assets/images/slider/title-shape.png" alt="Title Decoration">
-                            </div>
-                            <div class="slider-sub-title">
-                                <h4>Your Dream Home Awaits – Let's Make It a Reality</h4>
-                            </div>
-                            <div class="slider-main-title">
-                                <h1>The Safest and Secure Way to Lease, Rent and Manage your properties!</h1>
-                            </div>
-                            <div class="slider-discripton">
-                                <p>Discover a seamless and secure way to rent, manage, and invest in properties. At Lease Captain, we're here to help you every step of the way, providing expert services and unmatched support.</p>
-                            </div>
-                            <div class="slider-button">
-                                <div class="hamilton-btn slider">
-                                    <a href="/signup">Enroll now!</a>
+
+    <!--==================================================-->
+    <!-- Start Banner Area -->
+    <!--==================================================-->
+    <section class="banner-section">
+        <div class="banner-carousel owl-carousel">
+            <div class="slide-item one">
+                <div class="image-layer" style="background-image: url('assets/images/slider/slider1.jpg');"></div>
+                <div class="container">
+                    <div class="row align-items-center">
+                        <!-- Content Column -->
+                        <div class="col-12 col-lg-6 order-2 order-lg-1">
+                            <div class="slider-content py-4 py-lg-0">
+                                <div class="slider-title-shape">
+                                    <img src="assets/images/slider/title-shape.png" alt="Title Decoration">
+                                </div>
+                                <div class="slider-sub-title">
+                                    <h4>Your Dream Home Awaits – Let's Make It a Reality</h4>
+                                </div>
+                                <div class="slider-main-title">
+                                    <h1>The Safest and Secure Way to Lease, Rent and Manage your properties!</h1>
+                                </div>
+                                <div class="slider-discripton">
+                                    <p>Discover a seamless and secure way to rent, manage, and invest in properties. At
+                                        Lease Captain, we're here to help you every step of the way, providing expert
+                                        services and unmatched support.</p>
+                                </div>
+                                <div class="slider-button">
+                                    <div class="hamilton-btn slider">
+                                        <a href="/signup">Enroll now!</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!--==================================================-->
-<!-- End Banner Area -->
-<!--==================================================-->
-
-
-
-<!-- Service Area -->
-<div class="service-area">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="section-title text-center">
-                    <div class="section-main-title">
-                        <h2>Discover Properties in Kenya</h2>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="service_list owl-carousel">
-                <% if (properties && properties.length > 0) { %>
-                    <% 
-                        // Sort by latest (assuming createdAt exists) and take first 4
-                        const latestProperties = properties
-                            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-                            .slice(0, 4); 
-                    %>
-                    <% latestProperties.forEach(property => { %>
-                        <div class="service-single-box">
-                            <div class="service-thumb">
-                                <img src="<%= property.images && property.images.length > 0 ? property.images[0] : '/assets/images/service/default.png' %>" alt="<%= property.name || 'Property Image' %>">
-                                <div class="service-rate">
-                                    <h4>KSh <%= property.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %><span>/Month</span></h4>
-                                </div>
-                            </div>
-                            <div class="service-content">
-                                <div class="service-title">
-                                    <h4><a href="/property/<%= property._id %>"><%= property.name || 'Unnamed Property' %></a></h4>
-                                </div>
-                                <div class="service-description">
-                                    <p><%= property.description && property.description.length > 100 ? property.description.substring(0, 100) + '...' : property.description || 'No description available.' %></p>
-                                </div>
-                                <div class="service-facilities">
-                                    <ul>
-                                        <li>
-                                            <div class="service-icon-thumb">
-                                                <img src="/assets/images/service/service-icon1.png" alt="Bedroom Icon">
+    </section>
+    <!--==================================================-->
+    <!-- End Banner Area -->
+    <!--==================================================-->
+
+
+
+    <!-- Service Area -->
+    <div class="service-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-title text-center">
+                        <div class="section-main-title">
+                            <h2>Discover Properties in Kenya</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="service_list owl-carousel">
+                    <% if (properties && properties.length> 0) { %>
+                        <% // Sort by latest (assuming createdAt exists) and take first 4 const
+                            latestProperties=properties .sort((a, b)=> new Date(b.createdAt) - new Date(a.createdAt))
+                            .slice(0, 4);
+                            %>
+                            <% latestProperties.forEach(property=> { %>
+                                <div class="service-single-box">
+                                    <div class="service-thumb">
+                                        <img src="<%= property.images && property.images.length > 0 ? property.images[0] : '/assets/images/service/default.png' %>"
+                                            alt="<%= property.name || 'Property Image' %>">
+                                        <div class="service-rate">
+                                            <h4>KSh <%= property.price.toLocaleString('en-US', { minimumFractionDigits:
+                                                    2, maximumFractionDigits: 2 }) %><span>/Month</span></h4>
+                                        </div>
+                                    </div>
+                                    <div class="service-content">
+                                        <div class="service-title">
+                                            <h4><a href="/property/<%= property._id %>">
+                                                    <%= property.name || 'Unnamed Property' %>
+                                                </a></h4>
+                                        </div>
+                                        <div class="service-description">
+                                            <p>
+                                                <%= property.description && property.description.length> 100 ?
+                                                    property.description.substring(0, 100) + '...' :
+                                                    property.description || 'No description available.' %>
+                                            </p>
+                                        </div>
+                                        <div class="service-facilities">
+                                            <ul>
+                                                <li>
+                                                    <div class="service-icon-thumb">
+                                                        <img src="/assets/images/service/service-icon1.png"
+                                                            alt="Bedroom Icon">
+                                                    </div>
+                                                    <span>
+                                                        <%= property.bedrooms || 0 %> Bedrooms
+                                                    </span>
+                                                </li>
+                                                <li>
+                                                    <div class="service-icon-thumb">
+                                                        <img src="/assets/images/service/service-icon2.png"
+                                                            alt="Bathroom Icon">
+                                                    </div>
+                                                    <span>
+                                                        <%= property.bathrooms || 0 %> Bathrooms
+                                                    </span>
+                                                </li>
+                                                <% if (property.facilities && property.facilities.length> 0) { %>
+                                                    <li>
+                                                        <div class="service-icon-thumb">
+                                                            <img src="/assets/images/service/service-icon3.png"
+                                                                alt="Facility Icon">
+                                                        </div>
+                                                        <span>
+                                                            <%= property.facilities[0] %>
+                                                        </span>
+                                                    </li>
+                                                    <% } %>
+                                            </ul>
+                                        </div>
+                                        <div class="service-address">
+                                            <div class="service-location">
+                                                <span><i class="bi bi-geo-alt"></i>
+                                                    <%= property.location || 'N/A' %>
+                                                </span>
                                             </div>
-                                            <span><%= property.bedrooms || 0 %> Bedrooms</span>
-                                        </li>
-                                        <li>
-                                            <div class="service-icon-thumb">
-                                                <img src="/assets/images/service/service-icon2.png" alt="Bathroom Icon">
+                                            <div class="service-icon">
+                                                <span><i class="bi bi-heart"></i></span>
+                                                <span><a href="/property/<%= property._id %>"><i
+                                                            class="bi bi-arrow-right"></i></a></span>
                                             </div>
-                                            <span><%= property.bathrooms || 0 %> Bathrooms</span>
-                                        </li>
-                                        <% if (property.facilities && property.facilities.length > 0) { %>
-                                            <li>
-                                                <div class="service-icon-thumb">
-                                                    <img src="/assets/images/service/service-icon3.png" alt="Facility Icon">
-                                                </div>
-                                                <span><%= property.facilities[0] %></span>
-                                            </li>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% }); %>
+                                    <% } else { %>
+                                        <div class="col-lg-12 text-center">
+                                            <p>No properties found matching your criteria.</p>
+                                        </div>
                                         <% } %>
-                                    </ul>
-                                </div>
-                                <div class="service-address">
-                                    <div class="service-location">
-                                        <span><i class="bi bi-geo-alt"></i> <%= property.location || 'N/A' %></span>
-                                    </div>
-                                    <div class="service-icon">
-                                        <span><i class="bi bi-heart"></i></span>
-                                        <span><a href="/property/<%= property._id %>"><i class="bi bi-arrow-right"></i></a></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    <% }); %>
-                <% } else { %>
-                    <div class="col-lg-12 text-center">
-                        <p>No properties found matching your criteria.</p>
-                    </div>
-                <% } %>
+                </div>
             </div>
-        </div>
-        <!-- Creative View More Button -->
-        <div class="row">
-            <div class="col-lg-12 text-center mt-4">
-                <a href="/properties" class="view-more-btn">
-                    <span class="btn-text">Explore More Properties</span>
-                    <span class="btn-icon">
-                        <i class="bi bi-arrow-right-circle"></i>
-                    </span>
-                </a>
+            <!-- Creative View More Button -->
+            <div class="row">
+                <div class="col-lg-12 text-center mt-4">
+                    <a href="/properties" class="view-more-btn">
+                        <span class="btn-text">Explore More Properties</span>
+                        <span class="btn-icon">
+                            <i class="bi bi-arrow-right-circle"></i>
+                        </span>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<style>
-.service-single-box {
-    background: #fff;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    height: 100%; /* Ensures uniform height within carousel */
-}
+    <style>
+        .service-single-box {
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            /* Ensures uniform height within carousel */
+        }
 
-.service-thumb {
-    position: relative;
-    height: 250px; /* Fixed height for uniformity */
-    overflow: hidden;
-}
+        .service-thumb {
+            position: relative;
+            height: 250px;
+            /* Fixed height for uniformity */
+            overflow: hidden;
+        }
 
-.service-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Ensures images scale uniformly */
-}
+        .service-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Ensures images scale uniformly */
+        }
 
-.service-rate {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    background: rgba(0, 61, 77, 0.8);
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 4px;
-}
+        .service-rate {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 61, 77, 0.8);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
 
-.service-rate h4 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 600;
-}
+        .service-rate h4 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
 
-.service-rate span {
-    font-size: 14px;
-    font-weight: 400;
-}
+        .service-rate span {
+            font-size: 14px;
+            font-weight: 400;
+        }
 
-.service-content {
-    padding: 20px;
-    flex-grow: 1; /* Allows content to expand uniformly */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
+        .service-content {
+            padding: 20px;
+            flex-grow: 1;
+            /* Allows content to expand uniformly */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
 
-.service-title h4 {
-    font-size: 22px;
-    margin: 0 0 10px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
+        .service-title h4 {
+            font-size: 22px;
+            margin: 0 0 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
-.service-title h4 a {
-    color: #003d4d;
-    text-decoration: none;
-}
+        .service-title h4 a {
+            color: #003d4d;
+            text-decoration: none;
+        }
 
-.service-title h4 a:hover {
-    color: #1685b6;
-}
+        .service-title h4 a:hover {
+            color: #1685b6;
+        }
 
-.service-description p {
-    font-size: 15px;
-    color: #666;
-    margin: 0 0 15px;
-    line-height: 1.5;
-    max-height: 45px; /* Limits description to 2-3 lines */
-    overflow: hidden;
-}
+        .service-description p {
+            font-size: 15px;
+            color: #666;
+            margin: 0 0 15px;
+            line-height: 1.5;
+            max-height: 45px;
+            /* Limits description to 2-3 lines */
+            overflow: hidden;
+        }
 
-.service-facilities ul {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 15px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
+        .service-facilities ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
 
-.service-facilities li {
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    color: #555;
-}
+        .service-facilities li {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #555;
+        }
 
-.service-icon-thumb {
-    margin-right: 8px;
-}
+        .service-icon-thumb {
+            margin-right: 8px;
+        }
 
-.service-icon-thumb img {
-    width: 20px;
-    height: 20px;
-}
+        .service-icon-thumb img {
+            width: 20px;
+            height: 20px;
+        }
 
-.service-address {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        .service-address {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-.service-location {
-    font-size: 14px;
-    color: #777;
-}
+        .service-location {
+            font-size: 14px;
+            color: #777;
+        }
 
-.service-location i {
-    margin-right: 5px;
-}
+        .service-location i {
+            margin-right: 5px;
+        }
 
-.service-icon span {
-    margin-left: 10px;
-    font-size: 18px;
-    color: #003d4d;
-    cursor: pointer;
-}
+        .service-icon span {
+            margin-left: 10px;
+            font-size: 18px;
+            color: #003d4d;
+            cursor: pointer;
+        }
 
-.service-icon span:hover {
-    color: #1685b6;
-}
+        .service-icon span:hover {
+            color: #1685b6;
+        }
 
-.no-properties {
-    padding: 20px;
-    width: 100%;
-}
+        .no-properties {
+            padding: 20px;
+            width: 100%;
+        }
 
-/* Responsive Adjustments */
+        /* Responsive Adjustments */
 
-/* Large Desktop: 1200px+ */
-@media (min-width: 1200px) {
-    .service_list .owl-stage {
-        display: flex;
-        align-items: stretch; /* Ensures uniform height in carousel */
-    }
-    .service-single-box {
-        width: 100%;
-    }
-}
+        /* Large Desktop: 1200px+ */
+        @media (min-width: 1200px) {
+            .service_list .owl-stage {
+                display: flex;
+                align-items: stretch;
+                /* Ensures uniform height in carousel */
+            }
 
-/* Tablet: 768px - 991px */
-@media (min-width: 768px) and (max-width: 991px) {
-    .service-area {
-        padding: 70px 0;
-    }
-    .service-thumb {
-        height: 200px; /* Slightly smaller */
-    }
-    .service-title h4 {
-        font-size: 20px;
-    }
-    .service-description p {
-        font-size: 14px;
-    }
-    .service-rate h4 {
-        font-size: 16px;
-    }
-    .service-facilities {
-        display: block; /* Show facilities unless hidden elsewhere */
-    }
-}
+            .service-single-box {
+                width: 100%;
+            }
+        }
 
-/* Small Tablet: 600px - 767px */
-@media (min-width: 600px) and (max-width: 767px) {
-    .service-area {
-        padding: 70px 0;
-    }
-    .service-thumb {
-        height: 180px;
-    }
-    .service-title h4 {
-        font-size: 18px;
-    }
-    .service-description p {
-        font-size: 13px;
-        max-height: 40px;
-    }
-    .service-rate h4 {
-        font-size: 16px;
-    }
-    .service-facilities li {
-        font-size: 13px;
-    }
-    .service-icon-thumb img {
-        width: 18px;
-        height: 18px;
-    }
-}
+        /* Tablet: 768px - 991px */
+        @media (min-width: 768px) and (max-width: 991px) {
+            .service-area {
+                padding: 70px 0;
+            }
 
-/* Mobile: Below 599px */
-@media (max-width: 599px) {
-    .service-area {
-        padding: 50px 0;
-    }
-    .service-thumb {
-        height: 150px;
-    }
-    .service-title h4 {
-        font-size: 16px;
-    }
-    .service-description p {
-        font-size: 12px;
-        max-height: 36px;
-    }
-    .service-rate h4 {
-        font-size: 14px;
-    }
-    .service-rate span {
-        font-size: 12px;
-    }
-    .service-facilities ul {
-        flex-direction: column;
-        gap: 8px;
-    }
-    .service-facilities li {
-        font-size: 12px;
-    }
-    .service-icon-thumb img {
-        width: 16px;
-        height: 16px;
-    }
-    .service-address {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-    .service-icon span {
-        font-size: 16px;
-    }
-}
-    .view-more-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px 25px;
-    background: linear-gradient(90deg,rgb(21, 165, 255), #1685b6); /* Vibrant gradient */
-    color: #fff;
-    text-decoration: none;
-    border-radius: 50px; /* Rounded edges */
-    font-size: 16px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-}
+            .service-thumb {
+                height: 200px;
+                /* Slightly smaller */
+            }
 
-.view-more-btn .btn-text {
-    margin-right: 10px; /* Space between text and icon */
-}
+            .service-title h4 {
+                font-size: 20px;
+            }
 
-.view-more-btn .btn-icon {
-    font-size: 20px; /* Slightly larger icon */
-    transition: transform 0.3s ease;
-}
+            .service-description p {
+                font-size: 14px;
+            }
 
-.view-more-btn:hover {
-    background: linear-gradient(90deg, #003366, rgb(21, 165, 255));
-    color: #fff;
-    transform: translateY(-3px); /* Slight lift effect */
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-}
+            .service-rate h4 {
+                font-size: 16px;
+            }
 
-.view-more-btn:hover .btn-icon {
-    transform: translateX(5px); /* Icon slides right on hover */
-}
-</style>
+            .service-facilities {
+                display: block;
+                /* Show facilities unless hidden elsewhere */
+            }
+        }
 
-    
+        /* Small Tablet: 600px - 767px */
+        @media (min-width: 600px) and (max-width: 767px) {
+            .service-area {
+                padding: 70px 0;
+            }
+
+            .service-thumb {
+                height: 180px;
+            }
+
+            .service-title h4 {
+                font-size: 18px;
+            }
+
+            .service-description p {
+                font-size: 13px;
+                max-height: 40px;
+            }
+
+            .service-rate h4 {
+                font-size: 16px;
+            }
+
+            .service-facilities li {
+                font-size: 13px;
+            }
+
+            .service-icon-thumb img {
+                width: 18px;
+                height: 18px;
+            }
+        }
+
+        /* Mobile: Below 599px */
+        @media (max-width: 599px) {
+            .service-area {
+                padding: 50px 0;
+            }
+
+            .service-thumb {
+                height: 150px;
+            }
+
+            .service-title h4 {
+                font-size: 16px;
+            }
+
+            .service-description p {
+                font-size: 12px;
+                max-height: 36px;
+            }
+
+            .service-rate h4 {
+                font-size: 14px;
+            }
+
+            .service-rate span {
+                font-size: 12px;
+            }
+
+            .service-facilities ul {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .service-facilities li {
+                font-size: 12px;
+            }
+
+            .service-icon-thumb img {
+                width: 16px;
+                height: 16px;
+            }
+
+            .service-address {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .service-icon span {
+                font-size: 16px;
+            }
+        }
+
+        .view-more-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 25px;
+            background: linear-gradient(90deg, rgb(21, 165, 255), #1685b6);
+            /* Vibrant gradient */
+            color: #fff;
+            text-decoration: none;
+            border-radius: 50px;
+            /* Rounded edges */
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            /* Subtle shadow */
+        }
+
+        .view-more-btn .btn-text {
+            margin-right: 10px;
+            /* Space between text and icon */
+        }
+
+        .view-more-btn .btn-icon {
+            font-size: 20px;
+            /* Slightly larger icon */
+            transition: transform 0.3s ease;
+        }
+
+        .view-more-btn:hover {
+            background: linear-gradient(90deg, #003366, rgb(21, 165, 255));
+            color: #fff;
+            transform: translateY(-3px);
+            /* Slight lift effect */
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .view-more-btn:hover .btn-icon {
+            transform: translateX(5px);
+            /* Icon slides right on hover */
+        }
+    </style>
+
+
     <!--==================================================-->
     <!-- Start Feature Area -->
     <!--==================================================-->
@@ -928,219 +985,252 @@
     <!-- End About Area -->
     <!--==================================================-->
 
-<!-- Pricing Section -->
-<section id="pricing" class="py-5" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
-    <div class="container">
-        <h3 class="text-center mb-5" style="color: #001b36; font-size: 2.25rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
-            <i class="fas fa-tags mr-2" style="color: #003366;" aria-hidden="true"></i> Our Pricing Plans
-        </h3>
-        <p class="text-center mb-4" style="font-size: 1rem; color: #000000;"><strong>Save more with yearly plans! Slide to view all options.</strong></p>
-       
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-5" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+        <div class="container">
+            <h3 class="text-center mb-5"
+                style="color: #001b36; font-size: 2.25rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+                <i class="fas fa-tags mr-2" style="color: #003366;" aria-hidden="true"></i> Our Pricing Plans
+            </h3>
+            <p class="text-center mb-4" style="font-size: 1rem; color: #000000;"><strong>Save more with yearly plans!
+                    Slide to view all options.</strong></p>
 
-        <!-- Billing Toggle -->
-        <div class="d-flex justify-content-center mb-5">
-            <div class="toggle-wrapper" style="background: #fff; border-radius: 50px; padding: 5px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: inline-flex;">
-                <button type="button" class="btn toggle-btn active" id="monthlyToggle" aria-pressed="true" style="border-radius: 50px; padding: 10px 25px; font-weight: 600; transition: all 0.3s ease;">
-                    Monthly
-                </button>
-                <button type="button" class="btn toggle-btn" id="yearlyToggle" aria-pressed="false" style="border-radius: 50px; padding: 10px 25px; font-weight: 600; transition: all 0.3s ease;">
-                    Yearly <span class="discount-tag" style="font-size: 0.75rem; color: #fff; background: #28a745; padding: 2px 8px; border-radius: 10px; margin-left: 5px;">Save 20%</span>
-                </button>
+
+            <!-- Billing Toggle -->
+            <div class="d-flex justify-content-center mb-5">
+                <div class="toggle-wrapper"
+                    style="background: #fff; border-radius: 50px; padding: 5px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: inline-flex;">
+                    <button type="button" class="btn toggle-btn active" id="monthlyToggle" aria-pressed="true"
+                        style="border-radius: 50px; padding: 10px 25px; font-weight: 600; transition: all 0.3s ease;">
+                        Monthly
+                    </button>
+                    <button type="button" class="btn toggle-btn" id="yearlyToggle" aria-pressed="false"
+                        style="border-radius: 50px; padding: 10px 25px; font-weight: 600; transition: all 0.3s ease;">
+                        Yearly <span class="discount-tag"
+                            style="font-size: 0.75rem; color: #fff; background: #28a745; padding: 2px 8px; border-radius: 10px; margin-left: 5px;">Save
+                            20%</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Row for Pricing Cards with Responsive Layout -->
+            <div class="row flex-nowrap overflow-auto text-center" id="pricingCards"
+                style="scroll-behavior: smooth; padding-bottom: 15px;">
+                <!-- Standard Plan -->
+                <div class="col-10 col-sm-6 col-lg-3 mb-4 mx-2" data-aos="zoom-in" data-aos-duration="1000">
+                    <div class="card h-100 shadow-lg border-0" style="border-radius: 15px; transition: transform 0.3s;">
+                        <div class="card-body p-4">
+                            <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
+                                <i class="fas fa-user" aria-hidden="true"></i>
+                            </div>
+                            <h3 class="card-title" style="color: #003366; font-size: 1.75rem; font-weight: 600;">
+                                Standard</h3>
+                            <p class="lead" style="font-size: 1.2rem;">Up to 20 Units</p>
+                            <p class="font-weight-bold monthly-price" style="font-size: 1.5rem;">
+                                <strong>Ksh.1,499</strong> <span class="text-muted"
+                                    style="font-size: 0.7rem; vertical-align: super;">/month</span>
+                            </p>
+                            <p class="font-weight-bold yearly-price d-none" style="font-size: 1.5rem;">
+                                <strong>Ksh.14,390</strong> <span class="text-muted"
+                                    style="font-size: 0.7rem; vertical-align: super;">/year</span>
+                                <span class="badge badge-success ml-2">Save 20%</span>
+                            </p>
+                            <p style="font-size: 0.9rem; color: #555;">Perfect for small property managers starting out.
+                            </p>
+                            <ul class="list-unstyled mt-3" style="font-size: 0.85rem; color: #333;">
+                                <li><i class="fas fa-check text-success mr-2"></i> 20 Property Units</li>
+                                <li><i class="fas fa-check text-success mr-2"></i> Unlimited Listings</li>
+                                <li><i class="fas fa-check text-success mr-2"></i> Basic Tenant Management</li>
+                                <li><i class="fas fa-check text-success mr-2"></i> Email Support</li>
+                            </ul>
+                            <div class="hamilton-btn slider mt-4">
+                                <a href="/signup?plan=Standard-Monthly" class="btn btn-primary btn-lg plan-link"
+                                    data-plan="Standard" style="border-radius: 25px; padding: 10px 25px;">Get
+                                    Started</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pro Plan -->
+                <div class="col-10 col-sm-6 col-lg-3 mb-4 mx-2" data-aos="zoom-in" data-aos-duration="1000">
+                    <div class="card h-100 shadow-lg border-0" style="border-radius: 15px; transition: transform 0.3s;">
+                        <div class="card-body p-4">
+                            <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
+                                <i class="fas fa-building" aria-hidden="true"></i>
+                            </div>
+                            <h3 class="card-title" style="color: #003366; font-size: 1.75rem; font-weight: 600;">Pro
+                            </h3>
+                            <p class="lead" style="font-size: 1.2rem;">Up to 50 Units</p>
+                            <p class="font-weight-bold monthly-price" style="font-size: 1.5rem;">
+                                <strong>Ksh.2,999</strong> <span class="text-muted"
+                                    style="font-size: 0.7rem; vertical-align: super;">/month</span>
+                            </p>
+                            <p class="font-weight-bold yearly-price d-none" style="font-size: 1.5rem;">
+                                <strong>Ksh.28,790</strong> <span class="text-muted"
+                                    style="font-size: 0.7rem; vertical-align: super;">/year</span>
+                                <span class="badge badge-success ml-2">Save 20%</span>
+                            </p>
+                            <p style="font-size: 0.9rem; color: #555;">Ideal for growing property management businesses.
+                            </p>
+                            <ul class="list-unstyled mt-3" style="font-size: 0.85rem; color: #333;">
+                                <li><i class="fas fa-check text-success mr-2"></i> 50 Property Units</li>
+                                <li><i class="fas fa-check text-success mr-2"></i> Unlimited Listings</li>
+                                <li><i class="fas fa-check text-success mr-2"></i> Advanced Tenant Management</li>
+                                <li><i class="fas fa-check text-success mr-2"></i> Payment Gateway Integration</li>
+                                <li><i class="fas fa-check text-success mr-2"></i> Priority Email Support</li>
+                            </ul>
+                            <div class="hamilton-btn slider mt-4">
+                                <a href="/signup?plan=Pro-Monthly" class="btn btn-primary btn-lg plan-link"
+                                    data-plan="Pro" style="border-radius: 25px; padding: 10px 25px;">Get Started</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Plan -->
+                <div class="col-10 col-sm-6 col-lg-3 mb-4 mx-2" data-aos="zoom-in" data-aos-duration="1000">
+                    <div class="card h-100 shadow-lg border-0" style="border-radius: 15px; transition: transform 0.3s;">
+                        <div class="card-body p-4">
+                            <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
+                                <i class="fas fa-users" aria-hidden="true"></i>
+                            </div>
+                            <h3 class="card-title" style="color: #003366; font-size: 1.75rem; font-weight: 600;">
+                                Advanced</h3>
+                            <p class="lead" style="font-size: 1.2rem;">Up to 100 Units</p>
+                            <p class="font-weight-bold monthly-price" style="font-size: 1.5rem;">
+                                <strong>Ksh.4,499</strong> <span class="text-muted"
+                                    style="font-size: 0.7rem; vertical-align: super;">/month</span>
+                            </p>
+                            <p class="font-weight-bold yearly-price d-none" style="font-size: 1.5rem;">
+                                <strong>Ksh.43,190</strong> <span class="text-muted"
+                                    style="font-size: 0.7rem; vertical-align: super;">/year</span>
+                                <span class="badge badge-success ml-2">Save 20%</span>
+                            </p>
+                            <p style="font-size: 0.9rem; color: #555;">Designed for large property portfolios.</p>
+                            <ul class="list-unstyled mt-3" style="font-size: 0.85rem; color: #333;">
+                                <li><i class="fas fa-check text-success mr-2"></i> 100 Property Units</li>
+                                <li><i class="fas fa-check text-success mr-2"></i> Unlimited Listings</li>
+                                <li><i class="fas fa-check text-success mr-2"></i> Full Tenant Management Suite</li>
+                                <li><i class="fas fa-check text-success mr-2"></i> Payment Gateway + Analytics</li>
+                                <li><i class="fas fa-check text-success mr-2"></i> 24/7 Phone & Email Support</li>
+                            </ul>
+                            <div class="hamilton-btn slider mt-4">
+                                <a href="/signup?plan=Advanced-Monthly" class="btn btn-primary btn-lg plan-link"
+                                    data-plan="Advanced" style="border-radius: 25px; padding: 10px 25px;">Get
+                                    Started</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enterprise Plan -->
+                <div class="col-10 col-sm-6 col-lg-3 mb-4 mx-2" data-aos="zoom-in" data-aos-duration="1000">
+                    <div class="card h-100 shadow-lg border-0" style="border-radius: 15px; transition: transform 0.3s;">
+                        <div class="card-body p-4">
+                            <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
+                                <i class="fas fa-city" aria-hidden="true"></i>
+                            </div>
+                            <h3 class="card-title" style="color: #003366; font-size: 1.75rem; font-weight: 600;">
+                                Enterprise</h3>
+                            <p class="lead" style="font-size: 1.2rem;">Up to 150 Units</p>
+                            <p class="font-weight-bold monthly-price" style="font-size: 1.5rem;">
+                                <strong>Ksh.6,999</strong> <span class="text-muted"
+                                    style="font-size: 0.7rem; vertical-align: super;">/month</span>
+                            </p>
+                            <p class="font-weight-bold yearly-price d-none" style="font-size: 1.5rem;">
+                                <strong>Ksh.67,190</strong> <span class="text-muted"
+                                    style="font-size: 0.7rem; vertical-align: super;">/year</span>
+                                <span class="badge badge-success ml-2">Save 20%</span>
+                            </p>
+                            <p style="font-size: 0.9rem; color: #555;">For extensive property management needs.</p>
+                            <ul class="list-unstyled mt-3" style="font-size: 0.85rem; color: #333;">
+                                <li><i class="fas fa-check text-success mr-2"></i> 150 Property Units</li>
+                                <li><i class="fas fa-check text-success mr-2"></i> Unlimited Listings</li>
+                                <li><i class="fas fa-check text-success mr-2"></i> Enterprise Tenant Tools</li>
+                                <li><i class="fas fa-check text-success mr-2"></i> Advanced Analytics & Payments</li>
+                                <li><i class="fas fa-check text-success mr-2"></i> Dedicated Account Manager</li>
+                            </ul>
+                            <div class="hamilton-btn slider mt-4">
+                                <a href="/signup?plan=Enterprise-Monthly" class="btn btn-primary btn-lg plan-link"
+                                    data-plan="Enterprise" style="border-radius: 25px; padding: 10px 25px;">Get
+                                    Started</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Premium Plan -->
+                <div class="col-10 col-sm-6 col-lg-3 mb-4 mx-2" data-aos="zoom-in" data-aos-duration="1000">
+                    <div class="card h-100 shadow-lg border-0"
+                        style="border-radius: 15px; transition: transform 0.3s; background: linear-gradient(135deg, #003366 0%, #0066cc 100%); color: white;">
+                        <div class="card-body p-4">
+                            <div class="feature-icon mb-3" style="font-size: 2rem; color: #fff;">
+                                <i class="fas fa-briefcase" aria-hidden="true"></i>
+                            </div>
+                            <h3 class="card-title" style="color: #fff; font-size: 1.75rem; font-weight: 600;">Premium
+                            </h3>
+                            <p class="lead" style="font-size: 1.2rem; color: #fff;">Unlimited Units</p>
+                            <p class="font-weight-bold" style="font-size: 1.75rem; color: #fff;">Custom Pricing</p>
+                            <p style="font-size: 0.9rem; color: #ddd;">Tailored solutions for your unique needs.</p>
+                            <ul class="list-unstyled mt-3" style="font-size: 0.85rem; color: #ddd;">
+                                <li><i class="fas fa-check text-success mr-2"></i> Unlimited Property Units</li>
+                                <li><i class="fas fa-check text-success mr-2"></i> Unlimited Listings</li>
+                                <li><i class="fas fa-check text-success mr-2"></i> Custom Tenant Management</li>
+                                <li><i class="fas fa-check text-success mr-2"></i> Full Integration Suite</li>
+                                <li><i class="fas fa-check text-success mr-2"></i> VIP Support & Onboarding</li>
+                            </ul>
+                            <div class="hamilton-btn slider mt-4">
+                                <a href="/signup?plan=Premium" class="btn btn-light btn-lg plan-link"
+                                    data-plan="Premium"
+                                    style="border-radius: 25px; padding: 10px 25px; color: #003366;">Contact Us</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Row for Pricing Cards with Responsive Layout -->
-        <div class="row flex-nowrap overflow-auto text-center" id="pricingCards" style="scroll-behavior: smooth; padding-bottom: 15px;">
-            <!-- Standard Plan -->
-            <div class="col-10 col-sm-6 col-lg-3 mb-4 mx-2" data-aos="zoom-in" data-aos-duration="1000">
-                <div class="card h-100 shadow-lg border-0" style="border-radius: 15px; transition: transform 0.3s;">
-                    <div class="card-body p-4">
-                        <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
-                            <i class="fas fa-user" aria-hidden="true"></i>
-                        </div>
-                        <h3 class="card-title" style="color: #003366; font-size: 1.75rem; font-weight: 600;">Standard</h3>
-                        <p class="lead" style="font-size: 1.2rem;">Up to 20 Units</p>
-                        <p class="font-weight-bold monthly-price" style="font-size: 1.5rem;">
-                            <strong>Ksh.1,499</strong> <span class="text-muted" style="font-size: 0.7rem; vertical-align: super;">/month</span>
-                        </p>
-                        <p class="font-weight-bold yearly-price d-none" style="font-size: 1.5rem;">
-                            <strong>Ksh.14,390</strong> <span class="text-muted" style="font-size: 0.7rem; vertical-align: super;">/year</span>
-                            <span class="badge badge-success ml-2">Save 20%</span>
-                        </p>
-                        <p style="font-size: 0.9rem; color: #555;">Perfect for small property managers starting out.</p>
-                        <ul class="list-unstyled mt-3" style="font-size: 0.85rem; color: #333;">
-                            <li><i class="fas fa-check text-success mr-2"></i> 20 Property Units</li>
-                            <li><i class="fas fa-check text-success mr-2"></i> Unlimited Listings</li>
-                            <li><i class="fas fa-check text-success mr-2"></i> Basic Tenant Management</li>
-                            <li><i class="fas fa-check text-success mr-2"></i> Email Support</li>
-                        </ul>
-                        <div class="hamilton-btn slider mt-4">
-                            <a href="/signup?plan=Standard-Monthly" class="btn btn-primary btn-lg plan-link" data-plan="Standard" style="border-radius: 25px; padding: 10px 25px;">Get Started</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- Font Awesome (Ensure this is included in your project) -->
+        <script src="https://kit.fontawesome.com/your-font-awesome-kit.js" crossorigin="anonymous"></script>
 
-            <!-- Pro Plan -->
-            <div class="col-10 col-sm-6 col-lg-3 mb-4 mx-2" data-aos="zoom-in" data-aos-duration="1000">
-                <div class="card h-100 shadow-lg border-0" style="border-radius: 15px; transition: transform 0.3s;">
-                    <div class="card-body p-4">
-                        <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
-                            <i class="fas fa-building" aria-hidden="true"></i>
-                        </div>
-                        <h3 class="card-title" style="color: #003366; font-size: 1.75rem; font-weight: 600;">Pro</h3>
-                        <p class="lead" style="font-size: 1.2rem;">Up to 50 Units</p>
-                        <p class="font-weight-bold monthly-price" style="font-size: 1.5rem;">
-                            <strong>Ksh.2,999</strong> <span class="text-muted" style="font-size: 0.7rem; vertical-align: super;">/month</span>
-                        </p>
-                        <p class="font-weight-bold yearly-price d-none" style="font-size: 1.5rem;">
-                            <strong>Ksh.28,790</strong> <span class="text-muted" style="font-size: 0.7rem; vertical-align: super;">/year</span>
-                            <span class="badge badge-success ml-2">Save 20%</span>
-                        </p>
-                        <p style="font-size: 0.9rem; color: #555;">Ideal for growing property management businesses.</p>
-                        <ul class="list-unstyled mt-3" style="font-size: 0.85rem; color: #333;">
-                            <li><i class="fas fa-check text-success mr-2"></i> 50 Property Units</li>
-                            <li><i class="fas fa-check text-success mr-2"></i> Unlimited Listings</li>
-                            <li><i class="fas fa-check text-success mr-2"></i> Advanced Tenant Management</li>
-                            <li><i class="fas fa-check text-success mr-2"></i> Payment Gateway Integration</li>
-                            <li><i class="fas fa-check text-success mr-2"></i> Priority Email Support</li>
-                        </ul>
-                        <div class="hamilton-btn slider mt-4">
-                            <a href="/signup?plan=Pro-Monthly" class="btn btn-primary btn-lg plan-link" data-plan="Pro" style="border-radius: 25px; padding: 10px 25px;">Get Started</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- JavaScript for Toggle and Link Updates -->
+        <script>
+            const monthlyToggle = document.getElementById('monthlyToggle');
+            const yearlyToggle = document.getElementById('yearlyToggle');
+            const monthlyPrices = document.querySelectorAll('.monthly-price');
+            const yearlyPrices = document.querySelectorAll('.yearly-price');
+            const planLinks = document.querySelectorAll('.plan-link');
 
-            <!-- Advanced Plan -->
-            <div class="col-10 col-sm-6 col-lg-3 mb-4 mx-2" data-aos="zoom-in" data-aos-duration="1000">
-                <div class="card h-100 shadow-lg border-0" style="border-radius: 15px; transition: transform 0.3s;">
-                    <div class="card-body p-4">
-                        <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
-                            <i class="fas fa-users" aria-hidden="true"></i>
-                        </div>
-                        <h3 class="card-title" style="color: #003366; font-size: 1.75rem; font-weight: 600;">Advanced</h3>
-                        <p class="lead" style="font-size: 1.2rem;">Up to 100 Units</p>
-                        <p class="font-weight-bold monthly-price" style="font-size: 1.5rem;">
-                            <strong>Ksh.4,499</strong> <span class="text-muted" style="font-size: 0.7rem; vertical-align: super;">/month</span>
-                        </p>
-                        <p class="font-weight-bold yearly-price d-none" style="font-size: 1.5rem;">
-                            <strong>Ksh.43,190</strong> <span class="text-muted" style="font-size: 0.7rem; vertical-align: super;">/year</span>
-                            <span class="badge badge-success ml-2">Save 20%</span>
-                        </p>
-                        <p style="font-size: 0.9rem; color: #555;">Designed for large property portfolios.</p>
-                        <ul class="list-unstyled mt-3" style="font-size: 0.85rem; color: #333;">
-                            <li><i class="fas fa-check text-success mr-2"></i> 100 Property Units</li>
-                            <li><i class="fas fa-check text-success mr-2"></i> Unlimited Listings</li>
-                            <li><i class="fas fa-check text-success mr-2"></i> Full Tenant Management Suite</li>
-                            <li><i class="fas fa-check text-success mr-2"></i> Payment Gateway + Analytics</li>
-                            <li><i class="fas fa-check text-success mr-2"></i> 24/7 Phone & Email Support</li>
-                        </ul>
-                        <div class="hamilton-btn slider mt-4">
-                            <a href="/signup?plan=Advanced-Monthly" class="btn btn-primary btn-lg plan-link" data-plan="Advanced" style="border-radius: 25px; padding: 10px 25px;">Get Started</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            function togglePricing(activeBtn, inactiveBtn, showClass, hideClass, billingCycle) {
+                activeBtn.classList.add('active');
+                activeBtn.setAttribute('aria-pressed', 'true');
+                inactiveBtn.classList.remove('active');
+                inactiveBtn.setAttribute('aria-pressed', 'false');
+                showClass.forEach(el => el.classList.remove('d-none'));
+                hideClass.forEach(el => el.classList.add('d-none'));
 
-            <!-- Enterprise Plan -->
-            <div class="col-10 col-sm-6 col-lg-3 mb-4 mx-2" data-aos="zoom-in" data-aos-duration="1000">
-                <div class="card h-100 shadow-lg border-0" style="border-radius: 15px; transition: transform 0.3s;">
-                    <div class="card-body p-4">
-                        <div class="feature-icon mb-3" style="font-size: 2rem; color: #003366;">
-                            <i class="fas fa-city" aria-hidden="true"></i>
-                        </div>
-                        <h3 class="card-title" style="color: #003366; font-size: 1.75rem; font-weight: 600;">Enterprise</h3>
-                        <p class="lead" style="font-size: 1.2rem;">Up to 150 Units</p>
-                        <p class="font-weight-bold monthly-price" style="font-size: 1.5rem;">
-                            <strong>Ksh.6,999</strong> <span class="text-muted" style="font-size: 0.7rem; vertical-align: super;">/month</span>
-                        </p>
-                        <p class="font-weight-bold yearly-price d-none" style="font-size: 1.5rem;">
-                            <strong>Ksh.67,190</strong> <span class="text-muted" style="font-size: 0.7rem; vertical-align: super;">/year</span>
-                            <span class="badge badge-success ml-2">Save 20%</span>
-                        </p>
-                        <p style="font-size: 0.9rem; color: #555;">For extensive property management needs.</p>
-                        <ul class="list-unstyled mt-3" style="font-size: 0.85rem; color: #333;">
-                            <li><i class="fas fa-check text-success mr-2"></i> 150 Property Units</li>
-                            <li><i class="fas fa-check text-success mr-2"></i> Unlimited Listings</li>
-                            <li><i class="fas fa-check text-success mr-2"></i> Enterprise Tenant Tools</li>
-                            <li><i class="fas fa-check text-success mr-2"></i> Advanced Analytics & Payments</li>
-                            <li><i class="fas fa-check text-success mr-2"></i> Dedicated Account Manager</li>
-                        </ul>
-                        <div class="hamilton-btn slider mt-4">
-                            <a href="/signup?plan=Enterprise-Monthly" class="btn btn-primary btn-lg plan-link" data-plan="Enterprise" style="border-radius: 25px; padding: 10px 25px;">Get Started</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                // Update the href of each "Get Started" link based on billing cycle
+                planLinks.forEach(link => {
+                    const plan = link.getAttribute('data-plan');
+                    if (plan === 'Premium') {
+                        link.href = `/signup?plan=Premium`; // Premium doesn't change
+                    } else {
+                        link.href = `/signup?plan=${plan}-${billingCycle}`;
+                    }
+                });
+            }
 
-            <!-- Premium Plan -->
-            <div class="col-10 col-sm-6 col-lg-3 mb-4 mx-2" data-aos="zoom-in" data-aos-duration="1000">
-                <div class="card h-100 shadow-lg border-0" style="border-radius: 15px; transition: transform 0.3s; background: linear-gradient(135deg, #003366 0%, #0066cc 100%); color: white;">
-                    <div class="card-body p-4">
-                        <div class="feature-icon mb-3" style="font-size: 2rem; color: #fff;">
-                            <i class="fas fa-briefcase" aria-hidden="true"></i>
-                        </div>
-                        <h3 class="card-title" style="color: #fff; font-size: 1.75rem; font-weight: 600;">Premium</h3>
-                        <p class="lead" style="font-size: 1.2rem; color: #fff;">Unlimited Units</p>
-                        <p class="font-weight-bold" style="font-size: 1.75rem; color: #fff;">Custom Pricing</p>
-                        <p style="font-size: 0.9rem; color: #ddd;">Tailored solutions for your unique needs.</p>
-                        <ul class="list-unstyled mt-3" style="font-size: 0.85rem; color: #ddd;">
-                            <li><i class="fas fa-check text-success mr-2"></i> Unlimited Property Units</li>
-                            <li><i class="fas fa-check text-success mr-2"></i> Unlimited Listings</li>
-                            <li><i class="fas fa-check text-success mr-2"></i> Custom Tenant Management</li>
-                            <li><i class="fas fa-check text-success mr-2"></i> Full Integration Suite</li>
-                            <li><i class="fas fa-check text-success mr-2"></i> VIP Support & Onboarding</li>
-                        </ul>
-                        <div class="hamilton-btn slider mt-4">
-                            <a href="/signup?plan=Premium" class="btn btn-light btn-lg plan-link" data-plan="Premium" style="border-radius: 25px; padding: 10px 25px; color: #003366;">Contact Us</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+            monthlyToggle.addEventListener('click', () => togglePricing(monthlyToggle, yearlyToggle, monthlyPrices, yearlyPrices, 'Monthly'));
+            yearlyToggle.addEventListener('click', () => togglePricing(yearlyToggle, monthlyToggle, yearlyPrices, monthlyPrices, 'Yearly'));
 
-    <!-- Font Awesome (Ensure this is included in your project) -->
-    <script src="https://kit.fontawesome.com/your-font-awesome-kit.js" crossorigin="anonymous"></script>
-
-    <!-- JavaScript for Toggle and Link Updates -->
-    <script>
-        const monthlyToggle = document.getElementById('monthlyToggle');
-        const yearlyToggle = document.getElementById('yearlyToggle');
-        const monthlyPrices = document.querySelectorAll('.monthly-price');
-        const yearlyPrices = document.querySelectorAll('.yearly-price');
-        const planLinks = document.querySelectorAll('.plan-link');
-
-        function togglePricing(activeBtn, inactiveBtn, showClass, hideClass, billingCycle) {
-            activeBtn.classList.add('active');
-            activeBtn.setAttribute('aria-pressed', 'true');
-            inactiveBtn.classList.remove('active');
-            inactiveBtn.setAttribute('aria-pressed', 'false');
-            showClass.forEach(el => el.classList.remove('d-none'));
-            hideClass.forEach(el => el.classList.add('d-none'));
-
-            // Update the href of each "Get Started" link based on billing cycle
-            planLinks.forEach(link => {
-                const plan = link.getAttribute('data-plan');
-                if (plan === 'Premium') {
-                    link.href = `/signup?plan=Premium`; // Premium doesn't change
-                } else {
-                    link.href = `/signup?plan=${plan}-${billingCycle}`;
-                }
+            // Card hover effect
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('mouseenter', () => card.style.transform = 'scale(1.05)');
+                card.addEventListener('mouseleave', () => card.style.transform = 'scale(1)');
             });
-        }
-
-        monthlyToggle.addEventListener('click', () => togglePricing(monthlyToggle, yearlyToggle, monthlyPrices, yearlyPrices, 'Monthly'));
-        yearlyToggle.addEventListener('click', () => togglePricing(yearlyToggle, monthlyToggle, yearlyPrices, monthlyPrices, 'Yearly'));
-
-        // Card hover effect
-        document.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('mouseenter', () => card.style.transform = 'scale(1.05)');
-            card.addEventListener('mouseleave', () => card.style.transform = 'scale(1)');
-        });
-    </script>
-</section>
+        </script>
+    </section>
 
     <!--==================================================-->
     <!-- Start Sidebar Area -->
@@ -1163,7 +1253,7 @@
                                 <ul>
                                     <li class="dropdown"><a href="#" data-toggle="dropdown">Home</a>
                                     </li>
-                                    
+
                                     <li class="dropdown"><a href="#" data-toggle="dropdown">Blog <i
                                                 class="icon-arrow"></i></a>
                                         <ul class="dropdown-menu">
@@ -1190,15 +1280,17 @@
                             <ul class="social-box"
                                 style="list-style: none; display: flex; gap: 15px; padding: 0; margin-top: 20px;">
                                 <li class="facebook">
-                                    <a href="#" class="fab fa-facebook-f"
+                                    <a href="https://www.facebook.com/profile.php?id=61569016955138"
+                                        class="fab fa-facebook-f"
                                         style="text-decoration: none; font-size: 20px; color: black;"></a>
                                 </li>
                                 <li class="instagram">
-                                    <a href="#" class="fab fa-instagram"
+                                    <a href="https://www.instagram.com/vickins_tech" class="fab fa-instagram"
                                         style="text-decoration: none; font-size: 20px; color: black;"></a>
                                 </li>
                                 <li class="x">
-                                    <a href="#" style="display: inline-block; text-decoration: none;">
+                                    <a href="https://x.com/vickins_tech"
+                                        style="display: inline-block; text-decoration: none;">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20"
                                             height="20" fill="black">
                                             <path
@@ -1207,7 +1299,7 @@
                                     </a>
                                 </li>
                                 <li class="youtube">
-                                    <a href="#" class="fab fa-youtube"
+                                    <a href="https://www.youtube.com/@VickinsTechnologies" class="fab fa-youtube"
                                         style="text-decoration: none; font-size: 20px; color: black;"></a>
                                 </li>
                             </ul>
