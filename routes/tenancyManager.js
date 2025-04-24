@@ -1327,6 +1327,49 @@ router.post('/tenancy-manager/tenant/new', async (req, res) => {
     }
 });
 
+router.post('/tenancy-manager/tenant/impersonate/:tenantId', async (req, res) => {
+    try {
+        // Authentication Check
+        if (!req.user) {
+            req.flash('error', 'Please log in to access this feature');
+            return res.redirect('/login');
+        }
+
+        const tenantId = req.params.tenantId;
+
+        // Fetch Tenant and Verify Ownership
+        const tenant = await Tenant.findOne({ _id: tenantId, owner: req.user._id });
+        if (!tenant) {
+            req.flash('error', 'Tenant not found or you do not have access');
+            return res.redirect('/tenancy-manager/tenants');
+        }
+
+        // Store tenant information in session to mimic tenant login
+        req.session.tenantId = tenant._id;
+        req.session.tenant = {
+            name: tenant.name,
+            email: tenant.email,
+            property: tenant.property,
+            unit: tenant.unit
+        };
+        // Optionally, store a flag to indicate impersonation (for UI or logging purposes)
+        req.session.isImpersonating = true;
+        req.session.landlordId = req.user._id; // Store landlord ID for reverting
+
+        req.flash('success', `Now accessing tenant portal as ${tenant.name}`);
+        return res.redirect('/tenantPortal/dashboard');
+    } catch (error) {
+        console.error('Impersonation Error:', {
+            message: error.message,
+            stack: error.stack,
+            tenantId: req.params.tenantId,
+            userId: req.user?._id
+        });
+        req.flash('error', 'Unable to access tenant portal. Please try again.');
+        return res.redirect('/tenancy-manager/tenants');
+    }
+});
+
 // Function to send tenant email separately
 async function sendTenantEmail(newTenant, propertyName) {
 

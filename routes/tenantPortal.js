@@ -204,7 +204,8 @@ router.get('/tenantPortal/dashboard', async (req, res) => {
             announcements,
             recentTransactions,
             leaseProgress,
-            maintenanceScheduleDates: formattedRequests
+            maintenanceScheduleDates: formattedRequests,
+            isImpersonating: req.session.isImpersonating || false
         });
 
     } catch (error) {
@@ -216,6 +217,35 @@ router.get('/tenantPortal/dashboard', async (req, res) => {
         });
         req.flash('error', 'An error occurred while loading your dashboard');
         return res.redirect('/tenantPortal/login');
+    }
+});
+
+router.post('/tenancy-manager/exit-impersonation', async (req, res) => {
+    try {
+        if (!req.session.isImpersonating || !req.session.landlordId) {
+            req.flash('error', 'No impersonation session found');
+            return res.redirect('/dashboard');
+        }
+
+        // Clear tenant session data
+        delete req.session.tenantId;
+        delete req.session.tenant;
+        delete req.session.isImpersonating;
+
+        // Restore landlord session (assuming req.user is still valid)
+        const landlordId = req.session.landlordId;
+        delete req.session.landlordId;
+
+        req.flash('success', 'Returned to landlord dashboard');
+        return res.redirect('/dashboard');
+    } catch (error) {
+        console.error('Exit Impersonation Error:', {
+            message: error.message,
+            stack: error.stack,
+            userId: req.user?._id
+        });
+        req.flash('error', 'Unable to exit tenant portal. Please try again.');
+        return res.redirect('/tenantPortal/dashboard');
     }
 });
 

@@ -444,6 +444,12 @@
                                                 data-target="#deleteTenantModal<%= tenant._id %>">
                                             <i class="fas fa-trash-alt"></i> Delete
                                         </button>
+                                        <!-- New Button for Direct Tenant Portal Access -->
+                                        <form action="/tenancy-manager/tenant/impersonate/<%= tenant._id %>" method="POST" class="d-inline mr-2">
+                                            <button class="btn btn-success" type="submit">
+                                                <i class="fas fa-user"></i> Access Tenant Portal
+                                            </button>
+                                        </form>
                                         <a href="/tenancy-manager/tenants" class="btn-back ml-3"><i class="fas fa-arrow-left"></i> Back to Tenants</a>
                                     </div>
                                 </div>
