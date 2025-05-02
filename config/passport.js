@@ -1,9 +1,10 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
 const User = require('../models/user');
 require('dotenv').config();
 
-// Google OAuth Strategy
+// GOOGLE STRATEGY
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -19,9 +20,9 @@ passport.use(new GoogleStrategy({
             googleId: profile.id,
             username: profile.displayName.replace(/\s+/g, '').toLowerCase(),
             email: profile.emails[0].value,
-            plan: 'Basic', // Default plan for Google users
-            phone: '',     // Required field, set a default or handle in UI
-            password: undefined // No password for OAuth users
+            plan: 'Basic',
+            phone: '',
+            password: undefined
           });
           await user.save();
         } else {
@@ -36,12 +37,46 @@ passport.use(new GoogleStrategy({
   }
 ));
 
-// Serialize user to save in session
+// FACEBOOK STRATEGY
+passport.use(new FacebookStrategy({
+  clientID: process.env.FACEBOOK_APP_ID,
+  clientSecret: process.env.FACEBOOK_APP_SECRET,
+  callbackURL: process.env.FACEBOOK_CALLBACK_URL,
+  profileFields: ['id', 'displayName', 'emails'] 
+},
+  async (accessToken, refreshToken, profile, done) => {
+    try {
+      const email = profile.emails?.[0]?.value || `${profile.id}@facebook.com`; // fallback
+      let user = await User.findOne({ facebookId: profile.id });
+      if (!user) {
+        user = await User.findOne({ email });
+        if (!user) {
+          user = new User({
+            facebookId: profile.id,
+            username: profile.displayName.replace(/\s+/g, '').toLowerCase(),
+            email: email,
+            plan: 'Basic',
+            phone: '',
+            password: undefined
+          });
+          await user.save();
+        } else {
+          user.facebookId = profile.id;
+          await user.save();
+        }
+      }
+      return done(null, user);
+    } catch (error) {
+      return done(error);
+    }
+  }
+));
+
+// SESSION SETUP
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-// Deserialize user from session
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await User.findById(id);
