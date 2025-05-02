@@ -31,6 +31,14 @@ const moment = require('moment');
 const EventEmitter = require('events');
 const paymentEvents = new EventEmitter();
 
+// Authentication middleware
+const ensureAuthenticated = (req, res, next) => {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect('/login');
+};
+
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -725,21 +733,15 @@ router.post('/subscription', async (req, res) => {
     }
 });
 
-router.get('/subscription', async (req, res) => {
-    try {
-        if (!req.user) {
-            req.flash('error', 'Please log in to view subscription details.');
-            return res.redirect('/login');
-        }
 
-        // Fetch user from database to ensure latest data
+router.get('/subscription', ensureAuthenticated, async (req, res) => {
+    try {
         const user = await mongoose.model('User').findById(req.user._id);
         if (!user) {
             req.flash('error', 'User not found.');
             return res.redirect('/login');
         }
 
-        // Define pricing for both monthly and yearly plans
         const planAmounts = {
             'Basic': { monthly: 0, yearly: 0 },
             'Standard': { monthly: 1499, yearly: 14390 },
@@ -750,41 +752,20 @@ router.get('/subscription', async (req, res) => {
         };
 
         const planDetails = {
-            'Basic': {
-                'monthly': { amount: 0, units: 5 },
-                'yearly': { amount: 0, units: 5 }
-            },
-            'Standard': {
-                'monthly': { amount: 1499, units: 20 },
-                'yearly': { amount: 14390, units: 20 }
-            },
-            'Pro': {
-                'monthly': { amount: 2999, units: 50 },
-                'yearly': { amount: 28790, units: 50 }
-            },
-            'Advanced': {
-                'monthly': { amount: 4499, units: 100 },
-                'yearly': { amount: 43190, units: 100 }
-            },
-            'Enterprise': {
-                'monthly': { amount: 6999, units: 150 },
-                'yearly': { amount: 67190, units: 150 }
-            },
-            'Premium': {
-                'monthly': { amount: null, units: "Contact Support for Pricing" },
-                'yearly': { amount: null, units: "Contact Support for Pricing" }
-            },
+            'Basic': { monthly: { amount: 0, units: 5 }, yearly: { amount: 0, units: 5 } },
+            'Standard': { monthly: { amount: 1499, units: 20 }, yearly: { amount: 14390, units: 20 } },
+            'Pro': { monthly: { amount: 2999, units: 50 }, yearly: { amount: 28790, units: 50 } },
+            'Advanced': { monthly: { amount: 4499, units: 100 }, yearly: { amount: 43190, units: 100 } },
+            'Enterprise': { monthly: { amount: 6999, units: 150 }, yearly: { amount: 67190, units: 150 } },
+            'Premium': { monthly: { amount: null, units: 'Contact Support for Pricing' }, yearly: { amount: null, units: 'Contact Support for Pricing' } },
         };
 
-        // Extract user plan and billing period from the model
         let userPlan = user.plan || 'Basic';
         const billingPeriod = user.paymentStatus?.billingPeriod || 'monthly';
 
-        // Normalize plan name 
         const planTier = userPlan.replace(/-(Monthly|Yearly)$/, '');
         const expectedBillingPeriod = userPlan.includes('Monthly') ? 'monthly' : userPlan.includes('Yearly') ? 'yearly' : billingPeriod;
 
-        // Validate if planTier exists in planDetails
         if (!planDetails[planTier]) {
             console.error(`Invalid plan: ${planTier}`);
             req.flash('error', 'Invalid subscription plan. Defaulting to Basic.');
@@ -793,12 +774,11 @@ router.get('/subscription', async (req, res) => {
             return res.redirect('/subscription');
         }
 
-        // Validate if billingPeriod exists for the selected plan
         if (!planDetails[planTier][expectedBillingPeriod]) {
             console.error(`Invalid billing period: ${expectedBillingPeriod} for plan ${planTier}`);
             req.flash('error', 'Invalid billing period. Defaulting to monthly.');
             user.paymentStatus.billingPeriod = 'monthly';
-            user.plan = `${planTier}-Monthly`; // Update plan to match schema enum
+            user.plan = `${planTier}-Monthly`;
             await user.save();
             return res.redirect('/subscription');
         }
@@ -2401,13 +2381,6 @@ router.post('/reset-password', async (req, res) => {
     }
 });
 
-// Authentication middleware
-const ensureAuthenticated = (req, res, next) => {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.redirect('/login');
-};
 
 // Ensure uploads directory exists
 const uploadDir = path.join(__dirname, '../public/uploads');
