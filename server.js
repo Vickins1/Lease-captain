@@ -25,7 +25,8 @@ const http = require('http');
 const server = http.createServer(app);
 const path = require('path');
 app.set('trust proxy', 1);
-const uri = "mongodb+srv://Admin:Kefini360@lease-captain.ryokh.mongodb.net/LC-db?retryWrites=true&w=majority&appName=Lease-Captain";
+
+const uri =  process.env.MONGODB_URI
 
 async function connectToDatabase() {
   try {
