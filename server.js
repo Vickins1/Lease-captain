@@ -30,7 +30,7 @@ const uri = "mongodb+srv://Admin:Kefini360@lease-captain.ryokh.mongodb.net/LC-db
 async function connectToDatabase() {
   try {
     await mongoose.connect(uri);
-    console.log("Connected to MongoDB!");
+    console.log("Successfully connected to MongoDB database");
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
     process.exit(1);
