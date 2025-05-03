@@ -102,7 +102,7 @@
                     </div>
                     <div class="info">
                         <a href="#" class="d-block" aria-haspopup="true" aria-expanded="false">
-                            <span>Welcome back,</span>
+                            <span>Welcome back,</span><br>
                             <strong>
                                 <%= currentUser.username %>
                             </strong>
@@ -111,229 +111,231 @@
                 </div>
 
                 <!-- Sidebar Menu -->
-<nav class="mt-2">
-    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-        <!-- Dashboard -->
-        <li class="nav-item">
-            <a href="/dashboard" class="nav-link active" style="background-color: #003366; color: #ffffff;">
-                <i class="nav-icon fas fa-tachometer-alt"></i>
-                <p>Dashboard</p>
-            </a>
-        </li>
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                        data-accordion="false">
+                        <!-- Dashboard -->
+                        <li class="nav-item">
+                            <a href="/dashboard" class="nav-link active"
+                                style="background-color: #003366; color: #ffffff;">
+                                <i class="nav-icon fas fa-tachometer-alt"></i>
+                                <p>Dashboard</p>
+                            </a>
+                        </li>
 
-        <!-- Property Management -->
-        <li class="nav-header"><strong>PROPERTY MANAGEMENT</strong></li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/properties" class="nav-link">
-                <i class="nav-icon fas fa-building"></i>
-                <p>Properties</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/property/units" class="nav-link">
-                <i class="nav-icon fas fa-cogs"></i>
-                <p>Property Units</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/propertyListing" class="nav-link">
-                <i class="nav-icon fas fa-list-alt"></i>
-                <p>List Properties</p>
-            </a>
-        </li>
+                        <!-- Property Management -->
+                        <li class="nav-header"><strong>PROPERTY MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/properties" class="nav-link">
+                                <i class="nav-icon fas fa-building"></i>
+                                <p>Properties</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/property/units" class="nav-link">
+                                <i class="nav-icon fas fa-cogs"></i>
+                                <p>Property Units</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/propertyListing" class="nav-link">
+                                <i class="nav-icon fas fa-list-alt"></i>
+                                <p>List Properties</p>
+                            </a>
+                        </li>
 
-        <li class="nav-item">
-            <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-chart-line"></i>
-                <p>
-                    Tenant Management
-                    <i class="right fas fa-angle-left"></i>
-                </p>
-            </a>
-            <ul class="nav nav-treeview">
-                <li class="nav-item">
-                    <a href="/tenancy-manager/tenants" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Tenants</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/maintenance-requests" class="nav-link">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Maintenance Requests</p>
-                    </a>
-                </li>
-            </ul>
-        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-chart-line"></i>
+                                <p>
+                                    Tenant Management
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="/tenancy-manager/tenants" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Tenants</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/maintenance-requests" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Maintenance Requests</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
 
-        <!-- Land Management -->
-        <li class="nav-header"><strong>LAND MANAGEMENT</strong></li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/lands" class="nav-link">
-                <i class="nav-icon fas fa-map"></i>
-                <p>Registered Lands</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/land-parcels" class="nav-link">
-                <i class="nav-icon fas fa-th-large"></i>
-                <p>Land Parcels</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/land-reports" class="nav-link">
-                <i class="nav-icon fas fa-chart-area"></i>
-                <p>Land Reports</p>
-            </a>
-        </li>
+                        <!-- Land Management -->
+                        <li class="nav-header"><strong>LAND MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/lands" class="nav-link">
+                                <i class="nav-icon fas fa-map"></i>
+                                <p>Registered Lands</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/land-parcels" class="nav-link">
+                                <i class="nav-icon fas fa-th-large"></i>
+                                <p>Land Parcels</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/land-reports" class="nav-link">
+                                <i class="nav-icon fas fa-chart-area"></i>
+                                <p>Land Reports</p>
+                            </a>
+                        </li>
 
-        <!-- Lease Management -->
-        <li class="nav-header"><strong>LEASE MANAGEMENT</strong></li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/leases" class="nav-link">
-                <i class="nav-icon fas fa-file-contract"></i>
-                <p>Leases</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/lease-templates" class="nav-link">
-                <i class="nav-icon fas fa-file-alt"></i>
-                <p>Lease Templates</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/lease-reports" class="nav-link">
-                <i class="nav-icon fas fa-chart-bar"></i>
-                <p>Lease Reports</p>
-            </a>
-        </li>
+                        <!-- Lease Management -->
+                        <li class="nav-header"><strong>LEASE MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/leases" class="nav-link">
+                                <i class="nav-icon fas fa-file-contract"></i>
+                                <p>Leases</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/lease-templates" class="nav-link">
+                                <i class="nav-icon fas fa-file-alt"></i>
+                                <p>Lease Templates</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/lease-reports" class="nav-link">
+                                <i class="nav-icon fas fa-chart-bar"></i>
+                                <p>Lease Reports</p>
+                            </a>
+                        </li>
 
-        <!-- Vehicle Management -->
-        <li class="nav-header"><strong>VEHICLE MANAGEMENT</strong></li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/vehicles" class="nav-link">
-                <i class="nav-icon fas fa-car"></i>
-                <p>Registered Vehicles</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/vehicle-parking" class="nav-link">
-                <i class="nav-icon fas fa-parking"></i>
-                <p>Parking Spaces</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/vehicle-reports" class="nav-link">
-                <i class="nav-icon fas fa-clipboard-list"></i>
-                <p>Vehicle Reports</p>
-            </a>
-        </li>
+                        <!-- Vehicle Management -->
+                        <li class="nav-header"><strong>VEHICLE MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/vehicles" class="nav-link">
+                                <i class="nav-icon fas fa-car"></i>
+                                <p>Registered Vehicles</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/vehicle-parking" class="nav-link">
+                                <i class="nav-icon fas fa-parking"></i>
+                                <p>Parking Spaces</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/vehicle-reports" class="nav-link">
+                                <i class="nav-icon fas fa-clipboard-list"></i>
+                                <p>Vehicle Reports</p>
+                            </a>
+                        </li>
 
-        <!-- Finance -->
-        <li class="nav-header"><strong>FINANCE MANAGEMENT</strong></li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/payments" class="nav-link">
-                <i class="nav-icon fas fa-money-bill-wave"></i>
-                <p>Payment Transactions</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/reports-invoices" class="nav-link">
-                <i class="nav-icon fas fa-file-invoice"></i>
-                <p>Reports & Invoices</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/expenses" class="nav-link">
-                <i class="nav-icon fas fa-wallet"></i>
-                <p>Expense Tracking</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/budget-planning" class="nav-link">
-                <i class="nav-icon fas fa-chart-pie"></i>
-                <p>Budget Planning</p>
-            </a>
-        </li>
+                        <!-- Finance -->
+                        <li class="nav-header"><strong>FINANCE MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/payments" class="nav-link">
+                                <i class="nav-icon fas fa-money-bill-wave"></i>
+                                <p>Payment Transactions</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/reports-invoices" class="nav-link">
+                                <i class="nav-icon fas fa-file-invoice"></i>
+                                <p>Reports & Invoices</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/expenses" class="nav-link">
+                                <i class="nav-icon fas fa-wallet"></i>
+                                <p>Expense Tracking</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/budget-planning" class="nav-link">
+                                <i class="nav-icon fas fa-chart-pie"></i>
+                                <p>Budget Planning</p>
+                            </a>
+                        </li>
 
-        <!-- Notifications -->
-        <li class="nav-header"><strong>NOTIFICATION MANAGEMENT</strong></li>
-        <li class="nav-item">
-            <a href="/sms&email" class="nav-link">
-                <i class="nav-icon fas fa-sms"></i>
-                <p>SMS & Email</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/sms&email" class="nav-link">
-                <i class="nav-icon fas fa-credit-card"></i>
-                <p>Credit Top-up</p>
-            </a>
-        </li>
+                        <!-- Notifications -->
+                        <li class="nav-header"><strong>NOTIFICATION MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/sms&email" class="nav-link">
+                                <i class="nav-icon fas fa-sms"></i>
+                                <p>SMS & Email</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/sms&email" class="nav-link">
+                                <i class="nav-icon fas fa-credit-card"></i>
+                                <p>Credit Top-up</p>
+                            </a>
+                        </li>
 
-        <!-- Staff Management -->
-        <li class="nav-header"><strong>STAFF MANAGEMENT</strong></li>
-        <li class="nav-item">
-            <a href="/staff-directory" class="nav-link">
-                <i class="nav-icon fas fa-user-tie"></i>
-                <p>Staff Directory</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/staff-attendance" class="nav-link">
-                <i class="nav-icon fas fa-calendar-check"></i>
-                <p>Attendance</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/staff-payroll" class="nav-link">
-                <i class="nav-icon fas fa-file-invoice-dollar"></i>
-                <p>Payroll</p>
-            </a>
-        </li>
+                        <!-- Staff Management -->
+                        <li class="nav-header"><strong>STAFF MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/staff-directory" class="nav-link">
+                                <i class="nav-icon fas fa-user-tie"></i>
+                                <p>Staff Directory</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/staff-attendance" class="nav-link">
+                                <i class="nav-icon fas fa-calendar-check"></i>
+                                <p>Attendance</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/staff-payroll" class="nav-link">
+                                <i class="nav-icon fas fa-file-invoice-dollar"></i>
+                                <p>Payroll</p>
+                            </a>
+                        </li>
 
-        <!-- Account Management -->
-        <li class="nav-header"><strong>ACCOUNT MANAGEMENT</strong></li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/profile" class="nav-link">
-                <i class="nav-icon fas fa-user"></i>
-                <p>Profile Settings</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/tenancy-manager/security" class="nav-link">
-                <i class="nav-icon fas fa-lock"></i>
-                <p>Security Settings</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/connect" class="nav-link">
-                <i class="nav-icon fas fa-link"></i>
-                <p>Payment Gateway</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/users" class="nav-link">
-                <i class="nav-icon fas fa-users"></i>
-                <p>User Accounts</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="/upgrade-subscription" class="nav-link">
-                <i class="nav-icon fas fa-arrow-circle-up"></i>
-                <p>Upgrade Subscription</p>
-            </a>
-        </li>
-        <!-- Support -->
-        <li class="nav-item mt-auto">
-            <a href="/contacts" class="nav-link d-flex align-items-center justify-content-center"
-                style="background-color: #003366; color: #ffffff; border-radius: 5px; margin: 10px;">
-                <i class="fas fa-headset mr-2"></i>
-                <p>Support</p>
-            </a>
-        </li>
-    </ul>
-</nav>
+                        <!-- Account Management -->
+                        <li class="nav-header"><strong>ACCOUNT MANAGEMENT</strong></li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/profile" class="nav-link">
+                                <i class="nav-icon fas fa-user"></i>
+                                <p>Profile Settings</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/tenancy-manager/security" class="nav-link">
+                                <i class="nav-icon fas fa-lock"></i>
+                                <p>Security Settings</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/connect" class="nav-link">
+                                <i class="nav-icon fas fa-link"></i>
+                                <p>Payment Gateway</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/users" class="nav-link">
+                                <i class="nav-icon fas fa-users"></i>
+                                <p>User Accounts</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/upgrade-subscription" class="nav-link">
+                                <i class="nav-icon fas fa-arrow-circle-up"></i>
+                                <p>Upgrade Subscription</p>
+                            </a>
+                        </li>
+                        <!-- Support -->
+                        <li class="nav-item mt-auto">
+                            <a href="/contacts" class="nav-link d-flex align-items-center justify-content-center"
+                                style="background-color: #003366; color: #ffffff; border-radius: 5px; margin: 10px;">
+                                <i class="fas fa-headset mr-2"></i>
+                                <p>Support</p>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </aside>
 
@@ -347,58 +349,177 @@
                         this.isTourActive = false;
                         this.sidebar = document.querySelector('.main-sidebar');
                         this.navContainer = document.querySelector('.nav-sidebar');
-                
+
                         this.steps = [
                             {
+                                target: '.nav-link[href="/dashboard"]',
+                                title: ' Explore Your Dashboard',
+                                content: 'The dashboard provides an overview of your properties, tenants, and financials, giving you quick insights at a glance.'
+                            },
+                            {
                                 target: '.nav-link[href="/tenancy-manager/properties"]',
-                                title: 'Step 1: Add Your First Property',
+                                title: 'Add Your First Property',
                                 content: 'Adding a property is the foundation of your rental management. It lets you organize all your units, tenants, and payments in one place.'
                             },
                             {
                                 target: '.nav-link[href="/tenancy-manager/property/units"]',
-                                title: 'Step 2: Add Property Units',
-                                content: 'Units help you break down your property into manageable parts. This makes it easier to assign tenants and track rent for each space.'
-                            },
-                            {
-                                target: '.nav-link[href="/tenancy-manager/tenants"]',
-                                title: 'Step 3: Add Tenants',
-                                content: 'Tenants are the heart of your business. Adding them here lets you monitor leases, payments, and maintenance requests efficiently.'
-                            },
-                            {
-                                "target": ".nav-link[href=\"/connect\"]",
-                                "title": "Step 4: Connect Payment Gateway",
-                                "content": "Streamline rent collection by integrating a payment gateway, enhancing efficiency and security. To enable STK Push for tenants, follow these steps: <br><br> 1. <strong>Sign Up</strong>: Create an account on <a href=\"https://portal.umeskiasoftwares.com\" target=\"_blank\">portal.umeskiasoftwares.com</a>.<br> 2. <strong>Register for UmsPay</strong>: Access your dashboard and enroll in UmsPay to activate payment services.<br> 3. Follow the steps and <strong>connect your bank/paybil/Till</strong> account.<br> 3. <strong>Connect API</strong>: Retrieve your API key and account credentials from the Developers section, then input them here to enable seamless STK Push payments.<br><br> This setup minimizes errors, saves time, and ensures secure transactions."
+                                title: ' Add Property Units',
+                                content: 'Units help you break down your property into manageable parts, making it easier to assign tenants and track rent for each space.'
                             },
                             {
                                 target: '.nav-link[href="/tenancy-manager/propertyListing"]',
-                                title: 'Step 5: List Your Properties',
-                                content: 'Listing your properties attracts new tenants. It’s your chance to showcase your rentals and fill vacancies faster.'
-                            }
+                                title: ' List Your Properties',
+                                content: 'Listing your properties attracts new tenants. Showcase your rentals here to fill vacancies faster.'
+                            },
+                            {
+                                target: '.nav-link[href="/tenancy-manager/tenants"]',
+                                title: ' Add Tenants',
+                                content: 'Tenants are the heart of your business. Add them here to monitor leases, payments, and maintenance requests efficiently.'
+                            },
+                            {
+                                target: '.nav-link[href="/maintenance-requests"]',
+                                title: ' Handle Maintenance Requests',
+                                content: 'Manage tenant maintenance requests here to keep your properties in top condition and ensure tenant satisfaction.'
+                            },
+                            {
+                                target: '.nav-link[href="/connect"]',
+                                title: ' Connect Payment Gateway',
+                                content: 'Streamline rent collection by integrating a payment gateway. Follow these steps to enable STK Push: <br><br> 1. <strong>Sign Up</strong>: Create an account on <a href="https://portal.umeskiasoftwares.com" target="_blank">portal.umeskiasoftwares.com</a>.<br> 2. <strong>Register for UmsPay</strong>: Enroll in UmsPay via your dashboard.<br> 3. <strong>Connect Bank/Paybill/Till</strong>: Link your account.<br> 4. <strong>Connect API</strong>: Input your API key from the Developers section for seamless payments.<br><br>Contact support for guidance if you need assistance.'
+                            },
+
+                            {
+                                target: '.nav-link[href="/tenancy-manager/payments"]',
+                                title: ' Manage Payment Transactions',
+                                content: 'Track and manage all payment transactions, monitor rent payments, issue receipts, and ensure financial transparency.'
+                            },
+                            {
+                                target: '.nav-link[href="/reports-invoices"]',
+                                title: ' Generate Reports & Invoices',
+                                content: 'Create detailed financial reports and invoices to keep records organized and communicate payment details to tenants.'
+                            },
+                            {
+                                target: '.nav-link[href="/expenses"]',
+                                title: ' Track Expenses',
+                                content: 'Monitor property-related expenses to maintain a clear overview of financial outflows and optimize your budget.'
+                            },
+                            {
+                                target: '.nav-link[href="/budget-planning"]',
+                                title: ' Plan Your Budget',
+                                content: 'Use budget planning tools to forecast income and expenses, helping you make informed financial decisions.'
+                            },
+                            {
+                                target: '.nav-link[href="/sms&email"]',
+                                title: ' Send SMS & Email Notifications',
+                                content: 'Communicate with tenants and staff via SMS and email to send reminders, updates, or important notices.'
+                            },
+
+
+                            {
+                                target: '.nav-link[href="/users"]',
+                                title: ' Manage User Accounts',
+                                content: 'Add or manage additional user accounts for your team to collaborate on property management tasks.'
+                            },
+                            {
+                                target: '.nav-link[href="/upgrade-subscription"]',
+                                title: ' Upgrade Subscription',
+                                content: 'Unlock advanced features and higher limits by upgrading your subscription plan.'
+                            },
+                            {
+                                target: '.nav-link[href="/staff-directory"]',
+                                title: ' Manage Staff Directory',
+                                content: 'Keep track of your team by maintaining an organized staff directory with contact and role details.'
+                            },
+                            {
+                                target: '.nav-link[href="/staff-attendance"]',
+                                title: ' Track Staff Attendance',
+                                content: 'Monitor staff attendance to ensure accountability and streamline workforce management.'
+                            },
+                            {
+                                target: '.nav-link[href="/staff-payroll"]',
+                                title: ' Handle Payroll',
+                                content: 'Manage staff salaries and payments efficiently with the payroll system.'
+                            },
+                            {
+                                target: '.nav-link[href="/tenancy-manager/profile"]',
+                                title: ' Update Profile Settings',
+                                content: 'Personalize your account by updating your profile settings, including contact information and preferences.'
+                            },
+                            {
+                                target: '.nav-link[href="/tenancy-manager/security"]',
+                                title: ' Secure Your Account',
+                                content: 'Enhance your account security by managing passwords and other security settings here.'
+                            },
+                            {
+                                target: '.nav-link[href="/tenancy-manager/lands"]',
+                                title: ' Register Lands',
+                                content: 'Track your land assets by registering them here, organizing ownership and usage details.'
+                            },
+                            {
+                                target: '.nav-link[href="/tenancy-manager/land-parcels"]',
+                                title: ' Manage Land Parcels',
+                                content: 'Divide your land into parcels for better management and potential leasing or development.'
+                            },
+                            {
+                                target: '.nav-link[href="/tenancy-manager/land-reports"]',
+                                title: ' View Land Reports',
+                                content: 'Generate reports to analyze your land assets, helping you make informed decisions.'
+                            },
+                            {
+                                target: '.nav-link[href="/tenancy-manager/leases"]',
+                                title: ' Create Leases',
+                                content: 'Set up lease agreements for your tenants to formalize rental terms and ensure clarity.'
+                            },
+                            {
+                                target: '.nav-link[href="/tenancy-manager/lease-templates"]',
+                                title: ' Use Lease Templates',
+                                content: 'Save time by creating reusable lease templates for consistent and efficient lease management.'
+                            },
+                            {
+                                target: '.nav-link[href="/tenancy-manager/lease-reports"]',
+                                title: ' Review Lease Reports',
+                                content: 'Monitor lease performance and compliance with detailed reports to stay on top of your agreements.'
+                            },
+                            {
+                                target: '.nav-link[href="/tenancy-manager/vehicles"]',
+                                title: ' Register Vehicles',
+                                content: 'Track vehicles associated with your properties, such as tenant or staff vehicles, for better management.'
+                            },
+                            {
+                                target: '.nav-link[href="/tenancy-manager/vehicle-parking"]',
+                                title: ' Assign Parking Spaces',
+                                content: 'Organize parking spaces for tenants or visitors to streamline property access and avoid conflicts.'
+                            },
+                            {
+                                target: '.nav-link[href="/tenancy-manager/vehicle-reports"]',
+                                title: ' Check Vehicle Reports',
+                                content: 'Review vehicle-related data to ensure compliance with parking rules and property policies.'
+                            },
+
                         ];
                     }
-                
+
                     createOverlay() {
                         const overlay = document.createElement('div');
                         overlay.className = 'tour-overlay';
                         document.body.appendChild(overlay);
                         return overlay;
                     }
-                
+
                     async showStep(stepIndex) {
                         if (!this.isTourActive || stepIndex >= this.steps.length) {
                             await this.endTour();
                             return;
                         }
-                
+
                         const step = this.steps[stepIndex];
                         const targetElement = document.querySelector(step.target);
-                
+
                         if (!targetElement) {
                             console.warn(`Target element not found: ${step.target}`);
                             this.nextStep();
                             return;
                         }
-                
+
                         // Expand parent treeview if target is in a submenu
                         const parentTreeview = targetElement.closest('.nav-treeview');
                         if (parentTreeview) {
@@ -407,15 +528,15 @@
                                 parentLink.click(); // Trigger AdminLTE treeview expand
                             }
                         }
-                
+
                         // Scroll the sidebar to the target
                         targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                
+
                         document.querySelectorAll('.tour-step').forEach(el => el.remove());
                         document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
-                
+
                         targetElement.classList.add('highlight');
-                
+
                         const stepDiv = document.createElement('div');
                         stepDiv.className = 'tour-step';
                         // Position at the right edge of the sidebar
@@ -425,7 +546,7 @@
                         stepDiv.style.left = `${sidebarRect.right + 10}px`; // Right edge of sidebar + 10px offset
                         stepDiv.style.width = '300px'; // Fixed width for consistency
                         stepDiv.style.zIndex = '2010';
-                
+
                         stepDiv.innerHTML = `
                             <div class="tour-progress">Step ${stepIndex + 1} of ${this.steps.length}</div>
                             <h3>${step.title}</h3>
@@ -437,28 +558,28 @@
                                 </button>
                             </div>
                         `;
-                
+
                         document.body.appendChild(stepDiv); // Append to body for fixed positioning
                         this.overlay.style.display = 'block';
                         this.overlay.style.zIndex = '1000';
-                
+
                         const nextBtn = stepDiv.querySelector('#next-btn');
                         const skipBtn = stepDiv.querySelector('.skip-btn');
                         nextBtn.addEventListener('click', () => this.nextStep(), { once: true });
                         skipBtn.addEventListener('click', () => this.endTour(), { once: true });
                     }
-                
+
                     nextStep() {
                         this.currentStep++;
                         this.showStep(this.currentStep);
                     }
-                
+
                     async endTour() {
                         this.isTourActive = false;
                         this.overlay.style.display = 'none';
                         document.querySelectorAll('.tour-step').forEach(el => el.remove());
                         document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
-                
+
                         try {
                             const response = await fetch('/api/user/complete-tour', {
                                 method: 'POST',
@@ -472,7 +593,7 @@
                             this.showCompletionMessage(false);
                         }
                     }
-                
+
                     showCompletionMessage(success) {
                         const message = success
                             ? 'Welcome aboard! You’re ready to manage your properties like a pro!'
@@ -483,11 +604,11 @@
                         document.body.appendChild(alertDiv);
                         setTimeout(() => alertDiv.remove(), 5000);
                     }
-                
+
                     async start() {
                         if (this.isTourActive) return;
                         this.isTourActive = true;
-                
+
                         // Check if sidebar is collapsed or on mobile screen (<= 768px)
                         const isMobile = window.innerWidth <= 768;
                         if (isMobile || this.sidebar.classList.contains('sidebar-collapse')) {
@@ -496,9 +617,9 @@
                                 pushMenuButton.click(); // Open sidebar
                             }
                         }
-                
+
                         this.showStep(this.currentStep);
-                
+
                         window.addEventListener('resize', () => {
                             if (this.isTourActive) {
                                 const stepDiv = document.querySelector('.tour-step');
@@ -510,7 +631,7 @@
                         });
                     }
                 }
-                
+
                 document.addEventListener('DOMContentLoaded', () => {
                     const isNewUser = document.body.dataset.isNewUser === 'true';
                     if (isNewUser) {
@@ -518,9 +639,9 @@
                         tour.start();
                     }
                 });
-                </script>
-                
-                <style>
+            </script>
+
+            <style>
                 .tour-overlay {
                     position: fixed;
                     top: 0;
@@ -532,7 +653,7 @@
                     display: none;
                     transition: opacity 0.3s ease;
                 }
-                
+
                 .tour-step {
                     background: #ffffff;
                     padding: 15px;
@@ -542,34 +663,34 @@
                     animation: fadeIn 0.5s ease-in-out;
                     border: 1px solid #003366;
                 }
-                
+
                 .tour-progress {
                     font-size: 0.9em;
                     color: #666;
                     margin-bottom: 10px;
                 }
-                
+
                 .tour-step h3 {
                     color: #003366;
                     margin: 0 0 10px 0;
                     font-size: 1.2em;
                     font-weight: 600;
                 }
-                
+
                 .tour-step p {
                     margin: 0 0 12px 0;
                     color: #333;
                     line-height: 1.4;
                     font-size: 0.95em;
                 }
-                
+
                 .tour-buttons {
                     display: flex;
                     gap: 10px;
                     justify-content: flex-end;
                     margin-top: 12px;
                 }
-                
+
                 .tour-step button {
                     padding: 6px 16px;
                     border-radius: 5px;
@@ -578,28 +699,28 @@
                     font-size: 0.9em;
                     transition: all 0.3s ease;
                 }
-                
+
                 .tour-step #next-btn {
                     background-color: #003366;
                     color: #fff;
                 }
-                
+
                 .tour-step #next-btn:hover {
                     background-color: #0055a5;
                     transform: translateY(-2px);
                 }
-                
+
                 .tour-step .skip-btn {
                     background-color: #f5f5f5;
                     color: #333;
                     border: 1px solid #ddd;
                 }
-                
+
                 .tour-step .skip-btn:hover {
                     background-color: #e0e0e0;
                     transform: translateY(-2px);
                 }
-                
+
                 .highlight {
                     position: relative;
                     z-index: 2005;
@@ -609,7 +730,7 @@
                     animation: pulse 1.5s infinite;
                     box-shadow: 0 0 10px rgba(0, 51, 102, 0.5);
                 }
-                
+
                 .tour-alert {
                     position: fixed;
                     bottom: 20px;
@@ -622,82 +743,81 @@
                     animation: slideIn 0.5s ease-in-out;
                     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
                 }
-                
+
                 @keyframes fadeIn {
                     from {
                         opacity: 0;
                         transform: translateY(-20px);
                     }
-                
+
                     to {
                         opacity: 1;
                         transform: translateY(0);
                     }
                 }
-                
+
                 @keyframes pulse {
                     0% {
                         box-shadow: 0 0 0 0 rgba(0, 51, 102, 0.7);
                     }
-                
+
                     70% {
                         box-shadow: 0 0 0 15px rgba(0, 51, 102, 0);
                     }
-                
+
                     100% {
                         box-shadow: 0 0 0 0 rgba(0, 51, 102, 0);
                     }
                 }
-                
+
                 @keyframes slideIn {
                     from {
                         opacity: 0;
                         transform: translateX(100%);
                     }
-                
+
                     to {
                         opacity: 1;
                         transform: translateX(0);
                     }
                 }
-                
+
                 @media (max-width: 991px) {
                     .tour-step {
                         padding: 10px;
                         font-size: 0.9em;
                         width: 250px;
                     }
-                
+
                     .tour-step h3 {
                         font-size: 1.1em;
                     }
-                
+
                     .tour-step button {
                         padding: 5px 12px;
                         font-size: 0.85em;
                     }
                 }
-                
+
                 @media (max-width: 576px) {
                     .tour-step {
                         top: 10px !important;
                         left: 10px !important;
-                        /* Fallback to left edge on small screens */
                         width: calc(100% - 20px) !important;
                         padding: 8px;
                     }
-                
+
                     .tour-buttons {
                         flex-direction: column;
                         gap: 8px;
                     }
-                
+
                     .tour-step button {
                         width: 100%;
                     }
                 }
-                </style>
-            
+            </style>
+
             <!-- Main content -->
             <section class="content">
                 <div class="container-fluid">
