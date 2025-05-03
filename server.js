@@ -596,12 +596,13 @@ function getLocalIP() {
     return 'localhost';
 }
 
-// Start the server
+// Start the Lease Captain server
 const PORT = process.env.PORT || 5000;
+const serverName = 'Lease Captain';
 
-server.listen(PORT, () => {
+app.listen(PORT, () => {
     const localIP = getLocalIP();
-    console.log(`Server is running on http://${localIP}:${PORT}`);
+    console.log(`${serverName} is running on http://${localIP}:${PORT}`);
 });
 
 // Handle uncaught exceptions and unhandled rejections
