@@ -15,6 +15,12 @@
     <link rel="stylesheet" href="/dist/css/adminlte.min2167.css?v=3.2.0">
     <!-- Custom Styles -->
     <link rel="icon" type="image/png" sizes="56x56" href="/assets/images/1.png">
+        <!-- IntaSend JavaScript SDK -->
+        <script src="https://js.intasend.com/v1/intasend-inline.js"></script>
+        
+    <!-- Bootstrap CSS (assumed to be included) -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- IntaSend JavaScript SDK -->
 </head>
 
 <body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
@@ -234,45 +240,53 @@
                             </div>
                         </div>
                 
-                        <!-- Rent Payment Modal -->
-                        <div class="modal fade" id="rentPaymentModal" tabindex="-1" role="dialog" aria-labelledby="rentPaymentModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                <div class="modal-content sleek-modal">
-                                    <div class="modal-header" style="background-color: #003366; color: #ffffff; border-radius: 10px 10px 0 0;">
-                                        <h5 class="modal-title" id="rentPaymentModalLabel">Make Rent Payment</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">×</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body p-4">
-                                        <form id="rentPaymentForm" novalidate>
-                                            <div class="form-group">
-                                                <label for="rentAmount">Payment Amount</label>
-                                                <input type="number" class="form-control sleek-input" id="rentAmount" name="amount" placeholder="Enter amount (e.g., 5000)" step="0.01" min="0" required>
-                                                <small class="form-text text-muted">Enter the rent amount in Ksh.</small>
-                                                <div class="invalid-feedback">Please enter a valid amount (e.g., 5000).</div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="rentPaymentMethod">Payment Method</label>
-                                                <select class="form-control sleek-input" id="rentPaymentMethod" name="paymentMethod" required>
-                                                    <option value="">Select Payment Method</option>
-                                                    <option value="mobilePayment">Mobile Payment</option>
-                                                </select>
-                                                <small class="form-text text-muted">Choose how you'd like to pay.</small>
-                                                <div class="invalid-feedback">Please select a payment method.</div>
-                                            </div>
-                                            <div class="form-group" id="rentPhoneGroup" style="display: none;">
-                                                <label for="rentPhoneNumber">Phone Number</label>
-                                                <input type="tel" class="form-control sleek-input" id="rentPhoneNumber" name="phoneNumber" placeholder="e.g., 0787654321" pattern="^0\d{9}$" required>
-                                                <small class="form-text text-muted">Use format: 0787654321</small>
-                                                <div class="invalid-feedback">Please enter a valid phone number (e.g., 0787654321).</div>
-                                            </div>
-                                            <button type="submit" class="btn btn-primary btn-block sleek-btn" id="rentSubmitButton">Pay Rent</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
+                       <!-- Rent Payment Modal -->
+    <div class="modal fade" id="rentPaymentModal" tabindex="-1" role="dialog" aria-labelledby="rentPaymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content sleek-modal">
+                <div class="modal-header" style="background-color: #003366; color: #ffffff; border-radius: 10px 10px 0 0;">
+                    <h5 class="modal-title" id="rentPaymentModalLabel">Make Rent Payment</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="rentPaymentForm" novalidate>
+                        <div class="form-group">
+                            <label for="rentAmount">Payment Amount</label>
+                            <input type="number" class="form-control sleek-input" id="rentAmount" name="amount" placeholder="Enter amount (e.g., 5000)" step="0.01" min="0" required>
+                            <small class="form-text text-muted">Enter the rent amount in Ksh.</small>
+                            <div class="invalid-feedback">Please enter a valid amount (e.g., 5000).</div>
                         </div>
+                        <div class="form-group">
+                            <label for="rentPaymentMethod">Payment Method</label>
+                            <select class="form-control sleek-input" id="rentPaymentMethod" name="paymentMethod" required>
+                                <option value="">Select Payment Method</option>
+                                <option value="mobilePayment">Mobile Payment (M-Pesa)</option>
+                                <option value="cardPayment">Card Payment</option>
+                            </select>
+                            <small class="form-text text-muted">Choose how you'd like to pay.</small>
+                            <div class="invalid-feedback">Please select a payment method.</div>
+                        </div>
+                        <div class="form-group" id="rentPhoneGroup" style="display: none;">
+                            <label for="rentPhoneNumber">Phone Number</label>
+                            <input type="tel" class="form-control sleek-input" id="rentPhoneNumber" name="phoneNumber" placeholder="e.g., 0787654321" pattern="^0\d{9}$" required>
+                            <small class="form-text text-muted">Use format: 0787654321</small>
+                            <div class="invalid-feedback">Please enter a valid phone number (e.g., 0787654321).</div>
+                        </div>
+                        <div class="form-group" id="rentCardGroup" style="display: none;">
+                            <label>Card Details</label>
+                            <div id="rentCardElement" class="sleek-input"></div>
+                            <small class="form-text text-muted">Enter your card details securely.</small>
+                            <div id="rentCardError" class="invalid-feedback" style="display: none;"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block sleek-btn" id="rentSubmitButton">Pay Rent</button>
+                        <div id="rentLoader" class="loader" style="display: none;"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
                 
                         <!-- Rent Loader Modal -->
                         <div class="modal fade" id="rentLoaderModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
@@ -285,45 +299,55 @@
                             </div>
                         </div>
                 
-                        <!-- Utility Payment Modal -->
-                        <div class="modal fade" id="utilityPaymentModal" tabindex="-1" role="dialog" aria-labelledby="utilityPaymentModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                <div class="modal-content sleek-modal">
-                                    <div class="modal-header" style="background-color: #003366; color: #ffffff; border-radius: 10px 10px 0 0;">
-                                        <h5 class="modal-title" id="utilityPaymentModalLabel">Make Utility Payment</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">×</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body p-4">
-                                        <form id="utilityPaymentForm" novalidate>
-                                            <div class="form-group">
-                                                <label for="utilityAmount">Utility Amount</label>
-                                                <input type="number" class="form-control sleek-input" id="utilityAmount" name="amount" placeholder="Enter amount (e.g., 1000)" step="0.01" min="0" required>
-                                                <small class="form-text text-muted">Enter the utility amount in Ksh.</small>
-                                                <div class="invalid-feedback">Please enter a valid amount (e.g., 1000).</div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="utilityPaymentMethod">Payment Method</label>
-                                                <select class="form-control sleek-input" id="utilityPaymentMethod" name="paymentMethod" required>
-                                                    <option value="">Select Payment Method</option>
-                                                    <option value="mobilePayment">Mobile Payment</option>
-                                                </select>
-                                                <small class="form-text text-muted">Choose how you'd like to pay.</small>
-                                                <div class="invalid-feedback">Please select a payment method.</div>
-                                            </div>
-                                            <div class="form-group" id="utilityPhoneGroup" style="display: none;">
-                                                <label for="utilityPhoneNumber">Phone Number</label>
-                                                <input type="tel" class="form-control sleek-input" id="utilityPhoneNumber" name="phoneNumber" placeholder="e.g., 0787654321" pattern="^0\d{9}$" required>
-                                                <small class="form-text text-muted">Use format: 0787654321</small>
-                                                <div class="invalid-feedback">Please enter a valid phone number (e.g., 0787654321).</div>
-                                            </div>
-                                            <button type="submit" class="btn btn-primary btn-block sleek-btn" id="utilitySubmitButton">Pay Utility</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
+                           <!-- Utility Payment Modal -->
+    <div class="modal fade" id="utilityPaymentModal" tabindex="-1" role="dialog" aria-labelledby="utilityPaymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content sleek-modal">
+                <div class="modal-header" style="background-color: #003366; color: #ffffff; border-radius: 10px 10px 0 0;">
+                    <h5 class="modal-title" id="utilityPaymentModalLabel">Make Utility Payment</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="utilityPaymentForm" novalidate>
+                        <div class="form-group">
+                            <label for="utilityAmount">Utility Amount</label>
+                            <input type="number" class="form-control sleek-input" id="utilityAmount" name="amount" placeholder="Enter amount (e.g., 1000)" step="0.01" min="0" required>
+                            <small class="form-text text-muted">Enter the utility amount in Ksh.</small>
+                            <div class="invalid-feedback">Please enter a valid amount (e.g., 1000).</div>
                         </div>
+                        <div class="form-group">
+                            <label for="utilityPaymentMethod">Payment Method</label>
+                            <select class="form-control sleek-input" id="utilityPaymentMethod" name="paymentMethod" required>
+                                <option value="">Select Payment Method</option>
+ \
+
+                                <option value="mobilePayment">Mobile Payment (M-Pesa)</option>
+                                <option value="cardPayment">Card Payment</option>
+                            </select>
+                            <small class="form-text text-muted">Choose how you'd like to pay.</small>
+                            <div class="invalid-feedback">Please select a payment method.</div>
+                        </div>
+                        <div class="form-group" id="utilityPhoneGroup" style="display: none;">
+                            <label for="utilityPhoneNumber">Phone Number</label>
+                            <input type="tel" class="form-control sleek-input" id="utilityPhoneNumber" name="phoneNumber" placeholder="e.g., 0787654321" pattern="^0\d{9}$" required>
+                            <small class="form-text text-muted">Use format: 0787654321</small>
+                            <div class="invalid-feedback">Please enter a valid phone number (e.g., 0787654321).</div>
+                        </div>
+                        <div class="form-group" id="utilityCardGroup" style="display: none;">
+                            <label>Card Details</label>
+                            <div id="utilityCardElement" class="sleek-input"></div>
+                            <small class="form-text text-muted">Enter your card details securely.</small>
+                            <div id="utilityCardError" class="invalid-feedback" style="display: none;"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block sleek-btn" id="utilitySubmitButton">Pay Utility</button>
+                        <div id="utilityLoader" class="loader" style="display: none;"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
                 
                         <!-- Utility Loader Modal -->
                         <div class="modal fade" id="utilityLoaderModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
@@ -336,76 +360,238 @@
                             </div>
                         </div>
                 
-                        <!-- Custom Styles (unchanged) -->
-                        <style>
-                            .btn-primary {
-                                background-color: #003366;
-                                border-color: #003366;
-                            }
-                            .btn-primary:hover {
-                                background-color: #002244;
-                                border-color: #002244;
-                            }
-                            .sleek-modal {
-                                border-radius: 10px;
-                                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-                                background: linear-gradient(135deg, #ffffff, #f8f9fa);
-                            }
-                            .modal-header {
-                                border-bottom: none;
-                                padding: 1.5rem 2rem;
-                            }
-                            .modal-header .close {
-                                color: #ffffff;
-                                font-size: 1.5rem;
-                                opacity: 1;
-                                text-shadow: none;
-                            }
-                            .modal-header .close:hover {
-                                color: #ddd;
-                            }
-                            .sleek-input {
-                                border-radius: 8px;
-                                border: 1px solid #ced4da;
-                                padding: 0.75rem 1rem;
-                                transition: border-color 0.3s ease, box-shadow 0.3s ease;
-                            }
-                            .sleek-input:focus {
-                                border-color: #003366;
-                                box-shadow: 0 0 5px rgba(0, 51, 102, 0.5);
-                            }
-                            .sleek-btn {
-                                border-radius: 8px;
-                                padding: 0.75rem;
-                                font-weight: 600;
-                                background-color: #003366;
-                                border: none;
-                                transition: background-color 0.3s ease, transform 0.2s ease;
-                            }
-                            .sleek-btn:hover {
-                                background-color: #002244;
-                                transform: translateY(-2px);
-                            }
-                            .loader {
-                                width: 40px;
-                                height: 40px;
-                                border: 4px solid #f3f3f3;
-                                border-top: 4px solid #003366;
-                                border-radius: 50%;
-                                animation: spin 1s linear infinite;
-                                margin: 0 auto;
-                            }
-                            @keyframes spin {
-                                0% { transform: rotate(0deg); }
-                                100% { transform: rotate(360deg); }
-                            }
-                            @media (max-width: 576px) {
-                                .modal-body {
-                                    padding: 1rem !important;
-                                }
-                            }
-                        </style>
-                
+                            <!-- Custom Styles (unchanged) -->
+    <style>
+        .btn-primary {
+            background-color: #003366;
+            border-color: #003366;
+        }
+        .btn-primary:hover {
+            background-color: #002244;
+            border-color: #002244;
+        }
+        .sleek-modal {
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+        }
+        .modal-header {
+            border-bottom: none;
+            padding: 1.5rem 2rem;
+        }
+        .modal-header .close {
+            color: #ffffff;
+            font-size: 1.5rem;
+            opacity: 1;
+            text-shadow: none;
+        }
+        .modal-header .close:hover {
+            color: #ddd;
+        }
+        .sleek-input {
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            padding: 0.75rem 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .sleek-input:focus {
+            border-color: #003366;
+            box-shadow: 0 0 5px rgba(0, 51, 102, 0.5);
+        }
+        .sleek-btn {
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-weight: 600;
+            background-color: #003366;
+            border: none;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .sleek-btn:hover {
+            background-color: #002244;
+            transform: translateY(-2px);
+        }
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #003366;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @media (max-width: 576px) {
+            .modal-body {
+                padding: 1rem !important;
+            }
+        }
+    </style>
+
+                   <!-- JavaScript for Form Handling and IntaSend Integration -->
+    <script>
+        // Replace with your IntaSend Publishable Key from the dashboard
+        const INTASEND_PUBLISHABLE_KEY = 'YOUR_INTASEND_PUBLISHABLE_KEY';
+
+        // Initialize IntaSend for card payments
+        const intasend = new window.IntaSend({
+            public_key: INTASEND_PUBLISHABLE_KEY,
+            test: true // Set to false in production
+        });
+
+        // Rent Payment Modal Logic
+        const rentPaymentForm = document.getElementById('rentPaymentForm');
+        const rentPaymentMethod = document.getElementById('rentPaymentMethod');
+        const rentPhoneGroup = document.getElementById('rentPhoneGroup');
+        const rentCardGroup = document.getElementById('rentCardGroup');
+        const rentCardElement = document.getElementById('rentCardElement');
+        const rentCardError = document.getElementById('rentCardError');
+        const rentSubmitButton = document.getElementById('rentSubmitButton');
+        const rentLoader = document.getElement.ById('rentLoader');
+
+        // Utility Payment Modal Logic
+        const utilityPaymentForm = document.getElementById('utilityPaymentForm');
+        const utilityPaymentMethod = document.getElementById('utilityPaymentMethod');
+        const utilityPhoneGroup = document.getElementById('utilityPhoneGroup');
+        const utilityCardGroup = document.getElementById('utilityCardGroup');
+        const utilityCardElement = document.getElementById('utilityCardElement');
+        const utilityCardError = document.getElementById('utilityCardError');
+        const utilitySubmitButton = document.getElementById('utilitySubmitButton');
+        const utilityLoader = document.getElementById('utilityLoader');
+
+        // Setup card elements for both modals
+        const rentCard = intasend.elements.card(rentCardElement);
+        const utilityCard = intasend.elements.card(utilityCardElement);
+
+        // Toggle fields based on payment method
+        function toggleFields(modalType, method) {
+            const phoneGroup = modalType === 'rent' ? rentPhoneGroup : utilityPhoneGroup;
+            const cardGroup = modalType === 'rent' ? rentCardGroup : utilityCardGroup;
+            phoneGroup.style.display = method === 'mobilePayment' ? 'block' : 'none';
+            cardGroup.style.display = method === 'cardPayment' ? 'block' : 'none';
+        }
+
+        // Rent Payment Method Change
+        rentPaymentMethod.addEventListener('change', () => {
+            toggleFields('rent', rentPaymentMethod.value);
+        });
+
+        // Utility Payment Method Change
+        utilityPaymentMethod.addEventListener('change', () => {
+            toggleFields('utility', utilityPaymentMethod.value);
+        });
+
+        // Form validation and submission for Rent Payment
+        rentPaymentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!rentPaymentForm.checkValidity()) {
+                rentPaymentForm.classList.add('was-validated');
+                return;
+            }
+
+            rentSubmitButton.disabled = true;
+            rentLoader.style.display = 'block';
+            rentCardError.style.display = 'none';
+
+            const amount = parseFloat(document.getElementById('rentAmount').value);
+            const phoneNumber = document.getElementById('rentPhoneNumber').value;
+
+            try {
+                if (rentPaymentMethod.value === 'mobilePayment') {
+                    // Existing M-Pesa logic (assumed to be implemented)
+                    console.log('Processing M-Pesa payment:', { amount, phoneNumber });
+                    // Example: Call IntaSend M-Pesa API (not shown)
+                    alert('M-Pesa payment initiated. Check your phone.');
+                } else if (rentPaymentMethod.value === 'cardPayment') {
+                    const result = await intasend.charge({
+                        amount: amount,
+                        currency: 'KES',
+                        card: rentCard
+                    });
+                    if (result.status === 'success') {
+                        alert('Card payment successful!');
+                        rentPaymentForm.reset();
+                        rentPaymentForm.classList.remove('was-validated');
+                        document.getElementById('rentPaymentModal').classList.remove('show');
+                        document.body.classList.remove('modal-open');
+                        document.querySelector('.modal-backdrop').remove();
+                    } else {
+                        rentCardError.textContent = result.error || 'Card payment failed.';
+                        rentCardError.style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                rentCardError.textContent = error.message || 'An error occurred.';
+                rentCardError.style.display = 'block';
+            } finally {
+                rentSubmitButton.disabled = false;
+                rentLoader.style.display = 'none';
+            }
+        });
+
+        // Form validation and submission for Utility Payment
+        utilityPaymentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!utilityPaymentForm.checkValidity()) {
+                utilityPaymentForm.classList.add('was-validated');
+                return;
+            }
+
+            utilitySubmitButton.disabled = true;
+            utilityLoader.style.display = 'block';
+            utilityCardError.style.display = 'none';
+
+            const amount = parseFloat(document.getElementById('utilityAmount').value);
+            const phoneNumber = document.getElementById('utilityPhoneNumber').value;
+
+            try {
+                if (utilityPaymentMethod.value === 'mobilePayment') {
+                    // Existing M-Pesa logic (assumed to be implemented)
+                    console.log('Processing M-Pesa payment:', { amount, phoneNumber });
+                    // Example: Call IntaSend M-Pesa API (not shown)
+                    alert('M-Pesa payment initiated. Check your phone.');
+                } else if (utilityPaymentMethod.value === 'cardPayment') {
+                    const result = await intasend.charge({
+                        amount: amount,
+                        currency: 'KES',
+                        card: utilityCard
+                    });
+                    if (result.status === 'success') {
+                        alert('Card payment successful!');
+                        utilityPaymentForm.reset();
+                        utilityPaymentForm.classList.remove('was-validated');
+                        document.getElementById('utilityPaymentModal').classList.remove('show');
+                        document.body.classList.remove('modal-open');
+                        document.querySelector('.modal-backdrop').remove();
+                    } else {
+                        utilityCardError.textContent = result.error || 'Card payment failed.';
+                        utilityCardError.style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                utilityCardError.textContent = error.message || 'An error occurred.';
+                utilityCardError.style.display = 'block';
+            } finally {
+                utilitySubmitButton.disabled = false;
+                utilityLoader.style.display = 'none';
+            }
+        });
+
+        // Reset forms when modals are closed
+        document.getElementById('rentPaymentModal').addEventListener('hidden.bs.modal', () => {
+            rentPaymentForm.reset();
+            rentPaymentForm.classList.remove('was-validated');
+            toggleFields('rent', '');
+        });
+
+        document.getElementById('utilityPaymentModal').addEventListener('hidden.bs.modal', () => {
+            utilityPaymentForm.reset();
+            utilityPaymentForm.classList.remove('was-validated');
+            toggleFields('utility', '');
+        });
+    </script>
                         <!-- JavaScript (unchanged except for updatePaymentHistory) -->
                         <script>
                             document.addEventListener('DOMContentLoaded', function () {
@@ -604,6 +790,9 @@
         </footer>
     </div>
 
+    <!-- Bootstrap JS and Dependencies (assumed to be included) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@pop Chiara/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- REQUIRED SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/plugins/jquery/jquery.min.js"></script>
