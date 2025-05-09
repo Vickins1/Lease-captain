@@ -39,7 +39,6 @@ const ensureAuthenticated = (req, res, next) => {
     res.redirect('/login');
 };
 
-// nodemailer transporter setup
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -98,7 +97,6 @@ router.get('/resend-verification', async (req, res) => {
     }
 });
 
-// Function to send welcome email with verification link
 const sendWelcomeEmail = async (email, username, verificationToken) => {
     const mailOptions = {
         from: `"Lease Captain" <${process.env.EMAIL_USERNAME}>`,
@@ -251,166 +249,42 @@ async function fetchRecentPayments(userId) {
         .lean();
 }
 
-// Calculate metrics for tenants
+// Calculate financial metrics
 async function calculateMetrics(tenants, userId) {
-    const currentDate = new Date('2025-05-09');
-    const monthlyMetrics = {};
+    const currentYear = new Date().getFullYear();
+    let totalRentCollected = 0;
+    let totalRentDue = 0;
+    let utilityCollected = 0;
+    let utilityDue = 0;
 
-    // Helper function to get months between dates with proration
-    function getMonthsBetween(startDate, endDate, currentDate) {
-        const months = [];
-        let current = new Date(startDate);
-        current.setDate(1);
-        const effectiveEnd = endDate && endDate < currentDate ? endDate : currentDate;
-        while (current <= effectiveEnd) {
-            const yearMonth = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}`;
-            const monthStart = new Date(current.getFullYear(), current.getMonth(), 1);
-            const monthEnd = new Date(current.getFullYear(), current.getMonth() + 1, 0);
-            const daysInMonth = monthEnd.getDate();
-            const effectiveStart = startDate > monthStart ? startDate : monthStart;
-            const effectiveMonthEnd = effectiveEnd < monthEnd ? effectiveEnd : monthEnd;
-            const daysActive = Math.ceil((effectiveMonthEnd - effectiveStart) / (1000 * 60 * 60 * 24)) + 1;
-            const prorationFactor = daysActive / daysInMonth;
-            months.push({ yearMonth, prorationFactor });
-            current.setMonth(current.getMonth() + 1);
-        }
-        return months;
-    }
-
-    // Process each tenant
     for (const tenant of tenants) {
-        const leaseStartDate = new Date(tenant.leaseStartDate);
-        const leaseEndDate = tenant.leaseEndDate ? new Date(tenant.leaseEndDate) : null;
-        if (isNaN(leaseStartDate)) continue;
-
-        // Fetch unit data
-        const unit = await mongoose.model('PropertyUnit').findById(tenant.unit).lean();
-        if (!unit) continue;
-
-        const monthlyRent = Number(unit.unitPrice) || 0;
-        const monthlyUtility = unit.utilities?.reduce((sum, u) => sum + (Number(u.amount) || 0), 0) || 0;
-
-        const months = getMonthsBetween(leaseStartDate, leaseEndDate, currentDate);
-
-        for (const { yearMonth, prorationFactor } of months) {
-            if (!monthlyMetrics[yearMonth]) {
-                monthlyMetrics[yearMonth] = {
-                    totalRentCollected: 0,
-                    totalRentDue: 0,
-                    utilityCollected: 0,
-                    utilityDue: 0,
-                    totalExpenses: 0,
-                    totalExpectedRent: 0,
-                    totalProfit: 0,
-                    totalUtility: 0
-                };
-            }
-
-            const expectedRent = monthlyRent * prorationFactor;
-            const expectedUtility = monthlyUtility * prorationFactor;
-
-            monthlyMetrics[yearMonth].totalExpectedRent += expectedRent;
-            monthlyMetrics[yearMonth].totalUtility += expectedUtility;
-        }
+        totalRentCollected += tenant.rentPaid || 0;
+        totalRentDue += tenant.rentDue || 0;
+        utilityCollected += tenant.utilityPaid || 0;
+        utilityDue += tenant.utilityDue || 0;
     }
 
-    // Fetch payments
-    const payments = await mongoose.model('Payment').find({
-        owner: userId,
-        status: 'completed',
-        paymentType: { $in: ['rent', 'utility'] }
-    }).lean();
-
-    for (const payment of payments) {
-        const paymentDate = new Date(payment.datePaid || currentDate);
-        const yearMonth = `${paymentDate.getFullYear()}-${String(paymentDate.getMonth() + 1).padStart(2, '0')}`;
-        if (!monthlyMetrics[yearMonth]) {
-            monthlyMetrics[yearMonth] = {
-                totalRentCollected: 0,
-                totalRentDue: 0,
-                utilityCollected: 0,
-                utilityDue: 0,
-                totalExpenses: 0,
-                totalExpectedRent: 0,
-                totalProfit: 0,
-                totalUtility: 0
-            };
-        }
-
-        if (payment.paymentType === 'rent') {
-            monthlyMetrics[yearMonth].totalRentCollected += Number(payment.rentPaid) || 0;
-        } else if (payment.paymentType === 'utility') {
-            monthlyMetrics[yearMonth].utilityCollected += Number(payment.utilityPaid) || 0;
-        }
-    }
-
-    // Fetch expenses
-    const expenses = await mongoose.model('Expense').aggregate([
+    const expenses = await Expense.aggregate([
         { $match: { owner: userId } },
-        {
-            $group: {
-                _id: {
-                    year: { $year: '$date' },
-                    month: { $month: '$date' }
-                },
-                total: { $sum: '$amount' }
-            }
-        }
+        { $group: { _id: null, total: { $sum: '$amount' } } }
     ]);
 
-    for (const expense of expenses) {
-        const monthKey = `${expense._id.year}-${String(expense._id.month).padStart(2, '0')}`;
-        if (!monthlyMetrics[monthKey]) {
-            monthlyMetrics[monthKey] = {
-                totalRentCollected: 0,
-                totalRentDue: 0,
-                utilityCollected: 0,
-                utilityDue: 0,
-                totalExpenses: expense.total,
-                totalExpectedRent: 0,
-                totalProfit: 0,
-                totalUtility: 0
-            };
-        } else {
-            monthlyMetrics[monthKey].totalExpenses = expense.total;
-        }
-    }
+    const totalExpenses = expenses[0]?.total || 0;
+    const totalExpectedRent = totalRentCollected + totalRentDue;
+    const totalProfit = totalRentCollected - totalExpenses;
+    const totalUtility = utilityCollected + utilityDue;
 
-    // Calculate derived metrics
-    for (const month in monthlyMetrics) {
-        const metrics = monthlyMetrics[month];
-        metrics.totalRentDue = Math.max(0, metrics.totalExpectedRent - metrics.totalRentCollected);
-        metrics.utilityDue = Math.max(0, metrics.totalUtility - metrics.utilityCollected);
-        metrics.totalProfit = metrics.totalRentCollected - metrics.totalExpenses;
-    }
-
-    // Aggregate totals
-    const totalMetrics = {
-        totalRentCollected: 0,
-        totalRentDue: 0,
-        utilityCollected: 0,
-        utilityDue: 0,
-        totalExpenses: 0,
-        totalExpectedRent: 0,
-        totalProfit: 0,
-        totalUtility: 0
+    return {
+        totalRentCollected,
+        totalRentDue,
+        utilityCollected,
+        utilityDue,
+        totalExpenses,
+        totalExpectedRent,
+        totalProfit,
+        totalUtility
     };
-
-    for (const month in monthlyMetrics) {
-        const metrics = monthlyMetrics[month];
-        totalMetrics.totalRentCollected += metrics.totalRentCollected;
-        totalMetrics.totalRentDue += metrics.totalRentDue;
-        totalMetrics.utilityCollected += metrics.utilityCollected;
-        totalMetrics.utilityDue += metrics.utilityDue;
-        totalMetrics.totalExpenses += metrics.totalExpenses;
-        totalMetrics.totalExpectedRent += metrics.totalExpectedRent;
-        totalMetrics.totalProfit += metrics.totalProfit;
-        totalMetrics.totalUtility += metrics.totalUtility;
-    }
-
-    return { monthlyMetrics, totalMetrics };
 }
-
 
 // Prepare graph data
 async function prepareGraphData(userId, tenants) {
@@ -483,27 +357,28 @@ async function checkUserProgress(req, properties, propertyUnits, tenants, hasPai
     return { userProgress, isNewUser };
 }
 
-// Dashboard route
+// Main dashboard route
 router.get('/dashboard', async (req, res) => {
     try {
+        // Authentication and verification
         const authCheck = await checkAuthAndVerification(req);
         if (!authCheck.isValid) return res.redirect(authCheck.redirect);
 
+        // Payment status
         const paymentCheck = await validatePaymentStatus(req);
         if (!paymentCheck.isValid) return res.redirect(paymentCheck.redirect);
 
+        // Fetch data
         const { properties, propertyUnits, propertyIds } = await fetchPropertiesAndUnits(req.user._id);
         const tenants = await fetchTenants(req.user._id);
         const payments = await fetchRecentPayments(req.user._id);
-        
-        const maintenanceRequests = await mongoose.model('MaintenanceRequest').find({ owner: req.user._id });
-        const totalRequests = maintenanceRequests.length;
 
+        // Calculate metrics
         const metrics = await calculateMetrics(tenants, req.user._id);
-        const { monthlyMetrics, totalMetrics } = metrics;
-        const rentDataArray = await prepareGraphData(req.user._id, tenants, monthlyMetrics);
+        const rentDataArray = await prepareGraphData(req.user._id, tenants);
         const additionalMetrics = await calculateAdditionalMetrics(tenants, req.user._id);
 
+        // User progress
         const { userProgress, isNewUser } = await checkUserProgress(
             req,
             properties,
@@ -512,31 +387,30 @@ router.get('/dashboard', async (req, res) => {
             paymentCheck.isValid
         );
 
+        // Render dashboard
         res.render('tenancyManager/dashboard', {
             properties,
             propertyUnits,
             tenants,
             totalTenants: tenants.length,
             payments,
-            ...totalMetrics,
-            monthlyMetrics,
+            ...metrics,
             ...additionalMetrics,
             rentDataArray,
-            rentCollectedPercentage: totalMetrics.totalExpectedRent
-                ? (totalMetrics.totalRentCollected / totalMetrics.totalExpectedRent) * 100
+            rentCollectedPercentage: metrics.totalExpectedRent
+                ? (metrics.totalRentCollected / metrics.totalExpectedRent) * 100
                 : 0,
-            expensesPercentage: totalMetrics.totalExpectedRent
-                ? (totalMetrics.totalExpenses / totalMetrics.totalExpectedRent) * 100
+            expensesPercentage: metrics.totalExpectedRent
+                ? (metrics.totalExpenses / metrics.totalExpectedRent) * 100
                 : 0,
-            profitPercentage: totalMetrics.totalExpectedRent
-                ? (totalMetrics.totalProfit / totalMetrics.totalExpectedRent) * 100
+            profitPercentage: metrics.totalExpectedRent
+                ? (metrics.totalProfit / metrics.totalExpectedRent) * 100
                 : 0,
             tenantPercentage: tenants.length
                 ? (additionalMetrics.occupiedTenants / tenants.length) * 100
                 : 0,
             numberOfTenants: tenants.length,
             occupiedUnitsCount: additionalMetrics.occupiedTenants,
-            totalRequests,
             userProgress,
             currentUser: req.user,
             isNewUser,
@@ -550,7 +424,6 @@ router.get('/dashboard', async (req, res) => {
     }
 });
 
-// Route to fetch rent data for the dashboard
 router.get('/dashboard/rent-data', async (req, res) => {
     try {
         // Check if user is authenticated
@@ -617,7 +490,6 @@ router.get('/api/user/progress', async (req, res) => {
     }
 });
 
-// Route to complete the tour
 router.post('/api/user/complete-tour', async (req, res) => {
     try {
         if (!req.user) {
@@ -635,7 +507,6 @@ router.post('/api/user/complete-tour', async (req, res) => {
     }
 });
 
-// Route to handle subscription upgrade
 router.get('/upgrade-subscription', async (req, res) => {
     try {
         if (!req.user) {
@@ -669,7 +540,6 @@ router.get('/upgrade-subscription', async (req, res) => {
     }
 });
 
-// Route to handle payment initiation
 async function sendPaymentRequest(payload, req, res) {
     try {
         const transactionId = payload.transaction_id || `LC${Math.floor(100000 + Math.random() * 900000)}`;
@@ -863,7 +733,7 @@ router.post('/subscription', async (req, res) => {
     }
 });
 
-// Route to handle subscription page rendering
+
 router.get('/subscription', ensureAuthenticated, async (req, res) => {
     try {
         const user = await mongoose.model('User').findById(req.user._id);
@@ -1293,7 +1163,6 @@ router.post('/tenancy-manager/profile/:id', isTenancyManager, async (req, res) =
     }
 });
 
-// Route to handle tenant creation
 const getMaxTenants = (plan) => {
     const tenantsLimit = {
         Basic: 5,
@@ -1309,7 +1178,6 @@ const getMaxTenants = (plan) => {
     return tenantsLimit[basePlan] || 0;
 };
 
-// Route to create a new tenant 
 router.post('/tenancy-manager/tenant/new', async (req, res) => {
     const {
         name, email, address, phone, leaseStartDate, leaseEndDate, property, deposit, utilities, unitId, doorNumber
@@ -1439,7 +1307,6 @@ router.post('/tenancy-manager/tenant/new', async (req, res) => {
     }
 });
 
-// Route to handle tenant impersonation
 router.post('/tenancy-manager/tenant/impersonate/:tenantId', async (req, res) => {
     try {
         // Authentication Check
@@ -1582,7 +1449,6 @@ async function sendTenantEmail(newTenant, propertyName) {
     }
 }
 
-// Function to send welcome SMS using UMS API
 const sendWelcomeSMS = async (tenant) => {
     const { phone, name, propertyName } = tenant;
     const message = `Dear ${name}, welcome to your new home at ${propertyName}! Use the credentials sent to your email to log in to your portal. Access it here: leasecaptain.com/tenantPortal/login.`;
@@ -1638,7 +1504,6 @@ router.post('/tenancy-manager/tenant/resend-email/:tenantId', async (req, res) =
     }
 });
 
-// Route to handle payments for tenancy managers
 router.get('/tenancy-manager/payments', isTenancyManager, async (req, res) => {
     try {
         const pageSize = 10;
@@ -1701,7 +1566,6 @@ router.get('/tenancy-manager/payments', isTenancyManager, async (req, res) => {
     }
 });
 
-// Route to fetch tenant details by ID
 router.get('/api/tenants/:id', async (req, res) => {
     const tenantId = req.params.id;
     try {
@@ -1718,7 +1582,6 @@ router.get('/api/tenants/:id', async (req, res) => {
     }
 });
 
-// Route to handle reports and invoices
 router.get('/reports-invoices', async (req, res) => {
     try {
         const { property, dateFrom, dateTo } = req.query;
@@ -2019,7 +1882,6 @@ router.get('/users', isTenancyManager, async (req, res) => {
     }
 });
 
-// POST route to create a new user
 router.post('/users/:id/delete', async (req, res) => {
     try {
         await User.findByIdAndDelete(req.params.id);
@@ -2092,7 +1954,7 @@ router.post('/maintenance-requests/:id', isTenancyManager, async (req, res) => {
     }
 });
 
-//POST Schedule Maintenance
+
 router.post('/schedule', async (req, res) => {
     const { requestId, scheduleDate, scheduleDescription } = req.body;
 
@@ -2121,7 +1983,7 @@ router.post('/schedule', async (req, res) => {
     }
 });
 
-//GET connect account
+
 router.get('/connect', async (req, res) => {
     if (!req.user) {
         req.flash('error', 'User not authenticated.');
@@ -2155,7 +2017,7 @@ router.get('/connect', async (req, res) => {
     }
 });
 
-//POST connect account
+
 router.post('/connect', async (req, res) => {
     const { accountEmail, apiKey, accountId, status, webhookUrl } = req.body;
 
@@ -2188,8 +2050,6 @@ router.post('/connect', async (req, res) => {
     }
 });
 
-
-// Edit account route
 router.post('/edit/:id', async (req, res) => {
     const accountId = req.params.id;
     const { accountEmail, apiKey, accountId: newAccountId, status, webhookUrl } = req.body;
@@ -2534,8 +2394,6 @@ const storage = multer.diskStorage({
     filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
 });
 
-
-// Multer instance with file size limit and file type filter
 const upload = multer({
     storage: storage,
     limits: { fileSize: 5 * 1024 * 1024 },

@@ -127,4 +127,4 @@ userSchema.plugin(passportLocalMongoose, {
 });
 
 // Export the user model
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.models.User || mongoose.model('User', userSchema);

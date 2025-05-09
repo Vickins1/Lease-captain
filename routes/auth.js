@@ -15,8 +15,6 @@ const signupLimiter = rateLimit({
   message: 'Too many signup attempts from this IP, please try again after 15 minutes'
 });
 
-
-// Rate limiter for login attempts
 router.post('/signup', 
   signupLimiter,
   async (req, res) => {
@@ -190,8 +188,7 @@ router.get('/signup', (req, res) => {
   res.render('tenancyManager/signup', { errors: { error: error.length > 0 ? error[0] : null } });
 });
 
-//Function to get the plan rates
-// This function returns the plan rates based on the plan name
+
 const planRates = {
   'Basic': 0,
   'Standard-Monthly': 1499,
@@ -205,8 +202,6 @@ const planRates = {
   'Premium': null
 };
 
-//Function to get the tenants count based on the plan
-// This function returns the tenants count based on the plan name
 function getTenantsCount(plan) {
   const tenantsLimit = {
     'Basic': 5,
@@ -223,7 +218,6 @@ function getTenantsCount(plan) {
   return tenantsLimit[plan] || 5;
 }
 
-// Function to send welcome email using Nodemailer
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -232,7 +226,6 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// Function to send welcome email
 const sendWelcomeEmail = async (email, username, verificationToken) => {
   const mailOptions = {
       from: `"Lease Captain" <${process.env.EMAIL_USERNAME}>`, 
@@ -367,7 +360,6 @@ router.get('/login', (req, res) => {
   res.render('tenancyManager/login', { errors: { error: error.length > 0 ? error[0] : null } });
 });
 
-// Login form submission
 router.post('/login', (req, res, next) => {
   const { email, password } = req.body; 
   // Rate limiting to prevent brute force using session
