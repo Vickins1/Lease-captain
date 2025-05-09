@@ -8,7 +8,8 @@ const PropertyUnit = require('../models/unit');
 const moment = require('moment') 
 const mongoose = require('mongoose');
 
-
+//Route to get all tenants for the logged-in user
+// This route is protected and requires the user to be a tenancy manager
 router.get('/tenancy-manager/tenants', isTenancyManager, async (req, res) => {
     try {
         const currentUser = req.user;

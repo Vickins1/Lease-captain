@@ -13,6 +13,7 @@ const moment = require('moment');
 const path = require('path');
 PDFDocument = require('pdfkit');
 
+// Configure nodemailer transporter
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -21,9 +22,8 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-const Account = require('../models/account');
-const PropertyUnit = require('../models/unit');
 
+// Function to update tenant dues and create payment record
 const updateTenantDues = async (tenantId, paymentType, amount, transactionId) => {
     try {
         // Fetch tenant and related data
@@ -108,6 +108,7 @@ const updateTenantDues = async (tenantId, paymentType, amount, transactionId) =>
     }
 };
 
+// Function to send payment initiation request
 async function sendPaymentRequest(payload, req, res, account) {
     try {
         const transactionId = payload.transaction_id || `LC${Math.floor(100000 + Math.random() * 900000)}`;
@@ -342,6 +343,7 @@ router.get('/payment-status', (req, res) => {
     }
 });
 
+// Endpoint to handle payment confirmation
 router.get('/payments', async (req, res) => {
     try {
         const tenantId = req.session.tenantId;
@@ -650,6 +652,7 @@ router.post('/payment/rent', fetchTenantFromSession, async (req, res) => {
     }
 });
 
+// Utility payment route
 router.post('/payment/utility', fetchTenantFromSession, async (req, res) => {
     const { msisdn, amount } = req.body;
     const tenant = req.tenant;
@@ -689,6 +692,7 @@ router.post('/payment/utility', fetchTenantFromSession, async (req, res) => {
     }
 });
 
+// Download receipt route
 router.get('/download-receipt/:Id', fetchTenantFromSession, async (req, res) => {
     try {
         const paymentId = req.params.Id;

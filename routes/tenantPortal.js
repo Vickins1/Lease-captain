@@ -7,10 +7,12 @@ const Payment = require('../models/payment');
 const Document = require('../models/document');
 const mongoose = require('mongoose');
 
+//Render the login page for tenants
 router.get('/tenantPortal/login', (req, res) => {
     res.render('tenantPortal/login');
 });
 
+// Handle tenant login
 router.post('/tenant/login', async (req, res) => {
     const { name, password } = req.body;
 
@@ -57,6 +59,8 @@ router.post('/tenant/login', async (req, res) => {
     }
 });
 
+
+//Render the dashboard page for tenants
 router.get('/tenantPortal/dashboard', async (req, res) => {
     try {
         const tenantId = req.session.tenantId;
@@ -254,6 +258,8 @@ router.get('/tenantPortal/dashboard', async (req, res) => {
     }
 });
 
+
+// Impersonation route for tenancy managers
 router.post('/tenancy-manager/exit-impersonation', async (req, res) => {
     try {
         if (!req.session.isImpersonating || !req.session.landlordId) {
@@ -283,6 +289,7 @@ router.post('/tenancy-manager/exit-impersonation', async (req, res) => {
     }
 });
 
+// Route to render the lease page
 router.get('/lease', async (req, res) => {
     try {
         const tenantId = req.session.tenantId;
@@ -337,6 +344,7 @@ router.get('/lease', async (req, res) => {
     }
 });
 
+// Route to download the lease document as a PDF
 router.get('/lease/download/:tenantId', async (req, res) => {
     const tenant = await Tenant.findById(req.params.tenantId).populate('property unit owner').lean();
     const PDFDocument = require('pdfkit');
@@ -349,6 +357,7 @@ router.get('/lease/download/:tenantId', async (req, res) => {
     doc.end();
 });
 
+// Route to render the documents page
 router.get('/tenantPortal/logout', (req, res) => {
     req.session.destroy(err => {
         if (err) {
@@ -360,6 +369,9 @@ router.get('/tenantPortal/logout', (req, res) => {
     });
 });
 
+
+// Function to calculate wallet balance
+// This function calculates the wallet balance based on the lease start date, rent paid, monthly rent, deposit amount, and current date.
 function calculateWalletBalance(leaseStartDate, currentRentPaid, monthlyRent, depositAmount, currentDate) {
     let leaseStart = new Date(leaseStartDate);
     let current = new Date(currentDate);
@@ -376,6 +388,7 @@ function calculateWalletBalance(leaseStartDate, currentRentPaid, monthlyRent, de
     return walletBalance;
 }
 
+// Route to render the tenant profile page
 router.get('/tenant/profile', async (req, res) => {
     try {
         const tenantId = req.session.tenantId;
@@ -453,7 +466,8 @@ router.get('/tenant/agreement', async (req, res) => {
     }
 });
 
-
+// Route to handle refund requests
+// This route allows tenants to request a refund from their wallet balance.
 router.post('/tenant/requestRefund', async (req, res) => {
     try {
         const tenantId = req.session.tenantId;
@@ -559,6 +573,7 @@ router.post('/tenant/profile/update', async (req, res) => {
 
 const moment = require('moment');
 
+// GET - Render the maintenance request page
 router.get('/requestMaintenance', async (req, res) => {
     try {
         const tenantId = req.session.tenantId;
@@ -646,7 +661,6 @@ router.post('/maintenance/edit', async (req, res) => {
     }
 });
 
-
 // POST - Delete a maintenance request
 router.post('/requests/:id/delete', async (req, res) => {
     try {
@@ -672,6 +686,5 @@ router.post('/requests/:id/delete', async (req, res) => {
         res.redirect('/requestMaintenance');
     }
 });
-
 
 module.exports = router;

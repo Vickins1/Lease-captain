@@ -39,6 +39,7 @@ const ensureAuthenticated = (req, res, next) => {
     res.redirect('/login');
 };
 
+// nodemailer transporter setup
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -97,6 +98,7 @@ router.get('/resend-verification', async (req, res) => {
     }
 });
 
+// Function to send welcome email with verification link
 const sendWelcomeEmail = async (email, username, verificationToken) => {
     const mailOptions = {
         from: `"Lease Captain" <${process.env.EMAIL_USERNAME}>`,
@@ -249,6 +251,7 @@ async function fetchRecentPayments(userId) {
         .lean();
 }
 
+// Calculate metrics for tenants
 async function calculateMetrics(tenants, userId) {
     const currentDate = new Date('2025-05-09');
     const monthlyMetrics = {};
@@ -480,6 +483,7 @@ async function checkUserProgress(req, properties, propertyUnits, tenants, hasPai
     return { userProgress, isNewUser };
 }
 
+// Dashboard route
 router.get('/dashboard', async (req, res) => {
     try {
         const authCheck = await checkAuthAndVerification(req);
@@ -546,6 +550,7 @@ router.get('/dashboard', async (req, res) => {
     }
 });
 
+// Route to fetch rent data for the dashboard
 router.get('/dashboard/rent-data', async (req, res) => {
     try {
         // Check if user is authenticated
@@ -612,6 +617,7 @@ router.get('/api/user/progress', async (req, res) => {
     }
 });
 
+// Route to complete the tour
 router.post('/api/user/complete-tour', async (req, res) => {
     try {
         if (!req.user) {
@@ -629,6 +635,7 @@ router.post('/api/user/complete-tour', async (req, res) => {
     }
 });
 
+// Route to handle subscription upgrade
 router.get('/upgrade-subscription', async (req, res) => {
     try {
         if (!req.user) {
@@ -662,6 +669,7 @@ router.get('/upgrade-subscription', async (req, res) => {
     }
 });
 
+// Route to handle payment initiation
 async function sendPaymentRequest(payload, req, res) {
     try {
         const transactionId = payload.transaction_id || `LC${Math.floor(100000 + Math.random() * 900000)}`;
@@ -855,7 +863,7 @@ router.post('/subscription', async (req, res) => {
     }
 });
 
-
+// Route to handle subscription page rendering
 router.get('/subscription', ensureAuthenticated, async (req, res) => {
     try {
         const user = await mongoose.model('User').findById(req.user._id);
@@ -1285,6 +1293,7 @@ router.post('/tenancy-manager/profile/:id', isTenancyManager, async (req, res) =
     }
 });
 
+// Route to handle tenant creation
 const getMaxTenants = (plan) => {
     const tenantsLimit = {
         Basic: 5,
@@ -1300,6 +1309,7 @@ const getMaxTenants = (plan) => {
     return tenantsLimit[basePlan] || 0;
 };
 
+// Route to create a new tenant 
 router.post('/tenancy-manager/tenant/new', async (req, res) => {
     const {
         name, email, address, phone, leaseStartDate, leaseEndDate, property, deposit, utilities, unitId, doorNumber
@@ -1429,6 +1439,7 @@ router.post('/tenancy-manager/tenant/new', async (req, res) => {
     }
 });
 
+// Route to handle tenant impersonation
 router.post('/tenancy-manager/tenant/impersonate/:tenantId', async (req, res) => {
     try {
         // Authentication Check
@@ -1571,6 +1582,7 @@ async function sendTenantEmail(newTenant, propertyName) {
     }
 }
 
+// Function to send welcome SMS using UMS API
 const sendWelcomeSMS = async (tenant) => {
     const { phone, name, propertyName } = tenant;
     const message = `Dear ${name}, welcome to your new home at ${propertyName}! Use the credentials sent to your email to log in to your portal. Access it here: leasecaptain.com/tenantPortal/login.`;
@@ -1626,6 +1638,7 @@ router.post('/tenancy-manager/tenant/resend-email/:tenantId', async (req, res) =
     }
 });
 
+// Route to handle payments for tenancy managers
 router.get('/tenancy-manager/payments', isTenancyManager, async (req, res) => {
     try {
         const pageSize = 10;
@@ -1688,6 +1701,7 @@ router.get('/tenancy-manager/payments', isTenancyManager, async (req, res) => {
     }
 });
 
+// Route to fetch tenant details by ID
 router.get('/api/tenants/:id', async (req, res) => {
     const tenantId = req.params.id;
     try {
@@ -1704,6 +1718,7 @@ router.get('/api/tenants/:id', async (req, res) => {
     }
 });
 
+// Route to handle reports and invoices
 router.get('/reports-invoices', async (req, res) => {
     try {
         const { property, dateFrom, dateTo } = req.query;
@@ -2004,6 +2019,7 @@ router.get('/users', isTenancyManager, async (req, res) => {
     }
 });
 
+// POST route to create a new user
 router.post('/users/:id/delete', async (req, res) => {
     try {
         await User.findByIdAndDelete(req.params.id);
@@ -2076,7 +2092,7 @@ router.post('/maintenance-requests/:id', isTenancyManager, async (req, res) => {
     }
 });
 
-
+//POST Schedule Maintenance
 router.post('/schedule', async (req, res) => {
     const { requestId, scheduleDate, scheduleDescription } = req.body;
 
@@ -2105,7 +2121,7 @@ router.post('/schedule', async (req, res) => {
     }
 });
 
-
+//GET connect account
 router.get('/connect', async (req, res) => {
     if (!req.user) {
         req.flash('error', 'User not authenticated.');
@@ -2139,7 +2155,7 @@ router.get('/connect', async (req, res) => {
     }
 });
 
-
+//POST connect account
 router.post('/connect', async (req, res) => {
     const { accountEmail, apiKey, accountId, status, webhookUrl } = req.body;
 
@@ -2172,6 +2188,8 @@ router.post('/connect', async (req, res) => {
     }
 });
 
+
+// Edit account route
 router.post('/edit/:id', async (req, res) => {
     const accountId = req.params.id;
     const { accountEmail, apiKey, accountId: newAccountId, status, webhookUrl } = req.body;
@@ -2516,6 +2534,8 @@ const storage = multer.diskStorage({
     filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
 });
 
+
+// Multer instance with file size limit and file type filter
 const upload = multer({
     storage: storage,
     limits: { fileSize: 5 * 1024 * 1024 },

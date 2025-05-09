@@ -4,6 +4,7 @@ const Property = require('../models/property');
 const PropertyUnit = require('../models/unit');
 const {  checkRole,isTenancyManager } = require('../middleware');
 
+//Route to render the property page & property creation form
 router.get('/tenancy-manager/properties', isTenancyManager, async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -152,7 +153,7 @@ router.get('/tenancy-manager/properties', isTenancyManager, async (req, res) => 
     }
 });
 
-
+//Route to render the propertyUnits & propertyUnit creation form
 router.get('/tenancy-manager/property/units', isTenancyManager, async (req, res) => {
     try {
         if (!req.user) {
@@ -213,7 +214,6 @@ router.get('/tenancy-manager/property/units', isTenancyManager, async (req, res)
     }
 });
 
-
 // GET route to fetch units for a specific property
 router.get('/tenancy-manager/units/:propertyId', async (req, res) => {
     try {
@@ -233,7 +233,6 @@ router.get('/tenancy-manager/units/:propertyId', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-
 
 // Create Property Unit
 router.post('/tenancy-manager/property/units', isTenancyManager, async (req, res) => {
@@ -268,7 +267,6 @@ router.post('/tenancy-manager/property/units', isTenancyManager, async (req, res
     }
 });
 
-
 // Create Property
 router.post('/tenancy-manager/property', isTenancyManager, async (req, res) => {
     const { name, address, paymentDay, propertyType } = req.body;
@@ -300,7 +298,6 @@ router.post('/tenancy-manager/property', isTenancyManager, async (req, res) => {
         res.redirect('/tenancy-manager/properties'); 
     }
 });
-
 
 // Edit property
 router.post('/tenancy-manager/property/edit/:id', isTenancyManager, async (req, res) => {
@@ -340,7 +337,6 @@ router.post('/tenancy-manager/property/edit/:id', isTenancyManager, async (req, 
     }
 });
 
-
 // Delete Property by ID using POST
 router.post('/tenancy-manager/property/delete/:id', isTenancyManager, async (req, res) => {
     try {
@@ -360,8 +356,6 @@ router.post('/tenancy-manager/property/delete/:id', isTenancyManager, async (req
         res.redirect('/tenancy-manager/properties');
     }
 });
-
-
 
 // Edit Property Unit
 router.post('/tenancy-manager/property/units/edit/:id', isTenancyManager, async (req, res) => {
@@ -403,8 +397,6 @@ router.post('/tenancy-manager/property/units/edit/:id', isTenancyManager, async 
         res.redirect(`/tenancy-manager/property/units/${req.params.id}/edit`);
     }
 });
-
-
 
 // DELETE route for a property unit
 router.post('/tenancy-manager/property/units/delete/:id', isTenancyManager, async (req, res) => {
