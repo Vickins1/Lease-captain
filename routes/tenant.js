@@ -6,6 +6,7 @@ const Payment = require('../models/payment');
 const {  checkRole,isTenancyManager } = require('../middleware');
 const PropertyUnit = require('../models/unit');
 const moment = require('moment') 
+const mongoose = require('mongoose');
 
 
 router.get('/tenancy-manager/tenants', isTenancyManager, async (req, res) => {
@@ -158,7 +159,7 @@ router.get('/tenancy-manager/tenant-report/:tenantId', async (req, res) => {
         const tenantId = req.params.tenantId;
 
         // Fetch Tenant Data
-        const tenant = await Tenant.findOne({ _id: tenantId, owner: req.user._id })
+        const tenant = await mongoose.model('Tenant').findOne({ _id: tenantId, owner: req.user._id })
             .populate('property', 'name address paymentDay')
             .populate('unit', 'unitType unitPrice utilities')
             .lean();
@@ -169,35 +170,113 @@ router.get('/tenancy-manager/tenant-report/:tenantId', async (req, res) => {
         }
 
         // Fetch Payment History
-        const payments = await Payment.find({ tenant: tenantId })
+        const payments = await mongoose.model('Payment').find({ tenant: tenantId })
             .sort({ datePaid: -1 })
             .lean();
 
         // Fetch Properties for Edit Modal
-        const properties = await Property.find({ owner: req.user._id }).lean();
+        const properties = await mongoose.model('Property').find({ owner: req.user._id }).lean();
 
         // Calculate Metrics
         const toNumber = (value) => Number(value) || 0;
-        const totalRentPaid = toNumber(tenant.rentPaid);
-        const totalUtilityPaid = toNumber(tenant.utilityPaid);
-        const rentDue = toNumber(tenant.rentDue);
-        const utilityDue = toNumber(tenant.utilityDue);
+
+        // Helper: Get months with proration
+        function getMonthsBetween(startDate, endDate, currentDate) {
+            const months = [];
+            let current = new Date(startDate);
+            current.setDate(1);
+            const effectiveEnd = endDate && endDate < currentDate ? endDate : currentDate;
+            while (current <= effectiveEnd) {
+                const yearMonth = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}`;
+                const monthStart = new Date(current.getFullYear(), current.getMonth(), 1);
+                const monthEnd = new Date(current.getFullYear(), current.getMonth() + 1, 0);
+                const daysInMonth = monthEnd.getDate();
+                const effectiveStart = startDate > monthStart ? startDate : monthStart;
+                const effectiveMonthEnd = effectiveEnd < monthEnd ? effectiveEnd : monthEnd;
+                const daysActive = Math.ceil((effectiveMonthEnd - effectiveStart) / (1000 * 60 * 60 * 24)) + 1;
+                const prorationFactor = daysActive / daysInMonth;
+                months.push({ yearMonth, prorationFactor });
+                current.setMonth(current.getMonth() + 1);
+            }
+            return months;
+        }
+
+        const leaseStartDate = tenant.leaseStartDate ? new Date(tenant.leaseStartDate) : new Date();
+        const leaseEndDate = tenant.leaseEndDate ? new Date(tenant.leaseEndDate) : null;
+        const currentDate = new Date('2025-05-09');
+        const monthlyRent = toNumber(tenant.unit?.unitPrice);
+        const utilities = Array.isArray(tenant.unit?.utilities) ? tenant.unit.utilities : [];
+        const totalUtilityPerMonth = utilities.reduce((sum, util) => sum + toNumber(util.amount), 0);
+
+        const months = getMonthsBetween(leaseStartDate, leaseEndDate, currentDate);
+
+        let expectedRent = 0;
+        let expectedUtility = 0;
+        const monthlyData = {};
+
+        for (const { yearMonth, prorationFactor } of months) {
+            const monthlyExpectedRent = monthlyRent * prorationFactor;
+            const monthlyExpectedUtility = totalUtilityPerMonth * prorationFactor;
+            expectedRent += monthlyExpectedRent;
+            expectedUtility += monthlyExpectedUtility;
+            monthlyData[yearMonth] = {
+                expectedRent: monthlyExpectedRent,
+                expectedUtility: monthlyExpectedUtility,
+                rentPaid: 0,
+                utilityPaid: 0
+            };
+        }
+
+        let totalRentPaid = 0;
+        let totalUtilityPaid = 0;
+
+        for (const payment of payments.filter(p => p.status === 'completed')) {
+            const paymentDate = new Date(payment.datePaid || currentDate);
+            const yearMonth = `${paymentDate.getFullYear()}-${String(paymentDate.getMonth() + 1).padStart(2, '0')}`;
+            if (payment.paymentType === 'rent') {
+                const amount = toNumber(payment.rentPaid);
+                totalRentPaid += amount;
+                if (monthlyData[yearMonth]) {
+                    monthlyData[yearMonth].rentPaid += amount;
+                }
+            } else if (payment.paymentType === 'utility') {
+                const amount = toNumber(payment.utilityPaid);
+                totalUtilityPaid += amount;
+                if (monthlyData[yearMonth]) {
+                    monthlyData[yearMonth].utilityPaid += amount;
+                }
+            }
+        }
+
+        const rentDue = Math.max(0, expectedRent - totalRentPaid);
+        const utilityDue = Math.max(0, expectedUtility - totalUtilityPaid);
         const totalPaid = totalRentPaid + totalUtilityPaid;
         const totalDue = rentDue + utilityDue;
-        const overpayment = toNumber(tenant.overpayment);
+        const overpayment = Math.max(0, totalRentPaid - expectedRent);
 
         // Lease Duration
         const leaseStart = new Date(tenant.leaseStartDate);
         const leaseEnd = new Date(tenant.leaseEndDate);
         const leaseDurationDays = Math.max(1, (leaseEnd - leaseStart) / (1000 * 60 * 60 * 24));
-        const daysRemaining = Math.max(0, (leaseEnd - new Date()) / (1000 * 60 * 60 * 24));
-        const leaseProgress = Math.round((leaseDurationDays - daysRemaining) / leaseDurationDays * 100);
+        const daysRemaining = Math.max(0, (leaseEnd - currentDate) / (1000 * 60 * 60 * 24));
+        const leaseProgress = Math.min(100, Math.round((leaseDurationDays - daysRemaining) / leaseDurationDays * 100));
+
+        // Monthly Chart Data
+        const monthlyRentUtilityData = {
+            labels: Object.keys(monthlyData).sort(),
+            datasets: [
+                { label: 'Rent Paid', data: Object.values(monthlyData).map(m => m.rentPaid), backgroundColor: '#28a745', borderColor: '#28a745', borderWidth: 1, fill: false },
+                { label: 'Rent Expected', data: Object.values(monthlyData).map(m => m.expectedRent), backgroundColor: '#dc3545', borderColor: '#dc3545', borderWidth: 1, fill: false },
+                { label: 'Utility Paid', data: Object.values(monthlyData).map(m => m.utilityPaid), backgroundColor: '#007bff', borderColor: '#007bff', borderWidth: 1, fill: false },
+                { label: 'Utility Expected', data: Object.values(monthlyData).map(m => m.expectedUtility), backgroundColor: '#ff9800', borderColor: '#ff9800', borderWidth: 1, fill: false }
+            ]
+        };
 
         // Render Report
         res.render('tenancyManager/tenantReport', {
             tenant,
             payments,
-            properties, // Pass properties for the edit modal
+            properties,
             totalRentPaid: totalRentPaid.toFixed(2),
             totalUtilityPaid: totalUtilityPaid.toFixed(2),
             rentDue: rentDue.toFixed(2),
@@ -205,10 +284,11 @@ router.get('/tenancy-manager/tenant-report/:tenantId', async (req, res) => {
             totalPaid: totalPaid.toFixed(2),
             totalDue: totalDue.toFixed(2),
             overpayment: overpayment.toFixed(2),
-            leaseStart: moment(leaseStart).format('MMMM D, YYYY'),
-            leaseEnd: moment(leaseEnd).format('MMMM D, YYYY'),
+            leaseStart: leaseStart.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+            leaseEnd: leaseEnd.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
             leaseProgress,
             daysRemaining: Math.ceil(daysRemaining),
+            monthlyRentDataArray: JSON.stringify(monthlyRentUtilityData),
             currentUser: req.user,
             error: req.flash('error'),
             success: req.flash('success')

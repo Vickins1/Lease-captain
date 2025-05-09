@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const MaintenanceRequest = require('../models/maintenanceRequest')
 const Payment = require('../models/payment');
 const Document = require('../models/document');
+const mongoose = require('mongoose');
 
 router.get('/tenantPortal/login', (req, res) => {
     res.render('tenantPortal/login');
@@ -58,15 +59,13 @@ router.post('/tenant/login', async (req, res) => {
 
 router.get('/tenantPortal/dashboard', async (req, res) => {
     try {
-        // **Authentication Check**
         const tenantId = req.session.tenantId;
         if (!tenantId) {
             req.flash('error', 'Please log in to access the dashboard');
             return res.redirect('/tenantPortal/login');
         }
 
-        // **Fetch Tenant Data**
-        const tenant = await Tenant.findById(tenantId)
+        const tenant = await mongoose.model('Tenant').findById(tenantId)
             .populate('property', 'name paymentDay')
             .populate('unit', 'unitType unitPrice utilities')
             .lean();
@@ -79,94 +78,121 @@ router.get('/tenantPortal/dashboard', async (req, res) => {
         const property = tenant.property || {};
         const unit = tenant.unit || {};
 
-        // **Fetch Related Data**
         const [rentPayments, utilityPayments, maintenanceRequests] = await Promise.all([
-            Payment.find({ tenant: tenantId, paymentType: 'rent' }).lean(),
-            Payment.find({ tenant: tenantId, paymentType: 'utility' }).lean(),
-            MaintenanceRequest.find({ tenantId }).lean()
+            mongoose.model('Payment').find({ tenant: tenantId, paymentType: 'rent', status: 'completed' }).lean(),
+            mongoose.model('Payment').find({ tenant: tenantId, paymentType: 'utility', status: 'completed' }).lean(),
+            mongoose.model('MaintenanceRequest').find({ tenantId }).lean()
         ]);
 
-        // **Numeric Sanitization Helper**
         const toNumber = (value) => Number(value) || 0;
 
-        // **Calculate Number of Payment Periods**
+        function getMonthsBetween(startDate, endDate, currentDate) {
+            const months = [];
+            let current = new Date(startDate);
+            current.setDate(1);
+            const effectiveEnd = endDate && endDate < currentDate ? endDate : currentDate;
+            while (current <= effectiveEnd) {
+                const yearMonth = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}`;
+                const monthStart = new Date(current.getFullYear(), current.getMonth(), 1);
+                const monthEnd = new Date(current.getFullYear(), current.getMonth() + 1, 0);
+                const daysInMonth = monthEnd.getDate();
+                const effectiveStart = startDate > monthStart ? startDate : monthStart;
+                const effectiveMonthEnd = effectiveEnd < monthEnd ? effectiveEnd : monthEnd;
+                const daysActive = Math.ceil((effectiveMonthEnd - effectiveStart) / (1000 * 60 * 60 * 24)) + 1;
+                const prorationFactor = daysActive / daysInMonth;
+                months.push({ yearMonth, prorationFactor });
+                current.setMonth(current.getMonth() + 1);
+            }
+            return months;
+        }
+
         const leaseStartDate = tenant.leaseStartDate ? new Date(tenant.leaseStartDate) : new Date();
         const leaseEndDate = tenant.leaseEndDate ? new Date(tenant.leaseEndDate) : null;
-        const currentDate = new Date();
-        const paymentDay = toNumber(property.paymentDay) || 1;
-
-        const start = moment(leaseStartDate);
-        const current = moment(currentDate);
-        const effectiveEnd = leaseEndDate ? moment.min(current, moment(leaseEndDate)) : current;
-
-        let firstPayment;
-        if (start.date() <= paymentDay) {
-            firstPayment = start.clone().date(paymentDay);
-        } else {
-            firstPayment = start.clone().add(1, 'month').date(paymentDay);
-        }
-
-        let count = 0;
-        let paymentDate = firstPayment.clone();
-        while (paymentDate <= effectiveEnd) {
-            count++;
-            paymentDate.add(1, 'month');
-        }
-
-        // **Calculate Expected Rent and Utility**
+        const currentDate = new Date('2025-05-09');
         const monthlyRent = toNumber(unit.unitPrice);
         const utilities = Array.isArray(unit.utilities) ? unit.utilities : [];
         const totalUtilityPerMonth = utilities.reduce((sum, util) => sum + toNumber(util.amount), 0);
 
-        const expectedRent = count * monthlyRent;
-        const expectedUtility = count * totalUtilityPerMonth;
+        const months = getMonthsBetween(leaseStartDate, leaseEndDate, currentDate);
+        
+        let expectedRent = 0;
+        let expectedUtility = 0;
+        const monthlyData = {};
 
-        // **Calculate Dues**
-        const totalRentPaid = toNumber(tenant.rentPaid);
-        const totalUtilityPaid = toNumber(tenant.utilityPaid);
+        for (const { yearMonth, prorationFactor } of months) {
+            const monthlyExpectedRent = monthlyRent * prorationFactor;
+            const monthlyExpectedUtility = totalUtilityPerMonth * prorationFactor;
+            expectedRent += monthlyExpectedRent;
+            expectedUtility += monthlyExpectedUtility;
+            monthlyData[yearMonth] = {
+                expectedRent: monthlyExpectedRent,
+                expectedUtility: monthlyExpectedUtility,
+                rentPaid: 0,
+                utilityPaid: 0
+            };
+        }
+
+        let totalRentPaid = 0;
+        let totalUtilityPaid = 0;
+
+        for (const payment of rentPayments) {
+            const amount = toNumber(payment.rentPaid);
+            totalRentPaid += amount;
+            const paymentDate = new Date(payment.datePaid || currentDate);
+            const yearMonth = `${paymentDate.getFullYear()}-${String(paymentDate.getMonth() + 1).padStart(2, '0')}`;
+            if (monthlyData[yearMonth]) {
+                monthlyData[yearMonth].rentPaid += amount;
+            }
+        }
+
+        for (const payment of utilityPayments) {
+            const amount = toNumber(payment.utilityPaid);
+            totalUtilityPaid += amount;
+            const paymentDate = new Date(payment.datePaid || currentDate);
+            const yearMonth = `${paymentDate.getFullYear()}-${String(paymentDate.getMonth() + 1).padStart(2, '0')}`;
+            if (monthlyData[yearMonth]) {
+                monthlyData[yearMonth].utilityPaid += amount;
+            }
+        }
+
         const rentDue = Math.max(0, expectedRent - totalRentPaid);
         const utilityDue = Math.max(0, expectedUtility - totalUtilityPaid);
 
-        // **Deposit and Wallet Balance**
         const depositAmount = toNumber(tenant.deposit);
         const walletBalance = toNumber(tenant.walletBalance);
         const depositPaid = Math.min(depositAmount, Math.max(0, walletBalance));
         const remainingWalletBalance = Math.max(0, walletBalance - depositAmount);
 
-        // **Next Rent Due Date**
-        const today = new Date();
         const paymentDayNum = toNumber(property.paymentDay) || 1;
-        let nextRentDue = new Date(today.getFullYear(), today.getMonth(), paymentDayNum);
-        if (nextRentDue <= today) nextRentDue.setMonth(nextRentDue.getMonth() + 1);
-        const formattedNextRentDue = moment(nextRentDue).format('MMMM D, YYYY');
+        let nextRentDue = new Date(currentDate.getFullYear(), currentDate.getMonth(), paymentDayNum);
+        if (nextRentDue < currentDate || currentDate.getDate() >= paymentDayNum) {
+            nextRentDue.setMonth(nextRentDue.getMonth() + 1);
+        }
+        const formattedNextRentDue = nextRentDue.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-        // **Maintenance Requests Formatting**
         const formattedRequests = maintenanceRequests.map(req => ({
             scheduleDateFormatted: req.scheduleDate 
-                ? moment(req.scheduleDate).format('MM/DD/YYYY') 
+                ? new Date(req.scheduleDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) 
                 : 'Not Scheduled',
             status: req.status || 'pending'
         }));
 
-        // **Recent Transactions**
         const recentTransactions = [...rentPayments, ...utilityPayments]
-            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .sort((a, b) => new Date(b.datePaid || currentDate) - new Date(a.datePaid || currentDate))
             .slice(0, 5)
             .map(p => ({
-                date: p.date || new Date(),
+                date: p.datePaid || currentDate,
                 type: p.paymentType,
                 amount: toNumber(p.rentPaid || p.utilityPaid),
                 status: p.status || 'completed'
             }));
 
-        // **Lease Progress**
-        const leaseStartDateObj = tenant.leaseStartDate ? new Date(tenant.leaseStartDate) : today;
-        const leaseEndDateObj = tenant.leaseEndDate ? new Date(tenant.leaseEndDate) : today;
+        const leaseStartDateObj = tenant.leaseStartDate ? new Date(tenant.leaseStartDate) : currentDate;
+        const leaseEndDateObj = tenant.leaseEndDate ? new Date(tenant.leaseEndDate) : currentDate;
         const totalLeaseDays = Math.max(1, (leaseEndDateObj - leaseStartDateObj) / (1000 * 60 * 60 * 24));
-        const daysPassed = Math.max(0, (today - leaseStartDateObj) / (1000 * 60 * 60 * 24));
+        const daysPassed = Math.max(0, (currentDate - leaseStartDateObj) / (1000 * 60 * 60 * 24));
         const leaseProgress = Math.min(100, Math.round((daysPassed / totalLeaseDays) * 100));
 
-        // **Chart Data for Rent and Utility**
         const rentUtilityData = {
             labels: ['Rent Paid', 'Rent Due', 'Utility Paid', 'Utility Due'],
             datasets: [{
@@ -178,20 +204,29 @@ router.get('/tenantPortal/dashboard', async (req, res) => {
             }]
         };
 
-        // **Announcements**
+        const monthlyRentUtilityData = {
+            labels: Object.keys(monthlyData).sort(),
+            datasets: [
+                { label: 'Rent Paid', data: Object.values(monthlyData).map(m => m.rentPaid), backgroundColor: '#28a745', borderColor: '#28a745', borderWidth: 1, fill: false },
+                { label: 'Rent Expected', data: Object.values(monthlyData).map(m => m.expectedRent), backgroundColor: '#dc3545', borderColor: '#dc3545', borderWidth: 1, fill: false },
+                { label: 'Utility Paid', data: Object.values(monthlyData).map(m => m.utilityPaid), backgroundColor: '#007bff', borderColor: '#007bff', borderWidth: 1, fill: false },
+                { label: 'Utility Expected', data: Object.values(monthlyData).map(m => m.expectedUtility), backgroundColor: '#ff9800', borderColor: '#ff9800', borderWidth: 1, fill: false }
+            ]
+        };
+
         const announcements = [
             { 
                 type: 'info', 
                 message: rentDue > 0 
-                    ? `Rent due in ${Math.ceil((nextRentDue - today) / (1000 * 60 * 60 * 24))} days!`
+                    ? `Rent due in ${Math.ceil((nextRentDue - currentDate) / (1000 * 60 * 60 * 24))} days!`
                     : 'All payments up to date!'
             }
         ];
 
-        // **Render Dashboard**
         res.render('tenantPortal/dashboard', {
             tenant,
             rentDataArray: JSON.stringify(rentUtilityData),
+            monthlyRentDataArray: JSON.stringify(monthlyRentUtilityData),
             walletBalance: walletBalance.toFixed(2),
             nextRentDue: formattedNextRentDue,
             totalRentPaid: totalRentPaid.toFixed(2),
@@ -207,7 +242,6 @@ router.get('/tenantPortal/dashboard', async (req, res) => {
             maintenanceScheduleDates: formattedRequests,
             isImpersonating: req.session.isImpersonating || false
         });
-
     } catch (error) {
         console.error('Dashboard Error:', {
             message: error.message,

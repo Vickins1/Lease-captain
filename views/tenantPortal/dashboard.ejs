@@ -189,82 +189,91 @@
                     </div>
 
                     <!-- Dashboard Cards -->
-                    <div class="row g-4">
-                        <div class="col-lg-3 col-md-6 col-sm-12">
-                            <div class="modern-card">
-                                <div class="card-header"><h5>Monthly Rent</h5></div>
-                                <div class="card-body"><p>Ksh. <strong><%= tenant?.unit?.unitPrice ?? '0.00' %></strong></p></div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-sm-12">
-                            <div class="modern-card">
-                                <div class="card-header"><h5>Rent Paid</h5></div>
-                                <div class="card-body"><p>Ksh. <strong><%= totalRentPaid ?? '0.00' %></strong></p></div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-sm-12">
-                            <div class="modern-card">
-                                <div class="card-header"><h5>Utility Paid</h5></div>
-                                <div class="card-body"><p>Ksh. <strong><%= utilityPaid ?? '0.00' %></strong></p></div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-sm-12">
-                            <div class="modern-card">
-                                <div class="card-header"><h5>Deposit Paid</h5></div>
-                                <div class="card-body"><p>Ksh. <strong><%= depositPaid ?? '0.00' %> / <%= depositAmount ?? '0.00' %></strong></p></div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-sm-12">
-                            <div class="modern-card">
-                                <div class="card-header"><h5>Rent Due</h5></div>
-                                <div class="card-body"><p>Ksh. <strong><%= rentDue ?? '0.00' %></strong></p></div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-sm-12">
-                            <div class="modern-card">
-                                <div class="card-header"><h5>Utility Due</h5></div>
-                                <div class="card-body"><p>Ksh. <strong><%= utilityDue ?? '0.00' %></strong></p></div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-sm-12">
-                            <div class="modern-card">
-                                <div class="card-header"><h5>Rent Due Date</h5></div>
-                                <div class="card-body"><i class="fas fa-calendar-alt me-2"></i><strong><%= nextRentDue ?? 'Not Set' %></strong></div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-sm-12">
-                            <div class="modern-card">
-                                <div class="card-header"><h5>Lease End Date</h5></div>
-                                <div class="card-body"><i class="fas fa-calendar-check me-2"></i><strong><%= tenant?.leaseEndDate?.toDateString() ?? 'N/A' %></strong></div>
-                            </div>
-                        </div>
+<div class="row g-4">
+    <div class="col-lg-3 col-md-6 col-sm-12">
+        <div class="modern-card">
+            <div class="card-header"><h5>Monthly Rent</h5></div>
+            <div class="card-body"><p>Ksh. <strong><%= tenant?.unit?.unitPrice?.toFixed(2) ?? '0.00' %></strong></p></div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-12">
+        <div class="modern-card">
+            <div class="card-header"><h5>Rent Paid</h5></div>
+            <div class="card-body"><p>Ksh. <strong><%= totalRentPaid ?? '0.00' %></strong></p></div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-12">
+        <div class="modern-card">
+            <div class="card-header"><h5>Utility Paid</h5></div>
+            <div class="card-body"><p>Ksh. <strong><%= utilityPaid ?? '0.00' %></strong></p></div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-12">
+        <div class="modern-card">
+            <div class="card-header"><h5>Deposit Paid</h5></div>
+            <div class="card-body"><p>Ksh. <strong><%= depositPaid ?? '0.00' %> / <%= depositAmount ?? '0.00' %></strong></p></div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-12">
+        <div class="modern-card">
+            <div class="card-header"><h5>Rent Due</h5></div>
+            <div class="card-body"><p>Ksh. <strong><%= rentDue ?? '0.00' %></strong></p></div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-12">
+        <div class="modern-card">
+            <div class="card-header"><h5>Utility Due</h5></div>
+            <div class="card-body"><p>Ksh. <strong><%= utilityDue ?? '0.00' %></strong></p></div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-12">
+        <div class="modern-card">
+            <div class="card-header"><h5>Rent Due Date</h5></div>
+            <div class="card-body"><i class="fas fa-calendar-alt me-2"></i><strong><%= nextRentDue ?? 'Not Set' %></strong></div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-12">
+        <div class="modern-card">
+            <div class="card-header"><h5>Lease End Date</h5></div>
+            <div class="card-body">
+                <i class="fas fa-calendar-check me-2"></i>
+                <strong><%= tenant?.leaseEndDate ? new Date(tenant.leaseEndDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'N/A' %></strong>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-12">
+        <div class="modern-card">
+            <div class="card-header"><h5>Wallet Balance</h5></div>
+            <div class="card-body"><p>Ksh. <strong><%= walletBalance ?? '0.00' %></strong></p></div>
+        </div>
+    </div>
 
-                        <!-- Maintenance Schedule -->
-                        <% if (maintenanceScheduleDates?.length > 0) { %>
-                            <% maintenanceScheduleDates.forEach((schedule, index) => { %>
-                                <div class="col-lg-3 col-md-6 col-sm-12">
-                                    <div class="modern-card">
-                                        <div class="card-header"><h5>Maintenance #<%= index + 1 %></h5></div>
-                                        <div class="card-body">
-                                            <div class="d-flex align-items-center mb-2">
-                                                <i class="fas fa-wrench me-2"></i><strong><%= schedule.scheduleDateFormatted ?? 'TBD' %></strong>
-                                            </div>
-                                            <span class="status-chip <%= schedule.status === 'pending' ? 'bg-warning' : schedule.status === 'in-progress' ? 'bg-info' : 'bg-success' %>">
-                                                <%= schedule.status || 'Pending' %>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            <% }) %>
-                        <% } else { %>
-                            <div class="col-lg-3 col-md-6 col-sm-12">
-                                <div class="modern-card">
-                                    <div class="card-header"><h5>Maintenance Schedule</h5></div>
-                                    <div class="card-body"><p class="text-muted">No scheduled maintenance</p></div>
-                                </div>
-                            </div>
-                        <% } %>
+    <!-- Maintenance Schedule -->
+    <% if (maintenanceScheduleDates?.length > 0) { %>
+        <% maintenanceScheduleDates.forEach((schedule, index) => { %>
+            <div class="col-lg-3 col-md-6 col-sm-12">
+                <div class="modern-card">
+                    <div class="card-header"><h5>Maintenance #<%= index + 1 %></h5></div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-wrench me-2"></i><strong><%= schedule.scheduleDateFormatted ?? 'TBD' %></strong>
+                        </div>
+                        <span class="status-chip <%= schedule.status === 'pending' ? 'bg-warning' : schedule.status === 'in-progress' ? 'bg-info' : 'bg-success' %>">
+                            <%= schedule.status || 'Pending' %>
+                        </span>
                     </div>
+                </div>
+            </div>
+        <% }) %>
+    <% } else { %>
+        <div class="col-lg-3 col-md-6 col-sm-12">
+            <div class="modern-card">
+                <div class="card-header"><h5>Maintenance Schedule</h5></div>
+                <div class="card-body"><p class="text-muted">No scheduled maintenance</p></div>
+            </div>
+        </div>
+    <% } %>
+</div>
 
                    <!-- Quick Actions -->
 <div class="modern-card mt-4">

@@ -1,124 +1,40 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 
 const tenantSchema = new Schema({
-    name: {
-        type: String,
-        required: true
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-        match: /.+\@.+\..+/,
-        index: true
-    },
-    phone: {
-        type: String,
-        required: true
-    },
-    rentPaid: {
-        type: Number,
-        default: 0,
-    },
-    utilityPaid: {
-        type: Number,
-        default: 0,
-    }, 
-    rentDue: {
-        type: Number,
-        default: 0  
-    },
-    utilityDue: {
-        type: Number,
-        default: 0 
-    },
-    overpayment: {
-        type: Number,
-        default: 0
-    },
-    deposit: {
-        type: Number,
-        required: true
-    },
-    property: {
-        type: Schema.Types.ObjectId,
-        ref: 'Property',
-        required: true
-    },
-    unit: {
-        type: Schema.Types.ObjectId,
-        ref: 'PropertyUnit',
-        required: true
-    },
-    doorNumber: {
-        type: String,
-        required: true
-    },
-    payments: [{ 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Payment' 
-    }],
-    leaseStartDate: {
-        type: Date,
-        required: true
-    },
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true, match: /.+\@.+\..+/, index: true },
+    phone: { type: String, required: true },
+    rentPaid: { type: Number, default: 0 },
+    utilityPaid: { type: Number, default: 0 },
+    rentDue: { type: Number, default: 0 },
+    utilityDue: { type: Number, default: 0 },
+    overpayment: { type: Number, default: 0 },
+    deposit: { type: Number, required: true },
+    property: { type: Schema.Types.ObjectId, ref: 'Property', required: true },
+    unit: { type: Schema.Types.ObjectId, ref: 'PropertyUnit', required: true },
+    doorNumber: { type: String, required: true },
+    payments: [{ type: Schema.Types.ObjectId, ref: 'Payment' }],
+    leaseStartDate: { type: Date, required: true },
     leaseEndDate: {
         type: Date,
         required: true,
         validate: {
-            validator: function (v) {
-                return v > this.leaseStartDate;
-            },
+            validator: function (v) { return v > this.leaseStartDate; },
             message: props => `${props.value} is not a valid lease end date!`
         }
     },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    },
-    username: {
-        type: String,
-        required: true,
-        unique: true,
-        index: true 
-    },
-    password: {
-        type: String,
-        required: true,
-        minlength: 8
-    },
-    owner: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    userId: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'User' 
-    },
-    resetCode: {
-        type: String,
-        default: null
-    },
-    resetCodeExpiration: {
-        type: Date,
-        default: null
-    },
-    transactions: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Transaction'
-    }],
-    maintenanceRequests: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'MaintenanceRequest'
-    }],
-    walletBalance: {
-        type: Number,
-        default: 0
-    },
+    createdAt: { type: Date, default: Date.now },
+    username: { type: String, required: true, unique: true, index: true },
+    password: { type: String, required: true, minlength: 8 },
+    owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    userId: { type: Schema.Types.ObjectId, ref: 'User' },
+    resetCode: { type: String, default: null },
+    resetCodeExpiration: { type: Date, default: null },
+    transactions: [{ type: Schema.Types.ObjectId, ref: 'Transaction' }],
+    maintenanceRequests: [{ type: Schema.Types.ObjectId, ref: 'MaintenanceRequest' }],
+    walletBalance: { type: Number, default: 0 }
 }, { timestamps: true });
-
 
 tenantSchema.pre('save', async function (next) {
     if (!this.isModified('rentPaid') && !this.isModified('utilityPaid') && 
@@ -135,18 +51,39 @@ tenantSchema.pre('save', async function (next) {
 
         const today = new Date();
         const leaseStart = new Date(this.leaseStartDate);
-        const paymentDay = property.paymentDay || 1;
+        const leaseEnd = this.leaseEndDate ? new Date(this.leaseEndDate) : null;
+        const effectiveEnd = leaseEnd && leaseEnd < today ? leaseEnd : today;
 
-        let monthsDue = 0;
-        let current = new Date(leaseStart);
-        while (current <= today) {
-            const dueDate = new Date(current.getFullYear(), current.getMonth(), paymentDay);
-            if (dueDate <= today) monthsDue++;
-            current.setMonth(current.getMonth() + 1);
+        // Helper: Get months with proration
+        function getMonthsBetween(startDate, endDate) {
+            const months = [];
+            let current = new Date(startDate);
+            current.setDate(1);
+            while (current <= endDate) {
+                const yearMonth = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}`;
+                const monthStart = new Date(current.getFullYear(), current.getMonth(), 1);
+                const monthEnd = new Date(current.getFullYear(), current.getMonth() + 1, 0);
+                const daysInMonth = monthEnd.getDate();
+                const effectiveStart = startDate > monthStart ? startDate : monthStart;
+                const effectiveMonthEnd = endDate < monthEnd ? endDate : monthEnd;
+                const daysActive = Math.ceil((effectiveMonthEnd - effectiveStart) / (1000 * 60 * 60 * 24)) + 1;
+                const prorationFactor = daysActive / daysInMonth;
+                months.push({ yearMonth, prorationFactor });
+                current.setMonth(current.getMonth() + 1);
+            }
+            return months;
         }
 
-        const totalRentExpected = monthsDue * (unit.unitPrice || 0);
-        const totalUtilityExpected = monthsDue * (unit.utilities?.reduce((sum, u) => sum + (u.amount || 0), 0) || 0);
+        const months = getMonthsBetween(leaseStart, effectiveEnd);
+        const monthlyRent = unit.unitPrice || 0;
+        const monthlyUtility = unit.utilities?.reduce((sum, u) => sum + (u.amount || 0), 0) || 0;
+
+        let totalRentExpected = 0;
+        let totalUtilityExpected = 0;
+        for (const { prorationFactor } of months) {
+            totalRentExpected += monthlyRent * prorationFactor;
+            totalUtilityExpected += monthlyUtility * prorationFactor;
+        }
 
         this.rentDue = Math.max(totalRentExpected - (this.rentPaid || 0), 0);
         this.utilityDue = Math.max(totalUtilityExpected - (this.utilityPaid || 0), 0);

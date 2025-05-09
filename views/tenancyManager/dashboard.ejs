@@ -822,110 +822,104 @@
             <section class="content">
                 <div class="container-fluid">
                     <!-- Info Boxes (4 per row) -->
-                    <div class="row mt-4 g-4">
-                        <!-- Total Rent Collected -->
-                        <div class="col-6 col-md-3 mb-4">
-                            <div class="card shadow-lg border-0">
-                                <div class="card-header text-white">
-                                    <h5>Total Rent Collected</h5>
-                                </div>
-                                <div class="card-body bold-text">
-                                    <i class="fas fa-money-bill-wave mr-2"></i> Ksh. <%= Number(totalRentCollected ||
-                                        0).toFixed(2) %>
-                                </div>
-                            </div>
-                        </div>
+<div class="row mt-4 g-4">
+    <!-- Total Rent Collected -->
+    <div class="col-6 col-md-3 mb-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-header text-white">
+                <h5>Total Rent Collected</h5>
+            </div>
+            <div class="card-body bold-text">
+                <i class="fas fa-money-bill-wave mr-2"></i> Ksh. <%= Number(totalRentCollected || 0).toFixed(2) %>
+            </div>
+        </div>
+    </div>
 
-                        <!-- Utility Paid -->
-                        <div class="col-6 col-md-3 mb-4">
-                            <div class="card shadow-lg border-0">
-                                <div class="card-header text-white">
-                                    <h5>Utility Paid</h5>
-                                </div>
-                                <div class="card-body bold-text">
-                                    <i class="fas fa-money-bill-alt mr-2"></i> Ksh. <%= Number(utilityCollected ||
-                                        0).toFixed(2) %>
-                                </div>
-                            </div>
-                        </div>
+    <!-- Utility Paid -->
+    <div class="col-6 col-md-3 mb-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-header text-white">
+                <h5>Utility Paid</h5>
+            </div>
+            <div class="card-body bold-text">
+                <i class="fas fa-money-bill-alt mr-2"></i> Ksh. <%= Number(utilityCollected || 0).toFixed(2) %>
+            </div>
+        </div>
+    </div>
 
-                        <!-- Total Rent Due -->
-                        <div class="col-6 col-md-3 mb-4">
-                            <div class="card shadow-lg border-0">
-                                <div class="card-header text-white">
-                                    <h5>Total Rent Due</h5>
-                                </div>
-                                <div class="card-body bold-text">
-                                    <i class="fas fa-calendar-times mr-2"></i> Ksh. <%= Number(totalRentDue ||
-                                        0).toFixed(2) %>
-                                </div>
-                            </div>
-                        </div>
+    <!-- Total Rent Due -->
+    <div class="col-6 col-md-3 mb-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-header text-white">
+                <h5>Total Rent Due</h5>
+            </div>
+            <div class="card-body bold-text">
+                <i class="fas fa-calendar-times mr-2"></i> Ksh. <%= Number(totalRentDue || 0).toFixed(2) %>
+            </div>
+        </div>
+    </div>
 
-                        <!-- Utility Due -->
-                        <div class="col-6 col-md-3 mb-4">
-                            <div class="card shadow-lg border-0">
-                                <div class="card-header text-white">
-                                    <h5>Utility Due</h5>
-                                </div>
-                                <div class="card-body bold-text">
-                                    <i class="fas fa-water mr-2"></i> Ksh. <%= Number(utilityDue || 0).toFixed(2) %>
-                                </div>
-                            </div>
-                        </div>
+    <!-- Utility Due -->
+    <div class="col-6 col-md-3 mb-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-header text-white">
+                <h5>Utility Due</h5>
+            </div>
+            <div class="card-body bold-text">
+                <i class="fas fa-water mr-2"></i> Ksh. <%= Number(utilityDue || 0).toFixed(2) %>
+            </div>
+        </div>
+    </div>
 
-                        <!-- Total Properties -->
-                        <div class="col-6 col-md-3 mb-4">
-                            <div class="card shadow-lg border-0">
-                                <div class="card-header text-white">
-                                    <h5>Total Properties</h5>
-                                </div>
-                                <div class="card-body bold-text">
-                                    <i class="fas fa-home mr-2"></i>
-                                    <%= properties?.length || 0 %>
-                                </div>
-                            </div>
-                        </div>
+    <!-- Total Properties -->
+    <div class="col-6 col-md-3 mb-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-header text-white">
+                <h5>Total Properties</h5>
+            </div>
+            <div class="card-body bold-text">
+                <i class="fas fa-home mr-2"></i> <%= properties?.length || 0 %>
+            </div>
+        </div>
+    </div>
 
-                        <!-- Number of Property Units -->
-                        <div class="col-6 col-md-3 mb-4">
-                            <div class="card shadow-lg border-0">
-                                <div class="card-header text-white">
-                                    <h5>Units</h5>
-                                </div>
-                                <div class="card-body bold-text">
-                                    <i class="fas fa-building mr-2"></i>
-                                    <%= propertyUnits?.length || 0 %>
-                                </div>
-                            </div>
-                        </div>
+    <!-- Number of Property Units -->
+    <div class="col-6 col-md-3 mb-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-header text-white">
+                <h5>Units</h5>
+            </div>
+            <div class="card-body bold-text">
+                <i class="fas fa-building mr-2"></i> <%= propertyUnits?.length || 0 %>
+            </div>
+        </div>
+    </div>
 
-                        <!-- Number of Tenants -->
-                        <div class="col-6 col-md-3 mb-4">
-                            <div class="card shadow-lg border-0">
-                                <div class="card-header text-white">
-                                    <h5>Tenants</h5>
-                                </div>
-                                <div class="card-body bold-text">
-                                    <i class="fas fa-users mr-2"></i>
-                                    <%= numberOfTenants || 0 %>
-                                </div>
-                            </div>
-                        </div>
+    <!-- Number of Tenants -->
+    <div class="col-6 col-md-3 mb-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-header text-white">
+                <h5>Tenants</h5>
+            </div>
+            <div class="card-body bold-text">
+                <i class="fas fa-users mr-2"></i> <%= numberOfTenants || 0 %>
+            </div>
+        </div>
+    </div>
 
-                        <!-- Maintenance Requests -->
-                        <div class="col-6 col-md-3 mb-4">
-                            <div class="card shadow-lg border-0">
-                                <div class="card-header text-white">
-                                    <h5>Maintenance Requests</h5>
-                                </div>
-                                <div class="card-body bold-text">
-                                    <i class="fas fa-tools mr-2"></i>
-                                    <%= totalRequests || 0 %>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <!-- Maintenance Requests -->
+    <div class="col-6 col-md-3 mb-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-header text-white">
+                <h5>Maintenance Requests</h5>
+            </div>
+            <div class="card-body bold-text">
+                <i class="fas fa-tools mr-2"></i> <%= totalRequests || 0 %>
+            </div>
+        </div>
+    </div>
+</div>
+
 
                     <style>
                         /* Info Boxes Styling */
